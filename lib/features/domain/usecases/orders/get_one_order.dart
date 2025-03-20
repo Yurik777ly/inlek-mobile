@@ -1,0 +1,16 @@
+import 'package:dartz/dartz.dart';
+import 'package:inlek/core/error/failure.dart';
+import 'package:inlek/core/usecases/usecase.dart';
+import 'package:inlek/features/domain/entities/order_entity.dart';
+import 'package:inlek/features/domain/repositories/order_repository.dart';
+
+class GetOneOrderUC extends UseCaseParam<OrderEntity?, int> {
+  final OrderRepository orderRepository;
+
+  GetOneOrderUC(this.orderRepository);
+
+  @override
+  Future<Either<Failure, OrderEntity?>> call(int params) async {
+    return await orderRepository.getOrderById(params);
+  }
+}

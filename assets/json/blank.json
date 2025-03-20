@@ -1,0 +1,451 @@
+{
+	"suggests": [
+		{
+			"name": "коллаген",
+			"url": "/search.html?search=%D0%BA%D0%BE%D0%BB%D0%BB%D0%B0%D0%B3%D0%B5%D0%BD&recommended_by=instant_search&recommended_code=%D0%BA%D0%BE%D0%BB%D0%BB%D0%B0%D0%B3%D0%B5%D0%BD&r46_search_query=%D0%BA%D0%BE%D0%BB%D0%BB%D0%B0%D0%B3%D0%B5%D0%BD"
+		},
+		{
+			"name": "магний",
+			"url": "/search.html?search=%D0%BC%D0%B0%D0%B3%D0%BD%D0%B8%D0%B9&recommended_by=instant_search&recommended_code=%D0%BC%D0%B0%D0%B3%D0%BD%D0%B8%D0%B9&r46_search_query=%D0%BC%D0%B0%D0%B3%D0%BD%D0%B8%D0%B9"
+		},
+		{
+			"name": "витамин д",
+			"url": "/search.html?search=%D0%B2%D0%B8%D1%82%D0%B0%D0%BC%D0%B8%D0%BD%20%D0%B4&recommended_by=instant_search&recommended_code=%D0%B2%D0%B8%D1%82%D0%B0%D0%BC%D0%B8%D0%BD%20%D0%B4&r46_search_query=%D0%B2%D0%B8%D1%82%D0%B0%D0%BC%D0%B8%D0%BD%20%D0%B4"
+		},
+		{
+			"name": "омега",
+			"url": "/search.html?search=%D0%BE%D0%BC%D0%B5%D0%B3%D0%B0&recommended_by=instant_search&recommended_code=%D0%BE%D0%BC%D0%B5%D0%B3%D0%B0&r46_search_query=%D0%BE%D0%BC%D0%B5%D0%B3%D0%B0"
+		},
+		{
+			"name": "bielenda",
+			"url": "/search.html?search=bielenda&recommended_by=instant_search&recommended_code=bielenda&r46_search_query=bielenda"
+		}
+	],
+	"products": [
+		{
+			"name": "Салфетка антисептическая с этанолом прединъекционная 60x90мм N1",
+			"url": "https://apteka-online.by/brendy/belaseptika/etanol-antisepticheskij-4810972002065.html?recommended_by=instant_search",
+			"category_ids": ["2", "220", "267", "342"],
+			"barcode": "4810972002065",
+			"sales_rate": 1135,
+			"relative_sales_rate": 100,
+			"picture": "https://pictures.rees46.ru/resize-images/180/a46b953ef509cadb85a3692a13dfac/3470107100837839584.jpg",
+			"categories": [
+				{
+					"id": "2",
+					"name": "Каталог",
+					"level": "1",
+					"name_with_parent": "Каталог"
+				},
+				{
+					"id": "220",
+					"parent_id": "2",
+					"url": "https://apteka-online.by/katalog/aptechka.html?recommended_by=instant_search",
+					"name": "Аптечка",
+					"level": "2",
+					"name_with_parent": "Каталог - Аптечка",
+					"url_handle": "/katalog/aptechka.html?recommended_by=instant_search"
+				},
+				{
+					"id": "267",
+					"parent_id": "220",
+					"url": "https://apteka-online.by/katalog/aptechka/aptechka-dlya-puteshestvij.html?recommended_by=instant_search",
+					"name": "Аптечка для путешествий",
+					"level": "3",
+					"name_with_parent": "Аптечка - Аптечка для путешествий",
+					"url_handle": "/katalog/aptechka/aptechka-dlya-puteshestvij.html?recommended_by=instant_search"
+				},
+				{
+					"id": "342",
+					"parent_id": "267",
+					"url": "https://apteka-online.by/katalog/aptechka/aptechka-dlya-puteshestvij/antiseptiki-dlya-ruk.html?recommended_by=instant_search",
+					"name": "Антисептики для рук",
+					"level": "4",
+					"name_with_parent": "Аптечка для путешествий - Антисептики для рук",
+					"url_handle": "/katalog/aptechka/aptechka-dlya-puteshestvij/antiseptiki-dlya-ruk.html?recommended_by=instant_search"
+				}
+			],
+			"price_full_formatted": "0.30 р.",
+			"price_full": 0.3,
+			"image_url": "https://apteka-online.by/assets/images/05b80aea6b64bd734748b829a5245602.jpg",
+			"image_url_handle": "/assets/images/05b80aea6b64bd734748b829a5245602.jpg",
+			"image_url_resized": {
+				"120": "https://pictures.rees46.ru/resize-images/120/a46b953ef509cadb85a3692a13dfac/3470107100837839584.jpg",
+				"140": "https://pictures.rees46.ru/resize-images/140/a46b953ef509cadb85a3692a13dfac/3470107100837839584.jpg",
+				"160": "https://pictures.rees46.ru/resize-images/160/a46b953ef509cadb85a3692a13dfac/3470107100837839584.jpg",
+				"180": "https://pictures.rees46.ru/resize-images/180/a46b953ef509cadb85a3692a13dfac/3470107100837839584.jpg",
+				"200": "https://pictures.rees46.ru/resize-images/200/a46b953ef509cadb85a3692a13dfac/3470107100837839584.jpg",
+				"220": "https://pictures.rees46.ru/resize-images/220/a46b953ef509cadb85a3692a13dfac/3470107100837839584.jpg",
+				"310": "https://pictures.rees46.ru/resize-images/310/a46b953ef509cadb85a3692a13dfac/3470107100837839584.jpg",
+				"520": "https://pictures.rees46.ru/resize-images/520/a46b953ef509cadb85a3692a13dfac/3470107100837839584.jpg"
+			},
+			"url_handle": "/brendy/belaseptika/etanol-antisepticheskij-4810972002065.html?recommended_by=instant_search",
+			"currency": "р.",
+			"_id": "3470107100837839584",
+			"id": "6725",
+			"group_id": "_3470107100837839584_"
+		},
+		{
+			"name": "Смекта порошок для приготовления раствора 3г №10 (апельсин)",
+			"url": "https://apteka-online.by/brendy/bofur-ipsen/smekta-3665585002343.html?recommended_by=instant_search",
+			"category_ids": ["2", "220", "267", "291", "294"],
+			"barcode": "3665585002343",
+			"sales_rate": 1135,
+			"relative_sales_rate": 100,
+			"picture": "https://pictures.rees46.ru/resize-images/180/a46b953ef509cadb85a3692a13dfac/3470107269474025517.jpg",
+			"categories": [
+				{
+					"id": "2",
+					"name": "Каталог",
+					"level": "1",
+					"name_with_parent": "Каталог"
+				},
+				{
+					"id": "220",
+					"parent_id": "2",
+					"url": "https://apteka-online.by/katalog/aptechka.html?recommended_by=instant_search",
+					"name": "Аптечка",
+					"level": "2",
+					"name_with_parent": "Каталог - Аптечка",
+					"url_handle": "/katalog/aptechka.html?recommended_by=instant_search"
+				},
+				{
+					"id": "267",
+					"parent_id": "220",
+					"url": "https://apteka-online.by/katalog/aptechka/aptechka-dlya-puteshestvij.html?recommended_by=instant_search",
+					"name": "Аптечка для путешествий",
+					"level": "3",
+					"name_with_parent": "Аптечка - Аптечка для путешествий",
+					"url_handle": "/katalog/aptechka/aptechka-dlya-puteshestvij.html?recommended_by=instant_search"
+				},
+				{
+					"id": "291",
+					"parent_id": "267",
+					"url": "https://apteka-online.by/katalog/aptechka/aptechka-dlya-puteshestvij/pri-kishechnyh-rasstrojstvah-i-otravlenii.html?recommended_by=instant_search",
+					"name": "При кишечных расстройствах и отравлении",
+					"level": "4",
+					"name_with_parent": "Аптечка для путешествий - При кишечных расстройствах и отравлении",
+					"url_handle": "/katalog/aptechka/aptechka-dlya-puteshestvij/pri-kishechnyh-rasstrojstvah-i-otravlenii.html?recommended_by=instant_search"
+				},
+				{
+					"id": "294",
+					"parent_id": "291",
+					"url": "https://apteka-online.by/katalog/aptechka/aptechka-dlya-puteshestvij/pri-kishechnyh-rasstrojstvah-i-otravlenii/adsorbenty-3.html?recommended_by=instant_search",
+					"name": "Адсорбенты",
+					"level": "5",
+					"name_with_parent": "При кишечных расстройствах и отравлении - Адсорбенты",
+					"url_handle": "/katalog/aptechka/aptechka-dlya-puteshestvij/pri-kishechnyh-rasstrojstvah-i-otravlenii/adsorbenty-3.html?recommended_by=instant_search"
+				}
+			],
+			"price_formatted": "16 р.",
+			"price_full_formatted": "16.60 р.",
+			"price": 16,
+			"price_full": 16.6,
+			"image_url": "https://apteka-online.by//img/picture_1/0a9ssyzhla06lqeoz38pgi2r3f1v2ien.jpg",
+			"image_url_handle": "//img/picture_1/0a9ssyzhla06lqeoz38pgi2r3f1v2ien.jpg",
+			"image_url_resized": {
+				"120": "https://pictures.rees46.ru/resize-images/120/a46b953ef509cadb85a3692a13dfac/3470107269474025517.jpg",
+				"140": "https://pictures.rees46.ru/resize-images/140/a46b953ef509cadb85a3692a13dfac/3470107269474025517.jpg",
+				"160": "https://pictures.rees46.ru/resize-images/160/a46b953ef509cadb85a3692a13dfac/3470107269474025517.jpg",
+				"180": "https://pictures.rees46.ru/resize-images/180/a46b953ef509cadb85a3692a13dfac/3470107269474025517.jpg",
+				"200": "https://pictures.rees46.ru/resize-images/200/a46b953ef509cadb85a3692a13dfac/3470107269474025517.jpg",
+				"220": "https://pictures.rees46.ru/resize-images/220/a46b953ef509cadb85a3692a13dfac/3470107269474025517.jpg",
+				"310": "https://pictures.rees46.ru/resize-images/310/a46b953ef509cadb85a3692a13dfac/3470107269474025517.jpg",
+				"520": "https://pictures.rees46.ru/resize-images/520/a46b953ef509cadb85a3692a13dfac/3470107269474025517.jpg"
+			},
+			"url_handle": "/brendy/bofur-ipsen/smekta-3665585002343.html?recommended_by=instant_search",
+			"currency": "р.",
+			"_id": "3470107269474025517",
+			"id": "5873",
+			"group_id": "_3470107269474025517_"
+		},
+		{
+			"name": "ТераФлю лимон порошок для приг. раствора N10",
+			"url": "https://apteka-online.by/brendy/famar/teraflyu-limon-4870223140663.html?recommended_by=instant_search",
+			"category_ids": ["2", "220", "267", "280", "282"],
+			"barcode": "4870223140663",
+			"sales_rate": 1135,
+			"relative_sales_rate": 100,
+			"picture": "https://pictures.rees46.ru/resize-images/180/a46b953ef509cadb85a3692a13dfac/3470107253141406322.jpg",
+			"categories": [
+				{
+					"id": "2",
+					"name": "Каталог",
+					"level": "1",
+					"name_with_parent": "Каталог"
+				},
+				{
+					"id": "220",
+					"parent_id": "2",
+					"url": "https://apteka-online.by/katalog/aptechka.html?recommended_by=instant_search",
+					"name": "Аптечка",
+					"level": "2",
+					"name_with_parent": "Каталог - Аптечка",
+					"url_handle": "/katalog/aptechka.html?recommended_by=instant_search"
+				},
+				{
+					"id": "267",
+					"parent_id": "220",
+					"url": "https://apteka-online.by/katalog/aptechka/aptechka-dlya-puteshestvij.html?recommended_by=instant_search",
+					"name": "Аптечка для путешествий",
+					"level": "3",
+					"name_with_parent": "Аптечка - Аптечка для путешествий",
+					"url_handle": "/katalog/aptechka/aptechka-dlya-puteshestvij.html?recommended_by=instant_search"
+				},
+				{
+					"id": "280",
+					"parent_id": "267",
+					"url": "https://apteka-online.by/katalog/aptechka/aptechka-dlya-puteshestvij/preparaty-pri-prostude-i-grippe-2.html?recommended_by=instant_search",
+					"name": "Препараты при простуде и гриппе",
+					"level": "4",
+					"name_with_parent": "Аптечка для путешествий - Препараты при простуде и гриппе",
+					"url_handle": "/katalog/aptechka/aptechka-dlya-puteshestvij/preparaty-pri-prostude-i-grippe-2.html?recommended_by=instant_search"
+				},
+				{
+					"id": "282",
+					"parent_id": "280",
+					"url": "https://apteka-online.by/katalog/aptechka/aptechka-dlya-puteshestvij/preparaty-pri-prostude-i-grippe-2/preparaty-ot-simptomov-prostudy-2.html?recommended_by=instant_search",
+					"name": "Препараты от симптомов простуды",
+					"level": "5",
+					"name_with_parent": "Препараты при простуде и гриппе - Препараты от симптомов простуды",
+					"url_handle": "/katalog/aptechka/aptechka-dlya-puteshestvij/preparaty-pri-prostude-i-grippe-2/preparaty-ot-simptomov-prostudy-2.html?recommended_by=instant_search"
+				}
+			],
+			"price_formatted": "33 р.",
+			"price_full_formatted": "33.28 р.",
+			"price": 33,
+			"price_full": 33.28,
+			"image_url": "https://apteka-online.by/assets/images/products/teraflyu-por-10pak-limon.png",
+			"image_url_handle": "/assets/images/products/teraflyu-por-10pak-limon.png",
+			"image_url_resized": {
+				"120": "https://pictures.rees46.ru/resize-images/120/a46b953ef509cadb85a3692a13dfac/3470107253141406322.jpg",
+				"140": "https://pictures.rees46.ru/resize-images/140/a46b953ef509cadb85a3692a13dfac/3470107253141406322.jpg",
+				"160": "https://pictures.rees46.ru/resize-images/160/a46b953ef509cadb85a3692a13dfac/3470107253141406322.jpg",
+				"180": "https://pictures.rees46.ru/resize-images/180/a46b953ef509cadb85a3692a13dfac/3470107253141406322.jpg",
+				"200": "https://pictures.rees46.ru/resize-images/200/a46b953ef509cadb85a3692a13dfac/3470107253141406322.jpg",
+				"220": "https://pictures.rees46.ru/resize-images/220/a46b953ef509cadb85a3692a13dfac/3470107253141406322.jpg",
+				"310": "https://pictures.rees46.ru/resize-images/310/a46b953ef509cadb85a3692a13dfac/3470107253141406322.jpg",
+				"520": "https://pictures.rees46.ru/resize-images/520/a46b953ef509cadb85a3692a13dfac/3470107253141406322.jpg"
+			},
+			"url_handle": "/brendy/famar/teraflyu-limon-4870223140663.html?recommended_by=instant_search",
+			"currency": "р.",
+			"_id": "3470107253141406322",
+			"id": "6052",
+			"group_id": "_3470107253141406322_"
+		},
+		{
+			"name": "Витавирин порошок для приготовления раствора 90мг N7",
+			"url": "https://apteka-online.by/brendy/amantismed/vitavirin-4814575000459.html?recommended_by=instant_search",
+			"category_ids": ["2", "3", "137", "144", "1353876"],
+			"barcode": "4814575000459",
+			"sales_rate": 1135,
+			"relative_sales_rate": 100,
+			"picture": "https://pictures.rees46.ru/resize-images/180/a46b953ef509cadb85a3692a13dfac/3470107098480640671.jpg",
+			"categories": [
+				{
+					"id": "2",
+					"name": "Каталог",
+					"level": "1",
+					"name_with_parent": "Каталог"
+				},
+				{
+					"id": "3",
+					"parent_id": "2",
+					"url": "https://apteka-online.by/katalog/lekarstva.html?recommended_by=instant_search",
+					"name": "Лекарственные препараты",
+					"level": "2",
+					"name_with_parent": "Каталог - Лекарственные препараты",
+					"url_handle": "/katalog/lekarstva.html?recommended_by=instant_search"
+				},
+				{
+					"id": "137",
+					"parent_id": "3",
+					"url": "https://apteka-online.by/katalog/lekarstva/prostuda_i_gripp.html?recommended_by=instant_search",
+					"name": "Препараты при простуде и гриппе",
+					"level": "3",
+					"name_with_parent": "Лекарственные препараты - Препараты при простуде и гриппе",
+					"url_handle": "/katalog/lekarstva/prostuda_i_gripp.html?recommended_by=instant_search"
+				},
+				{
+					"id": "144",
+					"parent_id": "137",
+					"url": "https://apteka-online.by/katalog/lekarstva/prostuda_i_gripp/protivovirusnye-i-immunomoduliruyushhie.html?recommended_by=instant_search",
+					"name": "Противовирусные и иммуномодулирующие препараты",
+					"level": "4",
+					"name_with_parent": "Препараты при простуде и гриппе - Противовирусные и иммуномодулирующие препараты",
+					"url_handle": "/katalog/lekarstva/prostuda_i_gripp/protivovirusnye-i-immunomoduliruyushhie.html?recommended_by=instant_search"
+				},
+				{
+					"id": "1353876",
+					"parent_id": "144",
+					"url": "https://apteka-online.by/katalog/lekarstva/prostuda_i_gripp/protivovirusnye-i-immunomoduliruyushhie/preparaty-protiv-grippa1.html?recommended_by=instant_search",
+					"name": "Препараты против гриппа",
+					"level": "5",
+					"name_with_parent": "Противовирусные и иммуномодулирующие препараты - Препараты против гриппа",
+					"url_handle": "/katalog/lekarstva/prostuda_i_gripp/protivovirusnye-i-immunomoduliruyushhie/preparaty-protiv-grippa1.html?recommended_by=instant_search"
+				}
+			],
+			"price_formatted": "27 р.",
+			"price_full_formatted": "27.67 р.",
+			"price": 27,
+			"price_full": 27.67,
+			"image_url": "https://apteka-online.by//img/picture_1/vgeirv7ziacdr0plex1acry6kjeo6bkt.jpg",
+			"image_url_handle": "//img/picture_1/vgeirv7ziacdr0plex1acry6kjeo6bkt.jpg",
+			"image_url_resized": {
+				"120": "https://pictures.rees46.ru/resize-images/120/a46b953ef509cadb85a3692a13dfac/3470107098480640671.jpg",
+				"140": "https://pictures.rees46.ru/resize-images/140/a46b953ef509cadb85a3692a13dfac/3470107098480640671.jpg",
+				"160": "https://pictures.rees46.ru/resize-images/160/a46b953ef509cadb85a3692a13dfac/3470107098480640671.jpg",
+				"180": "https://pictures.rees46.ru/resize-images/180/a46b953ef509cadb85a3692a13dfac/3470107098480640671.jpg",
+				"200": "https://pictures.rees46.ru/resize-images/200/a46b953ef509cadb85a3692a13dfac/3470107098480640671.jpg",
+				"220": "https://pictures.rees46.ru/resize-images/220/a46b953ef509cadb85a3692a13dfac/3470107098480640671.jpg",
+				"310": "https://pictures.rees46.ru/resize-images/310/a46b953ef509cadb85a3692a13dfac/3470107098480640671.jpg",
+				"520": "https://pictures.rees46.ru/resize-images/520/a46b953ef509cadb85a3692a13dfac/3470107098480640671.jpg"
+			},
+			"url_handle": "/brendy/amantismed/vitavirin-4814575000459.html?recommended_by=instant_search",
+			"currency": "р.",
+			"_id": "3470107098480640671",
+			"id": "3531",
+			"group_id": "_3470107098480640671_"
+		},
+		{
+			"name": "Валидол-Фармстандарт табл. подъязычные 60мг №10",
+			"url": "https://apteka-online.by/brendy/farmstandar/validol-farmstandart-4601669013033.html?recommended_by=instant_search",
+			"category_ids": ["2", "3", "30", "824"],
+			"barcode": "4601669013033",
+			"sales_rate": 1135,
+			"relative_sales_rate": 100,
+			"picture": "https://pictures.rees46.ru/resize-images/180/a46b953ef509cadb85a3692a13dfac/3470107170924659289.jpg",
+			"categories": [
+				{
+					"id": "2",
+					"name": "Каталог",
+					"level": "1",
+					"name_with_parent": "Каталог"
+				},
+				{
+					"id": "3",
+					"parent_id": "2",
+					"url": "https://apteka-online.by/katalog/lekarstva.html?recommended_by=instant_search",
+					"name": "Лекарственные препараты",
+					"level": "2",
+					"name_with_parent": "Каталог - Лекарственные препараты",
+					"url_handle": "/katalog/lekarstva.html?recommended_by=instant_search"
+				},
+				{
+					"id": "30",
+					"parent_id": "3",
+					"url": "https://apteka-online.by/katalog/lekarstva/serdechno-sosudistaia_sistema.html?recommended_by=instant_search",
+					"name": "Препараты для сердца и сосудов",
+					"level": "3",
+					"name_with_parent": "Лекарственные препараты - Препараты для сердца и сосудов",
+					"url_handle": "/katalog/lekarstva/serdechno-sosudistaia_sistema.html?recommended_by=instant_search"
+				},
+				{
+					"id": "824",
+					"parent_id": "30",
+					"url": "https://apteka-online.by/katalog/lekarstva/serdechno-sosudistaia_sistema/prochie-dlya-zabolevanij-serdca.html?recommended_by=instant_search",
+					"name": "Прочие препараты для сердца и сосудов",
+					"level": "4",
+					"name_with_parent": "Препараты для сердца и сосудов - Прочие препараты для сердца и сосудов",
+					"url_handle": "/katalog/lekarstva/serdechno-sosudistaia_sistema/prochie-dlya-zabolevanij-serdca.html?recommended_by=instant_search"
+				}
+			],
+			"price_formatted": "1 р.",
+			"price_full_formatted": "1.54 р.",
+			"price": 1,
+			"price_full": 1.54,
+			"image_url": "https://apteka-online.by/assets/images/products/validol.jpeg",
+			"image_url_handle": "/assets/images/products/validol.jpeg",
+			"image_url_resized": {
+				"120": "https://pictures.rees46.ru/resize-images/120/a46b953ef509cadb85a3692a13dfac/3470107170924659289.jpg",
+				"140": "https://pictures.rees46.ru/resize-images/140/a46b953ef509cadb85a3692a13dfac/3470107170924659289.jpg",
+				"160": "https://pictures.rees46.ru/resize-images/160/a46b953ef509cadb85a3692a13dfac/3470107170924659289.jpg",
+				"180": "https://pictures.rees46.ru/resize-images/180/a46b953ef509cadb85a3692a13dfac/3470107170924659289.jpg",
+				"200": "https://pictures.rees46.ru/resize-images/200/a46b953ef509cadb85a3692a13dfac/3470107170924659289.jpg",
+				"220": "https://pictures.rees46.ru/resize-images/220/a46b953ef509cadb85a3692a13dfac/3470107170924659289.jpg",
+				"310": "https://pictures.rees46.ru/resize-images/310/a46b953ef509cadb85a3692a13dfac/3470107170924659289.jpg",
+				"520": "https://pictures.rees46.ru/resize-images/520/a46b953ef509cadb85a3692a13dfac/3470107170924659289.jpg"
+			},
+			"url_handle": "/brendy/farmstandar/validol-farmstandart-4601669013033.html?recommended_by=instant_search",
+			"currency": "р.",
+			"_id": "3470107170924659289",
+			"id": "3443",
+			"group_id": "_3470107170924659289_"
+		},
+		{
+			"name": "Хлоргексидин биглюконат раствор 0.05% 100мл для местного и наружного применения",
+			"url": "https://apteka-online.by/brendy/belmedpreparaty/hlorgeksidin-biglyukonat-4813331000047.html?recommended_by=instant_search",
+			"category_ids": ["2", "220", "267", "301", "302"],
+			"barcode": "4813331000047",
+			"sales_rate": 1135,
+			"relative_sales_rate": 100,
+			"picture": "https://pictures.rees46.ru/resize-images/180/a46b953ef509cadb85a3692a13dfac/3470107104713376583.jpg",
+			"categories": [
+				{
+					"id": "2",
+					"name": "Каталог",
+					"level": "1",
+					"name_with_parent": "Каталог"
+				},
+				{
+					"id": "220",
+					"parent_id": "2",
+					"url": "https://apteka-online.by/katalog/aptechka.html?recommended_by=instant_search",
+					"name": "Аптечка",
+					"level": "2",
+					"name_with_parent": "Каталог - Аптечка",
+					"url_handle": "/katalog/aptechka.html?recommended_by=instant_search"
+				},
+				{
+					"id": "267",
+					"parent_id": "220",
+					"url": "https://apteka-online.by/katalog/aptechka/aptechka-dlya-puteshestvij.html?recommended_by=instant_search",
+					"name": "Аптечка для путешествий",
+					"level": "3",
+					"name_with_parent": "Аптечка - Аптечка для путешествий",
+					"url_handle": "/katalog/aptechka/aptechka-dlya-puteshestvij.html?recommended_by=instant_search"
+				},
+				{
+					"id": "301",
+					"parent_id": "267",
+					"url": "https://apteka-online.by/katalog/aptechka/aptechka-dlya-puteshestvij/zazhivlenie-ran.html?recommended_by=instant_search",
+					"name": "Заживление ран",
+					"level": "4",
+					"name_with_parent": "Аптечка для путешествий - Заживление ран",
+					"url_handle": "/katalog/aptechka/aptechka-dlya-puteshestvij/zazhivlenie-ran.html?recommended_by=instant_search"
+				},
+				{
+					"id": "302",
+					"parent_id": "301",
+					"url": "https://apteka-online.by/katalog/aptechka/aptechka-dlya-puteshestvij/zazhivlenie-ran/antiseptiki.html?recommended_by=instant_search",
+					"name": "Антисептики",
+					"level": "5",
+					"name_with_parent": "Заживление ран - Антисептики",
+					"url_handle": "/katalog/aptechka/aptechka-dlya-puteshestvij/zazhivlenie-ran/antiseptiki.html?recommended_by=instant_search"
+				}
+			],
+			"price_formatted": "2 р.",
+			"price_full_formatted": "2.60 р.",
+			"price": 2,
+			"price_full": 2.6,
+			"image_url": "https://apteka-online.by//img/picture_1/qhic5929lllb64ppnsnuz3fz6x6udiy1.jpg",
+			"image_url_handle": "//img/picture_1/qhic5929lllb64ppnsnuz3fz6x6udiy1.jpg",
+			"image_url_resized": {
+				"120": "https://pictures.rees46.ru/resize-images/120/a46b953ef509cadb85a3692a13dfac/3470107104713376583.jpg",
+				"140": "https://pictures.rees46.ru/resize-images/140/a46b953ef509cadb85a3692a13dfac/3470107104713376583.jpg",
+				"160": "https://pictures.rees46.ru/resize-images/160/a46b953ef509cadb85a3692a13dfac/3470107104713376583.jpg",
+				"180": "https://pictures.rees46.ru/resize-images/180/a46b953ef509cadb85a3692a13dfac/3470107104713376583.jpg",
+				"200": "https://pictures.rees46.ru/resize-images/200/a46b953ef509cadb85a3692a13dfac/3470107104713376583.jpg",
+				"220": "https://pictures.rees46.ru/resize-images/220/a46b953ef509cadb85a3692a13dfac/3470107104713376583.jpg",
+				"310": "https://pictures.rees46.ru/resize-images/310/a46b953ef509cadb85a3692a13dfac/3470107104713376583.jpg",
+				"520": "https://pictures.rees46.ru/resize-images/520/a46b953ef509cadb85a3692a13dfac/3470107104713376583.jpg"
+			},
+			"url_handle": "/brendy/belmedpreparaty/hlorgeksidin-biglyukonat-4813331000047.html?recommended_by=instant_search",
+			"currency": "р.",
+			"_id": "3470107104713376583",
+			"id": "6425",
+			"group_id": "_3470107104713376583_"
+		}
+	],
+	"html": "<div class=\"rees46-search-wrapper\"> <div class=\"rees46-search-container\"> <div class=\"rees46-search-group\"> <div class=\"rees46-search-group-title\"> Результаты </div> <div class=\"rees46-search-group-description\"> <a class=\"rees46-search-row\" data-id=\"\" data-remote=\"true\" href=\"/search.html?search=%D0%BA%D0%BE%D0%BB%D0%BB%D0%B0%D0%B3%D0%B5%D0%BD&recommended_by=instant_search&recommended_code=%D0%BA%D0%BE%D0%BB%D0%BB%D0%B0%D0%B3%D0%B5%D0%BD&r46_search_query=%D0%BA%D0%BE%D0%BB%D0%BB%D0%B0%D0%B3%D0%B5%D0%BD\"><span>коллаген </span></a> <a class=\"rees46-search-row\" data-id=\"\" data-remote=\"true\" href=\"/search.html?search=%D0%BC%D0%B0%D0%B3%D0%BD%D0%B8%D0%B9&recommended_by=instant_search&recommended_code=%D0%BC%D0%B0%D0%B3%D0%BD%D0%B8%D0%B9&r46_search_query=%D0%BC%D0%B0%D0%B3%D0%BD%D0%B8%D0%B9\"><span>магний </span></a> <a class=\"rees46-search-row\" data-id=\"\" data-remote=\"true\" href=\"/search.html?search=%D0%B2%D0%B8%D1%82%D0%B0%D0%BC%D0%B8%D0%BD%20%D0%B4&recommended_by=instant_search&recommended_code=%D0%B2%D0%B8%D1%82%D0%B0%D0%BC%D0%B8%D0%BD%20%D0%B4&r46_search_query=%D0%B2%D0%B8%D1%82%D0%B0%D0%BC%D0%B8%D0%BD%20%D0%B4\"><span>витамин д </span></a> <a class=\"rees46-search-row\" data-id=\"\" data-remote=\"true\" href=\"/search.html?search=%D0%BE%D0%BC%D0%B5%D0%B3%D0%B0&recommended_by=instant_search&recommended_code=%D0%BE%D0%BC%D0%B5%D0%B3%D0%B0&r46_search_query=%D0%BE%D0%BC%D0%B5%D0%B3%D0%B0\"><span>омега </span></a> <a class=\"rees46-search-row\" data-id=\"\" data-remote=\"true\" href=\"/search.html?search=bielenda&recommended_by=instant_search&recommended_code=bielenda&r46_search_query=bielenda\"><span>bielenda </span></a> </div> </div> </div> <div class=\"rees46-search-container\" id=\"rees46_search_products\"> <div class=\"rees46-search-group rees46-search-products\"> <div class=\"rees46-search-group-title\"> Подходящие товары </div> <div class=\"rees46-search-group-description\"> <a class=\"rees46-search-product\" href=\"https://apteka-online.by/brendy/belaseptika/etanol-antisepticheskij-4810972002065.html?recommended_by=instant_search\"> <div class=\"rees46-search-product__image\" style=\"background-image: url(&#39;https://apteka-online.by/assets/images/05b80aea6b64bd734748b829a5245602.jpg&#39;)\"></div> <div class=\"rees46-search-product__name\"> Салфетка антисептическая с этанолом прединъекционная 60x90мм N1 </div> <div class=\"rees46-search-product__price\"> от 0.30 р. </div> </a> <a class=\"rees46-search-product\" href=\"https://apteka-online.by/brendy/bofur-ipsen/smekta-3665585002343.html?recommended_by=instant_search\"> <div class=\"rees46-search-product__image\" style=\"background-image: url(&#39;https://apteka-online.by//img/picture_1/0a9ssyzhla06lqeoz38pgi2r3f1v2ien.jpg&#39;)\"></div> <div class=\"rees46-search-product__name\"> Смекта порошок для приготовления раствора 3г №10 (апельсин) </div> <div class=\"rees46-search-product__price\"> от 16.60 р. </div> </a> <a class=\"rees46-search-product\" href=\"https://apteka-online.by/brendy/famar/teraflyu-limon-4870223140663.html?recommended_by=instant_search\"> <div class=\"rees46-search-product__image\" style=\"background-image: url(&#39;https://apteka-online.by/assets/images/products/teraflyu-por-10pak-limon.png&#39;)\"></div> <div class=\"rees46-search-product__name\"> ТераФлю лимон порошок для приг. раствора N10 </div> <div class=\"rees46-search-product__price\"> от 33.28 р. </div> </a> <a class=\"rees46-search-product\" href=\"https://apteka-online.by/brendy/amantismed/vitavirin-4814575000459.html?recommended_by=instant_search\"> <div class=\"rees46-search-product__image\" style=\"background-image: url(&#39;https://apteka-online.by//img/picture_1/vgeirv7ziacdr0plex1acry6kjeo6bkt.jpg&#39;)\"></div> <div class=\"rees46-search-product__name\"> Витавирин порошок для приготовления раствора 90мг N7 </div> <div class=\"rees46-search-product__price\"> от 27.67 р. </div> </a> <a class=\"rees46-search-product\" href=\"https://apteka-online.by/brendy/farmstandar/validol-farmstandart-4601669013033.html?recommended_by=instant_search\"> <div class=\"rees46-search-product__image\" style=\"background-image: url(&#39;https://apteka-online.by/assets/images/products/validol.jpeg&#39;)\"></div> <div class=\"rees46-search-product__name\"> Валидол-Фармстандарт табл. подъязычные 60мг №10 </div> <div class=\"rees46-search-product__price\"> от 1.54 р. </div> </a> <a class=\"rees46-search-product\" href=\"https://apteka-online.by/brendy/belmedpreparaty/hlorgeksidin-biglyukonat-4813331000047.html?recommended_by=instant_search\"> <div class=\"rees46-search-product__image\" style=\"background-image: url(&#39;https://apteka-online.by//img/picture_1/qhic5929lllb64ppnsnuz3fz6x6udiy1.jpg&#39;)\"></div> <div class=\"rees46-search-product__name\"> Хлоргексидин биглюконат раствор 0.05% 100мл для местного и наружного применения </div> <div class=\"rees46-search-product__price\"> от 2.60 р. </div> </a> </div> </div> </div> <div class=\"rees46-search-close\"></div></div>"
+}
