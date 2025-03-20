@@ -5,7 +5,7 @@ class PharmacyMapState extends Equatable {
   final bool showStackWindow;
   final List<MapObject<dynamic>> markers;
 
-  final List<MapMarkerModel> points;
+  final List<CustomMapObject> points;
   final YandexMapController? mapController;
 
   const PharmacyMapState({
@@ -20,7 +20,7 @@ class PharmacyMapState extends Equatable {
     String? selectedMarkerId,
     bool? showStackWindow,
     List<MapObject<dynamic>>? markers,
-    List<MapMarkerModel>? points,
+    List<CustomMapObject>? points,
     CameraPosition? position,
     YandexMapController? mapController,
   }) {

@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/services.dart';
+import 'package:inlek/constants/paths.dart';
+import 'package:inlek/core/models/courier_zone_model.dart';
 import 'package:inlek/core/models/map_marker_model.dart';
 import 'package:inlek/features/data/models/pharmacy_model.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
@@ -20,8 +25,9 @@ class InfoAboutOrderScreenBloc
 
   void _onLoadData(
       LoadDataEvent event, Emitter<InfoAboutOrderScreenState> emit) async {
+    List<CustomMapObject> mapObjects = await _loadPolygonObjects();
+
     final failureOrLoads = await getPharmaciesUC('');
-    List<MapMarkerModel> points = [];
 
     failureOrLoads.fold(
       (_) => emit(
@@ -36,10 +42,12 @@ class InfoAboutOrderScreenBloc
 
           // Генерация иконки для маркера с количеством аптек
 
-          points.add(
-            MapMarkerModel(
-              id: pharmacy.pharmacyId!,
-              point: Point(latitude: latitude, longitude: longitude),
+          mapObjects.add(
+            CustomMapObject(
+              mapObject: PlacemarkMapObject(
+                mapId: MapObjectId(pharmacy.pharmacyId.toString()),
+                point: Point(latitude: latitude, longitude: longitude),
+              ),
               data: (pharmacy as PharmacyModel).toJson(),
             ),
           );
@@ -48,7 +56,53 @@ class InfoAboutOrderScreenBloc
     );
 
     emit(
-      InfoAboutOrderScreenState(isLoading: false, points: points),
+      InfoAboutOrderScreenState(isLoading: false, mapObjects: mapObjects),
     );
+  }
+
+  Future<List<CustomMapObject>> _loadPolygonObjects() async {
+    List<CustomMapObject> mapObjects = [];
+
+    String jsonString = await rootBundle.loadString(Paths.courierZonesJsonPath);
+
+    Map<String, dynamic> jsonData = jsonDecode(jsonString);
+
+    CourierZoneModel courierZoneData = CourierZoneModel.fromJson(jsonData);
+
+    for (Feature feature in courierZoneData.features) {
+      for (List<List<double>> coordinates in feature.geometry.coordinates) {
+        mapObjects.add(
+          CustomMapObject(
+            mapObject: PolygonMapObject(
+              fillColor: Color(
+                int.parse(
+                  "0xFF${feature.properties.fill.replaceAll('#', '')}",
+                ),
+              ).withOpacity(feature.properties.fillOpacity),
+              strokeColor: Color(
+                int.parse(
+                  "0xFF${feature.properties.stroke.replaceAll('#', '')}",
+                ),
+              ).withOpacity(feature.properties.strokeOpacity),
+              strokeWidth: feature.properties.strokeWidth,
+              mapId: MapObjectId(feature.id.toString()),
+              polygon: Polygon(
+                outerRing: LinearRing(
+                  points: List.generate(
+                    coordinates.length,
+                    (index) => Point(
+                        latitude: coordinates[index].last,
+                        longitude: coordinates[index].first),
+                  ),
+                ),
+                innerRings: [],
+              ),
+            ),
+          ),
+        );
+      }
+    }
+
+    return mapObjects;
   }
 }

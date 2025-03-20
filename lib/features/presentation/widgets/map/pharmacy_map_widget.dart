@@ -14,7 +14,7 @@ import 'package:inlek/features/presentation/widgets/map/map_button.dart';
 import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart';
 
 class PharmacyMapWidget extends StatelessWidget {
-  final List<MapMarkerModel> points;
+  final List<CustomMapObject> points;
   const PharmacyMapWidget({super.key, required this.points});
 
   @override
@@ -75,7 +75,8 @@ class PharmacyMapWidget extends StatelessWidget {
                         child: Builder(builder: (context) {
                           final String address = state.points
                                   .firstWhereOrNull((e) =>
-                                      e.id.toString() == state.selectedMarkerId)
+                                      e.mapObject.mapId.value.toString() ==
+                                      state.selectedMarkerId)
                                   ?.data?['address'] ??
                               '';
 

@@ -42,8 +42,9 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
 
     CameraPosition? position = await state.mapController?.getCameraPosition();
     final targetPoint = state.showStackWindow
-        ? state.points
-            .firstWhereOrNull((e) => e.id.toString() == state.selectedMarkerId)
+        ? (state.points.firstWhereOrNull(
+                    (e) => e.mapObject.mapId.value == state.selectedMarkerId)
+                as PlacemarkMapObject?)
             ?.point
         : null;
 
@@ -61,13 +62,16 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
     // Создание списка маркеров
     List<PlacemarkMapObject> placemarks = [];
 
-    for (MapMarkerModel point in state.points) {
+    for (CustomMapObject point in state.points
+        .where((e) => e.mapObject is PlacemarkMapObject)
+        .toList()) {
       final icon = await Utils.createBitmapIcon();
       final placemark = PlacemarkMapObject(
         opacity: 1,
-        mapId: MapObjectId(point.id.toString()),
+        mapId: MapObjectId(point.mapObject.mapId.value),
         point: Point(
-            latitude: point.point.latitude, longitude: point.point.longitude),
+            latitude: (point.mapObject as PlacemarkMapObject).point.latitude,
+            longitude: (point.mapObject as PlacemarkMapObject).point.longitude),
         icon: PlacemarkIcon.single(
           PlacemarkIconStyle(image: icon),
         ),
@@ -108,8 +112,9 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
   Future _onZoomIn(ZoomInEvent event, Emitter<PharmacyMapState> emit) async {
     CameraPosition? position = await state.mapController?.getCameraPosition();
     final targetPoint = state.showStackWindow
-        ? state.points
-            .firstWhereOrNull((e) => e.id.toString() == state.selectedMarkerId)
+        ? (state.points.firstWhereOrNull(
+                    (e) => e.mapObject.mapId.value == state.selectedMarkerId)
+                as PlacemarkMapObject?)
             ?.point
         : null;
     if (position != null) {
@@ -125,8 +130,9 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
   Future _onZoomOut(ZoomOutEvent event, Emitter<PharmacyMapState> emit) async {
     CameraPosition? position = await state.mapController?.getCameraPosition();
     final targetPoint = state.showStackWindow
-        ? state.points
-            .firstWhereOrNull((e) => e.id.toString() == state.selectedMarkerId)
+        ? (state.points.firstWhereOrNull(
+                    (e) => e.mapObject.mapId.value == state.selectedMarkerId)
+                as PlacemarkMapObject?)
             ?.point
         : null;
     if (position != null) {

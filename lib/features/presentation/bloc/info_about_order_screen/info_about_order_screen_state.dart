@@ -2,26 +2,26 @@ part of 'info_about_order_screen_bloc.dart';
 
 class InfoAboutOrderScreenState extends Equatable {
   final bool isLoading;
-  final List<MapMarkerModel>? points;
+  final List<CustomMapObject>? mapObjects;
 
   const InfoAboutOrderScreenState({
     this.isLoading = true,
-    this.points,
+    this.mapObjects,
   });
 
   InfoAboutOrderScreenState copyWith({
     bool? isLoading,
-    List<MapMarkerModel>? points,
+    List<CustomMapObject>? points,
   }) {
     return InfoAboutOrderScreenState(
       isLoading: isLoading ?? this.isLoading,
-      points: points ?? this.points,
+      mapObjects: mapObjects ?? mapObjects,
     );
   }
 
   @override
   List<Object?> get props => [
         isLoading,
-        points,
+        mapObjects,
       ];
 }

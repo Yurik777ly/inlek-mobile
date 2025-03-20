@@ -6,7 +6,7 @@ abstract class PharmacyMapEvent extends Equatable {
 }
 
 class InitPharmacyMapEvent extends PharmacyMapEvent {
-  final List<MapMarkerModel> points;
+  final List<CustomMapObject> points;
   InitPharmacyMapEvent({required this.points});
 }
 
