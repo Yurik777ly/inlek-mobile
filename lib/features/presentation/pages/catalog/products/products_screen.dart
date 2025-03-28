@@ -9,10 +9,10 @@ import 'package:inlek/core/params/product_param.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/products_screen/products_screen_bloc.dart';
-import 'package:inlek/features/presentation/widgets/custom_app_bar.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/internet_no_internet_connection_widget.dart';
 import 'package:inlek/features/presentation/widgets/products_screen/products_grid_widget.dart';
 import 'package:inlek/features/presentation/widgets/products_screen/sort_widget.dart';
+import 'package:inlek/features/presentation/widgets/search_product_app_bar.dart';
 import 'package:inlek/locator_service.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -51,15 +51,10 @@ class ProductsScreen extends StatelessWidget {
                       builder: (context) {
                         return Column(
                           children: [
-                            CustomAppBar(
-                              controller: TextEditingController(),
-                              showBack: true,
-                              isShowFilterButton: true,
-                              onTapFilterButton: () {
-                                BottomSheetManager.showProductsFilterSheet(
-                                    context);
-                              },
-                            ),
+                            SearchProductAppBar(
+                                screenContext: context,
+                                showBack: true,
+                                showFilters: true),
                             Expanded(
                               child: Padding(
                                 padding: getMarginOrPadding(

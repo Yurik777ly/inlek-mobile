@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
+import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/bloc/search_screen/search_screen_bloc.dart';
+import 'package:inlek/features/presentation/pages/starts/select_region_screen.dart';
 import 'package:inlek/features/presentation/widgets/app_text_field_widget.dart';
 import 'package:inlek/features/presentation/widgets/filter_button.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -14,14 +17,18 @@ import 'package:skeletonizer/skeletonizer.dart';
 class SearchProductAppBar extends StatelessWidget {
   const SearchProductAppBar({
     super.key,
-    this.onTapLocationChip,
     this.onTapBack,
     this.screenContext,
+    this.showFilters = false,
+    this.showLocationChip = false,
+    this.showBack = false,
   });
 
-  final Function()? onTapLocationChip;
   final Function()? onTapBack;
   final BuildContext? screenContext;
+  final bool showFilters;
+  final bool showLocationChip;
+  final bool showBack;
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +43,19 @@ class SearchProductAppBar extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  if (onTapLocationChip != null && !state.isExpanded)
+                  if (showLocationChip && !state.isExpanded)
                     Skeleton.replace(
                       child: GestureDetector(
-                        onTap: onTapLocationChip,
+                        onTap: () {
+                          FocusScope.of(context).unfocus();
+                          Navigator.of(context, rootNavigator: true).push(
+                            Routes.createRoute(
+                              const SelectRegionScreen(
+                                  selectRegionScreenType:
+                                      SelectRegionScreenType.main),
+                            ),
+                          );
+                        },
                         child: Padding(
                           padding: getMarginOrPadding(right: 8),
                           child: SvgPicture.asset(Paths.locationIconPath,
@@ -47,11 +63,11 @@ class SearchProductAppBar extends StatelessWidget {
                         ),
                       ),
                     ),
-                  if (onTapBack != null)
+                  if (showBack)
                     Padding(
                       padding: getMarginOrPadding(right: 10),
                       child: GestureDetector(
-                        onTap: onTapBack,
+                        onTap: onTapBack ?? () => Navigator.pop(context),
                         child: SvgPicture.asset(Paths.arrowBackIconPath,
                             color: UiConstants.darkBlue2Color.withOpacity(.6),
                             width: 24.w,
@@ -89,16 +105,18 @@ class SearchProductAppBar extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: getMarginOrPadding(left: 8),
-                    child: Skeleton.ignorePointer(
-                      child: FilterButton(
-                        onTap: () => BottomSheetManager.showProductsFilterSheet(
-                            context,
-                            searchBloc: searchBloc),
+                  if (showFilters)
+                    Padding(
+                      padding: getMarginOrPadding(left: 8),
+                      child: Skeleton.ignorePointer(
+                        child: FilterButton(
+                          onTap: () =>
+                              BottomSheetManager.showProductsFilterSheet(
+                                  context,
+                                  searchBloc: searchBloc),
+                        ),
                       ),
-                    ),
-                  )
+                    )
                 ],
               ),
             ],

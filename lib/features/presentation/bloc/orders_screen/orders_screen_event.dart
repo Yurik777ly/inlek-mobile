@@ -4,7 +4,7 @@ abstract class OrdersScreenEvent extends Equatable {
   const OrdersScreenEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class LoadDataEvent extends OrdersScreenEvent {}
@@ -42,10 +42,19 @@ class SelectDateEvent extends OrdersScreenEvent {
 }
 
 class ApplyFiltersEvent extends OrdersScreenEvent {
-  const ApplyFiltersEvent();
+  final Set<int>? selectedTypesReceivingIds;
+  final Set<OrderStatus>? selectedStatuses;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  const ApplyFiltersEvent(
+      {this.selectedTypesReceivingIds,
+      this.selectedStatuses,
+      this.startDate,
+      this.endDate});
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props =>
+      [selectedTypesReceivingIds, selectedStatuses, startDate, endDate];
 }
 
 class ClearFilterEvent extends OrdersScreenEvent {
@@ -53,4 +62,13 @@ class ClearFilterEvent extends OrdersScreenEvent {
 
   @override
   List<Object> get props => [];
+}
+
+class ChangeQueryEvent extends OrdersScreenEvent {
+  final String query;
+
+  const ChangeQueryEvent(this.query);
+
+  @override
+  List<Object> get props => [query];
 }

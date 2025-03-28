@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/features/domain/entities/order_entity.dart';
 import 'package:inlek/features/domain/usecases/orders/get_order_history.dart';
-import 'package:intl/intl.dart';
 
 part 'orders_screen_event.dart';
 part 'orders_screen_state.dart';
@@ -12,10 +11,7 @@ part 'orders_screen_state.dart';
 class OrdersScreenBloc extends Bloc<OrdersScreenEvent, OrdersScreenState> {
   final GetOrderHistoryUC getOrderHistoryUC;
 
-  TextEditingController startDateController =
-      TextEditingController(text: '23 / 08 / 2024');
-  TextEditingController endDateController =
-      TextEditingController(text: '30 / 08 / 2024');
+  TextEditingController queryController = TextEditingController();
 
   OrdersScreenBloc({required this.getOrderHistoryUC})
       : super(
@@ -33,6 +29,7 @@ class OrdersScreenBloc extends Bloc<OrdersScreenEvent, OrdersScreenState> {
     on<SelectDateEvent>(_onSelectDateEvent);
     on<ApplyFiltersEvent>(_onApplyFilters);
     on<ClearFilterEvent>(_onClearEvent);
+    on<ChangeQueryEvent>(_onChangeQuery);
   }
 
   void _onLoadData(LoadDataEvent event, Emitter<OrdersScreenState> emit) async {
@@ -42,13 +39,17 @@ class OrdersScreenBloc extends Bloc<OrdersScreenEvent, OrdersScreenState> {
       (_) => emit(
         state.copyWith(isLoading: false, error: 'Ошибка загрузки данных'),
       ),
-      (history) => emit(
-        state.copyWith(
-            error: null,
-            isLoading: false,
-            orders: history,
-            filteredOrders: history),
-      ),
+      (history) {
+        List<OrderEntity> filteredOrders = getFilteredOrders(history);
+
+        emit(
+          state.copyWith(
+              error: null,
+              isLoading: false,
+              orders: history,
+              filteredOrders: filteredOrders),
+        );
+      },
     );
   }
 
@@ -60,7 +61,7 @@ class OrdersScreenBloc extends Bloc<OrdersScreenEvent, OrdersScreenState> {
   void _onSelectTypeReceivingEvent(
       SelectTypeReceivingEvent event, Emitter<OrdersScreenState> emit) {
     final updatedTypesReceivingIds =
-        Set<int>.from(state.selectedTypesReceivingIds!);
+        Set<int>.from(state.selectedTypesReceivingIds);
     if (event.isChecked == true) {
       updatedTypesReceivingIds.add(event.typeReceivingId);
     } else {
@@ -71,7 +72,7 @@ class OrdersScreenBloc extends Bloc<OrdersScreenEvent, OrdersScreenState> {
 
   void _onSelectStatusEvent(
       SelectStatusEvent event, Emitter<OrdersScreenState> emit) {
-    final updatedStatusesIds = Set<OrderStatus>.from(state.selectedStatuses!);
+    final updatedStatusesIds = Set<OrderStatus>.from(state.selectedStatuses);
     if (event.isChecked == true) {
       updatedStatusesIds.add(event.status);
     } else {
@@ -87,21 +88,41 @@ class OrdersScreenBloc extends Bloc<OrdersScreenEvent, OrdersScreenState> {
 
   void _onApplyFilters(
       ApplyFiltersEvent event, Emitter<OrdersScreenState> emit) {
-    List<OrderEntity> filteredOrders = List.of(state.orders ?? []);
+    emit(
+      state.copyWith(
+          selectedTypesReceivingIds: event.selectedTypesReceivingIds,
+          selectedStatuses: event.selectedStatuses,
+          startDate: event.startDate,
+          endDate: event.endDate),
+    );
 
-    if (state.selectedStatuses!.isNotEmpty) {
+    List<OrderEntity> filteredOrders = getFilteredOrders(state.orders);
+
+    emit(state.copyWith(filteredOrders: filteredOrders));
+  }
+
+  List<OrderEntity> getFilteredOrders(List<OrderEntity> orders) {
+    List<OrderEntity> filteredOrders = List.of(orders);
+
+    if (state.query.isNotEmpty) {
+      filteredOrders = filteredOrders
+          .where((e) => e.orderId.toString().startsWith(state.query))
+          .toList();
+    }
+
+    if (state.selectedStatuses.isNotEmpty) {
       filteredOrders = filteredOrders
           .where(
-            (e) => state.selectedStatuses!.contains(e.status),
+            (e) => state.selectedStatuses.contains(e.status),
           )
           .toList();
     }
 
-    if (state.selectedTypesReceivingIds!.isNotEmpty) {
+    if (state.selectedTypesReceivingIds.isNotEmpty) {
       filteredOrders = filteredOrders
           .where(
-            (e) => state.selectedTypesReceivingIds!.contains(
-              state.typesReceiving!.indexOf(e.deliveryTitle == 'Самовывоз'
+            (e) => state.selectedTypesReceivingIds.contains(
+              state.typesReceiving.indexOf(e.deliveryTitle == 'Самовывоз'
                   ? e.deliveryTitle!
                   : 'Доставка'),
             ),
@@ -109,32 +130,33 @@ class OrdersScreenBloc extends Bloc<OrdersScreenEvent, OrdersScreenState> {
           .toList();
     }
 
-    DateTime? startDate =
-        DateFormat('dd / MM / yyyy').tryParse(startDateController.text);
-    DateTime? endDate =
-        DateFormat('dd / MM / yyyy').tryParse(endDateController.text);
+    DateTime startDate = state.startDate ?? DateTime(DateTime.now().year, 1, 1);
+    DateTime endDate = state.endDate ?? DateTime(DateTime.now().year, 12, 31);
 
-    if (startDate != null && endDate != null) {
-      endDate =
-          endDate.add(Duration(days: 1)).subtract(Duration(milliseconds: 1));
-      filteredOrders = filteredOrders
-          .where((e) =>
-              e.createdAt!.isAfter(startDate) &&
-              e.createdAt!.isBefore(endDate!))
-          .toList();
-    }
+    final adjustedEndDate =
+        endDate.add(Duration(days: 1)).subtract(Duration(milliseconds: 1));
 
-    emit(
-      state.copyWith(filteredOrders: filteredOrders),
-    );
+    filteredOrders = filteredOrders
+        .where((e) =>
+            e.createdAt!.isAfter(startDate) &&
+            e.createdAt!.isBefore(adjustedEndDate))
+        .toList();
+
+    return filteredOrders;
   }
 
   void _onClearEvent(ClearFilterEvent event, Emitter<OrdersScreenState> emit) {
-    startDateController = TextEditingController(text: '23 / 08 / 2024');
-    endDateController = TextEditingController(text: '30 / 08 / 2024');
+    DateTime startDate = state.startDate ?? DateTime(DateTime.now().year, 1, 1);
+    DateTime endDate = state.endDate ?? DateTime(DateTime.now().year, 12, 31);
     emit(state.copyWith(
-      selectedTypesReceivingIds: {},
-      selectedStatuses: {},
-    ));
+        selectedTypesReceivingIds: {},
+        selectedStatuses: {},
+        startDate: startDate,
+        endDate: endDate));
+  }
+
+  void _onChangeQuery(ChangeQueryEvent event, Emitter<OrdersScreenState> emit) {
+    emit(state.copyWith(query: event.query));
+    add(ApplyFiltersEvent());
   }
 }

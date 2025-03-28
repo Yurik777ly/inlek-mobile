@@ -41,10 +41,13 @@ class OrdersScreen extends StatelessWidget {
                           children: [
                             CustomAppBar(
                               hintText: 'Искать по заказам',
-                              controller: TextEditingController(),
+                              controller: ordersBloc.queryController,
                               title: 'История заказов',
                               showBack: true,
                               isShowFilterButton: true,
+                              onChangedField: (value) => ordersBloc.add(
+                                ChangeQueryEvent(value),
+                              ),
                               onTapFilterButton: () =>
                                   BottomSheetManager.showOrdersFilterSheet(
                                       homeBloc.context, context),
@@ -53,17 +56,18 @@ class OrdersScreen extends StatelessWidget {
                               child: homeState is InternetUnavailable
                                   ? InternetNoInternetConnectionWidget()
                                   : Builder(builder: (context) {
-                                      List<OrderEntity> orders = List.from(
-                                          ordersState.filteredOrders ?? []);
+                                      List<OrderEntity> orders =
+                                          List.from(ordersState.filteredOrders);
 
-                                      if (ordersState.isOnlyActive!) {
+                                      if (ordersState.isOnlyActive) {
                                         orders = orders
                                             .where((e) => ![
                                                   OrderStatus.canceled,
                                                 ].contains(e.status))
                                             .toList();
                                       }
-                                      if ((ordersState.orders ?? []).isEmpty) {
+
+                                      if (ordersState.orders.isEmpty) {
                                         return Center(
                                           child: Text(
                                             'Заказов нет',
@@ -93,8 +97,7 @@ class OrdersScreen extends StatelessWidget {
                                                       color: UiConstants
                                                           .blackColor),
                                             ),
-                                            isChecked:
-                                                ordersState.isOnlyActive!,
+                                            isChecked: ordersState.isOnlyActive,
                                             onChanged: (isChecked) =>
                                                 ordersBloc.add(
                                               ChangeOnlyActiveOrdersEvent(

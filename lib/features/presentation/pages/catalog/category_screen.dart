@@ -3,12 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
-import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/features/presentation/bloc/category_screen/category_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/category_screen/subcategories_list.dart';
-import 'package:inlek/features/presentation/widgets/custom_app_bar.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/internet_no_internet_connection_widget.dart';
+import 'package:inlek/features/presentation/widgets/search_product_app_bar.dart';
 import 'package:inlek/locator_service.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -50,15 +49,8 @@ class CategoryScreen extends StatelessWidget {
                       builder: (context) {
                         return Column(
                           children: [
-                            CustomAppBar(
-                              controller: TextEditingController(),
-                              showBack: true,
-                              isShowFilterButton: true,
-                              onTapFilterButton: () {
-                                BottomSheetManager.showProductsFilterSheet(
-                                    context);
-                              },
-                            ),
+                            SearchProductAppBar(
+                                screenContext: context, showBack: true),
                             Expanded(
                               child: homeState is InternetUnavailable
                                   ? InternetNoInternetConnectionWidget()

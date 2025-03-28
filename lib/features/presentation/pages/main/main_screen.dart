@@ -1,10 +1,6 @@
-import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/routes.dart';
@@ -13,7 +9,6 @@ import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.da
 import 'package:inlek/features/presentation/bloc/main_screen/main_screen_bloc.dart';
 import 'package:inlek/features/presentation/pages/catalog/products/products_screen.dart';
 import 'package:inlek/features/presentation/pages/profile/sales_screen.dart';
-import 'package:inlek/features/presentation/pages/starts/select_region_screen.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/block_widget.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/categories_grid_widget.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/custom_banner_widget.dart';
@@ -55,18 +50,7 @@ class MainScreen extends StatelessWidget {
                         return Column(
                           children: [
                             SearchProductAppBar(
-                              screenContext: context,
-                              onTapLocationChip: () {
-                                FocusScope.of(context).unfocus();
-                                Navigator.of(context, rootNavigator: true).push(
-                                  Routes.createRoute(
-                                    const SelectRegionScreen(
-                                        selectRegionScreenType:
-                                            SelectRegionScreenType.main),
-                                  ),
-                                );
-                              },
-                            ),
+                                screenContext: context, showLocationChip: true),
                             Expanded(
                               child: homeState is InternetUnavailable
                                   ? InternetNoInternetConnectionWidget()

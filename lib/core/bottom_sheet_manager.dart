@@ -37,7 +37,6 @@ import 'package:inlek/features/presentation/widgets/cart_screen/selector_widget.
 import 'package:inlek/features/presentation/widgets/cart_screen/summary_block/card_summary_block.dart';
 import 'package:inlek/features/presentation/widgets/custom_app_bar.dart';
 import 'package:inlek/features/presentation/widgets/custom_bottom_sheet.dart';
-import 'package:inlek/features/presentation/widgets/custom_checkbox.dart';
 import 'package:inlek/features/presentation/widgets/custom_radio_button.dart';
 import 'package:inlek/features/presentation/widgets/dropdown_block_item.dart';
 import 'package:inlek/features/presentation/widgets/dropdown_block_template.dart';
@@ -46,6 +45,7 @@ import 'package:inlek/features/presentation/widgets/map/pharmacy_map_widget.dart
 import 'package:inlek/features/presentation/widgets/orders_screen/order_info_list.dart';
 import 'package:inlek/features/presentation/widgets/pinput_widget.dart';
 import 'package:inlek/features/presentation/widgets/search_screen/price_range_widget.dart';
+import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class BottomSheetManager {
@@ -474,7 +474,7 @@ class BottomSheetManager {
                               backgroundColor: Colors.transparent,
                               contentPadding: EdgeInsets.zero,
                               isShowFilterButton: true,
-                              onTapFilterButton: () => showPharmacySort2Sheet(
+                              onTapFilterButton: () => showPharmacySortSheet(
                                   homeContext, screenContext),
                             ),
                           ),
@@ -893,7 +893,7 @@ class BottomSheetManager {
           bloc: productsBloc,
           builder: (context, state) {
             return CustomBottomSheet(
-              height: 200.h,
+              height: 210.h,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -994,69 +994,79 @@ class BottomSheetManager {
     );
   }
 
-  static showPharmacySort2Sheet(
-      BuildContext homeContext, BuildContext screenContext) {
-    showModalBottomSheet(
-      context: homeContext,
-      builder: (sheetContext) {
-        CartScreenBloc cartBloc = screenContext.read<CartScreenBloc>();
-        return BlocBuilder<CartScreenBloc, CartScreenState>(
-          bloc: cartBloc,
-          builder: (context, state) {
-            return CustomBottomSheet(
-              height: 200.h,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Фильтр',
-                    style: UiConstants.textStyle5
-                        .copyWith(color: UiConstants.darkBlueColor),
-                  ),
-                  SizedBox(height: 16.h),
-                  CustomCheckbox(
-                    title: Text(
-                      'Работает сейчас',
-                      style: UiConstants.textStyle2
-                          .copyWith(color: UiConstants.darkBlueColor),
-                    ),
-                    isChecked: state.isShowPharmaciesWorkingNow,
-                    onChanged: (isChecked) => cartBloc.add(
-                      ToggleShowPharmaciesWorkingNowEvent(isChecked),
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  CustomCheckbox(
-                    title: Text(
-                      'Все товары в наличии',
-                      style: UiConstants.textStyle2
-                          .copyWith(color: UiConstants.darkBlueColor),
-                    ),
-                    isChecked: state.isShowPharmaciesProductsInStock,
-                    onChanged: (isChecked) => cartBloc.add(
-                      ToggleShowPharmaciesProductsInStockEvent(isChecked),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
   static showOrdersFilterSheet(
       BuildContext homeContext, BuildContext screenContext) {
     OrdersScreenBloc ordersBloc = screenContext.read<OrdersScreenBloc>();
+    final state = ordersBloc.state;
+
+    // Локальные копии состояния
+    Set<int> selectedTypesReceivingIds =
+        Set.from(state.selectedTypesReceivingIds);
+    Set<OrderStatus> selectedStatuses = Set.from(state.selectedStatuses);
+
+    DateTime? startDate =
+        state.startDate ?? DateTime(DateTime.now().year, 1, 1);
+    DateTime? endDate = state.endDate ?? DateTime(DateTime.now().year, 12, 31);
+
+    DateFormat format = DateFormat('dd / MM / yyyy');
+    TextEditingController startDateController =
+        TextEditingController(text: format.format(startDate));
+    TextEditingController endDateController =
+        TextEditingController(text: format.format(endDate));
+
+    bool isButtonActive =
+        startDate.isBefore(endDate) || startDate.isAtSameMomentAs(endDate);
+
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
       context: homeContext,
       builder: (sheetContext) {
-        return BlocBuilder<OrdersScreenBloc, OrdersScreenState>(
-          bloc: ordersBloc,
-          builder: (context, state) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            void validateDates() {
+              RegExp dateRegex = RegExp(r'^\d{2} / \d{2} / \d{4}$');
+
+              bool isValidFormat =
+                  dateRegex.hasMatch(startDateController.text) &&
+                      dateRegex.hasMatch(endDateController.text);
+
+              if (!isValidFormat) {
+                setState(() {
+                  isButtonActive = false;
+                });
+                return;
+              }
+
+              startDate = DateFormat('dd / MM / yyyy')
+                  .tryParse(startDateController.text);
+              endDate =
+                  DateFormat('dd / MM / yyyy').tryParse(endDateController.text);
+
+              bool isValid = startDate != null &&
+                  endDate != null &&
+                  (startDate!.isBefore(endDate!) ||
+                      startDate!.isAtSameMomentAs(endDate!));
+
+              setState(() {
+                isButtonActive = isValid;
+              });
+            }
+
+            void clear() {
+              selectedTypesReceivingIds.clear();
+              selectedStatuses.clear();
+
+              startDate =
+                  state.startDate ?? DateTime(DateTime.now().year, 1, 1);
+              endDate = state.endDate ?? DateTime(DateTime.now().year, 12, 31);
+
+              startDateController =
+                  TextEditingController(text: format.format(startDate!));
+              endDateController =
+                  TextEditingController(text: format.format(endDate!));
+            }
+
             return CustomBottomSheet(
               color: UiConstants.whiteColor,
               child: Expanded(
@@ -1071,9 +1081,7 @@ class BottomSheetManager {
                               .copyWith(color: UiConstants.darkBlueColor),
                         ),
                         GestureDetector(
-                          onTap: () => ordersBloc.add(
-                            ClearFilterEvent(),
-                          ),
+                          onTap: () => setState(clear),
                           child: Text(
                             'Сбросить',
                             style: UiConstants.textStyle3.copyWith(
@@ -1091,16 +1099,22 @@ class BottomSheetManager {
                           padding: EdgeInsets.zero,
                           shrinkWrap: true,
                           itemBuilder: (context, index) => DropdownBlockItem(
-                                text: state.typesReceiving![index],
-                                isChecked: state.selectedTypesReceivingIds!
-                                    .contains(index),
-                                onChanged: (isChecked) => ordersBloc.add(
-                                  SelectTypeReceivingEvent(index, isChecked),
-                                ),
+                                text: state.typesReceiving[index],
+                                isChecked:
+                                    selectedTypesReceivingIds.contains(index),
+                                onChanged: (isChecked) {
+                                  if (isChecked == null) return;
+                                  setState(() {
+                                    if (isChecked) {
+                                      selectedTypesReceivingIds.add(index);
+                                    } else {
+                                      selectedTypesReceivingIds.remove(index);
+                                    }
+                                  });
+                                },
                               ),
-                          separatorBuilder: (context, index) =>
-                              SizedBox(height: 8),
-                          itemCount: state.typesReceiving!.length),
+                          separatorBuilder: (_, __) => SizedBox(height: 8),
+                          itemCount: state.typesReceiving.length),
                     ),
                     SizedBox(height: 16.h),
                     DropdownBlockTemplate(
@@ -1117,15 +1131,22 @@ class BottomSheetManager {
 
                           return DropdownBlockItem(
                             text: statusName,
-                            isChecked:
-                                (state.selectedStatuses ?? {}).contains(status),
-                            onChanged: (isChecked) => ordersBloc.add(
-                              SelectStatusEvent(status, isChecked),
-                            ),
+                            isChecked: selectedStatuses.contains(status),
+                            onChanged: (isChecked) {
+                              if (isChecked == null) return;
+                              setState(
+                                () {
+                                  if (isChecked) {
+                                    selectedStatuses.add(status);
+                                  } else {
+                                    selectedStatuses.remove(status);
+                                  }
+                                },
+                              );
+                            },
                           );
                         },
-                        separatorBuilder: (context, index) =>
-                            SizedBox(height: 8),
+                        separatorBuilder: (_, __) => SizedBox(height: 8),
                         itemCount: OrderStatusExtension.titles.length,
                       ),
                     ),
@@ -1139,28 +1160,7 @@ class BottomSheetManager {
                               hintMaxLines: 1,
                               title: 'От',
                               hintText: 'ДД / ММ / ГГГГ',
-                              controller: ordersBloc.startDateController,
-                              keyboardType: TextInputType.datetime,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                                DateInputFormatter()
-                              ],
-                              suffixWidget: Padding(
-                                padding:
-                                    getMarginOrPadding(top: 10, bottom: 10),
-                                child: SvgPicture.asset(Paths.calendarIconPath),
-                              ),
-                              contentPadding:
-                                  getMarginOrPadding(left: 12, right: 12),
-                            ),
-                          ),
-                          SizedBox(width: 8.w),
-                          Expanded(
-                            child: AppTextFieldWidget(
-                              hintMaxLines: 1,
-                              title: 'До',
-                              hintText: 'ДД / ММ / ГГГГ',
-                              controller: ordersBloc.endDateController,
+                              controller: startDateController,
                               keyboardType: TextInputType.datetime,
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
@@ -1173,6 +1173,29 @@ class BottomSheetManager {
                               ),
                               contentPadding:
                                   getMarginOrPadding(left: 12, right: 12),
+                              onChangedField: (value) => validateDates(),
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            child: AppTextFieldWidget(
+                              hintMaxLines: 1,
+                              title: 'До',
+                              hintText: 'ДД / ММ / ГГГГ',
+                              controller: endDateController,
+                              keyboardType: TextInputType.datetime,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                DateInputFormatter()
+                              ],
+                              suffixWidget: Padding(
+                                padding:
+                                    getMarginOrPadding(top: 10, bottom: 12),
+                                child: SvgPicture.asset(Paths.calendarIconPath),
+                              ),
+                              contentPadding:
+                                  getMarginOrPadding(left: 12, right: 12),
+                              onChangedField: (value) => validateDates(),
                             ),
                           ),
                         ],
@@ -1180,12 +1203,20 @@ class BottomSheetManager {
                     ),
                     Spacer(),
                     AppButtonWidget(
-                      text: 'Показать результаты',
-                      onTap: () {
-                        ordersBloc.add(ApplyFiltersEvent());
-                        Navigator.pop(context);
-                      },
-                    )
+                        text: 'Показать результаты',
+                        onTap: isButtonActive
+                            ? () {
+                                ordersBloc.add(
+                                  ApplyFiltersEvent(
+                                      selectedTypesReceivingIds:
+                                          selectedTypesReceivingIds,
+                                      selectedStatuses: selectedStatuses,
+                                      startDate: startDate,
+                                      endDate: endDate),
+                                );
+                                Navigator.pop(context);
+                              }
+                            : null)
                   ],
                 ),
               ),
