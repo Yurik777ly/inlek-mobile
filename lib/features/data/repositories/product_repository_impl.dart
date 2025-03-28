@@ -6,6 +6,7 @@ import 'package:inlek/core/platform/network_info.dart';
 import 'package:inlek/features/data/datasources/product_remote_data_source_impl.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/domain/entities/product_pharmacy_entity.dart';
+import 'package:inlek/features/domain/entities/search_products_entity.dart';
 import 'package:inlek/features/domain/repositories/product_repository.dart';
 
 class ProductRepositoryImpl implements ProductRepository {
@@ -35,7 +36,7 @@ class ProductRepositoryImpl implements ProductRepository {
 
   // 📌 Получение списка продуктов по параметрам
   @override
-  Future<Either<Failure, List<ProductEntity>>> searchProducts(
+  Future<Either<Failure, SearchProductsEntity>> searchProducts(
           ProductParam param) async =>
       await errorHandler.handle(
         () async => await productRemoteDataSource.searchProducts(param),

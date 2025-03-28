@@ -13,8 +13,8 @@ class CartModel extends CartEntity {
     return CartModel(
       cart:
           json["cart"] != null ? CartDetailModel.fromJson(json["cart"]) : null,
-      products: json["products"] != null
-          ? (json["products"] as List)
+      products: json["product_info"] != null
+          ? (json["product_info"] as List)
               .map((e) => ProductModel.fromJson(e))
               .toList()
           : [],
@@ -23,7 +23,7 @@ class CartModel extends CartEntity {
 
   Map<String, dynamic> toJson() => {
         "cart": (cart as CartDetailModel?)?.toJson(),
-        "products":
+        "product_info":
             products?.map((e) => (e as ProductModel?)?.toJson()).toList(),
       };
 }

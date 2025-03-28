@@ -1,9 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/core/params/product_param.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
+import 'package:inlek/features/domain/entities/search_products_entity.dart';
 import 'package:inlek/features/domain/usecases/products/search_products.dart';
 
 part 'products_screen_event.dart';
@@ -16,6 +18,8 @@ class ProductsScreenBloc
   final ProductParam? productParam;
   final List<ProductEntity>? products;
 
+  ScrollController productsController = ScrollController();
+
   ProductsScreenBloc(
       {required this.searchProductsUC, this.productParam, this.products})
       : super(
@@ -23,43 +27,107 @@ class ProductsScreenBloc
         ) {
     on<LoadDataEvent>(_onLoadData);
     on<ChangeProductSortTypeEvent>(_onChangeProductSortTypeEvent);
+
+    // Добавляем слушатель для скролла
+    if (products == null) productsController.addListener(_scrollListener);
+  }
+
+  void _scrollListener() {
+    print("ScrollListener triggered"); // Печатаем, чтобы проверить срабатывание
+    // Если скроллинг достиг нижней границы, загружаем следующую страницу
+    if (productsController.position.pixels ==
+        productsController.position.maxScrollExtent) {
+      if (state.searchProducts != null &&
+          state.searchProducts!.currentPage < state.searchProducts!.lastPage) {
+        // Загружаем следующую страницу
+        add(LoadDataEvent(page: state.searchProducts!.currentPage + 1));
+      }
+    }
   }
 
   void _onChangeProductSortTypeEvent(
       ChangeProductSortTypeEvent event, Emitter<ProductsScreenState> emit) {
-    emit(state.copyWith(productSortType: event.productSortType));
+    productsController.animateTo(0,
+        duration: Duration(milliseconds: 300), curve: Curves.bounceIn);
+
+    emit(state.copyWith(
+        isLoadingProducts: true,
+        productSortType: event.productSortType,
+        searchProducts: state.searchProducts?.copyWith(products: [])));
 
     // Повторно вызываем загрузку данных с новым типом сортировки
-    add(LoadDataEvent());
+    add(LoadDataEvent(page: 1));
   }
 
   void _onLoadData(
       LoadDataEvent event, Emitter<ProductsScreenState> emit) async {
-    List<ProductEntity> products = this.products ?? [];
+    SearchProductsEntity? searchProducts;
     String? error;
 
+    if (products != null) {
+      searchProducts = SearchProductsEntity(
+          currentPage: 1,
+          lastPage: 1,
+          total: (products ?? []).length,
+          products: products ?? []);
+    }
+
     if (productParam != null) {
+      int currentPage =
+          (event.page ?? (state.searchProducts?.currentPage ?? 1));
+
+      List<ProductEntity> oldProducts = [];
+
+      if (currentPage != 1) {
+        emit(state.copyWith(isLoadingProducts: true));
+        oldProducts = state.searchProducts?.products ?? [];
+      }
+
       final failureOrLoads = await searchProductsUC(
-        productParam!.copyWith(sortBy: state.productSortType!.apiValue),
+        productParam!.copyWith(
+            sortBy: state.productSortType.apiValue,
+            page: event.page ?? ((state.searchProducts?.currentPage ?? 0) + 1)),
       );
 
       return failureOrLoads.fold(
         (_) => error = 'Ошибка получения данных',
-        (productList) {
-          products = productList;
+        (searchData) {
+          searchProducts = searchData;
+
+          // Получаем продукты из searchData
+          final newProducts = searchData.products;
+
+          // Объединяем старые продукты с новыми
+          final updatedProducts = List<ProductEntity>.from(oldProducts)
+            ..addAll(newProducts);
+
+          // Используем copyWith для обновления списка продуктов
+          searchProducts = searchProducts?.copyWith(products: updatedProducts);
+
           emit(
-            ProductsScreenState(
+            state.copyWith(
                 isLoading: false,
+                isLoadingProducts: false,
                 error: null,
-                productSortType: ProductSortType.popularity,
-                products: products),
+                searchProducts: searchProducts),
           );
         },
       );
     }
 
-    emit(
-      ProductsScreenState(isLoading: false, error: error, products: products),
-    );
+    if (products != null) {
+      emit(
+        state.copyWith(
+            isLoading: false, error: error, searchProducts: searchProducts),
+      );
+    }
+  }
+
+  @override
+  Future<void> close() {
+    // Очищаем ресурсы при закрытии блока
+    productsController.removeListener(_scrollListener);
+    productsController.dispose();
+    return super.close();
   }
 }

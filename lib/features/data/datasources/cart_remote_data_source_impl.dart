@@ -13,6 +13,7 @@ abstract class CartRemoteDataSource {
   Future<CartModel> getCart();
   Future<void> addCart(CartParams params);
   Future<void> deleteCart(CartParams params);
+  Future<void> clearCart();
 }
 
 class CartRemoteDataSourceImpl implements CartRemoteDataSource {
@@ -47,8 +48,12 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
           name: 'CartRemoteDataSourceImpl.getCart');
 
       if (response.statusCode == 200) {
-        final person = json.decode(response.body)['data'];
-        return CartModel.fromJson(person);
+        final cart = json.decode(response.body)['data'];
+        if (cart != null) {
+          return CartModel.fromJson(cart);
+        } else {
+          return CartModel();
+        }
       } else {
         log('Error: ServerException occurred',
             name: 'CartRemoteDataSourceImpl.getCart', error: response.body);
@@ -128,6 +133,39 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
       }
     } catch (e) {
       log('Error during deleteCart: $e', level: 1000);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> clearCart() async {
+    String baseUrl = dotenv.env['BASE_URL']!;
+    final String? serverToken =
+        sharedPreferences.getString(SharedPreferencesKeys.accessToken);
+
+    final uri = Uri.parse('${baseUrl}cart');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $serverToken'
+    };
+
+    log('PUT Request: $uri', name: 'CartRemoteDataSourceImpl.clearCart');
+    log('Headers: $headers', name: 'CartRemoteDataSourceImpl.clearCart');
+
+    try {
+      final response = await client.delete(uri, headers: headers);
+
+      log('Response Status Code: ${response.statusCode}',
+          name: 'CartRemoteDataSourceImpl.clearCart');
+      log('Response Body: ${response.body}',
+          name: 'CartRemoteDataSourceImpl.clearCart');
+
+      if (response.statusCode != 200) {
+        throw ServerException();
+      }
+    } catch (e) {
+      log('Error during clearCart: $e', level: 1000);
       rethrow;
     }
   }

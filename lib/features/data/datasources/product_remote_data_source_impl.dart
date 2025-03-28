@@ -8,12 +8,13 @@ import 'package:inlek/core/params/product_param.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/data/models/product_model.dart';
 import 'package:inlek/features/data/models/product_pharmacy_model.dart';
+import 'package:inlek/features/data/models/search_products_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class ProductRemoteDataSource {
   Future<List<ProductModel>> getDailyProducts();
   Future<ProductModel?> getProductById(int id);
-  Future<List<ProductModel>> searchProducts(ProductParam param);
+  Future<SearchProductsModel> searchProducts(ProductParam param);
   Future<List<ProductPharmacyModel>> getProductPharmacies(int id);
 }
 
@@ -102,7 +103,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   }
 
   @override
-  Future<List<ProductModel>> searchProducts(ProductParam param) async {
+  Future<SearchProductsModel> searchProducts(ProductParam param) async {
     String baseUrl = dotenv.env['BASE_URL']!;
     final String? serverToken =
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
@@ -127,12 +128,12 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       log('Response Status Code: ${response.statusCode}',
           name: 'ProductRemoteDataSource.searchProducts');
 
+      log('Response ($uri): ${response.statusCode} ${response.body}');
+
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = json.decode(response.body)['data'];
 
-        List<dynamic> dataList = data['data']['data'];
-
-        return dataList.map((e) => ProductModel.fromJson(e)).toList();
+        return SearchProductsModel.fromJson(data);
       } else {
         throw ServerException();
       }

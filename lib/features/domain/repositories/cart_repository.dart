@@ -7,4 +7,5 @@ abstract class CartRepository {
   Future<Either<Failure, CartEntity>> getCart();
   Future<Either<Failure, void>> addCart(CartParams params);
   Future<Either<Failure, void>> deleteCart(CartParams params);
+  Future<Either<Failure, void>> clearCart();
 }

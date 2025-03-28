@@ -11,11 +11,11 @@ class InfoAboutOrderScreenState extends Equatable {
 
   InfoAboutOrderScreenState copyWith({
     bool? isLoading,
-    List<CustomMapObject>? points,
+    List<CustomMapObject>? mapObjects,
   }) {
     return InfoAboutOrderScreenState(
       isLoading: isLoading ?? this.isLoading,
-      mapObjects: mapObjects ?? mapObjects,
+      mapObjects: mapObjects ?? this.mapObjects,
     );
   }
 

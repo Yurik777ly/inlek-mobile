@@ -25,7 +25,7 @@ class ProductPrice extends StatelessWidget {
         FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(
-            'от ${Utils.formatPrice(product.oldPrice ?? product.price)}',
+            'от ${Utils.formatPrice(product.price)}',
             style: UiConstants.textStyle14.copyWith(
                 color: product.oldPrice != null
                     ? UiConstants.pink2Color

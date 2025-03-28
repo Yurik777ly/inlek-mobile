@@ -5,9 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
-import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/banner_entity.dart';
-import 'package:inlek/features/presentation/pages/main/banner_screen.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/banner_item.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -89,7 +87,8 @@ class _CustomBannerWidgetState extends State<CustomBannerWidget> {
                       }
                     },
                     child: BannerItem(
-                      url: '${dotenv.env['PUBLIC_URL']!}${banner.image}',
+                      url:
+                          '${dotenv.env['PUBLIC_BANNERS_URL']!}${banner.image}',
                     ),
                   ),
                 ),

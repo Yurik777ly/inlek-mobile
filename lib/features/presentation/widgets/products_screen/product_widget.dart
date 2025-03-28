@@ -13,7 +13,7 @@ import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/pages/catalog/products/product_screen.dart';
-import 'package:inlek/features/presentation/widgets/app_button_widget.dart';
+import 'package:inlek/features/presentation/widgets/cart_screen/change_count_product_widget.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/product_price.dart';
 import 'package:inlek/features/presentation/widgets/product_chip_widget.dart';
 import 'package:inlek/features/presentation/widgets/product_screen/product_sale_chip.dart';
@@ -84,16 +84,11 @@ class ProductWidget extends StatelessWidget {
                           ],
                         ),
                         Spacer(),
-                        AppButtonWidget(
-                          isActive: true,
-                          text: 'В корзину',
-                          onTap: () => context.read<CartScreenBloc>()
-                            ..add(
-                              AddCartEvent(
-                                  context: context,
-                                  productId: product.productId!),
-                            ),
-                        )
+                        BlocBuilder<CartScreenBloc, CartScreenState>(
+                          builder: (context, state) {
+                            return ChangeCountProductWidget(product: product);
+                          },
+                        ),
                       ],
                     ),
                   ),

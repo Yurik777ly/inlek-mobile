@@ -33,7 +33,10 @@ class ToggleSelectionEvent extends CartScreenEvent {
 
 class PickAllProductsEvent extends CartScreenEvent {}
 
-class ClearProductsEvent extends CartScreenEvent {}
+class ClearProductsEvent extends CartScreenEvent {
+  final BuildContext context;
+  const ClearProductsEvent(this.context);
+}
 
 class DeleteProductEvent extends CartScreenEvent {
   final BuildContext context;
@@ -41,9 +44,17 @@ class DeleteProductEvent extends CartScreenEvent {
   const DeleteProductEvent(this.context, this.productId);
 }
 
-class DeletePromoCodeEvent extends CartScreenEvent {}
+class DeletePromoCodeEvent extends CartScreenEvent {
+  final PromocodeEntity promo;
+  const DeletePromoCodeEvent({required this.promo});
+}
 
-class AddPromoCodeEvent extends CartScreenEvent {}
+class AddPromoCodeEvent extends CartScreenEvent {
+  final String promo;
+  const AddPromoCodeEvent({required this.promo});
+}
+
+class ChangePromocodeFieldEvent extends CartScreenEvent {}
 
 class ChangeCartTypeEvent extends CartScreenEvent {
   final TypeReceiving cartType;

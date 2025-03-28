@@ -21,8 +21,6 @@ class CardSummaryBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController controller = TextEditingController();
-
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
       bloc: screenContext?.read<HomeScreenBloc>(),
       buildWhen: (previous, current) => screenContext == null,
@@ -46,9 +44,10 @@ class CardSummaryBlock extends StatelessWidget {
                 children: [
                   if (canUsePromoCodes)
                     AppTextFieldWidget(
+                      errorText: state.promocodeErrorText,
                       title: 'Промокод',
                       hintText: 'Введите промокод',
-                      controller: controller,
+                      controller: cartBloc.promocodeController,
                       hintMaxLines: 1,
                       suffixPadding: getMarginOrPadding(left: 16, right: 4),
                       suffixWidget: Padding(
@@ -59,15 +58,17 @@ class CardSummaryBlock extends StatelessWidget {
                           borderRadius: 12.r,
                           isExpanded: false,
                           onTap: () {
-                            if (controller.text.isNotEmpty) {
-                              cartBloc.add(AddPromoCodeEvent());
-                              controller.clear();
-                            }
+                            cartBloc.add(
+                              AddPromoCodeEvent(
+                                  promo: cartBloc.promocodeController.text),
+                            );
                           },
                         ),
                       ),
+                      onChangedField: (_) =>
+                          cartBloc.add(ChangePromocodeFieldEvent()),
                     ),
-                  if (state.promoCodes.isNotEmpty && canUsePromoCodes)
+                  if (state.selectedPromoCodes.isNotEmpty && canUsePromoCodes)
                     SizedBox(height: 24.h),
                   // список промокодов
                   if (canUsePromoCodes)
@@ -75,16 +76,19 @@ class CardSummaryBlock extends StatelessWidget {
                         physics: NeverScrollableScrollPhysics(),
                         padding: EdgeInsets.zero,
                         shrinkWrap: true,
-                        itemBuilder: (context, index) => PromoCodePlateWidget(
+                        itemBuilder: (context, index) {
+                          final promo = state.selectedPromoCodes[index];
+                          return PromoCodePlateWidget(
                               onDelete: () =>
                                   BottomSheetManager.showDeletePromoCodeSheet(
-                                      homeBloc.context),
-                            ),
+                                      homeBloc.context, promo),
+                              promocodeEntity: promo);
+                        },
                         separatorBuilder: (context, index) =>
                             SizedBox(height: 4.h),
-                        itemCount: state.promoCodes.length),
+                        itemCount: state.selectedPromoCodes.length),
                   if (canUsePromoCodes) SizedBox(height: 24.h),
-                  SummaryPricesBlock(cartType: cartBloc.state.cartType),
+                  SummaryPricesBlock(),
                 ],
               ),
             );

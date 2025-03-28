@@ -3,6 +3,7 @@ part of 'cart_screen_bloc.dart';
 class CartScreenState extends Equatable {
   final bool isLoading;
   final String? errorText;
+  final String? promocodeErrorText;
   final CartEntity? cartData;
   final Set<int> selectedProductIds;
   final bool isAllProductsChecked;
@@ -10,13 +11,15 @@ class CartScreenState extends Equatable {
   final ProductPharmacyEntity? selectedPharmacy;
   final bool isShowPharmaciesWorkingNow;
   final bool isShowPharmaciesProductsInStock;
-  final List<int> promoCodes;
+  final List<PromocodeEntity> availablePromoCodes;
+  final List<PromocodeEntity> selectedPromoCodes;
   final TypeReceiving cartType;
   final PaymentType paymentType;
 
   const CartScreenState({
     this.isLoading = true,
     this.errorText,
+    this.promocodeErrorText,
     this.cartData,
     this.selectedProductIds = const {},
     this.isAllProductsChecked = false,
@@ -24,7 +27,8 @@ class CartScreenState extends Equatable {
     this.selectedPharmacy,
     this.isShowPharmaciesWorkingNow = false,
     this.isShowPharmaciesProductsInStock = false,
-    this.promoCodes = const [],
+    this.selectedPromoCodes = const [],
+    this.availablePromoCodes = const [],
     this.cartType = TypeReceiving.delivery,
     this.paymentType = PaymentType.courier,
   });
@@ -32,6 +36,7 @@ class CartScreenState extends Equatable {
   CartScreenState copyWith({
     bool? isLoading,
     String? errorText,
+    String? promocodeErrorText,
     CartEntity? cartData,
     Set<int>? selectedProductIds,
     bool? isAllProductsChecked,
@@ -39,13 +44,15 @@ class CartScreenState extends Equatable {
     ProductPharmacyEntity? selectedPharmacy,
     bool? isShowPharmaciesWorkingNow,
     bool? isShowPharmaciesProductsInStock,
-    List<int>? promoCodes,
+    List<PromocodeEntity>? availablePromoCodes,
+    List<PromocodeEntity>? selectedPromoCodes,
     TypeReceiving? cartType,
     PaymentType? paymentType,
   }) {
     return CartScreenState(
       isLoading: isLoading ?? this.isLoading,
       errorText: errorText,
+      promocodeErrorText: promocodeErrorText,
       cartData: cartData ?? this.cartData,
       selectedProductIds: selectedProductIds ?? this.selectedProductIds,
       isAllProductsChecked: isAllProductsChecked ?? this.isAllProductsChecked,
@@ -55,7 +62,8 @@ class CartScreenState extends Equatable {
           isShowPharmaciesWorkingNow ?? this.isShowPharmaciesWorkingNow,
       isShowPharmaciesProductsInStock: isShowPharmaciesProductsInStock ??
           this.isShowPharmaciesProductsInStock,
-      promoCodes: promoCodes ?? this.promoCodes,
+      selectedPromoCodes: selectedPromoCodes ?? this.selectedPromoCodes,
+      availablePromoCodes: availablePromoCodes ?? this.availablePromoCodes,
       cartType: cartType ?? this.cartType,
       paymentType: paymentType ?? this.paymentType,
     );
@@ -65,6 +73,7 @@ class CartScreenState extends Equatable {
   List<Object?> get props => [
         isLoading,
         errorText,
+        promocodeErrorText,
         cartData,
         selectedProductIds,
         isAllProductsChecked,
@@ -72,7 +81,8 @@ class CartScreenState extends Equatable {
         selectedPharmacy,
         isShowPharmaciesWorkingNow,
         isShowPharmaciesProductsInStock,
-        promoCodes,
+        selectedPromoCodes,
+        availablePromoCodes,
         cartType,
         paymentType,
       ];

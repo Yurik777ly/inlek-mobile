@@ -6,11 +6,13 @@ import 'package:http/http.dart' as http;
 import 'package:inlek/core/error/exception.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/data/models/order_model.dart';
+import 'package:inlek/features/data/models/order_request_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class OrderRemoteDataSource {
   Future<List<OrderModel>> getOrderHistory();
   Future<OrderModel?> getOrderById(int id);
+  Future<void> createOrder(OrderRequestModel order);
 }
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
@@ -93,6 +95,33 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
       }
     } catch (e) {
       log('Error during getOrderById: $e', level: 1000);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> createOrder(OrderRequestModel order) async {
+    String baseUrl = dotenv.env['BASE_URL']!;
+    String url = '${baseUrl}order';
+
+    log('POST $url');
+    log('Request body: ${jsonEncode(order.toJson())}');
+
+    try {
+      final response = await client.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(jsonEncode(order.toJson())),
+      );
+
+      log('Response ($url): ${response.statusCode} ${response.body}');
+
+      if (response.statusCode != 200) throw ServerException();
+    } catch (e) {
+      log('Error during createOrder: $e', level: 1000);
       rethrow;
     }
   }

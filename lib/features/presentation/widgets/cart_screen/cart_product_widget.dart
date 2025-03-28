@@ -18,7 +18,6 @@ import 'package:inlek/features/presentation/widgets/cart_screen/info_border_plat
 import 'package:inlek/features/presentation/widgets/cart_screen/only_pickup_chip.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/out_stock_chip.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/product_price.dart';
-import 'package:inlek/features/presentation/widgets/cart_screen/product_stock_chip.dart';
 import 'package:inlek/features/presentation/widgets/custom_checkbox.dart';
 import 'package:inlek/features/presentation/widgets/product_chip_widget.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -51,6 +50,8 @@ class _CartProductWidgetState extends State<CartProductWidget> {
 
   @override
   Widget build(BuildContext context) {
+    bool isLoadingProduct = widget.product.price == null;
+
     return BlocBuilder<CartScreenBloc, CartScreenState>(
       bloc: widget.screenContext?.read<CartScreenBloc>(),
       buildWhen: (previous, current) => widget.screenContext == null,
@@ -84,194 +85,177 @@ class _CartProductWidgetState extends State<CartProductWidget> {
                 color: UiConstants.whiteColor,
                 borderRadius: BorderRadius.circular(16.r),
               ),
-              child: Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (inStock &&
-                          widget.productsListScreenType ==
-                              ProductsListScreenType.cart)
-                        CustomCheckbox(
-                          isChecked: state.selectedProductIds
-                              .contains(widget.product.productId),
-                          onChanged: (isChecked) => bloc.add(
-                            ToggleSelectionEvent(
-                                isChecked, widget.product.productId!),
-                          ),
-                        ),
-                      SizedBox(width: 8.w),
-                      Stack(
-                        children: [
-                          CachedNetworkImage(
-                            height: 104.w,
-                            width: 104.w,
-                            imageUrl:
-                                '${dotenv.env['PUBLIC_URL']!}${widget.product.image}',
-                            fit: BoxFit.fitHeight,
-                            cacheManager: CustomCacheManager(),
-                            errorWidget: (context, url, error) =>
-                                SvgPicture.asset(Paths.drugTemplateIconPath,
-                                    height: double.infinity),
-                            progressIndicatorBuilder:
-                                (context, url, progress) => Center(
-                              child: CircularProgressIndicator(
-                                  color: UiConstants.pink2Color),
+              child: Skeletonizer(
+                ignorePointers: false,
+                enabled: isLoadingProduct,
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (inStock &&
+                            widget.productsListScreenType ==
+                                ProductsListScreenType.cart)
+                          Skeleton.keep(
+                            child: CustomCheckbox(
+                              isChecked: state.selectedProductIds
+                                  .contains(widget.product.productId),
+                              onChanged: (isChecked) => bloc.add(
+                                ToggleSelectionEvent(
+                                    isChecked, widget.product.productId!),
+                              ),
                             ),
                           ),
-                          if (!inStock)
-                            Container(
+                        SizedBox(width: 8.w),
+                        Stack(
+                          children: [
+                            CachedNetworkImage(
                               height: 104.w,
                               width: 104.w,
-                              color: UiConstants.whiteColor.withOpacity(.6),
+                              imageUrl:
+                                  '${dotenv.env['PUBLIC_URL']!}${widget.product.image}',
+                              fit: BoxFit.fitHeight,
+                              cacheManager: CustomCacheManager(),
+                              errorWidget: (context, url, error) =>
+                                  SvgPicture.asset(Paths.drugTemplateIconPath,
+                                      height: double.infinity),
+                              progressIndicatorBuilder:
+                                  (context, url, progress) => Center(
+                                child: CircularProgressIndicator(
+                                    color: UiConstants.pink2Color),
+                              ),
                             ),
-                          Positioned(
-                            top: 4.h,
-                            left: 8.w,
-                            right: 8.w,
-                            child: Wrap(
-                              spacing: 4.w,
-                              runSpacing: 4.w,
-                              children: widget.index % 3 == 2 && inStock
-                                  ? [
-                                      ProductChipWidget(
-                                          productChipType:
-                                              ProductChipType.seasonalOffer),
-                                      ProductChipWidget(
-                                          productChipType:
-                                              ProductChipType.nova),
-                                      ProductChipWidget(
-                                          productChipType:
-                                              ProductChipType.stock),
-                                    ]
-                                  : widget.index % 3 == 1 && inStock
-                                      ? [
-                                          ProductChipWidget(
-                                              productChipType:
-                                                  ProductChipType.hit)
-                                        ]
-                                      : [],
-                            ),
-                          )
-                        ],
-                      ),
-                      SizedBox(width: 8.w),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Text(widget.product.name.orDash(),
-                                style: UiConstants.textStyle8.copyWith(
-                                  color: inStock
-                                      ? UiConstants.darkBlueColor
-                                      : UiConstants.darkBlue2Color
-                                          .withOpacity(.6),
-                                ),
-                                maxLines: 4,
-                                overflow: TextOverflow.ellipsis),
-                            SizedBox(height: 8.h),
                             if (!inStock)
-                              Padding(
-                                padding: getMarginOrPadding(bottom: 4),
-                                child: OutStockChip(),
+                              Container(
+                                height: 104.w,
+                                width: 104.w,
+                                color: UiConstants.whiteColor.withOpacity(.6),
                               ),
-                            if (widget.product.recipe != null && inStock)
-                              Padding(
-                                padding: getMarginOrPadding(bottom: 4),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    OnlyPickupChip(),
-                                    if (widget.productsListScreenType ==
-                                        ProductsListScreenType.order)
-                                      Skeleton.ignore(
-                                        child: CircleAvatar(
-                                          backgroundColor:
-                                              UiConstants.pink2Color,
-                                          radius: 12.w,
-                                          child: Padding(
-                                            padding: getMarginOrPadding(all: 4),
-                                            child: SvgPicture.asset(
-                                                Paths.replaceIconPath,
-                                                color: UiConstants.whiteColor),
-                                          ),
-                                        ),
-                                      )
-                                  ],
-                                ),
+                            Positioned(
+                              top: 4.h,
+                              left: 8.w,
+                              right: 8.w,
+                              child: Wrap(
+                                spacing: 4.w,
+                                runSpacing: 4.w,
+                                children: [
+                                  if (widget.product.productSticker != null)
+                                    ProductChipWidget(
+                                      productChipType:
+                                          ProductChipTypeExtension.fromString(
+                                              widget.product.productSticker!),
+                                    ),
+                                ],
                               ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: widget
-                                          .productsListScreenType ==
-                                      ProductsListScreenType.order
-                                  ? CrossAxisAlignment.end
-                                  : CrossAxisAlignment
-                                      .center, // TODO: если нет скидки, то CrossAxisAlignment.end
-                              children: [
-                                Expanded(
-                                  child: ProductPrice(product: widget.product),
-                                ),
-                                if (inStock &&
-                                    widget.productsListScreenType !=
-                                        ProductsListScreenType.order)
-                                  Padding(
-                                    padding: getMarginOrPadding(
-                                        top: 2, bottom: 2, left: 8),
-                                    child: ChangeCountProductWidget(
-                                      count:
-                                          widget.product.pivot?.quantity ?? 0,
-                                      onCountChange: (bool isIncrement) {
-                                        switch (isIncrement) {
-                                          case true:
-                                            bloc.add(
-                                              AddCartEvent(
-                                                  context: context,
-                                                  productId: widget
-                                                      .product.productId!),
-                                            );
-                                          case false:
-                                            bloc.add(
-                                              DeleteCartEvent(
-                                                  context: context,
-                                                  productId: widget
-                                                      .product.productId!),
-                                            );
-                                            break;
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                if (widget.productsListScreenType ==
-                                    ProductsListScreenType.order)
-                                  Text(
-                                    '${widget.product.pivot?.quantity} шт.',
-                                    style: UiConstants.textStyle8.copyWith(
-                                      color: UiConstants.darkBlueColor
-                                          .withOpacity(.6),
-                                    ),
-                                  ),
-                              ],
-                            ),
+                            )
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                  if (widget.index % 5 == 1 && state.promoCodes.isNotEmpty)
-                    Padding(
-                      padding: getMarginOrPadding(top: 8),
-                      child: InfoBorderPlate(
-                          imagePath: Paths.stockIconPath,
-                          title:
-                              'Этот товар уже со скидкой, промокод не действует'),
+                        SizedBox(width: 8.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(widget.product.pagetitle.orDash(),
+                                  style: UiConstants.textStyle8.copyWith(
+                                    color: inStock
+                                        ? UiConstants.darkBlueColor
+                                        : UiConstants.darkBlue2Color
+                                            .withOpacity(.6),
+                                  ),
+                                  maxLines: 4,
+                                  overflow: TextOverflow.ellipsis),
+                              SizedBox(height: 8.h),
+                              if (!inStock)
+                                Padding(
+                                  padding: getMarginOrPadding(bottom: 4),
+                                  child: OutStockChip(),
+                                ),
+                              if (widget.product.recipe != 'Безрецептурный' &&
+                                  inStock)
+                                Padding(
+                                  padding: getMarginOrPadding(bottom: 4),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      OnlyPickupChip(),
+                                      if (widget.productsListScreenType ==
+                                          ProductsListScreenType.order)
+                                        Skeleton.ignore(
+                                          child: CircleAvatar(
+                                            backgroundColor:
+                                                UiConstants.pink2Color,
+                                            radius: 12.w,
+                                            child: Padding(
+                                              padding:
+                                                  getMarginOrPadding(all: 4),
+                                              child: SvgPicture.asset(
+                                                  Paths.replaceIconPath,
+                                                  color:
+                                                      UiConstants.whiteColor),
+                                            ),
+                                          ),
+                                        )
+                                    ],
+                                  ),
+                                ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: widget
+                                            .productsListScreenType ==
+                                        ProductsListScreenType.order
+                                    ? CrossAxisAlignment.end
+                                    : CrossAxisAlignment
+                                        .center, // TODO: если нет скидки, то CrossAxisAlignment.end
+                                children: [
+                                  Expanded(
+                                    child:
+                                        ProductPrice(product: widget.product),
+                                  ),
+                                  if (inStock &&
+                                      widget.productsListScreenType !=
+                                          ProductsListScreenType.order)
+                                    Padding(
+                                      padding: getMarginOrPadding(
+                                          top: 2, bottom: 2, left: 8),
+                                      child: ChangeCountProductWidget(
+                                          product: widget.product,
+                                          cartOrProductType:
+                                              CartOrProductType.cart),
+                                    ),
+                                  if (widget.productsListScreenType ==
+                                      ProductsListScreenType.order)
+                                    Text(
+                                      '${widget.product.quantity} шт.',
+                                      style: UiConstants.textStyle8.copyWith(
+                                        color: UiConstants.darkBlueColor
+                                            .withOpacity(.6),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  if (widget.index % 3 == 2)
-                    Padding(
-                      padding: getMarginOrPadding(top: 8),
-                      child: ProductStockChip(),
-                    )
-                ],
+                    if (widget.product.discount != null &&
+                        state.selectedPromoCodes.isNotEmpty)
+                      Padding(
+                        padding: getMarginOrPadding(top: 8),
+                        child: InfoBorderPlate(
+                            imagePath: Paths.stockIconPath,
+                            title:
+                                'Этот товар уже со скидкой, промокод не действует'),
+                      ),
+                    //if (widget.index % 3 == 2)
+                    //  Padding(
+                    //    padding: getMarginOrPadding(top: 8),
+                    //    child: ProductStockChip(),
+                    //  )
+                  ],
+                ),
               ),
             ),
           ),

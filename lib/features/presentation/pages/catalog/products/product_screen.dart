@@ -12,6 +12,7 @@ import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.da
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/product_screen/product_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/app_button_widget.dart';
+import 'package:inlek/features/presentation/widgets/cart_screen/change_count_product_widget.dart';
 import 'package:inlek/features/presentation/widgets/custom_app_bar.dart';
 import 'package:inlek/features/presentation/widgets/dropdown_widget.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/block_widget.dart';
@@ -41,7 +42,7 @@ class ProductScreen extends StatelessWidget {
               getProductPharmaciesUC: sl())
             ..add(LoadDataEvent()),
           child: BlocBuilder<ProductScreenBloc, ProductScreenState>(
-            builder: (context, state) {
+            builder: (context, productState) {
               final productBloc = context.read<ProductScreenBloc>();
               return Scaffold(
                 appBar: AppBar(
@@ -55,7 +56,7 @@ class ProductScreen extends StatelessWidget {
                     justifyMultiLineText: false,
                     textBoneBorderRadius:
                         TextBoneBorderRadius.fromHeightFactor(.5),
-                    enabled: state.isLoading,
+                    enabled: productState.isLoading,
                     child: Builder(
                       builder: (context) {
                         return Column(
@@ -78,13 +79,14 @@ class ProductScreen extends StatelessWidget {
                                             ProductBannerWidget(
                                                 pageController:
                                                     productBloc.pageController,
-                                                product: state.product),
+                                                product: productState.product),
                                             SizedBox(height: 16.h),
                                             Padding(
                                               padding: getMarginOrPadding(
                                                   left: 20, right: 20),
                                               child: ProductTitleWidget(
-                                                  product: state.product),
+                                                  product:
+                                                      productState.product),
                                             ),
                                             SizedBox(height: 16.h),
                                             Padding(
@@ -93,7 +95,8 @@ class ProductScreen extends StatelessWidget {
                                               child:
                                                   ProductReceivingMethodsWidget(
                                                 pharmacies:
-                                                    state.pharmacies ?? [],
+                                                    productState.pharmacies ??
+                                                        [],
                                               ),
                                             ),
                                             SizedBox(height: 16.h),
@@ -104,10 +107,12 @@ class ProductScreen extends StatelessWidget {
                                                 title: 'Характеристики',
                                                 child:
                                                     ProductCharacteristicWidget(
-                                                        product: state.product),
+                                                        product: productState
+                                                            .product),
                                               ),
                                             ),
-                                            if (state.product?.description !=
+                                            if (productState
+                                                    .product?.description !=
                                                 null)
                                               Padding(
                                                 padding: getMarginOrPadding(
@@ -118,9 +123,10 @@ class ProductScreen extends StatelessWidget {
                                                   title: 'Описание',
                                                   child: Skeleton.replace(
                                                     child: Html(
-                                                      data: state.isLoading
+                                                      data: productState
+                                                              .isLoading
                                                           ? Utils.mockHtml
-                                                          : state.product
+                                                          : productState.product
                                                                   ?.description ??
                                                               '-',
                                                       style: {
@@ -146,7 +152,8 @@ class ProductScreen extends StatelessWidget {
                                                   ),
                                                 ),
                                               ),
-                                            if ((state.product?.brandProducts ??
+                                            if ((productState.product
+                                                        ?.brandProducts ??
                                                     [])
                                                 .isNotEmpty)
                                               Padding(
@@ -158,7 +165,8 @@ class ProductScreen extends StatelessWidget {
                                                           left: 20, right: 20),
                                                   title: 'Аналоги',
                                                   child: ProductsListWidget(
-                                                      products: state.product
+                                                      products: productState
+                                                              .product
                                                               ?.brandProducts ??
                                                           []),
                                                 ),
@@ -170,7 +178,7 @@ class ProductScreen extends StatelessWidget {
                                           left: 20.w,
                                           right: 20.w,
                                           bottom: 94,
-                                          child: (state.pharmacies ?? [])
+                                          child: (productState.pharmacies ?? [])
                                                   .isEmpty
                                               ? AppButtonWidget(
                                                   text:
@@ -179,16 +187,13 @@ class ProductScreen extends StatelessWidget {
                                                       .showProductReceiptNotificationSheet(
                                                           homeBloc.context),
                                                 )
-                                              : AppButtonWidget(
-                                                  text: 'В корзину',
-                                                  onTap: () => context
-                                                      .read<CartScreenBloc>()
-                                                    ..add(
-                                                      AddCartEvent(
-                                                          context: context,
-                                                          productId:
-                                                              productId!),
-                                                    ),
+                                              : BlocBuilder<CartScreenBloc,
+                                                  CartScreenState>(
+                                                  builder: (context, state) {
+                                                    return ChangeCountProductWidget(
+                                                        product: productState
+                                                            .product!);
+                                                  },
                                                 ),
                                         ),
                                       ],

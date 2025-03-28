@@ -32,7 +32,8 @@ class ProductEntity extends Equatable {
   final List<ProductEntity>? brandProducts;
   final List<ProductEntity>? relatedProducts;
   final List<ProductEntity>? similarProducts;
-  final PivotEntity? pivot;
+  final int? quantity;
+  final List<PromocodeEntity>? promocodesJson;
 
   const ProductEntity({
     this.productId,
@@ -66,8 +67,82 @@ class ProductEntity extends Equatable {
     this.brandProducts,
     this.relatedProducts,
     this.similarProducts,
-    this.pivot,
+    this.quantity,
+    this.promocodesJson,
   });
+
+  // Метод для копирования объекта с возможностью изменения полей
+  ProductEntity copyWith({
+    int? productId,
+    String? mnn,
+    String? mnnLat,
+    String? name,
+    String? description,
+    String? code,
+    String? dose,
+    String? form,
+    String? brand,
+    String? image,
+    String? recipe,
+    String? country,
+    String? delivery,
+    double? price,
+    double? oldPrice,
+    int? discount,
+    int? parent,
+    String? termin,
+    String? temperature,
+    String? releaseForm,
+    String? productInsert,
+    String? productSticker,
+    String? productRegister,
+    String? productTrademark,
+    String? productDateRegister,
+    String? productTimeRegister,
+    int? count,
+    String? pagetitle,
+    List<ProductEntity>? brandProducts,
+    List<ProductEntity>? relatedProducts,
+    List<ProductEntity>? similarProducts,
+    int? quantity,
+    List<PromocodeEntity>? promocodesJson,
+  }) {
+    return ProductEntity(
+      productId: productId ?? this.productId,
+      mnn: mnn ?? this.mnn,
+      mnnLat: mnnLat ?? this.mnnLat,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      code: code ?? this.code,
+      dose: dose ?? this.dose,
+      form: form ?? this.form,
+      brand: brand ?? this.brand,
+      image: image ?? this.image,
+      recipe: recipe ?? this.recipe,
+      country: country ?? this.country,
+      delivery: delivery ?? this.delivery,
+      price: price ?? this.price,
+      oldPrice: oldPrice ?? this.oldPrice,
+      discount: discount ?? this.discount,
+      parent: parent ?? this.parent,
+      termin: termin ?? this.termin,
+      temperature: temperature ?? this.temperature,
+      releaseForm: releaseForm ?? this.releaseForm,
+      productInsert: productInsert ?? this.productInsert,
+      productSticker: productSticker ?? this.productSticker,
+      productRegister: productRegister ?? this.productRegister,
+      productTrademark: productTrademark ?? this.productTrademark,
+      productDateRegister: productDateRegister ?? this.productDateRegister,
+      productTimeRegister: productTimeRegister ?? this.productTimeRegister,
+      count: count ?? this.count,
+      pagetitle: pagetitle ?? this.pagetitle,
+      brandProducts: brandProducts ?? this.brandProducts,
+      relatedProducts: relatedProducts ?? this.relatedProducts,
+      similarProducts: similarProducts ?? this.similarProducts,
+      quantity: quantity ?? this.quantity,
+      promocodesJson: promocodesJson ?? this.promocodesJson,
+    );
+  }
 
   @override
   List<Object?> get props => [
@@ -102,25 +177,29 @@ class ProductEntity extends Equatable {
         brandProducts,
         relatedProducts,
         similarProducts,
-        pivot,
+        quantity,
+        promocodesJson,
       ];
 }
 
-class PivotEntity extends Equatable {
-  final int cartId;
-  final int evoSiteContentId;
-  final int quantity;
+class PromocodeEntity {
+  final int productId;
+  final DateTime end;
+  final DateTime begin;
+  final int usages;
+  final String promocode;
+  final int minAmount;
+  final int promotionId;
+  final int promocodePercent;
 
-  const PivotEntity({
-    required this.cartId,
-    required this.evoSiteContentId,
-    required this.quantity,
+  const PromocodeEntity({
+    required this.productId,
+    required this.end,
+    required this.begin,
+    required this.usages,
+    required this.promocode,
+    required this.minAmount,
+    required this.promotionId,
+    required this.promocodePercent,
   });
-
-  @override
-  List<Object?> get props => [
-        cartId,
-        evoSiteContentId,
-        quantity,
-      ];
 }

@@ -7,7 +7,14 @@ abstract class ProductsScreenEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class LoadDataEvent extends ProductsScreenEvent {}
+class LoadDataEvent extends ProductsScreenEvent {
+  final int? page;
+
+  const LoadDataEvent({this.page});
+
+  @override
+  List<Object?> get props => [page];
+}
 
 class ChangeProductSortTypeEvent extends ProductsScreenEvent {
   final ProductSortType productSortType;

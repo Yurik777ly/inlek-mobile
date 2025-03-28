@@ -4,6 +4,7 @@ import 'package:inlek/core/platform/error_handler.dart';
 import 'package:inlek/core/platform/network_info.dart';
 import 'package:inlek/features/data/datasources/order_remote_data_source_impl.dart';
 import 'package:inlek/features/data/models/order_model.dart';
+import 'package:inlek/features/data/models/order_request_model.dart';
 import 'package:inlek/features/domain/repositories/order_repository.dart';
 
 class OrderRepositoryImpl implements OrderRepository {
@@ -29,5 +30,12 @@ class OrderRepositoryImpl implements OrderRepository {
   Future<Either<Failure, OrderModel?>> getOrderById(int id) async =>
       await errorHandler.handle(
         () async => await orderRemoteDataSource.getOrderById(id),
+      );
+
+  // 📌 Создание заказа
+  @override
+  Future<Either<Failure, void>> createOrder(OrderRequestModel order) async =>
+      await errorHandler.handle(
+        () async => await orderRemoteDataSource.createOrder(order),
       );
 }

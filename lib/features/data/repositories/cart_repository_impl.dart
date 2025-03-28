@@ -38,4 +38,10 @@ class CartRepositoryImpl implements CartRepository {
       await errorHandler.handle(
         () async => await cartRemoteDataSource.getCart(),
       );
+
+  // 📌 Получение продуктов корзины
+  @override
+  Future<Either<Failure, void>> clearCart() async => await errorHandler.handle(
+        () async => await cartRemoteDataSource.clearCart(),
+      );
 }

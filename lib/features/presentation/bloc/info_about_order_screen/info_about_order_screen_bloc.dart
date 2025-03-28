@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/core/models/courier_zone_model.dart';
-import 'package:inlek/core/models/map_marker_model.dart';
+import 'package:inlek/core/models/custom_marker_model.dart';
 import 'package:inlek/features/data/models/pharmacy_model.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/usecases/content/get_pharmacies.dart';

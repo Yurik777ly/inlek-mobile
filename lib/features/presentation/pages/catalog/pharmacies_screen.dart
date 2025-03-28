@@ -143,7 +143,7 @@ class PharmaciesScreen extends StatelessWidget {
                                                                 pharmacies[
                                                                     index],
                                                             pharmacyListScreenType:
-                                                                PharmacyListScreenType
+                                                                CartOrProductType
                                                                     .product),
                                                     separatorBuilder: (context,
                                                             index) =>

@@ -40,6 +40,7 @@ class ProductsScreen extends StatelessWidget {
             ),
           child: BlocBuilder<ProductsScreenBloc, ProductsScreenState>(
             builder: (context, state) {
+              ProductsScreenBloc bloc = context.read<ProductsScreenBloc>();
               return Scaffold(
                 backgroundColor: UiConstants.backgroundColor,
                 body: SafeArea(
@@ -60,45 +61,62 @@ class ProductsScreen extends StatelessWidget {
                               },
                             ),
                             Expanded(
-                              child: homeState is InternetUnavailable
-                                  ? InternetNoInternetConnectionWidget()
-                                  : ListView(
-                                      shrinkWrap: true,
-                                      padding: getMarginOrPadding(
-                                          bottom: 94,
-                                          right: 20,
-                                          left: 20,
-                                          top: 16),
-                                      children: [
-                                        Text(
-                                          title ?? '-',
-                                          style: UiConstants.textStyle9
-                                              .copyWith(
+                              child: Padding(
+                                padding: getMarginOrPadding(
+                                    right: 20, left: 20, top: 16),
+                                child: Builder(
+                                  builder: (context) {
+                                    return homeState is InternetUnavailable
+                                        ? InternetNoInternetConnectionWidget()
+                                        : Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                title ?? '-',
+                                                style: UiConstants.textStyle9
+                                                    .copyWith(
+                                                        color: UiConstants
+                                                            .darkBlueColor),
+                                              ),
+                                              SizedBox(height: 8.h),
+                                              Text(
+                                                Utils.getProductCountText(state
+                                                        .searchProducts
+                                                        ?.total ??
+                                                    0),
+                                                style: UiConstants.textStyle3
+                                                    .copyWith(
                                                   color: UiConstants
-                                                      .darkBlueColor),
-                                        ),
-                                        SizedBox(height: 8.h),
-                                        Text(
-                                          Utils.getProductCountText(
-                                              (state.products ?? []).length),
-                                          style:
-                                              UiConstants.textStyle3.copyWith(
-                                            color: UiConstants.darkBlue2Color
-                                                .withOpacity(.6),
-                                          ),
-                                        ),
-                                        SizedBox(height: 16.h),
-                                        SortWidget(
-                                          onTap: () => BottomSheetManager
-                                              .showProductSortSheet(
-                                                  homeBloc.context, context),
-                                        ),
-                                        SizedBox(height: 16.h),
-                                        ProductsGridWidget(
-                                            isLoading: state.isLoading,
-                                            products: state.products ?? [])
-                                      ],
-                                    ),
+                                                      .darkBlue2Color
+                                                      .withOpacity(.6),
+                                                ),
+                                              ),
+                                              SizedBox(height: 16.h),
+                                              SortWidget(
+                                                onTap: () => BottomSheetManager
+                                                    .showProductSortSheet(
+                                                        homeBloc.context,
+                                                        context),
+                                              ),
+                                              SizedBox(height: 16.h),
+                                              Expanded(
+                                                child: ProductsGridWidget(
+                                                    isLoading: state.isLoading,
+                                                    isLoadingProducts:
+                                                        state.isLoadingProducts,
+                                                    products: state
+                                                            .searchProducts
+                                                            ?.products ??
+                                                        [],
+                                                    controller: bloc
+                                                        .productsController),
+                                              )
+                                            ],
+                                          );
+                                  },
+                                ),
+                              ),
                             ),
                           ],
                         );

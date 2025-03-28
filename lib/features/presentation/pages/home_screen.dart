@@ -29,8 +29,11 @@ class _HomeScreenState extends State<HomeScreen> {
       providers: [
         BlocProvider(
           create: (context) => CartScreenBloc(
-              getCartUC: sl(), addCartUC: sl(), deleteCartUC: sl())
-            ..add(LoadCartDataEvent()),
+            getCartUC: sl(),
+            addCartUC: sl(),
+            deleteCartUC: sl(),
+            clearCartUC: sl(),
+          )..add(LoadCartDataEvent()),
         ),
         BlocProvider(
           create: (context) => HomeScreenBloc(context: context),

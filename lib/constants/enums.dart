@@ -14,7 +14,7 @@ enum PharmacyProductsAvailability { partially, fully }
 
 enum ProductsListScreenType { cart, pharmacy, order }
 
-enum PharmacyListScreenType { cart, product }
+enum CartOrProductType { cart, product }
 
 enum OrderStatus {
   courier, // У курьера

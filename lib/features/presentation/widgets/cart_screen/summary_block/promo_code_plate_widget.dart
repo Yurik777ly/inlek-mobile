@@ -4,10 +4,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/features/domain/entities/product_entity.dart';
 
 class PromoCodePlateWidget extends StatelessWidget {
-  const PromoCodePlateWidget({super.key, required this.onDelete});
+  const PromoCodePlateWidget(
+      {super.key, required this.onDelete, required this.promocodeEntity});
 
+  final PromocodeEntity promocodeEntity;
   final Function() onDelete;
 
   @override
@@ -29,13 +32,13 @@ class PromoCodePlateWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'HELLO',
+                promocodeEntity.promocode,
                 style: UiConstants.textStyle3.copyWith(
                     color: UiConstants.purpleColor,
                     fontWeight: FontWeight.w800),
               ),
               Text(
-                'Cкидка до 10 р. на первый заказ',
+                'Скидка ${promocodeEntity.promocodePercent}%',
                 style: UiConstants.textStyle8.copyWith(
                   color: UiConstants.darkBlue2Color.withOpacity(.6),
                 ),

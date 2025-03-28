@@ -7,6 +7,7 @@ import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
+import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/app_button_widget.dart';
@@ -61,6 +62,26 @@ class _CartScreenState extends State<CartScreen> {
         return BlocBuilder<CartScreenBloc, CartScreenState>(
           builder: (context, cartState) {
             CartScreenBloc cartBloc = context.read<CartScreenBloc>();
+
+            List<ProductEntity> inStockProducts = [];
+            List<ProductEntity> pickUpAndInStockProducts = [];
+            List<ProductEntity> noInStockProducts = [];
+
+            for (ProductEntity product in cartState.cartData?.products ?? []) {
+              bool isLoadingProduct = product.price == null;
+              if (product.recipe == 'Безрецептурный' ||
+                  isLoadingProduct ||
+                  cartState.cartType == TypeReceiving.pickup) {
+                inStockProducts.add(product);
+              } else {
+                pickUpAndInStockProducts.add(product);
+              }
+            }
+
+            bool isShowCreateOrderButton = !(pickUpAndInStockProducts.any((e) =>
+                    cartState.selectedProductIds.contains(e.productId)) &&
+                cartState.cartType == TypeReceiving.delivery);
+
             return BlocProvider(
               create: (context) => SelectorCubit(
                 index: [TypeReceiving.delivery, TypeReceiving.pickup]
@@ -79,20 +100,24 @@ class _CartScreenState extends State<CartScreen> {
                             return Column(
                               children: [
                                 CustomAppBar(
-                                  title: 'Корзина',
-                                  action: GestureDetector(
-                                    onTap: () =>
-                                        BottomSheetManager.showClearCartSheet(
-                                            homeBloc.context),
-                                    child: Text(
-                                      'Очистить корзину',
-                                      style: UiConstants.textStyle3.copyWith(
-                                        color: UiConstants.darkBlue2Color
-                                            .withOpacity(.6),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                    title: 'Корзина',
+                                    action: (cartState.cartData?.products ?? [])
+                                            .isNotEmpty
+                                        ? GestureDetector(
+                                            onTap: () => BottomSheetManager
+                                                .showClearCartSheet(
+                                                    homeBloc.context),
+                                            child: Text(
+                                              'Очистить корзину',
+                                              style: UiConstants.textStyle3
+                                                  .copyWith(
+                                                color: UiConstants
+                                                    .darkBlue2Color
+                                                    .withOpacity(.6),
+                                              ),
+                                            ),
+                                          )
+                                        : null),
                                 homeState is InternetUnavailable
                                     ? InternetNoInternetConnectionWidget()
                                     : (cartState.cartData?.products ?? [])
@@ -196,27 +221,26 @@ class _CartScreenState extends State<CartScreen> {
                                                                         cartState
                                                                             .selectedPharmacy!,
                                                                     pharmacyListScreenType:
-                                                                        PharmacyListScreenType
+                                                                        CartOrProductType
                                                                             .cart)
                                                                 : null),
                                                       ),
                                                     // список с товарами, доступными для доставки
-                                                    if (cartBloc.inStockProducts
+                                                    if (inStockProducts
                                                         .isNotEmpty)
                                                       Padding(
                                                         padding:
                                                             getMarginOrPadding(
                                                                 bottom: 32),
                                                         child: ProductsListWidget(
-                                                            products: cartBloc
-                                                                .inStockProducts,
+                                                            products:
+                                                                inStockProducts,
                                                             productsListScreenType:
                                                                 ProductsListScreenType
                                                                     .cart),
                                                       ),
                                                     // надпись самовывоза
-                                                    if (cartBloc
-                                                            .pickUpAndInStockProducts
+                                                    if (pickUpAndInStockProducts
                                                             .isNotEmpty &&
                                                         cartState.cartType ==
                                                             TypeReceiving
@@ -229,8 +253,7 @@ class _CartScreenState extends State<CartScreen> {
                                                             UnavailableForDeliveryWidget(),
                                                       ),
                                                     // список с товарами, доступными только для самовывоза
-                                                    if (cartBloc
-                                                            .pickUpAndInStockProducts
+                                                    if (pickUpAndInStockProducts
                                                             .isNotEmpty &&
                                                         cartState.cartType ==
                                                             TypeReceiving
@@ -242,15 +265,14 @@ class _CartScreenState extends State<CartScreen> {
                                                         child: ProductsListWidget(
                                                             title:
                                                                 'Только самовывоз',
-                                                            products: cartBloc
-                                                                .pickUpAndInStockProducts,
+                                                            products:
+                                                                pickUpAndInStockProducts,
                                                             productsListScreenType:
                                                                 ProductsListScreenType
                                                                     .cart),
                                                       ),
                                                     // список с законченными товарами
-                                                    if (cartBloc
-                                                        .noInStockProducts
+                                                    if (noInStockProducts
                                                         .isNotEmpty)
                                                       Padding(
                                                         padding:
@@ -259,8 +281,8 @@ class _CartScreenState extends State<CartScreen> {
                                                         child: ProductsListWidget(
                                                             title:
                                                                 'Товары закончились',
-                                                            products: cartBloc
-                                                                .noInStockProducts,
+                                                            products:
+                                                                noInStockProducts,
                                                             productsListScreenType:
                                                                 ProductsListScreenType
                                                                     .cart),
@@ -285,12 +307,11 @@ class _CartScreenState extends State<CartScreen> {
                                                             .isNotEmpty,
                                                         text:
                                                             'Перейти к оформлению',
-                                                        onTap: () =>
-                                                            goToRegistration(
-                                                                context,
-                                                                homeBloc
-                                                                    .context,
-                                                                cartBloc),
+                                                        onTap: !isShowCreateOrderButton
+                                                            ? null
+                                                            : () => BottomSheetManager
+                                                                .showDeliverySheet(
+                                                                    context),
                                                       ),
                                                   ],
                                                 );

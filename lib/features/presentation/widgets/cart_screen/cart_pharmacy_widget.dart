@@ -24,7 +24,7 @@ class CartPharmacyWidget extends StatelessWidget {
   });
 
   final ProductPharmacyEntity pharmacy;
-  final PharmacyListScreenType pharmacyListScreenType;
+  final CartOrProductType pharmacyListScreenType;
   final Function()? onButtonTap;
   final BuildContext? screenContext;
 
@@ -48,8 +48,7 @@ class CartPharmacyWidget extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  if (pharmacyListScreenType ==
-                          PharmacyListScreenType.product &&
+                  if (pharmacyListScreenType == CartOrProductType.product &&
                       pharmacy.pharmacyDelivery == 'Доставка')
                     Skeleton.replace(
                       child: Container(
@@ -66,8 +65,7 @@ class CartPharmacyWidget extends StatelessWidget {
                     ),
                   Expanded(
                     child: Text(
-                      pharmacyListScreenType ==
-                                  PharmacyListScreenType.product &&
+                      pharmacyListScreenType == CartOrProductType.product &&
                               pharmacy.pharmacyDelivery == 'Доставка'
                           ? 'Доставка'
                           : pharmacy.pharmacyName.orDash(),
@@ -84,13 +82,13 @@ class CartPharmacyWidget extends StatelessWidget {
                 style: UiConstants.textStyle2
                     .copyWith(color: UiConstants.darkBlueColor),
               ),
-              if (pharmacyListScreenType == PharmacyListScreenType.cart)
+              if (pharmacyListScreenType == CartOrProductType.cart)
                 Padding(
                   padding: getMarginOrPadding(top: 16),
                   child: PharmacyAvailableProductsChip(
                       allProductsAvailable: allProductsAvailable),
                 ),
-              if (pharmacyListScreenType == PharmacyListScreenType.product)
+              if (pharmacyListScreenType == CartOrProductType.product)
                 Padding(
                   padding: getMarginOrPadding(top: 8),
                   child: Text(
@@ -100,7 +98,7 @@ class CartPharmacyWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-              if (pharmacyListScreenType == PharmacyListScreenType.product)
+              if (pharmacyListScreenType == CartOrProductType.product)
                 Padding(
                   padding: getMarginOrPadding(top: 8),
                   child: Row(

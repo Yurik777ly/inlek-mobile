@@ -74,7 +74,9 @@ class BottomSheetManager {
               AppButtonWidget(
                 text: 'Удалить',
                 onTap: () {
-                  homeContext.read<CartScreenBloc>().add(ClearProductsEvent());
+                  homeContext.read<CartScreenBloc>().add(
+                        ClearProductsEvent(homeContext),
+                      );
                   Navigator.pop(sheetContext);
                 },
               ),
@@ -142,7 +144,8 @@ class BottomSheetManager {
     );
   }
 
-  static showDeletePromoCodeSheet(BuildContext homeContext) {
+  static showDeletePromoCodeSheet(
+      BuildContext homeContext, PromocodeEntity promo) {
     return showModalBottomSheet(
       context: homeContext,
       builder: (sheetContext) {
@@ -167,7 +170,7 @@ class BottomSheetManager {
                 isFilled: false,
                 onTap: () {
                   homeContext.read<CartScreenBloc>().add(
-                        DeletePromoCodeEvent(),
+                        DeletePromoCodeEvent(promo: promo),
                       );
                   Navigator.pop(sheetContext);
                 },
@@ -495,7 +498,7 @@ class BottomSheetManager {
                                         pharmacy:
                                             ProductPharmacyEntity(), // TODO: доделать
                                         pharmacyListScreenType:
-                                            PharmacyListScreenType.cart,
+                                            CartOrProductType.cart,
                                         onButtonTap: () => showPharmacySheet(
                                               homeContext,
                                               screenContext,

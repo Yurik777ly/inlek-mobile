@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:inlek/features/domain/entities/product_entity.dart';
 
 class ProductModel extends ProductEntity {
@@ -35,7 +33,8 @@ class ProductModel extends ProductEntity {
     super.brandProducts,
     super.relatedProducts,
     super.similarProducts,
-    super.pivot,
+    super.quantity,
+    super.promocodesJson,
   });
 
   @override
@@ -90,7 +89,15 @@ class ProductModel extends ProductEntity {
               .map((e) => ProductModel.fromJson(e))
               .toList()
           : [],
-      pivot: data['pivot'] != null ? PivotModel.fromJson(data['pivot']) : null,
+      quantity: data['quantity'],
+      promocodesJson: data['promocodes_json'] != null
+          ? (data['promocodes_json'] as List)
+              .map((e) => PromocodeModel.fromJson(
+                    (e as Map<String, dynamic>)
+                      ..addAll({'product_id': json["product_id"]}),
+                  ) as PromocodeEntity)
+              .toList()
+          : [],
     );
   }
 
@@ -130,32 +137,46 @@ class ProductModel extends ProductEntity {
           'brand_products': brandProducts,
           'related_products': relatedProducts,
           'similar_products': similarProducts,
-          'pivot': pivot,
+          'quantity': quantity,
+          'promocodes_json': promocodesJson
+              ?.map((e) => (e as PromocodeModel).toJson())
+              .toList(),
         }
       };
 }
 
-class PivotModel extends PivotEntity {
-  const PivotModel({
-    required super.cartId,
-    required super.evoSiteContentId,
-    required super.quantity,
+class PromocodeModel extends PromocodeEntity {
+  const PromocodeModel({
+    required super.productId,
+    required super.end,
+    required super.begin,
+    required super.usages,
+    required super.promocode,
+    required super.minAmount,
+    required super.promotionId,
+    required super.promocodePercent,
   });
 
-  factory PivotModel.fromRawJson(String str) =>
-      PivotModel.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
-
-  factory PivotModel.fromJson(Map<String, dynamic> json) => PivotModel(
-        cartId: json["cart_id"],
-        evoSiteContentId: json["evo_site_content_id"],
-        quantity: json["quantity"],
-      );
+  factory PromocodeModel.fromJson(Map<String, dynamic> json) {
+    return PromocodeModel(
+      productId: json['product_id'],
+      end: DateTime.parse(json['end']),
+      begin: DateTime.parse(json['begin']),
+      usages: json['usages'],
+      promocode: json['promocode'],
+      minAmount: json['min_amount'],
+      promotionId: json['promotion_id'],
+      promocodePercent: json['promocode_percent'],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
-        "cart_id": cartId,
-        "evo_site_content_id": evoSiteContentId,
-        "quantity": quantity,
+        'end': end.toIso8601String(),
+        'begin': begin.toIso8601String(),
+        'usages': usages,
+        'promocode': promocode,
+        'min_amount': minAmount,
+        'promotion_id': promotionId,
+        'promocode_percent': promocodePercent,
       };
 }

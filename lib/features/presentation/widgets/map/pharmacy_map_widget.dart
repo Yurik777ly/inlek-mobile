@@ -7,7 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
-import 'package:inlek/core/models/map_marker_model.dart';
+import 'package:inlek/core/models/custom_marker_model.dart';
 import 'package:inlek/features/presentation/bloc/pharmacy_map/pharmacy_map_bloc.dart';
 import 'package:inlek/features/presentation/widgets/map/address_plate.dart';
 import 'package:inlek/features/presentation/widgets/map/map_button.dart';

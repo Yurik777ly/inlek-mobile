@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:inlek/constants/utils.dart';
-import 'package:inlek/core/models/map_marker_model.dart';
+import 'package:inlek/core/models/custom_marker_model.dart';
 import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart';
 
 part 'pharmacy_map_event.dart';
@@ -42,9 +42,10 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
 
     CameraPosition? position = await state.mapController?.getCameraPosition();
     final targetPoint = state.showStackWindow
-        ? (state.points.firstWhereOrNull(
+        ? (state.points
+                .firstWhereOrNull(
                     (e) => e.mapObject.mapId.value == state.selectedMarkerId)
-                as PlacemarkMapObject?)
+                ?.mapObject as PlacemarkMapObject?)
             ?.point
         : null;
 
@@ -61,10 +62,11 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
       UpdatePharmacyMapEvent event, Emitter<PharmacyMapState> emit) async {
     // Создание списка маркеров
     List<PlacemarkMapObject> placemarks = [];
+    List<PolygonMapObject> polygons = []; // Список для полигонов
 
-    for (CustomMapObject point in state.points
-        .where((e) => e.mapObject is PlacemarkMapObject)
-        .toList()) {
+    // Обработка маркеров (PlacemarkMapObject)
+    for (CustomMapObject point
+        in state.points.where((e) => e.mapObject is PlacemarkMapObject)) {
       final icon = await Utils.createBitmapIcon();
       final placemark = PlacemarkMapObject(
         opacity: 1,
@@ -75,10 +77,18 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
         icon: PlacemarkIcon.single(
           PlacemarkIconStyle(image: icon),
         ),
-        onTap: (point, __) =>
-            add(SelectMarkerEvent(markerId: point.mapId.value)),
+        onTap: (point, __) => add(
+          SelectMarkerEvent(markerId: point.mapId.value),
+        ),
       );
       placemarks.add(placemark);
+    }
+
+    // Обработка полигонов (PolygonMapObject)
+    for (CustomMapObject point
+        in state.points.where((e) => e.mapObject is PolygonMapObject)) {
+      final polygon = point.mapObject as PolygonMapObject;
+      polygons.add(polygon);
     }
 
     // Создание кластеризованной коллекции маркеров
@@ -105,16 +115,19 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
       },
     );
 
-    // Добавление кластеризованной коллекции на карту
-    emit(state.copyWith(markers: [...state.markers, clusterizedCollection]));
+    // Добавление маркеров и полигонов на карту
+    emit(state.copyWith(
+      markers: [...state.markers, clusterizedCollection, ...polygons],
+    ));
   }
 
   Future _onZoomIn(ZoomInEvent event, Emitter<PharmacyMapState> emit) async {
     CameraPosition? position = await state.mapController?.getCameraPosition();
     final targetPoint = state.showStackWindow
-        ? (state.points.firstWhereOrNull(
+        ? (state.points
+                .firstWhereOrNull(
                     (e) => e.mapObject.mapId.value == state.selectedMarkerId)
-                as PlacemarkMapObject?)
+                ?.mapObject as PlacemarkMapObject?)
             ?.point
         : null;
     if (position != null) {
@@ -130,9 +143,10 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
   Future _onZoomOut(ZoomOutEvent event, Emitter<PharmacyMapState> emit) async {
     CameraPosition? position = await state.mapController?.getCameraPosition();
     final targetPoint = state.showStackWindow
-        ? (state.points.firstWhereOrNull(
+        ? (state.points
+                .firstWhereOrNull(
                     (e) => e.mapObject.mapId.value == state.selectedMarkerId)
-                as PlacemarkMapObject?)
+                ?.mapObject as PlacemarkMapObject?)
             ?.point
         : null;
     if (position != null) {

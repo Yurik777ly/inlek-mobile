@@ -31,6 +31,7 @@ import 'package:inlek/features/domain/usecases/auth/registration.dart';
 import 'package:inlek/features/domain/usecases/auth/request_code.dart';
 import 'package:inlek/features/domain/usecases/auth/update_password.dart';
 import 'package:inlek/features/domain/usecases/cart/add_cart.dart';
+import 'package:inlek/features/domain/usecases/cart/clear_cart.dart';
 import 'package:inlek/features/domain/usecases/cart/delete_cart.dart';
 import 'package:inlek/features/domain/usecases/cart/get_cart.dart';
 import 'package:inlek/features/domain/usecases/category/get_brands.dart';
@@ -46,6 +47,7 @@ import 'package:inlek/features/domain/usecases/content/get_one_action.dart';
 import 'package:inlek/features/domain/usecases/content/get_one_article.dart';
 import 'package:inlek/features/domain/usecases/content/get_one_news.dart';
 import 'package:inlek/features/domain/usecases/content/get_pharmacies.dart';
+import 'package:inlek/features/domain/usecases/orders/create_order.dart';
 import 'package:inlek/features/domain/usecases/orders/get_one_order.dart';
 import 'package:inlek/features/domain/usecases/orders/get_order_history.dart';
 import 'package:inlek/features/domain/usecases/products/get_daily_products.dart';
@@ -199,6 +201,7 @@ Future<void> init() async {
       getCartUC: sl<GetCartUC>(),
       addCartUC: sl<AddCartUC>(),
       deleteCartUC: sl<DeleteCartUC>(),
+      clearCartUC: sl<ClearCartUC>(),
     ),
   );
 
@@ -242,11 +245,13 @@ Future<void> init() async {
   // Order
   sl.registerLazySingleton(() => GetOrderHistoryUC(sl()));
   sl.registerLazySingleton(() => GetOneOrderUC(sl()));
+  sl.registerLazySingleton(() => CreateOrderUC(sl()));
 
   // Cart
   sl.registerLazySingleton(() => GetCartUC(sl()));
   sl.registerLazySingleton(() => AddCartUC(sl()));
   sl.registerLazySingleton(() => DeleteCartUC(sl()));
+  sl.registerLazySingleton(() => ClearCartUC(sl()));
 
   //// Repository
   sl.registerLazySingleton<AuthRepository>(
