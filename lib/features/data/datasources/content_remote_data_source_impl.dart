@@ -21,6 +21,7 @@ abstract class ContentRemoteDataSource {
   Future<ArticleModel> getOneArticle(int id);
   Future<List<BannerModel>> getBanners();
   Future<List<PharmacyModel>> getPharmacies(String address);
+  Future<List<String>> getCities();
 }
 
 class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
@@ -333,6 +334,46 @@ class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
       }
     } catch (e) {
       log('Error during getPharmacies: $e', level: 1000);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<String>> getCities() async {
+    String baseUrl = dotenv.env['BASE_URL']!;
+    String url = '${baseUrl}cities/';
+    final String? serverToken =
+        sharedPreferences.getString(SharedPreferencesKeys.accessToken);
+
+    log('GET $url');
+
+    try {
+      final response = await client.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $serverToken'
+        },
+      );
+
+      log('Response ($url): ${response.statusCode} ${response.body}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+
+        List<dynamic> dataList = data['data'];
+
+        return dataList
+            .where(
+                (e) => e is Map<String, dynamic> && e.containsKey('pagetitle'))
+            .map((e) => e['pagetitle'].toString())
+            .toList();
+      } else {
+        throw ServerException();
+      }
+    } catch (e) {
+      log('Error during getActions: $e', level: 1000);
       rethrow;
     }
   }

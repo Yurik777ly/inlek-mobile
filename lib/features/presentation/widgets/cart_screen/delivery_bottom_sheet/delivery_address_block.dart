@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/constants/utils.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/app_text_field_widget.dart';
 
@@ -40,7 +41,8 @@ class DeliveryAddressBlock extends StatelessWidget {
                   actionTitle: 'Выбрать на карте',
                   onTapActionTitle: onPickAddressOnMap,
                   hintText: 'Укажите город',
-                  controller: cartBloc.cityController),
+                  controller: cartBloc.cityController,
+                  validator: Utils.validate),
               SizedBox(height: 24.h),
               AppTextFieldWidget(
                   title: 'Улица, дом',
@@ -53,14 +55,16 @@ class DeliveryAddressBlock extends StatelessWidget {
                     child: AppTextFieldWidget(
                         title: 'Подъезд',
                         hintText: 'Не указано',
-                        controller: cartBloc.entranceController),
+                        controller: cartBloc.entranceController,
+                        validator: Utils.validate),
                   ),
                   SizedBox(width: 8.w),
                   Expanded(
                     child: AppTextFieldWidget(
                         title: 'Этаж',
                         hintText: 'Не указано',
-                        controller: cartBloc.floorController),
+                        controller: cartBloc.floorController,
+                        validator: Utils.validate),
                   ),
                 ],
               ),
@@ -71,14 +75,16 @@ class DeliveryAddressBlock extends StatelessWidget {
                     child: AppTextFieldWidget(
                         title: 'Квартира',
                         hintText: 'Не указано',
-                        controller: cartBloc.flatController),
+                        controller: cartBloc.flatController,
+                        validator: Utils.validate),
                   ),
                   SizedBox(width: 8.w),
                   Expanded(
                     child: AppTextFieldWidget(
                         title: 'Домофон',
                         hintText: 'Не указано',
-                        controller: cartBloc.doorPhoneController),
+                        controller: cartBloc.doorPhoneController,
+                        validator: Utils.validate),
                   ),
                 ],
               ),

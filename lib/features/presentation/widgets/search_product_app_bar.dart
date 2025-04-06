@@ -112,8 +112,7 @@ class SearchProductAppBar extends StatelessWidget {
                         child: FilterButton(
                           onTap: () =>
                               BottomSheetManager.showProductsFilterSheet(
-                                  context,
-                                  searchBloc: searchBloc),
+                                  screenContext!),
                         ),
                       ),
                     )

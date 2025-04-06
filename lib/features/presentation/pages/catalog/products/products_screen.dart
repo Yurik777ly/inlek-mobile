@@ -33,10 +33,13 @@ class ProductsScreen extends StatelessWidget {
         return BlocProvider(
           create: (context) => ProductsScreenBloc(
               searchProductsUC: sl(),
+              getBrandsUC: sl(),
+              getCountriesUC: sl(),
+              getFormsUC: sl(),
               productParam: productParam,
               products: products)
             ..add(
-              LoadDataEvent(),
+              LoadProductsEvent(),
             ),
           child: BlocBuilder<ProductsScreenBloc, ProductsScreenState>(
             builder: (context, state) {

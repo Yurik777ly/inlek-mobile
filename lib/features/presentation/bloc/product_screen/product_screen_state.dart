@@ -5,7 +5,7 @@ class ProductScreenState extends Equatable {
   final String? error;
 
   final ProductEntity? product;
-  final List<ProductPharmacyEntity>? pharmacies;
+  final List<PharmacyEntity>? pharmacies;
 
   const ProductScreenState({
     this.isLoading = true,
@@ -18,7 +18,7 @@ class ProductScreenState extends Equatable {
     bool? isLoading,
     String? error,
     ProductEntity? product,
-    List<ProductPharmacyEntity>? pharmacies,
+    List<PharmacyEntity>? pharmacies,
   }) {
     return ProductScreenState(
       isLoading: isLoading ?? this.isLoading,

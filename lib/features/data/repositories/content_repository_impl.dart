@@ -77,4 +77,11 @@ class ContentRepositoryImpl implements ContentRepository {
       await errorHandler.handle(
         () async => await contentRemoteDataSource.getPharmacies(address),
       );
+
+// 📌 Получение списка городов
+  @override
+  Future<Either<Failure, List<String>>> getCities() async =>
+      await errorHandler.handle(
+        () async => await contentRemoteDataSource.getCities(),
+      );
 }

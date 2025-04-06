@@ -8,7 +8,7 @@ class ProductParam extends Equatable {
   final List<String>? brand;
   final List<String>? country;
   final String? recipe;
-  final bool? action;
+  final int? action;
   final String? delivery;
   final bool? available;
   final int? perPage;
@@ -61,7 +61,7 @@ class ProductParam extends Equatable {
       brand: (json['brand'] as List?)?.map((e) => e as String).toList(),
       country: (json['country'] as List?)?.map((e) => e as String).toList(),
       recipe: json['recipe'] as String?,
-      action: json['action'] as bool?,
+      action: json['action'] == true ? 1 : null,
       delivery: json['delivery'] as String?,
       available: json['available'] as bool?,
       perPage: json['per_page'] as int?,
@@ -77,8 +77,8 @@ class ProductParam extends Equatable {
       'price_to': priceTo,
       'release_form': releaseForm,
       'form': form,
-      'brand': brand,
-      'country': country,
+      'brand': brand, // НЕ кодируем в JSON здесь
+      'country': country, // НЕ кодируем в JSON здесь
       'recipe': recipe,
       'action': action,
       'delivery': delivery,
@@ -91,7 +91,6 @@ class ProductParam extends Equatable {
 
     map.removeWhere(
         (key, value) => value == null || (value is List && value.isEmpty));
-
     return map;
   }
 
@@ -103,7 +102,7 @@ class ProductParam extends Equatable {
     List<String>? brand,
     List<String>? country,
     String? recipe,
-    bool? action,
+    int? action,
     String? delivery,
     bool? available,
     int? perPage,

@@ -42,6 +42,20 @@ class Utils {
     return null; // Если email корректный, возвращаем null (валидация успешна)
   }
 
+  static String? validate(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Поле не должно быть пустым';
+    }
+    return null;
+  }
+
+  static String? validatePhone(String? value) {
+    if ((value ?? '').length < 19) {
+      return 'Введите номер телефона';
+    }
+    return null;
+  }
+
   static String formatSecondToMMSS(int totalSeconds) {
     final minutes = totalSeconds ~/ 60;
     final seconds = totalSeconds % 60;

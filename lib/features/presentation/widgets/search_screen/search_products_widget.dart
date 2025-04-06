@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/block_widget.dart';
 import 'package:inlek/features/presentation/widgets/search_screen/search_products_item.dart';
 
 class SearchProductsWidget extends StatelessWidget {
-  const SearchProductsWidget({super.key});
+  const SearchProductsWidget(
+      {super.key, required this.products, required this.onProductTap});
+
+  final List<ProductEntity> products;
+  final Function(int id) onProductTap;
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +26,17 @@ class SearchProductsWidget extends StatelessWidget {
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             padding: EdgeInsets.zero,
-            itemBuilder: (context, index) => SearchProductsItem(),
+            itemBuilder: (context, index) => SearchProductsItem(
+                  product: products[index],
+                  onProductTap: () => onProductTap(products[index].productId!),
+                ),
             separatorBuilder: (context, index) => Container(
                   padding: getMarginOrPadding(top: 8, bottom: 8),
                   height: 18.h,
                   child:
                       Divider(color: UiConstants.white5Color, thickness: 2.h),
                 ),
-            itemCount: 8),
+            itemCount: products.length),
       ),
     );
   }

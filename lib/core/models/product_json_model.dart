@@ -2,6 +2,10 @@ import 'dart:convert';
 
 class ProductJsonModel {
   final int? id;
+  final double? price;
+  final double? oldPrice;
+  final int? salePercent;
+  final bool? isRecipe;
   final String? type;
   final String? contentType;
   final String? pagetitle;
@@ -90,10 +94,7 @@ class ProductJsonModel {
   final dynamic shu;
   final String? image;
   final List<dynamic>? gallery;
-  final double? price;
-  final double? oldPrice;
-  final int? salePercent;
-  final bool? isRecipe;
+
   final bool? isAlcohol;
   final bool? isDietarySupplement;
   final bool? isAvailable;

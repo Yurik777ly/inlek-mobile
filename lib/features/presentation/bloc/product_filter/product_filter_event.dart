@@ -17,30 +17,30 @@ class ChangePriceEvent extends ProductFilterEvent {
 }
 
 class SelectReleaseFormEvent extends ProductFilterEvent {
-  final int releaseFormId;
+  final String releaseForm;
   final bool? isChecked;
-  const SelectReleaseFormEvent(this.releaseFormId, this.isChecked);
+  const SelectReleaseFormEvent(this.releaseForm, this.isChecked);
 
   @override
-  List<Object> get props => [releaseFormId, isChecked ?? false];
+  List<Object> get props => [releaseForm, isChecked ?? false];
 }
 
 class SelectManufacturerEvent extends ProductFilterEvent {
-  final int manufacturerId;
+  final String manufacturer;
   final bool? isChecked;
-  const SelectManufacturerEvent(this.manufacturerId, this.isChecked);
+  const SelectManufacturerEvent(this.manufacturer, this.isChecked);
 
   @override
-  List<Object> get props => [manufacturerId, isChecked ?? false];
+  List<Object> get props => [manufacturer, isChecked ?? false];
 }
 
 class SelectCountryEvent extends ProductFilterEvent {
-  final int countryId;
+  final String country;
   final bool? isChecked;
-  const SelectCountryEvent(this.countryId, this.isChecked);
+  const SelectCountryEvent(this.country, this.isChecked);
 
   @override
-  List<Object> get props => [countryId, isChecked ?? false];
+  List<Object> get props => [country, isChecked ?? false];
 }
 
 class ToggleWithoutPrescriptionEvent extends ProductFilterEvent {

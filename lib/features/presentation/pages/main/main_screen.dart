@@ -26,8 +26,8 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     PageController pageController = PageController(viewportFraction: 0.95);
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
-      builder: (context, homeState) {
-        final homeBloc = context.read<HomeScreenBloc>();
+      builder: (homeContext, homeState) {
+        final homeBloc = homeContext.read<HomeScreenBloc>();
         return BlocProvider(
           create: (context) => MainScreenBloc(
             getBannersUC: sl(),
@@ -50,7 +50,8 @@ class MainScreen extends StatelessWidget {
                         return Column(
                           children: [
                             SearchProductAppBar(
-                                screenContext: context, showLocationChip: true),
+                                screenContext: homeContext,
+                                showLocationChip: true),
                             Expanded(
                               child: homeState is InternetUnavailable
                                   ? InternetNoInternetConnectionWidget()

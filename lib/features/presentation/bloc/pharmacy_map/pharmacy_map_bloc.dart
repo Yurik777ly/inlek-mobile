@@ -1,15 +1,24 @@
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/utils.dart';
+import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/core/models/custom_marker_model.dart';
+import 'package:inlek/features/data/models/pharmacy_model.dart';
+import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart';
 
 part 'pharmacy_map_event.dart';
 part 'pharmacy_map_state.dart';
 
 class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
-  PharmacyMapBloc() : super(PharmacyMapState()) {
+  final MapScreenType mapScreenType;
+  final BuildContext homeContext;
+
+  PharmacyMapBloc({required this.mapScreenType, required this.homeContext})
+      : super(PharmacyMapState()) {
     on<InitPharmacyMapEvent>((event, emit) {
       emit(PharmacyMapState(points: event.points));
       add(UpdatePharmacyMapEvent());
@@ -77,9 +86,26 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
         icon: PlacemarkIcon.single(
           PlacemarkIconStyle(image: icon),
         ),
-        onTap: (point, __) => add(
-          SelectMarkerEvent(markerId: point.mapId.value),
-        ),
+        onTap: (point, __) {
+          if (mapScreenType == MapScreenType.product) {
+            final dataMap = state.points
+                .firstWhereOrNull((e) =>
+                    e.mapObject.mapId.value.toString() == point.mapId.value)
+                ?.data;
+            PharmacyEntity pharmacy = PharmacyModel.fromJson(dataMap!);
+            BottomSheetManager.showPharmacyInfoSheet(homeContext, pharmacy);
+          }
+          if (mapScreenType == MapScreenType.cart) {
+            final dataMap = state.points
+                .firstWhereOrNull((e) =>
+                    e.mapObject.mapId.value.toString() == point.mapId.value)
+                ?.data;
+            PharmacyEntity pharmacy = PharmacyModel.fromJson(dataMap!);
+            BottomSheetManager.showPharmacySheet(homeContext, pharmacy);
+          } else {
+            add(SelectMarkerEvent(markerId: point.mapId.value));
+          }
+        },
       );
       placemarks.add(placemark);
     }

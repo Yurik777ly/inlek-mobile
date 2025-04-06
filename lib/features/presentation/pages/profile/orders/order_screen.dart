@@ -46,7 +46,7 @@ class OrderScreen extends StatelessWidget {
                         return Column(
                           children: [
                             CustomAppBar(
-                              title: 'Заказ #${orderState.order?.orderId}',
+                              title: 'Заказ #$orderId',
                               showBack: true,
                               backgroundColor: UiConstants.backgroundColor,
                             ),
@@ -79,15 +79,18 @@ class OrderScreen extends StatelessWidget {
                                                       orderState.order!.status!,
                                                   date: orderState
                                                       .order!.createdAt!),
-                                            SizedBox(height: 16.h),
                                             if (!orderState.isLoading)
-                                              OrderProgressIndicator(
-                                                  orderStatus:
-                                                      orderState.order!.status!,
-                                                  paymentType: orderState
-                                                      .order!.paymentType!,
-                                                  typeReceipt: orderState
-                                                      .order!.typeReceipt!),
+                                              Padding(
+                                                padding:
+                                                    getMarginOrPadding(top: 16),
+                                                child: OrderProgressIndicator(
+                                                    orderStatus: orderState
+                                                        .order!.status!,
+                                                    paymentType: orderState
+                                                        .order!.paymentType!,
+                                                    typeReceipt: orderState
+                                                        .order!.typeReceipt!),
+                                              ),
                                             if ((orderState.order?.products ??
                                                     [])
                                                 .any((e) => e.recipe != null))
@@ -136,14 +139,16 @@ class OrderScreen extends StatelessWidget {
                                                   },
                                                 ),
                                               ),
-                                            AppButtonWidget(
-                                              text: 'Связаться с нами',
-                                              showBorder: true,
-                                              textColor:
-                                                  UiConstants.purpleColor,
-                                              backgroundColor:
-                                                  UiConstants.backgroundColor,
-                                              onTap: () {},
+                                            Skeleton.replace(
+                                              child: AppButtonWidget(
+                                                text: 'Связаться с нами',
+                                                showBorder: true,
+                                                textColor:
+                                                    UiConstants.purpleColor,
+                                                backgroundColor:
+                                                    UiConstants.backgroundColor,
+                                                onTap: () {},
+                                              ),
                                             ),
                                           ],
                                         ),

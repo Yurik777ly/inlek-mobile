@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:inlek/core/error/failure.dart';
+import 'package:inlek/core/params/order_param.dart';
 import 'package:inlek/core/platform/error_handler.dart';
 import 'package:inlek/core/platform/network_info.dart';
 import 'package:inlek/features/data/datasources/order_remote_data_source_impl.dart';
 import 'package:inlek/features/data/models/order_model.dart';
-import 'package:inlek/features/data/models/order_request_model.dart';
 import 'package:inlek/features/domain/repositories/order_repository.dart';
 
 class OrderRepositoryImpl implements OrderRepository {
@@ -34,8 +34,8 @@ class OrderRepositoryImpl implements OrderRepository {
 
   // 📌 Создание заказа
   @override
-  Future<Either<Failure, void>> createOrder(OrderRequestModel order) async =>
+  Future<Either<Failure, String?>> createOrder(OrderParam params) async =>
       await errorHandler.handle(
-        () async => await orderRemoteDataSource.createOrder(order),
+        () async => await orderRemoteDataSource.createOrder(params),
       );
 }

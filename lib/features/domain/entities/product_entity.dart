@@ -24,7 +24,7 @@ class ProductEntity extends Equatable {
   final String? productInsert;
   final String? productSticker;
   final String? productRegister;
-  final String? productTrademark;
+  final dynamic productTrademark;
   final String? productDateRegister;
   final String? productTimeRegister;
   final int? count;
@@ -34,6 +34,7 @@ class ProductEntity extends Equatable {
   final List<ProductEntity>? similarProducts;
   final int? quantity;
   final List<PromocodeEntity>? promocodesJson;
+  final PropertiesEntity? properties;
 
   const ProductEntity({
     this.productId,
@@ -69,6 +70,7 @@ class ProductEntity extends Equatable {
     this.similarProducts,
     this.quantity,
     this.promocodesJson,
+    this.properties,
   });
 
   // Метод для копирования объекта с возможностью изменения полей
@@ -106,6 +108,7 @@ class ProductEntity extends Equatable {
     List<ProductEntity>? similarProducts,
     int? quantity,
     List<PromocodeEntity>? promocodesJson,
+    PropertiesEntity? properties,
   }) {
     return ProductEntity(
       productId: productId ?? this.productId,
@@ -141,6 +144,7 @@ class ProductEntity extends Equatable {
       similarProducts: similarProducts ?? this.similarProducts,
       quantity: quantity ?? this.quantity,
       promocodesJson: promocodesJson ?? this.promocodesJson,
+      properties: properties ?? this.properties,
     );
   }
 
@@ -179,10 +183,11 @@ class ProductEntity extends Equatable {
         similarProducts,
         quantity,
         promocodesJson,
+        properties,
       ];
 }
 
-class PromocodeEntity {
+class PromocodeEntity extends Equatable {
   final int productId;
   final DateTime end;
   final DateTime begin;
@@ -202,4 +207,31 @@ class PromocodeEntity {
     required this.promotionId,
     required this.promocodePercent,
   });
+
+  @override
+  List<Object?> get props => [
+        productId,
+        end,
+        begin,
+        usages,
+        promocode,
+        minAmount,
+        productId,
+        promocodePercent
+      ];
+}
+
+class PropertiesEntity extends Equatable {
+  final String? brand;
+  final String? country;
+  final String? releaseForm;
+
+  const PropertiesEntity({
+    this.brand,
+    this.country,
+    this.releaseForm,
+  });
+
+  @override
+  List<Object?> get props => [brand, country, releaseForm];
 }

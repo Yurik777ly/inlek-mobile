@@ -4,15 +4,15 @@ import 'dart:developer';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:inlek/core/error/exception.dart';
+import 'package:inlek/core/params/order_param.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/data/models/order_model.dart';
-import 'package:inlek/features/data/models/order_request_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class OrderRemoteDataSource {
   Future<List<OrderModel>> getOrderHistory();
   Future<OrderModel?> getOrderById(int id);
-  Future<void> createOrder(OrderRequestModel order);
+  Future<String?> createOrder(OrderParam params);
 }
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
@@ -43,8 +43,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     try {
       final response = await client.get(uri, headers: headers);
 
-      log('Response Status Code: ${response.statusCode}',
-          name: 'OrderRemoteDataSource.getOrderHistory');
+      log('Response ($uri): ${response.statusCode} ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -82,6 +81,8 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
 
       log('Response Status Code: ${response.statusCode}',
           name: 'OrderRemoteDataSource.getOrderById');
+      log('Response Body: ${response.body}',
+          name: 'OrderRemoteDataSource.getOrderById');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -100,9 +101,11 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   }
 
   @override
-  Future<void> createOrder(OrderRequestModel order) async {
+  Future<String?> createOrder(OrderParam order) async {
     String baseUrl = dotenv.env['BASE_URL']!;
     String url = '${baseUrl}order';
+    final String? serverToken =
+        sharedPreferences.getString(SharedPreferencesKeys.accessToken);
 
     log('POST $url');
     log('Request body: ${jsonEncode(order.toJson())}');
@@ -113,13 +116,22 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'Authorization': 'Bearer $serverToken'
         },
-        body: jsonEncode(jsonEncode(order.toJson())),
+        body: jsonEncode(order.toJson()),
       );
 
       log('Response ($url): ${response.statusCode} ${response.body}');
 
-      if (response.statusCode != 200) throw ServerException();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        if (data['link'] != null) return data['link'];
+      } else {
+        return null;
+      }
+
+      throw ServerException();
     } catch (e) {
       log('Error during createOrder: $e', level: 1000);
       rethrow;

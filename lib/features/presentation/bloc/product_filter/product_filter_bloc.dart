@@ -44,7 +44,7 @@ class ProductFilterBloc extends Bloc<ProductFilterEvent, ProductFilterState> {
 
     // Ограничиваем цену в рамках допустимых значений
     final clampedPrice =
-        event.newPrice!.clamp(state.minAllowedPrice!, state.maxAllowedPrice!);
+        event.newPrice!.clamp(state.minAllowedPrice, state.maxAllowedPrice);
 
     if (event.isMinPrice == true) {
       minValueController.text = clampedPrice.round().toString();
@@ -57,35 +57,35 @@ class ProductFilterBloc extends Bloc<ProductFilterEvent, ProductFilterState> {
 
   void _onSelectReleaseForm(
       SelectReleaseFormEvent event, Emitter<ProductFilterState> emit) {
-    final updatedReleaseForms = Set<int>.from(state.releaseForms ?? []);
+    final updatedReleaseForms = Set<String>.from(state.selectedReleaseForms);
     if (event.isChecked == true) {
-      updatedReleaseForms.add(event.releaseFormId);
+      updatedReleaseForms.add(event.releaseForm);
     } else {
-      updatedReleaseForms.remove(event.releaseFormId);
+      updatedReleaseForms.remove(event.releaseForm);
     }
-    emit(state.copyWith(selectedReleaseFormsId: updatedReleaseForms));
+    emit(state.copyWith(selectedReleaseForms: updatedReleaseForms));
   }
 
   void _onSelectManufacturer(
       SelectManufacturerEvent event, Emitter<ProductFilterState> emit) {
-    final updatedManufacturers = Set<int>.from(state.manufacturers ?? []);
+    final updatedManufacturers = Set<String>.from(state.selectedManufacturers);
     if (event.isChecked == true) {
-      updatedManufacturers.add(event.manufacturerId);
+      updatedManufacturers.add(event.manufacturer);
     } else {
-      updatedManufacturers.remove(event.manufacturerId);
+      updatedManufacturers.remove(event.manufacturer);
     }
-    emit(state.copyWith(selectedManufacturersId: updatedManufacturers));
+    emit(state.copyWith(selectedManufacturers: updatedManufacturers));
   }
 
   void _onSelectCountry(
       SelectCountryEvent event, Emitter<ProductFilterState> emit) {
-    final updatedCountries = Set<int>.from(state.countries ?? []);
+    final updatedCountries = Set<String>.from(state.selectedCountries);
     if (event.isChecked == true) {
-      updatedCountries.add(event.countryId);
+      updatedCountries.add(event.country);
     } else {
-      updatedCountries.remove(event.countryId);
+      updatedCountries.remove(event.country);
     }
-    emit(state.copyWith(selectedCountriesId: updatedCountries));
+    emit(state.copyWith(selectedCountries: updatedCountries));
   }
 
   void _onToggleWithoutPrescription(
@@ -109,9 +109,9 @@ class ProductFilterBloc extends Bloc<ProductFilterEvent, ProductFilterState> {
     maxValueController.text = '50';
     emit(
       state.copyWith(
-          selectedCountriesId: {},
-          selectedManufacturersId: {},
-          selectedReleaseFormsId: {},
+          selectedCountries: {},
+          selectedManufacturers: {},
+          selectedReleaseForms: {},
           isDeliveryPossible: false,
           isParticipatesInCampaign: false,
           isWithoutPrescription: false,
@@ -148,21 +148,21 @@ class ProductFilterBloc extends Bloc<ProductFilterEvent, ProductFilterState> {
       },
     );
 
-    ProductFilterState(
+    emit(state.copyWith(
       minAllowedPrice: 0,
       maxAllowedPrice: 50,
       minSelectedPrice: 0,
       maxSelectedPrice: 50,
       releaseForms: forms,
-      selectedReleaseFormsId: {},
+      selectedReleaseForms: {},
       manufacturers: brands,
-      selectedManufacturersId: {},
+      selectedManufacturers: {},
       countries: countries,
-      selectedCountriesId: {},
+      selectedCountries: {},
       isWithoutPrescription: false,
       isParticipatesInCampaign: false,
       isDeliveryPossible: false,
-    );
+    ));
   }
 
   @override

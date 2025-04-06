@@ -5,12 +5,16 @@ import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/features/domain/entities/order_entity.dart';
+import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/presentation/widgets/orders_screen/order_info_item.dart';
 
 class OrderInfoList extends StatelessWidget {
-  const OrderInfoList({super.key, required this.order});
+  const OrderInfoList(
+      {super.key, required this.order, this.pharmacy, this.address});
 
   final OrderEntity? order;
+  final PharmacyEntity? pharmacy;
+  final String? address;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +46,7 @@ class OrderInfoList extends StatelessWidget {
             child: OrderInfoItem(
                 imagePath: Paths.pointIconPath,
                 title: 'Адрес',
-                subtitle: 'пр-кт Независимости, д.1'),
+                subtitle: address ?? 'пр-кт Независимости, д.1'),
           )
         else
           Padding(
@@ -50,7 +54,7 @@ class OrderInfoList extends StatelessWidget {
             child: OrderInfoItem(
                 imagePath: Paths.pointIconPath,
                 title: 'Аптека',
-                subtitle:
+                subtitle: pharmacy?.address ??
                     'Аптека №36 InLek ОДО ДКМ-ФАРМ, Минский р-н, аг. Сеница, ул. Зеленая, 1, к. 5 (с/м Гиппо)'),
           ),
         if (order?.typeReceipt == TypeReceiving.delivery)

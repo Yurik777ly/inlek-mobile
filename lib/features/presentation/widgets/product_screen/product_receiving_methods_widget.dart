@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/routes.dart';
-import 'package:inlek/features/domain/entities/product_pharmacy_entity.dart';
+import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/presentation/pages/catalog/pharmacies_screen.dart';
 import 'package:inlek/features/presentation/widgets/product_screen/product_receiving_method_item.dart';
 
 class ProductReceivingMethodsWidget extends StatelessWidget {
-  final List<ProductPharmacyEntity> pharmacies;
+  final List<PharmacyEntity> pharmacies;
 
   const ProductReceivingMethodsWidget({super.key, required this.pharmacies});
 
@@ -24,7 +25,12 @@ class ProductReceivingMethodsWidget extends StatelessWidget {
               Routes.createRoute(
                 const PharmaciesScreen(),
                 settings: RouteSettings(
-                    name: Routes.pharmaciesScreen, arguments: pharmacies),
+                  name: Routes.pharmaciesScreen,
+                  arguments: {
+                    "mapScreenType": MapScreenType.product,
+                    "pharmacies": pharmacies
+                  },
+                ),
               ),
             ),
             onTapArrowButton: () {},

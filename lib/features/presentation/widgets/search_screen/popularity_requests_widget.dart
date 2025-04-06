@@ -4,51 +4,43 @@ import 'package:inlek/features/presentation/widgets/main_screen/block_widget.dar
 import 'package:inlek/features/presentation/widgets/search_screen/search_history_item.dart';
 
 class PopularityRequestsWidget extends StatelessWidget {
-  const PopularityRequestsWidget({super.key});
+  const PopularityRequestsWidget({
+    super.key,
+    required this.title,
+    required this.popularityRequests,
+    required this.onTap,
+    this.onTapDelete,
+    this.clearHistory,
+  });
+
+  final String title;
+  final List<String> popularityRequests;
+  final Function(String request) onTap;
+  final Function(String request)? onTapDelete;
+  final Function()? clearHistory;
 
   @override
   Widget build(BuildContext context) {
     return BlockWidget(
-      title: 'История поиска',
+      title: title,
+      clickableText: clearHistory != null ? 'Очистить' : null,
+      onTap: clearHistory,
       child: Align(
         alignment: Alignment.topLeft,
         child: Wrap(
           spacing: 8.w,
           runSpacing: 8.w,
-          children: [
-            SearchHistoryItem(
-              title: 'Терафлю',
-              onTap: () {},
-            ),
-            SearchHistoryItem(
-              title: 'Виши',
-              onTap: () {},
-            ),
-            SearchHistoryItem(
-              title: 'Солгар',
-              onTap: () {},
-            ),
-            SearchHistoryItem(
-              title: 'Биодерма',
-              onTap: () {},
-            ),
-            SearchHistoryItem(
-              title: 'Бепантен',
-              onTap: () {},
-            ),
-            SearchHistoryItem(
-              title: 'Термометр',
-              onTap: () {},
-            ),
-            SearchHistoryItem(
-              title: 'Ля Рош Позе',
-              onTap: () {},
-            ),
-            SearchHistoryItem(
-              title: 'Урьяж',
-              onTap: () {},
-            ),
-          ],
+          children: List.generate(
+            popularityRequests.length,
+            (index) {
+              String request = popularityRequests[index];
+              return SearchHistoryItem(
+                  title: request,
+                  onTap: () => onTap(request),
+                  onTapDelete:
+                      onTapDelete != null ? () => onTapDelete!(request) : null);
+            },
+          ),
         ),
       ),
     );

@@ -155,7 +155,10 @@ class _CartProductWidgetState extends State<CartProductWidget> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(widget.product.pagetitle.orDash(),
+                              Text(
+                                  (widget.product.pagetitle ??
+                                          widget.product.name)
+                                      .orDash(),
                                   style: UiConstants.textStyle8.copyWith(
                                     color: inStock
                                         ? UiConstants.darkBlueColor
@@ -179,7 +182,7 @@ class _CartProductWidgetState extends State<CartProductWidget> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       OnlyPickupChip(),
-                                      if (widget.productsListScreenType ==
+                                      /*if (widget.productsListScreenType ==
                                           ProductsListScreenType.order)
                                         Skeleton.ignore(
                                           child: CircleAvatar(
@@ -195,7 +198,7 @@ class _CartProductWidgetState extends State<CartProductWidget> {
                                                       UiConstants.whiteColor),
                                             ),
                                           ),
-                                        )
+                                        )*/
                                     ],
                                   ),
                                 ),
@@ -227,7 +230,7 @@ class _CartProductWidgetState extends State<CartProductWidget> {
                                   if (widget.productsListScreenType ==
                                       ProductsListScreenType.order)
                                     Text(
-                                      '${widget.product.quantity} шт.',
+                                      '${widget.product.quantity ?? widget.product.count} шт.',
                                       style: UiConstants.textStyle8.copyWith(
                                         color: UiConstants.darkBlueColor
                                             .withOpacity(.6),

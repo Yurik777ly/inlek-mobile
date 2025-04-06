@@ -17,8 +17,11 @@ class CourierDeliveryZonesBlock extends StatelessWidget {
         return AboutUsBlockTemplate(
           title: 'Зоны курьерской доставки',
           children: [
-            PharmacyMapWidget(
-              points: state.mapObjects ?? [],
+            SizedBox(
+              height: 439.h,
+              child: PharmacyMapWidget(
+                  points: state.mapObjects ?? [],
+                  mapScreenType: MapScreenType.courierDeliveryZones),
             ),
             SizedBox(height: 16.h),
             CourierDeliveryZoneItem(

@@ -4,9 +4,10 @@ import 'package:inlek/core/params/product_param.dart';
 import 'package:inlek/core/platform/error_handler.dart';
 import 'package:inlek/core/platform/network_info.dart';
 import 'package:inlek/features/data/datasources/product_remote_data_source_impl.dart';
+import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
-import 'package:inlek/features/domain/entities/product_pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/search_products_entity.dart';
+import 'package:inlek/features/domain/entities/search_products_v2_entity.dart';
 import 'package:inlek/features/domain/repositories/product_repository.dart';
 
 class ProductRepositoryImpl implements ProductRepository {
@@ -44,9 +45,17 @@ class ProductRepositoryImpl implements ProductRepository {
 
   // 📌 Получение списка аптек, где продукт в наличии
   @override
-  Future<Either<Failure, List<ProductPharmacyEntity>>> getProductPharmacies(
+  Future<Either<Failure, List<PharmacyEntity>>> getProductPharmacies(
           int id) async =>
       await errorHandler.handle(
         () async => await productRemoteDataSource.getProductPharmacies(id),
+      );
+
+  // 📌 Получение списка продуктов по поиску
+  @override
+  Future<Either<Failure, SearchProductsV2Entity?>> searchProductV2(
+          String query) async =>
+      await errorHandler.handle(
+        () async => await productRemoteDataSource.searchProductsV2(query),
       );
 }

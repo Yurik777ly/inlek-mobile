@@ -5,15 +5,15 @@ import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
-import 'package:inlek/features/domain/entities/product_pharmacy_entity.dart';
+import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/pharmacies_screen/pharmacies_screen_bloc.dart';
-import 'package:inlek/features/presentation/widgets/cart_screen/cart_pharmacy_widget.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/selector_widget.dart/cubit/selector_cubit.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/selector_widget.dart/selector/selector.dart';
 import 'package:inlek/features/presentation/widgets/custom_app_bar.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/internet_no_internet_connection_widget.dart';
 import 'package:inlek/features/presentation/widgets/map/pharmacy_map_widget.dart';
+import 'package:inlek/features/presentation/widgets/product_screen/product_pharmacy_widget.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class PharmaciesScreen extends StatelessWidget {
@@ -21,9 +21,11 @@ class PharmaciesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<ProductPharmacyEntity> pharmacies = ModalRoute.of(context)!
-        .settings
-        .arguments as List<ProductPharmacyEntity>;
+    Map<String, dynamic> arguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    List<PharmacyEntity> pharmacies =
+        arguments['pharmacies'] as List<PharmacyEntity>;
+    MapScreenType mapScreenType = arguments['mapScreenType'] as MapScreenType;
 
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
       builder: (context, homeState) {
@@ -31,34 +33,16 @@ class PharmaciesScreen extends StatelessWidget {
         return BlocProvider(
           create: (context) => PharmaciesScreenBloc()
             ..add(
-              LoadDataEvent(pharmacies),
+              LoadPharmaciesDataEvent(pharmacies),
             ),
           child: BlocBuilder<PharmaciesScreenBloc, PharmaciesScreenState>(
             builder: (context, pharmaciesState) {
               PharmaciesScreenBloc pharmaciesBloc =
                   context.read<PharmaciesScreenBloc>();
 
-              List<ProductPharmacyEntity> pharmacies =
-                  (pharmaciesState.pharmacies ?? []);
-
-              pharmacies = pharmacies.where((e) {
-                final sortType = pharmaciesState.pharmacySortType;
-                final query = (pharmaciesState.query ?? '').toLowerCase();
-                final pharmacyName = (e.pharmacyName ?? '').toLowerCase();
-                final isMatchingQuery = pharmacyName.contains(query);
-
-                final isMatchingSortType = sortType == TypeReceiving.all ||
-                    e.pharmacyDelivery ==
-                        (sortType == TypeReceiving.delivery
-                            ? 'Доставка'
-                            : 'Самовывоз');
-
-                return isMatchingSortType && isMatchingQuery;
-              }).toList();
-
               return BlocProvider(
                 create: (context) =>
-                    SelectorCubit(index: pharmaciesState.selectorIndex!),
+                    SelectorCubit(index: pharmaciesState.selectorIndex),
                 child: Scaffold(
                   backgroundColor: UiConstants.backgroundColor,
                   body: SafeArea(
@@ -75,7 +59,7 @@ class PharmaciesScreen extends StatelessWidget {
                                 title: 'Аптеки',
                                 showBack: true,
                                 action: Text(
-                                  '${pharmacies.length} аптек${pharmacies.length % 10 == 1 && pharmacies.length % 100 != 11 ? 'a' : ''}',
+                                  '${pharmaciesState.filteredPharmacies.length} аптек${pharmaciesState.filteredPharmacies.length % 10 == 1 && pharmaciesState.filteredPharmacies.length % 100 != 11 ? 'a' : ''}',
                                   style: UiConstants.textStyle3.copyWith(
                                     color: UiConstants.darkBlue2Color
                                         .withOpacity(.6),
@@ -84,81 +68,103 @@ class PharmaciesScreen extends StatelessWidget {
                                 isShowFilterButton: true,
                                 onTapFilterButton: () =>
                                     BottomSheetManager.showPharmacySortSheet(
-                                        homeBloc.context, context),
+                                        homeBloc.context),
                                 onChangedField: (value) => pharmaciesBloc.add(
-                                  ChangeQueryEvent(value),
+                                  ChangePharmacyQueryEvent(value),
                                 ),
                               ),
                               Expanded(
                                 child: homeState is InternetUnavailable
                                     ? InternetNoInternetConnectionWidget()
-                                    : pharmacies.isEmpty
-                                        ? Center(
-                                            child: Text(
-                                              'По выбранным фильтрам аптек нет',
-                                              style: UiConstants.textStyle3
-                                                  .copyWith(
-                                                      color: UiConstants
-                                                          .darkBlueColor,
-                                                      fontWeight:
-                                                          FontWeight.w800),
-                                            ),
-                                          )
-                                        : ListView(
-                                            shrinkWrap: true,
-                                            padding: getMarginOrPadding(
-                                                bottom: 94,
-                                                right: 20,
-                                                left: 20,
-                                                top: 16),
-                                            children: [
-                                              Align(
-                                                alignment:
-                                                    AlignmentDirectional.center,
-                                                child: Selector(
-                                                  titlesList: const [
-                                                    'Список',
-                                                    'Карта'
-                                                  ],
-                                                  onTap: (int index) =>
-                                                      pharmaciesBloc.add(
-                                                    ChangeSelectorIndexEvent(
-                                                        index),
-                                                  ),
+                                    : Padding(
+                                        padding: getMarginOrPadding(
+                                            top: 16,
+                                            left: 20,
+                                            right: 20,
+                                            bottom:
+                                                pharmaciesState.selectorIndex ==
+                                                        0
+                                                    ? 0
+                                                    : 94),
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment:
+                                                  AlignmentDirectional.center,
+                                              child: Selector(
+                                                titlesList: const [
+                                                  'Список',
+                                                  'Карта'
+                                                ],
+                                                onTap: (int index) =>
+                                                    pharmaciesBloc.add(
+                                                  ChangeSelectorIndexEvent(
+                                                      index),
                                                 ),
                                               ),
-                                              SizedBox(height: 16.h),
-                                              if (pharmaciesState
-                                                      .selectorIndex ==
-                                                  0)
-                                                ListView.separated(
-                                                    physics:
-                                                        NeverScrollableScrollPhysics(),
-                                                    padding: EdgeInsets.zero,
-                                                    shrinkWrap: true,
-                                                    itemBuilder: (context,
-                                                            index) =>
-                                                        CartPharmacyWidget(
-                                                            pharmacy:
-                                                                pharmacies[
-                                                                    index],
-                                                            pharmacyListScreenType:
-                                                                CartOrProductType
-                                                                    .product),
-                                                    separatorBuilder: (context,
-                                                            index) =>
-                                                        SizedBox(height: 8.h),
-                                                    itemCount:
-                                                        pharmacies.length)
-                                              else
-                                                SizedBox(
-                                                  height: 510.h,
-                                                  child: PharmacyMapWidget(
-                                                    points: [],
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
+                                            ),
+                                            SizedBox(height: 16.h),
+                                            Expanded(
+                                              child: pharmaciesState
+                                                          .selectorIndex ==
+                                                      0
+                                                  ? pharmaciesState
+                                                          .filteredPharmacies
+                                                          .isEmpty
+                                                      ? Center(
+                                                          child: Text(
+                                                            'По выбранным фильтрам аптек нет',
+                                                            style: UiConstants
+                                                                .textStyle3
+                                                                .copyWith(
+                                                                    color: UiConstants
+                                                                        .darkBlueColor,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w800),
+                                                          ),
+                                                        )
+                                                      : ListView(
+                                                          shrinkWrap: true,
+                                                          padding:
+                                                              getMarginOrPadding(
+                                                                  bottom: 94),
+                                                          children: [
+                                                            ListView.separated(
+                                                                physics:
+                                                                    NeverScrollableScrollPhysics(),
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .zero,
+                                                                shrinkWrap:
+                                                                    true,
+                                                                itemBuilder: (context,
+                                                                        index) =>
+                                                                    ProductPharmacyWidget(
+                                                                      pharmacy:
+                                                                          pharmaciesState
+                                                                              .filteredPharmacies[index],
+                                                                    ),
+                                                                separatorBuilder: (context,
+                                                                        index) =>
+                                                                    SizedBox(
+                                                                        height: 8
+                                                                            .h),
+                                                                itemCount:
+                                                                    pharmaciesState
+                                                                        .filteredPharmacies
+                                                                        .length)
+                                                          ],
+                                                        )
+                                                  : PharmacyMapWidget(
+                                                      points: pharmaciesState
+                                                          .mapObjects,
+                                                      mapScreenType:
+                                                          mapScreenType),
+                                            )
+                                          ],
+                                        ),
+                                      ),
                               )
                             ],
                           );

@@ -32,3 +32,5 @@ enum DeliveryZoneType { green, yellow }
 enum ProductSortType { popularity, priceDecrease, priceIncrease }
 
 enum GenderType { male, female }
+
+enum MapScreenType { product, courierDeliveryZones, cart, order }

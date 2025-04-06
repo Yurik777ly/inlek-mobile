@@ -208,21 +208,17 @@ class _CartScreenState extends State<CartScreen> {
                                                             title: 'Аптека',
                                                             clickableText:
                                                                 'Изменить',
-                                                            onTap: () => BottomSheetManager
-                                                                .showSelectPharmacySheet(
-                                                                    homeBloc
-                                                                        .context,
-                                                                    context),
+                                                            onTap: () =>
+                                                                BottomSheetManager
+                                                                    .showSelectPharmacySheet(
+                                                                        context),
                                                             child: cartState
                                                                         .selectedPharmacy !=
                                                                     null
                                                                 ? CartPharmacyWidget(
                                                                     pharmacy:
                                                                         cartState
-                                                                            .selectedPharmacy!,
-                                                                    pharmacyListScreenType:
-                                                                        CartOrProductType
-                                                                            .cart)
+                                                                            .selectedPharmacy!)
                                                                 : null),
                                                       ),
                                                     // список с товарами, доступными для доставки

@@ -1,37 +1,36 @@
 part of 'product_filter_bloc.dart';
 
 class ProductFilterState extends Equatable {
-  final double? minAllowedPrice;
-  final double? maxAllowedPrice;
-  final double? minSelectedPrice;
-  final double? maxSelectedPrice;
-  final List<String>? releaseForms;
-  final Set<int>? selectedReleaseFormsId;
-  final List<String>? manufacturers;
-  final Set<int>? selectedManufacturersId;
-  final List<String>? countries;
-  final Set<int>? selectedCountriesId;
-
-  final bool? isWithoutPrescription;
-  final bool? isParticipatesInCampaign;
-  final bool? isDeliveryPossible;
+  final double minAllowedPrice;
+  final double maxAllowedPrice;
+  final double minSelectedPrice;
+  final double maxSelectedPrice;
+  final List<String> releaseForms;
+  final Set<String> selectedReleaseForms;
+  final List<String> manufacturers;
+  final Set<String> selectedManufacturers;
+  final List<String> countries;
+  final Set<String> selectedCountries;
+  final bool isWithoutPrescription;
+  final bool isParticipatesInCampaign;
+  final bool isDeliveryPossible;
 
   final bool? isLoading;
 
   const ProductFilterState({
-    this.minAllowedPrice,
-    this.maxAllowedPrice,
-    this.minSelectedPrice,
-    this.maxSelectedPrice,
-    this.releaseForms,
-    this.selectedReleaseFormsId,
-    this.manufacturers,
-    this.selectedManufacturersId,
-    this.countries,
-    this.selectedCountriesId,
-    this.isWithoutPrescription,
-    this.isParticipatesInCampaign,
-    this.isDeliveryPossible,
+    this.minAllowedPrice = 0,
+    this.maxAllowedPrice = 0,
+    this.minSelectedPrice = 50,
+    this.maxSelectedPrice = 50,
+    this.releaseForms = const [],
+    this.selectedReleaseForms = const {},
+    this.manufacturers = const [],
+    this.selectedManufacturers = const {},
+    this.countries = const [],
+    this.selectedCountries = const {},
+    this.isWithoutPrescription = false,
+    this.isParticipatesInCampaign = false,
+    this.isDeliveryPossible = false,
     this.isLoading = true,
   });
 
@@ -41,11 +40,11 @@ class ProductFilterState extends Equatable {
     double? minSelectedPrice,
     double? maxSelectedPrice,
     List<String>? releaseForms,
-    Set<int>? selectedReleaseFormsId,
+    Set<String>? selectedReleaseForms,
     List<String>? manufacturers,
-    Set<int>? selectedManufacturersId,
+    Set<String>? selectedManufacturers,
     List<String>? countries,
-    Set<int>? selectedCountriesId,
+    Set<String>? selectedCountries,
     bool? isWithoutPrescription,
     bool? isParticipatesInCampaign,
     bool? isDeliveryPossible,
@@ -57,13 +56,12 @@ class ProductFilterState extends Equatable {
       minSelectedPrice: minSelectedPrice ?? this.minSelectedPrice,
       maxSelectedPrice: maxSelectedPrice ?? this.maxSelectedPrice,
       releaseForms: releaseForms ?? this.releaseForms,
-      selectedReleaseFormsId:
-          selectedReleaseFormsId ?? this.selectedReleaseFormsId,
+      selectedReleaseForms: selectedReleaseForms ?? this.selectedReleaseForms,
       manufacturers: manufacturers ?? this.manufacturers,
-      selectedManufacturersId:
-          selectedManufacturersId ?? this.selectedManufacturersId,
+      selectedManufacturers:
+          selectedManufacturers ?? this.selectedManufacturers,
       countries: countries ?? this.countries,
-      selectedCountriesId: selectedCountriesId ?? this.selectedCountriesId,
+      selectedCountries: selectedCountries ?? this.selectedCountries,
       isWithoutPrescription:
           isWithoutPrescription ?? this.isWithoutPrescription,
       isParticipatesInCampaign:
@@ -80,11 +78,11 @@ class ProductFilterState extends Equatable {
         minSelectedPrice,
         maxSelectedPrice,
         releaseForms,
-        selectedReleaseFormsId,
+        selectedReleaseForms,
         manufacturers,
-        selectedManufacturersId,
+        selectedManufacturers,
         countries,
-        selectedCountriesId,
+        selectedCountries,
         isWithoutPrescription,
         isParticipatesInCampaign,
         isDeliveryPossible,

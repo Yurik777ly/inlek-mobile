@@ -55,7 +55,9 @@ class ProductModel extends ProductEntity {
       recipe: json["recipe"],
       country: json["country"],
       delivery: json["delivery"],
-      price: double.tryParse(json["product_price_from"] ?? ''),
+      price: json['price'] is double
+          ? json['price']
+          : double.tryParse(json["product_price_from"] ?? ''),
       oldPrice: double.tryParse(
         (json["product_price_from_old"] ?? ''),
       ),
@@ -179,4 +181,35 @@ class PromocodeModel extends PromocodeEntity {
         'promotion_id': promotionId,
         'promocode_percent': promocodePercent,
       };
+}
+
+class PropertiesModel extends PropertiesEntity {
+  const PropertiesModel({
+    required super.brand,
+    required super.country,
+    required super.releaseForm,
+  });
+
+  factory PropertiesModel.fromJson(Map<String, dynamic> json) =>
+      PropertiesModel(
+        brand: json["brand"] == null ? null : json["brand"]["value"],
+        country: json["country"] == null ? null : json["country"]["value"],
+        releaseForm:
+            json["release_form"] == null ? null : json["release_form"]["value"],
+      );
+
+  @override
+  PropertiesModel copyWith({
+    String? brand,
+    String? country,
+    String? releaseForm,
+  }) =>
+      PropertiesModel(
+        brand: brand ?? this.brand,
+        country: country ?? this.country,
+        releaseForm: releaseForm ?? this.releaseForm,
+      );
+
+  @override
+  List<Object?> get props => [brand, country, releaseForm];
 }

@@ -2,8 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
-import 'package:inlek/features/domain/entities/product_pharmacy_entity.dart';
 import 'package:inlek/features/domain/usecases/products/get_one_product.dart';
 import 'package:inlek/features/domain/usecases/products/get_product_pharmacies.dart';
 
@@ -29,7 +29,7 @@ class ProductScreenBloc extends Bloc<ProductScreenEvent, ProductScreenState> {
       LoadDataEvent event, Emitter<ProductScreenState> emit) async {
     String? error = 'Ошибка получения данных';
     ProductEntity? product;
-    List<ProductPharmacyEntity> pharmacies = [];
+    List<PharmacyEntity> pharmacies = [];
 
     if (productId != null) {
       var data = await Future.wait(
@@ -45,7 +45,7 @@ class ProductScreenBloc extends Bloc<ProductScreenEvent, ProductScreenState> {
             (_) {},
             (result) => switch (index) {
               0 => product = result as ProductEntity,
-              1 => pharmacies = result as List<ProductPharmacyEntity>,
+              1 => pharmacies = result as List<PharmacyEntity>,
               _ => {},
             },
           );

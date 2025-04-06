@@ -4,20 +4,28 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 
 class AddressPlate extends StatelessWidget {
-  final String city;
-  final String street;
+  final PharmacyEntity pharmacy;
   final Function() onClose;
 
   const AddressPlate(
-      {super.key,
-      required this.street,
-      required this.city,
-      required this.onClose});
+      {super.key, required this.pharmacy, required this.onClose});
 
   @override
   Widget build(BuildContext context) {
+    final String address = pharmacy.address ?? '';
+    final List<String> addressSplit = address.split(', ');
+
+    String city = '';
+    String street = '';
+
+    if (addressSplit.length > 1) {
+      city = addressSplit.first;
+      street = addressSplit.skip(1).join(', ');
+    }
+
     return Container(
       padding: getMarginOrPadding(all: 8),
       decoration: BoxDecoration(

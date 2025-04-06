@@ -6,16 +6,18 @@ import 'package:http/http.dart' as http;
 import 'package:inlek/core/error/exception.dart';
 import 'package:inlek/core/params/product_param.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
+import 'package:inlek/features/data/models/pharmacy_model.dart';
 import 'package:inlek/features/data/models/product_model.dart';
-import 'package:inlek/features/data/models/product_pharmacy_model.dart';
 import 'package:inlek/features/data/models/search_products_model.dart';
+import 'package:inlek/features/data/models/search_products_v2_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class ProductRemoteDataSource {
   Future<List<ProductModel>> getDailyProducts();
   Future<ProductModel?> getProductById(int id);
   Future<SearchProductsModel> searchProducts(ProductParam param);
-  Future<List<ProductPharmacyModel>> getProductPharmacies(int id);
+  Future<SearchProductsV2Model?> searchProductsV2(String query);
+  Future<List<PharmacyModel>> getProductPharmacies(int id);
 }
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
@@ -109,8 +111,12 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
 
     final uri = Uri.parse('${baseUrl}product/search').replace(
-      queryParameters: param.toJson().map((key, value) =>
-          MapEntry(key, value?.toString())), // Преобразуем в строку для URL
+      queryParameters: param.toJson().map((key, value) {
+        if (value is List) {
+          return MapEntry('$key[]', value.map((e) => e.toString()).toList());
+        }
+        return MapEntry(key, value?.toString());
+      }),
     );
 
     final headers = {
@@ -144,7 +150,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   }
 
   @override
-  Future<List<ProductPharmacyModel>> getProductPharmacies(int id) async {
+  Future<List<PharmacyModel>> getProductPharmacies(int id) async {
     String baseUrl = dotenv.env['BASE_URL']!;
     final String? serverToken =
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
@@ -173,14 +179,52 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
         List<dynamic> dataList = data['data'];
 
         return dataList
-            .map((e) =>
-                ProductPharmacyModel.fromJson(e['product_pharmacy_json']))
+            .map((e) => PharmacyModel.fromJson(e['product_pharmacy_json']))
             .toList();
       } else {
         throw ServerException();
       }
     } catch (e) {
       log('Error during getProductPharmacies: $e', level: 1000);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<SearchProductsV2Model?> searchProductsV2(String query) async {
+    String baseUrl = "${dotenv.env['PUBLIC_URL']}api/v1/";
+    final String? serverToken =
+        sharedPreferences.getString(SharedPreferencesKeys.accessToken);
+
+    final uri = Uri.parse('${baseUrl}search?search=$query');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $serverToken'
+    };
+
+    log('GET Request: $uri', name: 'ProductRemoteDataSource.searchProductsV2');
+    log('Headers: $headers', name: 'ProductRemoteDataSource.searchProductsV2');
+
+    try {
+      final response = await client.get(uri, headers: headers);
+
+      log('Response Status Code: ${response.statusCode}',
+          name: 'ProductRemoteDataSource.searchProductsV2');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+        if (data['data'] != null) {
+          Map<String, dynamic> dataMap = data['data'];
+
+          return SearchProductsV2Model.fromJson(dataMap);
+        }
+        return null;
+      } else {
+        throw ServerException();
+      }
+    } catch (e) {
+      log('Error during searchProductsV2: $e', level: 1000);
       rethrow;
     }
   }

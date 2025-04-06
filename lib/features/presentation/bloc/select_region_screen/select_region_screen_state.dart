@@ -10,7 +10,7 @@ class SelectRegionScreenState extends Equatable {
     this.isButtonActive = false,
     this.showError = false,
     this.selectedRegion,
-    required this.popularCities,
+    this.popularCities = const [],
   });
 
   SelectRegionScreenState copyWith({

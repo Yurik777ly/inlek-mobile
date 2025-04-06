@@ -15,4 +15,5 @@ abstract class ContentRepository {
   Future<Either<Failure, ArticleEntity>> getOneArticle(int id);
   Future<Either<Failure, List<BannerEntity>>> getBanners();
   Future<Either<Failure, List<PharmacyEntity>>> getPharmacies(String address);
+  Future<Either<Failure, List<String>>> getCities();
 }

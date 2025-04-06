@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
-import 'package:inlek/features/presentation/bloc/search_screen/search_screen_bloc.dart';
+import 'package:inlek/features/presentation/bloc/products_screen/products_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/app_text_field_widget.dart';
 
 class PriceRangeWidget extends StatefulWidget {
@@ -26,9 +26,10 @@ class _PriceRangeWidgetState extends State<PriceRangeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    SearchScreenBloc searchBloc = widget.homeContext.read<SearchScreenBloc>();
-    return BlocBuilder<SearchScreenBloc, SearchScreenState>(
-      bloc: searchBloc,
+    ProductsScreenBloc productsBloc =
+        widget.homeContext.read<ProductsScreenBloc>();
+    return BlocBuilder<ProductsScreenBloc, ProductsScreenState>(
+      bloc: productsBloc,
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,9 +47,9 @@ class _PriceRangeWidgetState extends State<PriceRangeWidget> {
                 Expanded(
                   child: AppTextFieldWidget(
                       fillColor: UiConstants.whiteColor,
-                      controller: searchBloc.minValueController,
+                      controller: productsBloc.minValueController,
                       onChangedField: (value) {
-                        searchBloc.add(
+                        productsBloc.add(
                           ChangePriceEvent(double.tryParse(value), true),
                         );
                       },
@@ -63,9 +64,9 @@ class _PriceRangeWidgetState extends State<PriceRangeWidget> {
                 Expanded(
                   child: AppTextFieldWidget(
                       fillColor: UiConstants.whiteColor,
-                      controller: searchBloc.maxValueController,
+                      controller: productsBloc.maxValueController,
                       onChangedField: (value) {
-                        searchBloc.add(
+                        productsBloc.add(
                           ChangePriceEvent(double.tryParse(value), false),
                         );
                       },
@@ -89,10 +90,10 @@ class _PriceRangeWidgetState extends State<PriceRangeWidget> {
                 activeColor: UiConstants.purpleColor,
                 inactiveColor: UiConstants.white5Color,
                 onChanged: (RangeValues values) {
-                  searchBloc.add(
+                  productsBloc.add(
                     ChangePriceEvent(values.start.roundToDouble(), true),
                   );
-                  searchBloc.add(
+                  productsBloc.add(
                     ChangePriceEvent(values.end.roundToDouble(), false),
                   );
                 },

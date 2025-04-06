@@ -9,6 +9,8 @@ abstract class CartScreenEvent extends Equatable {
 
 class LoadCartDataEvent extends CartScreenEvent {}
 
+class LoadPharmaciesEvent extends CartScreenEvent {}
+
 class AddCartEvent extends CartScreenEvent {
   final BuildContext context;
   final int productId;
@@ -69,7 +71,7 @@ class ChangePaymentTypeEvent extends CartScreenEvent {
 }
 
 class SelectPharmacy extends CartScreenEvent {
-  final ProductPharmacyEntity pharmacy;
+  final PharmacyEntity pharmacy;
   const SelectPharmacy(this.pharmacy);
 }
 
@@ -88,4 +90,11 @@ class ToggleShowPharmaciesProductsInStockEvent extends CartScreenEvent {
 
   @override
   List<Object?> get props => [isShowPharmaciesProductsInStock];
+}
+
+class CreateOrderEvent extends CartScreenEvent {
+  const CreateOrderEvent();
+
+  @override
+  List<Object?> get props => [];
 }

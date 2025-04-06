@@ -5,18 +5,20 @@ import 'package:inlek/constants/ui_constants.dart';
 
 class CustomBottomSheet extends StatelessWidget {
   const CustomBottomSheet(
-      {super.key, this.height, required this.child, this.color});
+      {super.key, this.height, required this.child, this.color, this.padding});
 
   final double? height;
   final Color? color;
   final Widget child;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: height,
       width: double.infinity,
-      padding: getMarginOrPadding(left: 20, right: 20, top: 8, bottom: 16),
+      padding: padding ??
+          getMarginOrPadding(left: 20, right: 20, top: 8, bottom: 16),
       decoration: BoxDecoration(
         color: color ?? UiConstants.whiteColor,
         borderRadius: BorderRadius.vertical(

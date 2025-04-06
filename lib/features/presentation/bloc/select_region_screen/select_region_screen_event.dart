@@ -7,6 +7,11 @@ abstract class SelectRegionScreenEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class LoadDataEvent extends SelectRegionScreenEvent {
+  @override
+  List<Object> get props => [];
+}
+
 class RegionChangedEvent extends SelectRegionScreenEvent {
   final String region;
 
@@ -14,4 +19,12 @@ class RegionChangedEvent extends SelectRegionScreenEvent {
 
   @override
   List<Object> get props => [region];
+}
+
+class ConfirmRegionEvent extends SelectRegionScreenEvent {
+  final BuildContext context;
+  const ConfirmRegionEvent({required this.context});
+
+  @override
+  List<Object> get props => [context];
 }

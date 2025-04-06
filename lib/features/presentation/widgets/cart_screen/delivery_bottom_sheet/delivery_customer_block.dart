@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/formatters/custom_phone_input_formatter.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/app_text_field_widget.dart';
@@ -36,29 +37,32 @@ class DeliveryCustomerBlock extends StatelessWidget {
               AppTextFieldWidget(
                   title: 'Имя',
                   hintText: 'Введите имя',
-                  controller: cartBloc.fNameController),
+                  controller: cartBloc.fNameController,
+                  validator: Utils.validate),
               SizedBox(height: 24.h),
               AppTextFieldWidget(
                   title: 'Фамилия',
                   hintText: 'Введите фамилию',
-                  controller: cartBloc.sNameController),
+                  controller: cartBloc.sNameController,
+                  validator: Utils.validate),
               SizedBox(height: 24.h),
               AppTextFieldWidget(
-                title: 'Телефон',
-                hintText: '+375 (00) 000-00-00',
-                controller: cartBloc.phoneController,
-                keyboardType: TextInputType.phone,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  CustomPhoneInputFormatter()
-                ],
-              ),
+                  title: 'Телефон',
+                  hintText: '+375 (00) 000-00-00',
+                  controller: cartBloc.phoneController,
+                  keyboardType: TextInputType.phone,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    CustomPhoneInputFormatter()
+                  ],
+                  validator: Utils.validatePhone),
               SizedBox(height: 24.h),
               AppTextFieldWidget(
                   title: 'Email',
                   description: 'Обязательно при оплате онлайн в приложении',
                   hintText: 'Введите Email',
-                  controller: cartBloc.emailController),
+                  controller: cartBloc.emailController,
+                  validator: Utils.emailValidate),
             ],
           ),
         ),

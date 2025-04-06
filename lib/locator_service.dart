@@ -1,6 +1,7 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
+import 'package:inlek/core/geocoder_manager.dart';
 import 'package:inlek/core/platform/error_handler.dart';
 import 'package:inlek/core/platform/network_info.dart';
 import 'package:inlek/features/data/datasources/auth_remote_data_source_impl.dart';
@@ -42,6 +43,7 @@ import 'package:inlek/features/domain/usecases/category/get_subcategories.dart';
 import 'package:inlek/features/domain/usecases/content/get_actions.dart';
 import 'package:inlek/features/domain/usecases/content/get_articles.dart';
 import 'package:inlek/features/domain/usecases/content/get_banners.dart';
+import 'package:inlek/features/domain/usecases/content/get_cities.dart';
 import 'package:inlek/features/domain/usecases/content/get_news.dart';
 import 'package:inlek/features/domain/usecases/content/get_one_action.dart';
 import 'package:inlek/features/domain/usecases/content/get_one_article.dart';
@@ -54,6 +56,7 @@ import 'package:inlek/features/domain/usecases/products/get_daily_products.dart'
 import 'package:inlek/features/domain/usecases/products/get_one_product.dart';
 import 'package:inlek/features/domain/usecases/products/get_product_pharmacies.dart';
 import 'package:inlek/features/domain/usecases/products/search_products.dart';
+import 'package:inlek/features/domain/usecases/products/search_products_v2.dart';
 import 'package:inlek/features/domain/usecases/profile/delete_me.dart';
 import 'package:inlek/features/domain/usecases/profile/get_me.dart';
 import 'package:inlek/features/domain/usecases/profile/update_me.dart';
@@ -76,10 +79,13 @@ import 'package:inlek/features/presentation/bloc/product_screen/product_screen_b
 import 'package:inlek/features/presentation/bloc/products_screen/products_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/profile_screen/profile_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/sales_screen/sales_screen_bloc.dart';
+import 'package:inlek/features/presentation/bloc/search_screen/search_screen_bloc.dart';
+import 'package:inlek/features/presentation/bloc/select_region_screen/select_region_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/sign_up_screen/sign_up_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/splash_screen/splash_screen_bloc.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yandex_geocoder/yandex_geocoder.dart';
 
 final sl = GetIt.instance;
 
@@ -168,6 +174,9 @@ Future<void> init() async {
   sl.registerFactory(
     () => ProductsScreenBloc(
       searchProductsUC: sl<SearchProductsUC>(),
+      getBrandsUC: sl<GetBrandsUC>(),
+      getCountriesUC: sl<GetCountriesUC>(),
+      getFormsUC: sl<GetFormsUC>(),
     ),
   );
   sl.registerFactory(
@@ -202,6 +211,21 @@ Future<void> init() async {
       addCartUC: sl<AddCartUC>(),
       deleteCartUC: sl<DeleteCartUC>(),
       clearCartUC: sl<ClearCartUC>(),
+      createOrderUC: sl<CreateOrderUC>(),
+      getPharmaciesUC: sl<GetPharmaciesUC>(),
+      sharedPreferences: sl<SharedPreferences>(),
+    ),
+  );
+  sl.registerFactory(
+    () => SelectRegionScreenBloc(
+      getCitiesUC: sl<GetCitiesUC>(),
+      sharedPreferences: sl<SharedPreferences>(),
+    ),
+  );
+  sl.registerFactory(
+    () => SearchScreenBloc(
+      searchProductsV2UC: sl<SearchProductsV2UC>(),
+      sharedPreferences: sl<SharedPreferences>(),
     ),
   );
 
@@ -228,11 +252,13 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetOneArticleUC(sl()));
   sl.registerLazySingleton(() => GetOneNewsUC(sl()));
   sl.registerLazySingleton(() => GetPharmaciesUC(sl()));
+  sl.registerLazySingleton(() => GetCitiesUC(sl()));
 
   // Product
   sl.registerLazySingleton(() => GetDailyProductsUC(sl()));
   sl.registerLazySingleton(() => GetOneProductUC(sl()));
   sl.registerLazySingleton(() => SearchProductsUC(sl()));
+  sl.registerLazySingleton(() => SearchProductsV2UC(sl()));
   sl.registerLazySingleton(() => GetProductPharmaciesUC(sl()));
 
   // Category
@@ -362,4 +388,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => sharedPreferences);
   sl.registerLazySingleton(() => http.Client());
   sl.registerLazySingleton(() => InternetConnectionChecker());
+  sl.registerLazySingleton(
+      () => YandexGeocoder(apiKey: dotenv.env['YANDEX_GEOCODER_API_KEY']!));
+  sl.registerLazySingleton(() => GeocoderManager(sl<YandexGeocoder>()));
 }

@@ -7,13 +7,19 @@ import 'package:flutter/material.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/params/cart_params.dart';
+import 'package:inlek/core/params/order_param.dart';
+import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/domain/entities/cart_entity.dart';
+import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
-import 'package:inlek/features/domain/entities/product_pharmacy_entity.dart';
 import 'package:inlek/features/domain/usecases/cart/add_cart.dart';
 import 'package:inlek/features/domain/usecases/cart/clear_cart.dart';
 import 'package:inlek/features/domain/usecases/cart/delete_cart.dart';
 import 'package:inlek/features/domain/usecases/cart/get_cart.dart';
+import 'package:inlek/features/domain/usecases/content/get_pharmacies.dart';
+import 'package:inlek/features/domain/usecases/orders/create_order.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 part 'cart_screen_event.dart';
 part 'cart_screen_state.dart';
@@ -23,19 +29,33 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
   final AddCartUC addCartUC;
   final DeleteCartUC deleteCartUC;
   final ClearCartUC clearCartUC;
+  final CreateOrderUC createOrderUC;
+  final GetPharmaciesUC getPharmaciesUC;
+  final SharedPreferences sharedPreferences;
 
   final ScrollController controller = ScrollController();
-  final TextEditingController fNameController = TextEditingController();
-  final TextEditingController sNameController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController cityController = TextEditingController();
-  final TextEditingController streetHomeController = TextEditingController();
-  final TextEditingController entranceController = TextEditingController();
-  final TextEditingController floorController = TextEditingController();
-  final TextEditingController flatController = TextEditingController();
-  final TextEditingController doorPhoneController = TextEditingController();
-  final TextEditingController commentController = TextEditingController();
+  final TextEditingController fNameController =
+      TextEditingController(text: 'Иван');
+  final TextEditingController sNameController =
+      TextEditingController(text: 'Иванов');
+  final TextEditingController phoneController =
+      TextEditingController(text: '+375 (25) 222-33-49');
+  final TextEditingController emailController =
+      TextEditingController(text: 'penkin.333@mail.ru');
+  final TextEditingController cityController =
+      TextEditingController(text: 'Минск');
+  final TextEditingController streetHomeController =
+      TextEditingController(text: 'Заславская улица, 29, Минск, 220004');
+  final TextEditingController entranceController =
+      TextEditingController(text: '5');
+  final TextEditingController floorController =
+      TextEditingController(text: '20');
+  final TextEditingController flatController =
+      TextEditingController(text: '1029');
+  final TextEditingController doorPhoneController =
+      TextEditingController(text: '1029');
+  final TextEditingController commentController =
+      TextEditingController(text: 'Оставить возле двери');
 
   final TextEditingController promocodeController = TextEditingController();
 
@@ -46,6 +66,9 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     required this.addCartUC,
     required this.deleteCartUC,
     required this.clearCartUC,
+    required this.createOrderUC,
+    required this.getPharmaciesUC,
+    required this.sharedPreferences,
   }) : super(CartScreenState()) {
     on<LoadCartDataEvent>(_onLoadData);
     on<AddCartEvent>(_onAddCart);
@@ -63,6 +86,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     on<ChangeCartTypeEvent>(_onChangeCartType);
     on<ChangePaymentTypeEvent>(_onChangePaymentType);
     on<SelectPharmacy>(_onSelectPharmacy);
+    on<CreateOrderEvent>(_onCreateOrder);
+    on<LoadPharmaciesEvent>(_onLoadPharmacies);
     on<ScrollUpListEvent>((_, __) => controller.animateTo(0,
         duration: const Duration(milliseconds: 700), curve: Curves.easeOut));
   }
@@ -108,6 +133,19 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
             availablePromoCodes: availablePromoCodes,
             selectedPromoCodes: updatedSelectedPromoCodes));
       },
+    );
+  }
+
+  Future<void> _onLoadPharmacies(
+      LoadPharmaciesEvent event, Emitter<CartScreenState> emit) async {
+    String city = sharedPreferences.getString(SharedPreferencesKeys.city) ?? '';
+    final failureOrLoads = await getPharmaciesUC(city);
+
+    failureOrLoads.fold(
+      (_) {},
+      (pharmacies) => emit(
+        state.copyWith(pharmacies: pharmacies),
+      ),
     );
   }
 
@@ -172,7 +210,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         ?.firstWhereOrNull((e) => e.productId == event.productId);
     if (product == null) return;
 
-    int newQuantity = (product.quantity ?? 0) - (event.count ?? 1);
+    int newQuantity = event.count ?? (product.quantity ?? 0) - 1;
     List<ProductEntity> updatedProducts =
         List.from(state.cartData?.products ?? []);
     Set<int> updatedSelectedProductIds = Set.from(state.selectedProductIds);
@@ -228,7 +266,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
     if (!wasFirstTimeAdded) {
       ProductEntity product = updatedProducts[productIndex];
-      newQuantity = (product.quantity ?? 0) + (event.count ?? 1);
+      newQuantity = event.count ?? (product.quantity ?? 0) + 1;
       updatedProducts[productIndex] = product.copyWith(quantity: newQuantity);
     } else {
       updatedProducts.add(
@@ -364,5 +402,59 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
   void _onSelectPharmacy(
       SelectPharmacy event, Emitter<CartScreenState> emit) async {
     emit(state.copyWith(selectedPharmacy: event.pharmacy));
+  }
+
+  Future<void> _onCreateOrder(
+      CreateOrderEvent event, Emitter<CartScreenState> emit) async {
+    OrderParam params;
+    if (state.cartType == TypeReceiving.delivery) {
+      params = OrderParam(
+          ids: state.selectedProductIds,
+          promocodes: state.selectedPromoCodes.map((e) => e.promocode).toList(),
+          pharmacyId: 0,
+          delivery: 'delivery',
+          payment: state.paymentType == PaymentType.online ? 'bepaid' : 'cash',
+          lastName: fNameController.text,
+          firstName: sNameController.text,
+          email: emailController.text,
+          phone: Utils.formatPhoneNumber(phoneController.text),
+          city: cityController.text,
+          address: streetHomeController.text,
+          entrance: entranceController.text,
+          apartment: flatController.text,
+          floor: floorController.text,
+          intercom: doorPhoneController.text,
+          comment: commentController.text);
+    } else {
+      params = OrderParam(
+          ids: state.selectedProductIds,
+          promocodes: state.selectedPromoCodes.map((e) => e.promocode).toList(),
+          pharmacyId: state.selectedPharmacy?.pharmacyId ?? 0,
+          delivery: 'self',
+          payment: state.paymentType == PaymentType.online ? 'bepaid' : 'cash',
+          lastName: fNameController.text,
+          firstName: sNameController.text,
+          email: emailController.text,
+          phone: Utils.formatPhoneNumber(phoneController.text),
+          city: cityController.text,
+          address: streetHomeController.text,
+          comment: commentController.text);
+    }
+    final failureOrCart = await createOrderUC(params);
+
+    failureOrCart.fold(
+      (_) => emit(state.copyWith(
+          isLoading: false, errorText: 'Ошибка создания заказа')),
+      (link) async {
+        if (link != null) {
+          if (await canLaunchUrl(Uri.parse(link))) {
+            await launchUrl(Uri.parse(link),
+                mode: LaunchMode.externalApplication);
+          } else {
+            throw "Не удалось открыть $link";
+          }
+        }
+      },
+    );
   }
 }

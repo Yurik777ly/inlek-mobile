@@ -8,6 +8,14 @@ class PharmacyEntity extends Equatable {
   final String? coordinates;
   final String? image;
   final String? schedule;
+  final double? price;
+  final double? priceOld;
+  final int? productId;
+  final int? stockCount;
+  final String? productName;
+  final String? pharmacyName;
+  final String? expirationDate;
+  final String? pharmacyDelivery;
 
   const PharmacyEntity({
     this.pharmacyId,
@@ -17,6 +25,14 @@ class PharmacyEntity extends Equatable {
     this.coordinates,
     this.image,
     this.schedule,
+    this.price,
+    this.priceOld,
+    this.productId,
+    this.stockCount,
+    this.productName,
+    this.pharmacyName,
+    this.expirationDate,
+    this.pharmacyDelivery,
   });
 
   PharmacyEntity copyWith({
@@ -27,6 +43,14 @@ class PharmacyEntity extends Equatable {
     String? coordinates,
     String? image,
     String? schedule,
+    double? price,
+    double? priceOld,
+    int? productId,
+    int? stockCount,
+    String? productName,
+    String? pharmacyName,
+    String? expirationDate,
+    String? pharmacyDelivery,
   }) =>
       PharmacyEntity(
         pharmacyId: pharmacyId ?? this.pharmacyId,
@@ -36,6 +60,14 @@ class PharmacyEntity extends Equatable {
         coordinates: coordinates ?? this.coordinates,
         image: image ?? this.image,
         schedule: schedule ?? this.schedule,
+        price: price ?? this.price,
+        priceOld: priceOld ?? this.priceOld,
+        productId: productId ?? this.productId,
+        stockCount: stockCount ?? this.stockCount,
+        productName: productName ?? this.productName,
+        pharmacyName: pharmacyName ?? this.pharmacyName,
+        expirationDate: expirationDate ?? this.expirationDate,
+        pharmacyDelivery: pharmacyDelivery ?? this.pharmacyDelivery,
       );
 
   @override
@@ -47,5 +79,13 @@ class PharmacyEntity extends Equatable {
         coordinates,
         image,
         schedule,
+        price,
+        priceOld,
+        productId,
+        stockCount,
+        productName,
+        pharmacyName,
+        expirationDate,
+        pharmacyDelivery,
       ];
 }

@@ -33,13 +33,20 @@ class _HomeScreenState extends State<HomeScreen> {
             addCartUC: sl(),
             deleteCartUC: sl(),
             clearCartUC: sl(),
-          )..add(LoadCartDataEvent()),
+            createOrderUC: sl(),
+            getPharmaciesUC: sl(),
+            sharedPreferences: sl(),
+          )
+            ..add(LoadCartDataEvent())
+            ..add(LoadPharmaciesEvent()),
         ),
         BlocProvider(
           create: (context) => HomeScreenBloc(context: context),
         ),
         BlocProvider(
-          create: (context) => SearchScreenBloc()..add(LoadDataEvent()),
+          create: (context) => SearchScreenBloc(
+              searchProductsV2UC: sl(), sharedPreferences: sl())
+            ..add(LoadDataEvent()),
         ),
         BlocProvider(
           create: (context) => RouteObserverBloc(),
@@ -86,49 +93,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Column(
                               children: [
-                                //BlocBuilder<RouteObserverBloc,
-                                //    RouteObserverState>(
-                                //  builder: (context, state) {
-                                //    if (state is RouteUpdated) {
-                                //      return Visibility(
-                                //        visible: [
-                                //              Routes.catalogScreen,
-                                //              Routes.categoryScreen,
-                                //              Routes.productsScreen,
-                                //            ].contains(state.routeName) ||
-                                //            ([0, 1].contains(
-                                //                    bloc.selectedPageIndex) &&
-                                //                state.routeName == null),
-                                //        child: SearchProductAppBar(
-                                //            onTapLocationChip:
-                                //                bloc.selectedPageIndex == 0 &&
-                                //                        state.routeName ==
-                                //                            null
-                                //                    ? () => Navigator.of(
-                                //                                context,
-                                //                                rootNavigator:
-                                //                                    true)
-                                //                            .push(
-                                //                          Routes.createRoute(
-                                //                            const SelectRegionScreen(
-                                //                                selectRegionScreenType:
-                                //                                    SelectRegionScreenType
-                                //                                        .main),
-                                //                          ),
-                                //                        )
-                                //                    : null,
-                                //            onTapBack: state.routeName != null
-                                //                ? () => bloc
-                                //                    .navigatorKeys[bloc
-                                //                        .selectedPageIndex]
-                                //                    .currentState!
-                                //                    .pop()
-                                //                : null),
-                                //      );
-                                //    }
-                                //    return Container();
-                                //  },
-                                //),
                                 Expanded(
                                   child: PageStorage(
                                     bucket: bucket,

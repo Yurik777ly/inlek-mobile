@@ -7,10 +7,10 @@ abstract class PharmaciesScreenEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class LoadDataEvent extends PharmaciesScreenEvent {
-  final List<ProductPharmacyEntity> pharmacies;
+class LoadPharmaciesDataEvent extends PharmaciesScreenEvent {
+  final List<PharmacyEntity> pharmacies;
 
-  const LoadDataEvent(this.pharmacies);
+  const LoadPharmaciesDataEvent(this.pharmacies);
 }
 
 class ChangeSelectorIndexEvent extends PharmaciesScreenEvent {
@@ -18,9 +18,9 @@ class ChangeSelectorIndexEvent extends PharmaciesScreenEvent {
   const ChangeSelectorIndexEvent(this.selectorIndex);
 }
 
-class ChangeQueryEvent extends PharmaciesScreenEvent {
+class ChangePharmacyQueryEvent extends PharmaciesScreenEvent {
   final String query;
-  const ChangeQueryEvent(this.query);
+  const ChangePharmacyQueryEvent(this.query);
 }
 
 class ChangePharmacySortTypeEvent extends PharmaciesScreenEvent {
