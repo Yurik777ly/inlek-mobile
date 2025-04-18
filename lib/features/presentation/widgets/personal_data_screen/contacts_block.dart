@@ -8,7 +8,6 @@ import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/core/formatters/custom_phone_input_formatter.dart';
 import 'package:inlek/features/presentation/bloc/code_screen/code_screen_bloc.dart';
-import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/personal_data_screen/personal_data_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/app_text_field_widget.dart';
 import 'package:inlek/locator_service.dart';
@@ -46,7 +45,7 @@ class _ContactsBlockState extends State<ContactsBlock> {
             children: [
               BlocProvider(
                 create: (context) => CodeScreenBloc(
-                    context: context.read<HomeScreenBloc>().context,
+                    context: UiConstants.homeContext!,
                     requestCodeUC: sl(),
                     phone: personalDataBloc.phoneController.text,
                     code: personalDataBloc.state.confirmPhoneCode),
@@ -83,9 +82,7 @@ class _ContactsBlockState extends State<ContactsBlock> {
                           },
                         );
                         BottomSheetManager.showConfirmationCodeSheet(
-                            context.read<HomeScreenBloc>().context,
-                            context,
-                            personalDataBloc);
+                            context, personalDataBloc);
                       },
                       onChangedField: (_) => setState(() {}),
                     );

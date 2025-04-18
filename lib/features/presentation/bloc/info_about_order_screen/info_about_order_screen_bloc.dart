@@ -1,10 +1,6 @@
-import 'dart:convert';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/services.dart';
-import 'package:inlek/constants/paths.dart';
-import 'package:inlek/core/models/courier_zone_model.dart';
+import 'package:inlek/core/courier_zone_manager.dart';
 import 'package:inlek/core/models/custom_marker_model.dart';
 import 'package:inlek/features/data/models/pharmacy_model.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
@@ -17,15 +13,17 @@ part 'info_about_order_screen_state.dart';
 class InfoAboutOrderScreenBloc
     extends Bloc<InfoAboutOrderScreenEvent, InfoAboutOrderScreenState> {
   final GetPharmaciesUC getPharmaciesUC;
+  final CourierZoneManager courierZoneManager;
 
-  InfoAboutOrderScreenBloc({required this.getPharmaciesUC})
+  InfoAboutOrderScreenBloc(
+      {required this.getPharmaciesUC, required this.courierZoneManager})
       : super(InfoAboutOrderScreenState()) {
     on<LoadDataEvent>(_onLoadData);
   }
 
   void _onLoadData(
       LoadDataEvent event, Emitter<InfoAboutOrderScreenState> emit) async {
-    List<CustomMapObject> mapObjects = await _loadPolygonObjects();
+    List<CustomMapObject> mapObjects = List.of(courierZoneManager.mapObjects);
 
     final failureOrLoads = await getPharmaciesUC('');
 
@@ -58,51 +56,5 @@ class InfoAboutOrderScreenBloc
     emit(
       InfoAboutOrderScreenState(isLoading: false, mapObjects: mapObjects),
     );
-  }
-
-  Future<List<CustomMapObject>> _loadPolygonObjects() async {
-    List<CustomMapObject> mapObjects = [];
-
-    String jsonString = await rootBundle.loadString(Paths.courierZonesJsonPath);
-
-    Map<String, dynamic> jsonData = jsonDecode(jsonString);
-
-    CourierZoneModel courierZoneData = CourierZoneModel.fromJson(jsonData);
-
-    for (Feature feature in courierZoneData.features) {
-      for (List<List<double>> coordinates in feature.geometry.coordinates) {
-        mapObjects.add(
-          CustomMapObject(
-            mapObject: PolygonMapObject(
-              fillColor: Color(
-                int.parse(
-                  "0xFF${feature.properties.fill.replaceAll('#', '')}",
-                ),
-              ).withOpacity(feature.properties.fillOpacity),
-              strokeColor: Color(
-                int.parse(
-                  "0xFF${feature.properties.stroke.replaceAll('#', '')}",
-                ),
-              ).withOpacity(feature.properties.strokeOpacity),
-              strokeWidth: feature.properties.strokeWidth,
-              mapId: MapObjectId(feature.id.toString()),
-              polygon: Polygon(
-                outerRing: LinearRing(
-                  points: List.generate(
-                    coordinates.length,
-                    (index) => Point(
-                        latitude: coordinates[index].last,
-                        longitude: coordinates[index].first),
-                  ),
-                ),
-                innerRings: [],
-              ),
-            ),
-          ),
-        );
-      }
-    }
-
-    return mapObjects;
   }
 }

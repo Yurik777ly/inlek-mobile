@@ -48,7 +48,23 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
 
       if (response.statusCode == 200) {
         final person = json.decode(response.body)['data'];
-        return ProfileModel.fromJson(person);
+        ProfileModel profile = ProfileModel.fromJson(person);
+
+        sharedPreferences.setString(
+            SharedPreferencesKeys.userId, '${profile.userId}');
+        if (profile.firstName != null || profile.lastName != null) {
+          sharedPreferences.setString(SharedPreferencesKeys.fullName,
+              '${profile.firstName} ${profile.lastName}');
+        }
+        if (profile.emailAddress != null) {
+          sharedPreferences.setString(
+              SharedPreferencesKeys.email, '${profile.emailAddress}');
+        }
+        if (profile.phoneNumber != null) {
+          sharedPreferences.setString(
+              SharedPreferencesKeys.phone, '${profile.phoneNumber}');
+        }
+        return profile;
       } else {
         log('Error: ServerException occurred',
             name: 'ProfileRemoteDataSourceImpl.getMe', error: response.body);

@@ -1,9 +1,11 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
+import 'package:inlek/core/courier_zone_manager.dart';
 import 'package:inlek/core/geocoder_manager.dart';
 import 'package:inlek/core/platform/error_handler.dart';
 import 'package:inlek/core/platform/network_info.dart';
+import 'package:inlek/core/uni_links_manager.dart';
 import 'package:inlek/features/data/datasources/auth_remote_data_source_impl.dart';
 import 'package:inlek/features/data/datasources/cart_remote_data_source_impl.dart';
 import 'package:inlek/features/data/datasources/category_remote_data_source_impl.dart';
@@ -35,6 +37,7 @@ import 'package:inlek/features/domain/usecases/cart/add_cart.dart';
 import 'package:inlek/features/domain/usecases/cart/clear_cart.dart';
 import 'package:inlek/features/domain/usecases/cart/delete_cart.dart';
 import 'package:inlek/features/domain/usecases/cart/get_cart.dart';
+import 'package:inlek/features/domain/usecases/cart/get_cart_pharmacies.dart';
 import 'package:inlek/features/domain/usecases/category/get_brands.dart';
 import 'package:inlek/features/domain/usecases/category/get_categories.dart';
 import 'package:inlek/features/domain/usecases/category/get_countries.dart';
@@ -75,6 +78,7 @@ import 'package:inlek/features/presentation/bloc/order_screen/order_screen_bloc.
 import 'package:inlek/features/presentation/bloc/orders_screen/orders_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/passwrod_screen/password_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/personal_data_screen/personal_data_screen_bloc.dart';
+import 'package:inlek/features/presentation/bloc/pharmacies_screen/pharmacies_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/product_screen/product_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/products_screen/products_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/profile_screen/profile_screen_bloc.dart';
@@ -197,8 +201,8 @@ Future<void> init() async {
   );
   sl.registerFactory(
     () => InfoAboutOrderScreenBloc(
-      getPharmaciesUC: sl<GetPharmaciesUC>(),
-    ),
+        getPharmaciesUC: sl<GetPharmaciesUC>(),
+        courierZoneManager: sl<CourierZoneManager>()),
   );
   sl.registerFactory(
     () => SalesScreenBloc(
@@ -212,8 +216,8 @@ Future<void> init() async {
       deleteCartUC: sl<DeleteCartUC>(),
       clearCartUC: sl<ClearCartUC>(),
       createOrderUC: sl<CreateOrderUC>(),
-      getPharmaciesUC: sl<GetPharmaciesUC>(),
       sharedPreferences: sl<SharedPreferences>(),
+      courierZoneManager: sl<CourierZoneManager>(),
     ),
   );
   sl.registerFactory(
@@ -226,6 +230,11 @@ Future<void> init() async {
     () => SearchScreenBloc(
       searchProductsV2UC: sl<SearchProductsV2UC>(),
       sharedPreferences: sl<SharedPreferences>(),
+    ),
+  );
+  sl.registerFactory(
+    () => PharmaciesScreenBloc(
+      getCartPharmaciesUC: sl<GetCartPharmaciesUC>(),
     ),
   );
 
@@ -278,6 +287,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => AddCartUC(sl()));
   sl.registerLazySingleton(() => DeleteCartUC(sl()));
   sl.registerLazySingleton(() => ClearCartUC(sl()));
+  sl.registerLazySingleton(() => GetCartPharmaciesUC(sl()));
 
   //// Repository
   sl.registerLazySingleton<AuthRepository>(
@@ -391,4 +401,16 @@ Future<void> init() async {
   sl.registerLazySingleton(
       () => YandexGeocoder(apiKey: dotenv.env['YANDEX_GEOCODER_API_KEY']!));
   sl.registerLazySingleton(() => GeocoderManager(sl<YandexGeocoder>()));
+  sl.registerSingletonAsync<UniLinksManager>(() async {
+    final manager = UniLinksManager();
+    await manager.init();
+    return manager;
+  });
+  sl.registerSingletonAsync<CourierZoneManager>(() async {
+    final manager = CourierZoneManager();
+    await manager.init();
+    return manager;
+  });
+
+  await sl.allReady();
 }

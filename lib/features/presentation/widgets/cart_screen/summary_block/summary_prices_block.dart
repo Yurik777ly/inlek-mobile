@@ -9,11 +9,14 @@ import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.da
 import 'package:inlek/features/presentation/widgets/cart_screen/summary_block/summary_price_item.dart';
 
 class SummaryPricesBlock extends StatelessWidget {
-  const SummaryPricesBlock({super.key});
+  const SummaryPricesBlock({super.key, this.screenContext});
+
+  final BuildContext? screenContext;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CartScreenBloc, CartScreenState>(
+      bloc: screenContext?.read<CartScreenBloc>(),
       builder: (context, state) {
         final selectedProducts = state.cartData?.products
                 ?.where((product) =>
@@ -27,10 +30,6 @@ class SummaryPricesBlock extends StatelessWidget {
           (sum, product) =>
               sum + (product.price ?? 0) * (product.quantity ?? 1),
         );
-
-        // Считаем цену доставки
-        final deliveryPrice =
-            state.cartType == TypeReceiving.delivery ? 2.1 : 0.0;
 
         // Считаем скидку от старой цены
         final discount = selectedProducts.fold<double>(
@@ -66,7 +65,7 @@ class SummaryPricesBlock extends StatelessWidget {
 
         // Итоговая сумма
         final totalPrice =
-            productsTotal + deliveryPrice - discount - promoDiscount;
+            productsTotal + state.deliveryPayment - discount - promoDiscount;
 
         return Column(
           children: [
@@ -77,8 +76,8 @@ class SummaryPricesBlock extends StatelessWidget {
             if (state.cartType == TypeReceiving.delivery)
               Padding(
                 padding: getMarginOrPadding(top: 8),
-                child:
-                    SummaryPriceItem(title: 'Доставка', price: deliveryPrice),
+                child: SummaryPriceItem(
+                    title: 'Доставка', price: state.deliveryPayment.toDouble()),
               ),
             SizedBox(height: 8.h),
             SummaryPriceItem(

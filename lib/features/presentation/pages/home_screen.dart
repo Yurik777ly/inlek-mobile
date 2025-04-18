@@ -5,10 +5,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/app_route_observer.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/core/routes.dart';
+import 'package:inlek/core/uni_links_manager.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/route_observer/route_observer_bloc.dart';
 import 'package:inlek/features/presentation/bloc/search_screen/search_screen_bloc.dart';
+import 'package:inlek/features/presentation/pages/catalog/products/product_screen.dart';
 import 'package:inlek/features/presentation/widgets/bottom_navigation_bar_tile.dart';
 import 'package:inlek/features/presentation/widgets/search_screen/search_screen.dart';
 import 'package:inlek/locator_service.dart';
@@ -24,25 +27,52 @@ class _HomeScreenState extends State<HomeScreen> {
   final PageStorageBucket bucket = PageStorageBucket();
 
   @override
+  void initState() {
+    super.initState();
+    UiConstants.homeContext = context;
+
+    sl<UniLinksManager>().uriStream.listen((uri) {
+      if (uri.host == 'product') {
+        final id = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
+        if (id != null) {
+          _redirectToProduct(id);
+        }
+      }
+    });
+  }
+
+  void _redirectToProduct(String id) {
+    // Переход в нужный таб (например, Home)
+    final bloc = context.read<HomeScreenBloc>();
+    const homeTabIndex = 0;
+
+    bloc.onChangePage(homeTabIndex);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final navigator = bloc.navigatorKeys[homeTabIndex].currentState;
+      navigator?.push(
+        Routes.createRoute(
+          ProductScreen(),
+          settings: RouteSettings(name: Routes.productsScreen, arguments: id),
+        ),
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => CartScreenBloc(
-            getCartUC: sl(),
-            addCartUC: sl(),
-            deleteCartUC: sl(),
-            clearCartUC: sl(),
-            createOrderUC: sl(),
-            getPharmaciesUC: sl(),
-            sharedPreferences: sl(),
-          )
-            ..add(LoadCartDataEvent())
-            ..add(LoadPharmaciesEvent()),
-        ),
-        BlocProvider(
-          create: (context) => HomeScreenBloc(context: context),
-        ),
+            create: (context) => CartScreenBloc(
+                  getCartUC: sl(),
+                  addCartUC: sl(),
+                  deleteCartUC: sl(),
+                  clearCartUC: sl(),
+                  createOrderUC: sl(),
+                  sharedPreferences: sl(),
+                  courierZoneManager: sl(),
+                )..add(LoadCartDataEvent(isFirstLoading: true))),
         BlocProvider(
           create: (context) => SearchScreenBloc(
               searchProductsV2UC: sl(), sharedPreferences: sl())

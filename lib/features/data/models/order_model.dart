@@ -1,4 +1,5 @@
 import 'package:inlek/constants/extensions.dart';
+import 'package:inlek/features/data/models/pharmacy_model.dart';
 import 'package:inlek/features/data/models/product_model.dart';
 import 'package:inlek/features/domain/entities/order_entity.dart';
 
@@ -39,6 +40,8 @@ class OrderModel extends OrderEntity {
     super.products,
     super.paymentType,
     super.typeReceipt,
+    super.pharmacy,
+    super.link,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -98,9 +101,14 @@ class OrderModel extends OrderEntity {
               .map((e) => ProductModel.fromJson(e))
               .toList()
           : null,
-      paymentType: PaymentTypeExtension.fromTitle(json['payment_method_title']),
-      typeReceipt:
-          TypeReceivingExtension.fromTitle(json['delivery_method_title']),
+      paymentType: PaymentTypeExtension.fromTitle(
+          json['payment_method_title'] ?? json['payment_method']),
+      typeReceipt: TypeReceivingExtension.fromTitle(
+          json['delivery_method_title'] ?? json['delivery_method']),
+      pharmacy: json['pharmacy'] != null
+          ? PharmacyModel.fromJson(json['pharmacy'][0])
+          : null,
+      link: json['link'],
     );
   }
 }

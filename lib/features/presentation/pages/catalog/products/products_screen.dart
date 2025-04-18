@@ -94,7 +94,8 @@ class ProductsScreen extends StatelessWidget {
                                               SortWidget(
                                                 onTap: () => BottomSheetManager
                                                     .showProductSortSheet(
-                                                        homeBloc.context,
+                                                        UiConstants
+                                                            .homeContext!,
                                                         context),
                                               ),
                                               SizedBox(height: 16.h),

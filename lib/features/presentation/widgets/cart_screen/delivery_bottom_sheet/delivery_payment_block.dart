@@ -64,11 +64,12 @@ class _DeliveryPaymentBlockState extends State<DeliveryPaymentBlock> {
               child: DeliveryPaymentBlockItem(
                   imagePath: Paths.cardIconPath,
                   title: 'Онлайн',
-                  isChecked: paymentType == PaymentType.online,
+                  isChecked: [PaymentType.bepaid, PaymentType.oplati]
+                      .contains(paymentType),
                   onTap: () {
-                    setState(() => paymentType = PaymentType.online);
+                    setState(() => paymentType = PaymentType.bepaid);
                     cartBloc.add(
-                      ChangePaymentTypeEvent(PaymentType.online),
+                      ChangePaymentTypeEvent(PaymentType.bepaid),
                     );
                   },
                   changedOnlineMethodTap: widget.changedOnlineMethodTap),

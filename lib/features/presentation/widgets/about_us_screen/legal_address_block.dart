@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/constants/utils.dart';
 import 'package:inlek/features/presentation/widgets/about_us_screen/about_us_block_template.dart';
 import 'package:inlek/features/presentation/widgets/about_us_screen/more_detail_plate.dart';
 import 'package:inlek/features/presentation/widgets/orders_screen/order_info_item.dart';
@@ -59,10 +60,13 @@ class LegalAddressBlock extends StatelessWidget {
           ),
         ),
         MoreDetailPlate(
-            onTap: () {}, imagePath: Paths.licenseIconPath, title: 'Лицензии'),
+            onTap: () => Utils.openDocFile(Paths.licenses, name: 'Лицензии'),
+            imagePath: Paths.licenseIconPath,
+            title: 'Лицензии'),
         SizedBox(height: 8.h),
         MoreDetailPlate(
-            onTap: () {},
+            onTap: () => Utils.openDocFile(Paths.publicOfferAgreement,
+                name: 'Публичная_оферта'),
             imagePath: Paths.offerIconPath,
             title: 'Публичная оферта'),
       ],

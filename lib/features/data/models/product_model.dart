@@ -1,3 +1,4 @@
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 
 class ProductModel extends ProductEntity {
@@ -35,12 +36,30 @@ class ProductModel extends ProductEntity {
     super.similarProducts,
     super.quantity,
     super.promocodesJson,
+    super.requiredQuantity,
+    super.availability,
   });
 
   @override
   factory ProductModel.fromJson(Map<String, dynamic> data) {
     Map<String, dynamic> json = data["product_info"] ?? data;
     json = json["product_charachters"] ?? json;
+    var price =
+        json['price'] ?? json["product_price_from"] ?? json["product_price_"];
+    if (price != null) {
+      price = double.tryParse(price.toString());
+    }
+    var priceOld = json['price_old'] ??
+        json["product_price_from_old"] ??
+        json["product_price_old"];
+    if (priceOld != null) {
+      priceOld = double.tryParse(priceOld.toString());
+    }
+    var discount =
+        json["product_price_from_percent"] ?? json["product_price_percent"];
+    if (discount != null) {
+      discount = int.tryParse(discount.toString());
+    }
     return ProductModel(
       productId: json["product_id"] ?? json["id"],
       mnn: json["mnn"],
@@ -54,16 +73,10 @@ class ProductModel extends ProductEntity {
       image: json["image"],
       recipe: json["recipe"],
       country: json["country"],
-      delivery: json["delivery"],
-      price: json['price'] is double
-          ? json['price']
-          : double.tryParse(json["product_price_from"] ?? ''),
-      oldPrice: double.tryParse(
-        (json["product_price_from_old"] ?? ''),
-      ),
-      discount: int.tryParse(
-        (json["product_price_from_percent"] ?? ''),
-      ),
+      delivery: TypeReceivingExtension.fromTitle(json["delivery"]),
+      price: price,
+      oldPrice: priceOld,
+      discount: discount,
       parent: json["parent"],
       termin: json["termin"],
       temperature: json["temperature"],
@@ -74,7 +87,10 @@ class ProductModel extends ProductEntity {
       productTrademark: json["product_trademark"],
       productDateRegister: json["product_date_register"],
       productTimeRegister: json["product_time_register"],
-      count: json["count"],
+      count: int.tryParse(
+          (json["count"] ?? json["stock_count"])?.toString() ?? "0"),
+      requiredQuantity: json['required_quantity'],
+      availability: json["availability"],
       pagetitle: json["pagetitle"],
       brandProducts: data['brand_products'] != null
           ? (data['brand_products'] as List)
@@ -134,6 +150,8 @@ class ProductModel extends ProductEntity {
             "product_date_register": productDateRegister,
             "product_time_register": productTimeRegister,
             'count': count,
+            'required_quantity': requiredQuantity,
+            'availability': availability,
             'pagetitle': pagetitle,
           },
           'brand_products': brandProducts,

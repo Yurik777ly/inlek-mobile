@@ -30,7 +30,7 @@ class ProfileScreen extends StatelessWidget {
           child: BlocConsumer<ProfileScreenBloc, ProfileScreenState>(
             listener: (context, state) => switch (state) {
               NavigateLoginState _ =>
-                Navigator.of(homeBloc.context).pushAndRemoveUntil(
+                Navigator.of(UiConstants.homeContext!).pushAndRemoveUntil(
                     Routes.createRoute(
                       const LoginScreen(),
                       settings: RouteSettings(

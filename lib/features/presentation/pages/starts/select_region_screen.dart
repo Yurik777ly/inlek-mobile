@@ -65,7 +65,7 @@ class SelectRegionScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 16.h),
                       CitySearchField(
-                          hint: 'Найти другой город',
+                          hintText: 'Найти другой город',
                           controller: bloc.regionController,
                           suggestions: state.popularCities),
                       if (state.showError)

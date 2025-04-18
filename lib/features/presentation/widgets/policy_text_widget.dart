@@ -1,5 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/constants/utils.dart';
 
 class PolicyTextWidget extends StatelessWidget {
   const PolicyTextWidget({super.key});
@@ -20,6 +23,10 @@ class PolicyTextWidget extends StatelessWidget {
             text: 'Политики обработки персональных данных',
             style:
                 UiConstants.textStyle3.copyWith(color: UiConstants.purpleColor),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () => Utils.openDocFile(
+                  Paths.personalDataProcessingPolicy,
+                  name: 'Пполитика_обработки_персональных_данных'),
           ),
         ],
       ),

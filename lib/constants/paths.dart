@@ -2,6 +2,7 @@ class Paths {
   static const String _rootPath = 'assets/';
   static const String _imagesPath = '${_rootPath}images/';
   static const String _jsonPath = '${_rootPath}json/';
+  static const String _pdfPath = '${_rootPath}pdf/';
 
   // images
   static const String logoIconPath = '${_imagesPath}logo.svg';
@@ -93,4 +94,11 @@ class Paths {
   static const String searchProductJsonPath = '${_jsonPath}search.json';
   static const String recommendedProductJsonPath = '${_jsonPath}blank.json';
   static const String courierZonesJsonPath = '${_jsonPath}apteka.json';
+
+  //PDF
+  static const String publicOfferAgreement =
+      '${_pdfPath}public_offer_agreement.pdf';
+  static const String licenses = '${_pdfPath}licenses.pdf';
+  static const String personalDataProcessingPolicy =
+      '${_pdfPath}personal_data_processing_policy.pdf';
 }

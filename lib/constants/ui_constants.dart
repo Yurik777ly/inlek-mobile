@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class UiConstants {
+  static BuildContext? homeContext;
+
   static const Color whiteColor = Color(0xFFFFFFFF);
   static const Color white2Color = Color(0xFFF4F6F7);
   static const Color white3Color = Color(0xFFF5F5F5);

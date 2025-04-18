@@ -16,9 +16,14 @@ class CitySearchField extends StatefulWidget {
     this.suggestions,
     this.suggestionFetcher,
     this.suggestionObjects,
-    this.hint,
+    this.hintText,
+    this.title,
     this.onSuggestionTap,
     this.onChangeField,
+    this.hasSearchWidget = true,
+    this.widthOverlay,
+    this.validator,
+    this.offset = const Offset(0, 55),
   }) : assert(
             suggestions != null ||
                 suggestionFetcher != null && suggestionObjects != null,
@@ -28,9 +33,14 @@ class CitySearchField extends StatefulWidget {
   final List<String>? suggestions;
   final SuggestionFetcher? suggestionFetcher;
   final List<dynamic>? suggestionObjects;
-  final String? hint;
+  final String? hintText;
+  final String? title;
   final Function(dynamic)? onSuggestionTap;
   final Function(String)? onChangeField;
+  final bool hasSearchWidget;
+  final double? widthOverlay;
+  final Offset offset;
+  final String? Function(String?)? validator;
 
   @override
   State<CitySearchField> createState() => _CitySearchFieldState();
@@ -47,10 +57,10 @@ class _CitySearchFieldState extends State<CitySearchField> {
 
     _overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
-        width: MediaQuery.of(context).size.width - 40.w,
+        width: widget.widthOverlay ?? MediaQuery.of(context).size.width - 40.w,
         child: CompositedTransformFollower(
           link: _layerLink,
-          offset: const Offset(0, 55),
+          offset: widget.offset,
           child: Material(
             color: UiConstants.whiteColor,
             elevation: 1,
@@ -149,21 +159,27 @@ class _CitySearchFieldState extends State<CitySearchField> {
     return CompositedTransformTarget(
       link: _layerLink,
       child: AppTextFieldWidget(
-        hintText: widget.hint,
+        title: widget.title,
+        hintText: widget.hintText,
         controller: widget.controller,
-        prefixWidget: SvgPicture.asset(Paths.searchIconPath),
-        suffixWidget: widget.controller.text.isNotEmpty
-            ? Skeleton.ignore(
-                child: GestureDetector(
-                  onTap: () {
-                    widget.controller.clear();
-                    _removeOverlay();
-                    widget.onChangeField?.call('');
-                  },
-                  child: SvgPicture.asset(Paths.closeIconPath),
-                ),
-              )
+        prefixWidget: widget.hasSearchWidget
+            ? SvgPicture.asset(Paths.searchIconPath)
             : null,
+        suffixWidget: widget.hasSearchWidget
+            ? widget.controller.text.isNotEmpty
+                ? Skeleton.ignore(
+                    child: GestureDetector(
+                      onTap: () {
+                        widget.controller.clear();
+                        _removeOverlay();
+                        widget.onChangeField?.call('');
+                      },
+                      child: SvgPicture.asset(Paths.closeIconPath),
+                    ),
+                  )
+                : null
+            : null,
+        validator: widget.validator,
         onChangedField: (value) {
           _updateSuggestions(value);
           widget.onChangeField?.call(value);

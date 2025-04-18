@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:inlek/features/domain/entities/product_entity.dart';
 
 class PharmacyEntity extends Equatable {
   final int? pharmacyId;
@@ -12,10 +13,12 @@ class PharmacyEntity extends Equatable {
   final double? priceOld;
   final int? productId;
   final int? stockCount;
+  final String? availability;
   final String? productName;
   final String? pharmacyName;
   final String? expirationDate;
   final String? pharmacyDelivery;
+  final List<ProductEntity> products;
 
   const PharmacyEntity({
     this.pharmacyId,
@@ -29,10 +32,12 @@ class PharmacyEntity extends Equatable {
     this.priceOld,
     this.productId,
     this.stockCount,
+    this.availability,
     this.productName,
     this.pharmacyName,
     this.expirationDate,
     this.pharmacyDelivery,
+    this.products = const [],
   });
 
   PharmacyEntity copyWith({
@@ -47,10 +52,12 @@ class PharmacyEntity extends Equatable {
     double? priceOld,
     int? productId,
     int? stockCount,
+    String? availability,
     String? productName,
     String? pharmacyName,
     String? expirationDate,
     String? pharmacyDelivery,
+    List<ProductEntity>? products,
   }) =>
       PharmacyEntity(
         pharmacyId: pharmacyId ?? this.pharmacyId,
@@ -64,10 +71,12 @@ class PharmacyEntity extends Equatable {
         priceOld: priceOld ?? this.priceOld,
         productId: productId ?? this.productId,
         stockCount: stockCount ?? this.stockCount,
+        availability: availability ?? this.availability,
         productName: productName ?? this.productName,
         pharmacyName: pharmacyName ?? this.pharmacyName,
         expirationDate: expirationDate ?? this.expirationDate,
         pharmacyDelivery: pharmacyDelivery ?? this.pharmacyDelivery,
+        products: products ?? this.products,
       );
 
   @override
@@ -83,9 +92,11 @@ class PharmacyEntity extends Equatable {
         priceOld,
         productId,
         stockCount,
+        availability,
         productName,
         pharmacyName,
         expirationDate,
         pharmacyDelivery,
+        products,
       ];
 }

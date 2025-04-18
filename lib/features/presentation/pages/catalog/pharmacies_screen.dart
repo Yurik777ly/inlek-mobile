@@ -8,12 +8,14 @@ import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/pharmacies_screen/pharmacies_screen_bloc.dart';
+import 'package:inlek/features/presentation/bloc/pharmacy_map/pharmacy_map_bloc.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/selector_widget.dart/cubit/selector_cubit.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/selector_widget.dart/selector/selector.dart';
 import 'package:inlek/features/presentation/widgets/custom_app_bar.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/internet_no_internet_connection_widget.dart';
 import 'package:inlek/features/presentation/widgets/map/pharmacy_map_widget.dart';
 import 'package:inlek/features/presentation/widgets/product_screen/product_pharmacy_widget.dart';
+import 'package:inlek/locator_service.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class PharmaciesScreen extends StatelessWidget {
@@ -30,12 +32,27 @@ class PharmaciesScreen extends StatelessWidget {
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
       builder: (context, homeState) {
         HomeScreenBloc homeBloc = context.read<HomeScreenBloc>();
-        return BlocProvider(
-          create: (context) => PharmaciesScreenBloc()
-            ..add(
-              LoadPharmaciesDataEvent(pharmacies),
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) =>
+                  PharmaciesScreenBloc(getCartPharmaciesUC: sl())
+                    ..add(
+                      LoadPharmaciesDataEvent(pharmacies: pharmacies),
+                    ),
             ),
-          child: BlocBuilder<PharmaciesScreenBloc, PharmaciesScreenState>(
+            BlocProvider(
+              create: (context) =>
+                  PharmacyMapBloc(mapScreenType: mapScreenType),
+            ),
+          ],
+          child: BlocConsumer<PharmaciesScreenBloc, PharmaciesScreenState>(
+            listener: (context, state) async {
+              await Future.delayed(Duration(milliseconds: 300));
+              context.read<PharmacyMapBloc>().add(
+                    InitPharmacyMapEvent(points: state.mapObjects),
+                  );
+            },
             builder: (context, pharmaciesState) {
               PharmaciesScreenBloc pharmaciesBloc =
                   context.read<PharmaciesScreenBloc>();
@@ -68,7 +85,7 @@ class PharmaciesScreen extends StatelessWidget {
                                 isShowFilterButton: true,
                                 onTapFilterButton: () =>
                                     BottomSheetManager.showPharmacySortSheet(
-                                        homeBloc.context),
+                                        UiConstants.homeContext!, context),
                                 onChangedField: (value) => pharmaciesBloc.add(
                                   ChangePharmacyQueryEvent(value),
                                 ),
@@ -156,11 +173,7 @@ class PharmaciesScreen extends StatelessWidget {
                                                                         .length)
                                                           ],
                                                         )
-                                                  : PharmacyMapWidget(
-                                                      points: pharmaciesState
-                                                          .mapObjects,
-                                                      mapScreenType:
-                                                          mapScreenType),
+                                                  : PharmacyMapWidget(),
                                             )
                                           ],
                                         ),

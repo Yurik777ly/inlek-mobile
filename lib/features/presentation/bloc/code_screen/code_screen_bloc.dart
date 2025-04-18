@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -158,7 +159,12 @@ class CodeScreenBloc extends Bloc<CodeScreenEvent, CodeScreenState> {
         ServerFailure _ => 'Неизвестная ошибка',
         _ => 'Неизвестная ошибка',
       },
-      (code) => code.toString(),
+      (code) {
+        ScaffoldMessenger.of(screenContext).showSnackBar(
+          SnackBar(content: Text(code.toString())),
+        );
+        return code.toString();
+      },
     );
   }
 

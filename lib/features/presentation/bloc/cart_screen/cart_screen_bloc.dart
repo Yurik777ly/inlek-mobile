@@ -5,7 +5,10 @@ import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/utils.dart';
+import 'package:inlek/core/bottom_sheet_manager.dart';
+import 'package:inlek/core/courier_zone_manager.dart';
 import 'package:inlek/core/params/cart_params.dart';
 import 'package:inlek/core/params/order_param.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
@@ -16,10 +19,10 @@ import 'package:inlek/features/domain/usecases/cart/add_cart.dart';
 import 'package:inlek/features/domain/usecases/cart/clear_cart.dart';
 import 'package:inlek/features/domain/usecases/cart/delete_cart.dart';
 import 'package:inlek/features/domain/usecases/cart/get_cart.dart';
-import 'package:inlek/features/domain/usecases/content/get_pharmacies.dart';
 import 'package:inlek/features/domain/usecases/orders/create_order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:yandex_geocoder/yandex_geocoder.dart';
 
 part 'cart_screen_event.dart';
 part 'cart_screen_state.dart';
@@ -30,36 +33,33 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
   final DeleteCartUC deleteCartUC;
   final ClearCartUC clearCartUC;
   final CreateOrderUC createOrderUC;
-  final GetPharmaciesUC getPharmaciesUC;
+  final CourierZoneManager courierZoneManager;
+
   final SharedPreferences sharedPreferences;
 
   final ScrollController controller = ScrollController();
-  final TextEditingController fNameController =
-      TextEditingController(text: 'Иван');
-  final TextEditingController sNameController =
-      TextEditingController(text: 'Иванов');
-  final TextEditingController phoneController =
-      TextEditingController(text: '+375 (25) 222-33-49');
-  final TextEditingController emailController =
-      TextEditingController(text: 'penkin.333@mail.ru');
-  final TextEditingController cityController =
-      TextEditingController(text: 'Минск');
+  final TextEditingController fNameController = TextEditingController(text: '');
+  final TextEditingController sNameController = TextEditingController(text: '');
+  final TextEditingController phoneController = TextEditingController(text: '');
+  final TextEditingController emailController = TextEditingController(text: '');
+  final TextEditingController cityController = TextEditingController(text: '');
   final TextEditingController streetHomeController =
-      TextEditingController(text: 'Заславская улица, 29, Минск, 220004');
+      TextEditingController(text: '');
   final TextEditingController entranceController =
-      TextEditingController(text: '5');
-  final TextEditingController floorController =
-      TextEditingController(text: '20');
-  final TextEditingController flatController =
-      TextEditingController(text: '1029');
+      TextEditingController(text: '');
+  final TextEditingController floorController = TextEditingController(text: '');
+  final TextEditingController flatController = TextEditingController(text: '');
   final TextEditingController doorPhoneController =
-      TextEditingController(text: '1029');
+      TextEditingController(text: '');
   final TextEditingController commentController =
-      TextEditingController(text: 'Оставить возле двери');
+      TextEditingController(text: '');
 
   final TextEditingController promocodeController = TextEditingController();
 
+  GeoObject? selectedAddress;
+
   Timer? _debounceTimer;
+  Timer? _refreshCartTimer;
 
   CartScreenBloc({
     required this.getCartUC,
@@ -67,8 +67,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     required this.deleteCartUC,
     required this.clearCartUC,
     required this.createOrderUC,
-    required this.getPharmaciesUC,
     required this.sharedPreferences,
+    required this.courierZoneManager,
   }) : super(CartScreenState()) {
     on<LoadCartDataEvent>(_onLoadData);
     on<AddCartEvent>(_onAddCart);
@@ -87,66 +87,100 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     on<ChangePaymentTypeEvent>(_onChangePaymentType);
     on<SelectPharmacy>(_onSelectPharmacy);
     on<CreateOrderEvent>(_onCreateOrder);
-    on<LoadPharmaciesEvent>(_onLoadPharmacies);
+    on<UpdateDeliveryPriceEvent>(_onUpdateDeliveryPrice);
+
     on<ScrollUpListEvent>((_, __) => controller.animateTo(0,
         duration: const Duration(milliseconds: 700), curve: Curves.easeOut));
+
+    // Load shared preferences data
+    final String? fullName =
+        sharedPreferences.getString(SharedPreferencesKeys.fullName);
+    final String? email =
+        sharedPreferences.getString(SharedPreferencesKeys.email);
+    final String? city =
+        sharedPreferences.getString(SharedPreferencesKeys.city);
+    final String? phone =
+        sharedPreferences.getString(SharedPreferencesKeys.phone);
+
+    // Initialize controllers with SharedPreferences data
+    fNameController.text = fullName != null && fullName.split(' ').isNotEmpty
+        ? fullName.split(' ').first
+        : '';
+
+    sNameController.text = fullName != null && fullName.split(' ').length > 1
+        ? fullName.split(' ')[1]
+        : '';
+
+    if (fNameController.text == 'null') {
+      fNameController.text = '';
+    }
+    if (sNameController.text == 'null') {
+      sNameController.text = '';
+    }
+
+    cityController.text = city != null && city != 'null' ? city : '';
+
+    emailController.text = email != null && email != 'null' ? email : '';
+
+    phoneController.text = phone != null && phone != 'null'
+        ? Utils.formatPhoneNumber(phone, toServerFormat: false)
+        : '';
   }
 
   Future<void> _onLoadData(
-      LoadCartDataEvent event, Emitter<CartScreenState> emit) async {
+    LoadCartDataEvent event,
+    Emitter<CartScreenState> emit,
+  ) async {
+    add(UpdateDeliveryPriceEvent());
     final failureOrCart = await getCartUC();
 
     failureOrCart.fold(
       (_) => emit(state.copyWith(
           isLoading: false, errorText: 'Ошибка загрузки данных')),
       (cartData) {
-        // Сохранение старых значений quantity
-        final oldQuantities = {
-          for (var product in state.cartData?.products ?? [])
-            product.productId: product.quantity
-        };
+        final oldProducts = state.cartData?.products ?? [];
+        final newProducts = cartData.products ?? [];
 
-        // Обновляем список продуктов, подставляя старые quantity
-        final updatedProducts = (cartData.products ?? []).map((product) {
-          return product.copyWith(
-              quantity: oldQuantities[product.productId] ?? product.quantity);
+        final mergedProducts = oldProducts.map((oldProduct) {
+          final updated = newProducts.firstWhereOrNull(
+            (newProduct) => newProduct.productId == oldProduct.productId,
+          );
+
+          if (oldProduct.isLoading && updated != null) {
+            return updated;
+          }
+          return oldProduct;
         }).toList();
 
         // Обновляем список доступных промокодов
-        List<PromocodeEntity> availablePromoCodes = updatedProducts
+        final availablePromoCodes = mergedProducts
             .expand((product) => product.promocodesJson ?? [])
             .cast<PromocodeEntity>()
             .toList();
 
         // Фильтруем выбранные промокоды
-        List<PromocodeEntity> updatedSelectedPromoCodes = state
-            .selectedPromoCodes
-            .where((selectedPromo) => availablePromoCodes.any(
+        final updatedSelectedPromoCodes = state.selectedPromoCodes
+            .where(
+              (selectedPromo) => availablePromoCodes.any(
                 (availablePromo) =>
-                    availablePromo.promotionId == selectedPromo.promotionId))
+                    availablePromo.promotionId == selectedPromo.promotionId,
+              ),
+            )
             .toList();
 
         emit(state.copyWith(
-            isLoading: false,
-            cartData: cartData.copyWith(products: updatedProducts),
-            errorText: null,
-            availablePromoCodes: availablePromoCodes,
-            selectedPromoCodes: updatedSelectedPromoCodes));
+          isLoading: false,
+          cartData: cartData.copyWith(
+              products:
+                  event.isFirstLoading ? cartData.products : mergedProducts),
+          errorText: null,
+          availablePromoCodes: availablePromoCodes,
+          selectedPromoCodes: updatedSelectedPromoCodes,
+        ));
       },
     );
-  }
 
-  Future<void> _onLoadPharmacies(
-      LoadPharmaciesEvent event, Emitter<CartScreenState> emit) async {
-    String city = sharedPreferences.getString(SharedPreferencesKeys.city) ?? '';
-    final failureOrLoads = await getPharmaciesUC(city);
-
-    failureOrLoads.fold(
-      (_) {},
-      (pharmacies) => emit(
-        state.copyWith(pharmacies: pharmacies),
-      ),
-    );
+    add(PickAllProductsEvent(force: true));
   }
 
   void _toggleShowPharmaciesWorkingNow(
@@ -166,6 +200,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
   void _onToggleSelection(
       ToggleSelectionEvent event, Emitter<CartScreenState> emit) {
+    add(UpdateDeliveryPriceEvent());
     final selectedProductIds = Set<int>.from(state.selectedProductIds);
     event.isChecked == true
         ? selectedProductIds.add(event.productId)
@@ -198,8 +233,9 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
   // Функция для удаления товара с задержкой
   Future<void> _onDeleteCart(
       DeleteCartEvent event, Emitter<CartScreenState> emit) async {
+    add(UpdateDeliveryPriceEvent());
     // Эмитируем текущее состояние, чтобы UI обновился
-    emit(state.copyWith(isLoading: true));
+    // emit(state.copyWith(isLoading: true));
 
     // Ожидаем 2 секунды, прежде чем выполнить запрос, но сбрасываем таймер, если событие повторяется
     _debounceTimer
@@ -229,7 +265,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     emit(state.copyWith(
         cartData: state.cartData?.copyWith(products: updatedProducts),
         selectedProductIds: updatedSelectedProductIds));
-    _debounceTimer = Timer(const Duration(seconds: 2), () async {
+    _debounceTimer =
+        Timer(Duration(seconds: wasLastProductRemoved ? 0 : 2), () async {
       final result = await deleteCartUC(CartParams(
           productId: event.productId.toString(),
           quantity: newQuantity.toString()));
@@ -237,9 +274,9 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         (_) => _handleCartUpdateError(
             emit, updatedProducts, product, event.context),
         (_) {
-          if (wasLastProductRemoved) {
-            add(LoadCartDataEvent()); // Загружаем корзину только если товар был полностью удален
-          }
+          //if (wasLastProductRemoved) {
+          //  add(LoadCartDataEvent()); // Загружаем корзину только если товар был полностью удален
+          //}
         },
       );
     });
@@ -248,8 +285,9 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
   // Функция для добавления товара с задержкой
   Future<void> _onAddCart(
       AddCartEvent event, Emitter<CartScreenState> emit) async {
+    add(UpdateDeliveryPriceEvent());
     // Эмитируем текущее состояние, чтобы UI обновился
-    emit(state.copyWith(isLoading: true));
+    //emit(state.copyWith(isLoading: true));
 
     // Ожидаем 2 секунды, прежде чем выполнить запрос, но сбрасываем таймер, если событие повторяется
     _debounceTimer
@@ -269,15 +307,15 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       newQuantity = event.count ?? (product.quantity ?? 0) + 1;
       updatedProducts[productIndex] = product.copyWith(quantity: newQuantity);
     } else {
-      updatedProducts.add(
-          ProductEntity(productId: event.productId, quantity: newQuantity));
+      updatedProducts.add(ProductEntity(
+          productId: event.productId, quantity: newQuantity, isLoading: true));
     }
 
     emit(state.copyWith(
         cartData: state.cartData?.copyWith(products: updatedProducts),
-        isLoading: true));
+        isLoading: false));
     _debounceTimer = Timer(
-      const Duration(seconds: 2),
+      Duration(seconds: wasFirstTimeAdded ? 0 : 2),
       () async {
         final failureOrCart = await addCartUC(CartParams(
             productId: event.productId.toString(),
@@ -285,36 +323,50 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         failureOrCart.fold(
           (_) => _handleCartUpdateFailure(emit, updatedProducts, event.context,
               'Ошибка добавления товара в корзину'),
-          (_) {
+          (_) async {
             if (wasFirstTimeAdded) {
-              add(LoadCartDataEvent()); // Загружаем корзину только если товар добавлен впервые
+              // Перезапускаем отложенное обновление корзины
+              _refreshCartTimer?.cancel();
+              _refreshCartTimer = Timer(
+                Duration(seconds: 2),
+                () {
+                  if (!isClosed) {
+                    add(LoadCartDataEvent());
+                  }
+                },
+              );
             }
           },
         );
       },
     );
+
+    add(PickAllProductsEvent(force: true));
   }
 
   Future<void> _onClearCart(
       ClearProductsEvent event, Emitter<CartScreenState> emit) async {
+    add(UpdateDeliveryPriceEvent());
     final failureOrCart = await clearCartUC();
     failureOrCart.fold(
       (_) => Utils.showCustomDialog(
           screenContext: event.context,
           text: 'Ошибка очистки корзины',
           action: (context) => Navigator.of(context).pop()),
-      (_) => add(LoadCartDataEvent()),
+      (_) => add(LoadCartDataEvent(isFirstLoading: true)),
     );
   }
 
   void _onPickAllProducts(
       PickAllProductsEvent event, Emitter<CartScreenState> emit) {
-    Set<int> selectedProductIds = state.isAllProductsChecked
+    add(UpdateDeliveryPriceEvent());
+    Set<int> selectedProductIds = state.isAllProductsChecked && !event.force
         ? {}
         : state.cartData!.products!.map((e) => e.productId!).toSet();
     emit(state.copyWith(
         selectedProductIds: selectedProductIds,
-        isAllProductsChecked: selectedProductIds.isNotEmpty));
+        isAllProductsChecked:
+            event.force ? true : !state.isAllProductsChecked));
   }
 
   void _handleCartUpdateError(
@@ -338,6 +390,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
   void _onDeleteProduct(
       DeleteProductEvent event, Emitter<CartScreenState> emit) async {
+    add(UpdateDeliveryPriceEvent());
     ProductEntity? product = state.cartData?.products
         ?.firstWhereOrNull((e) => e.productId == event.productId);
     if (product != null) {
@@ -346,7 +399,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
           productId: product.productId!,
           count: product.quantity));
     } else {
-      add(LoadCartDataEvent());
+      //add(LoadCartDataEvent());
     }
   }
 
@@ -404,6 +457,66 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     emit(state.copyWith(selectedPharmacy: event.pharmacy));
   }
 
+  void _onUpdateDeliveryPrice(
+      UpdateDeliveryPriceEvent event, Emitter<CartScreenState> emit) async {
+    DeliveryZoneType deliveryZone = courierZoneManager
+        .getZoneTypeByCoordinates(event.address?.point ?? state.address?.point);
+
+    final selectedProducts = state.cartData?.products
+            ?.where((product) =>
+                state.selectedProductIds.contains(product.productId))
+            .toList() ??
+        [];
+
+    // Считаем сумму всех товаров
+    final productsTotal = selectedProducts.fold<double>(
+      0,
+      (sum, product) => sum + (product.price ?? 0) * (product.quantity ?? 1),
+    );
+
+    // Считаем цену доставки
+    final deliveryPrice = state.cartType == TypeReceiving.delivery ? 0.0 : 0.0;
+
+    // Считаем скидку от старой цены
+    final discount = selectedProducts.fold<double>(
+      0,
+      (sum, product) {
+        final oldPrice = product.oldPrice ?? product.price ?? 0;
+        final price = product.price ?? 0;
+        return sum +
+            (oldPrice > price
+                ? (oldPrice - price) * (product.quantity ?? 1)
+                : 0);
+      },
+    );
+
+    // Считаем скидку по промокоду
+    final promoDiscount = selectedProducts.fold<double>(
+      0,
+      (sum, product) {
+        final appliedPromo = state.availablePromoCodes.firstWhereOrNull(
+          (promo) =>
+              promo.productId == product.productId &&
+              state.selectedPromoCodes.contains(promo),
+        );
+
+        if (appliedPromo != null) {
+          final productDiscount =
+              (product.price ?? 0) * (appliedPromo.promocodePercent / 100);
+          return sum + productDiscount * (product.quantity ?? 1);
+        }
+        return sum;
+      },
+    );
+
+    // Итоговая сумма
+    final totalPrice = productsTotal + deliveryPrice - discount - promoDiscount;
+    // Получаем сообщение с ценой для зоны
+    final priceMessage = deliveryZone.getPrice(totalPrice);
+
+    emit(state.copyWith(deliveryPayment: priceMessage, address: event.address));
+  }
+
   Future<void> _onCreateOrder(
       CreateOrderEvent event, Emitter<CartScreenState> emit) async {
     OrderParam params;
@@ -413,7 +526,11 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
           promocodes: state.selectedPromoCodes.map((e) => e.promocode).toList(),
           pharmacyId: 0,
           delivery: 'delivery',
-          payment: state.paymentType == PaymentType.online ? 'bepaid' : 'cash',
+          payment: state.paymentType == PaymentType.bepaid
+              ? 'bepaid'
+              : state.paymentType == PaymentType.oplati
+                  ? 'oplati'
+                  : 'cash',
           lastName: fNameController.text,
           firstName: sNameController.text,
           email: emailController.text,
@@ -431,7 +548,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
           promocodes: state.selectedPromoCodes.map((e) => e.promocode).toList(),
           pharmacyId: state.selectedPharmacy?.pharmacyId ?? 0,
           delivery: 'self',
-          payment: state.paymentType == PaymentType.online ? 'bepaid' : 'cash',
+          payment: 'cash',
           lastName: fNameController.text,
           firstName: sNameController.text,
           email: emailController.text,
@@ -442,16 +559,20 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     }
     final failureOrCart = await createOrderUC(params);
 
+    add(LoadCartDataEvent(isFirstLoading: true));
+
     failureOrCart.fold(
       (_) => emit(state.copyWith(
           isLoading: false, errorText: 'Ошибка создания заказа')),
-      (link) async {
-        if (link != null) {
-          if (await canLaunchUrl(Uri.parse(link))) {
-            await launchUrl(Uri.parse(link),
+      (order) async {
+        if (order?.link != null) {
+          await BottomSheetManager.showThanksForOrderSheet(
+              event.screenContext, order!);
+          if (await canLaunchUrl(Uri.parse(order.link!))) {
+            await launchUrl(Uri.parse(order.link!),
                 mode: LaunchMode.externalApplication);
           } else {
-            throw "Не удалось открыть $link";
+            throw "Не удалось открыть ${order.link!}";
           }
         }
       },

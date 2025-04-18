@@ -15,12 +15,13 @@ part 'pharmacy_map_state.dart';
 
 class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
   final MapScreenType mapScreenType;
-  final BuildContext homeContext;
 
-  PharmacyMapBloc({required this.mapScreenType, required this.homeContext})
+  final BuildContext? screenContext;
+
+  PharmacyMapBloc({required this.mapScreenType, this.screenContext})
       : super(PharmacyMapState()) {
     on<InitPharmacyMapEvent>((event, emit) {
-      emit(PharmacyMapState(points: event.points));
+      emit(state.copyWith(points: event.points));
       add(UpdatePharmacyMapEvent());
     });
     on<AttachControllerEvent>((event, emit) {
@@ -93,7 +94,7 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
                     e.mapObject.mapId.value.toString() == point.mapId.value)
                 ?.data;
             PharmacyEntity pharmacy = PharmacyModel.fromJson(dataMap!);
-            BottomSheetManager.showPharmacyInfoSheet(homeContext, pharmacy);
+            BottomSheetManager.showPharmacyInfoSheet(pharmacy);
           }
           if (mapScreenType == MapScreenType.cart) {
             final dataMap = state.points
@@ -101,7 +102,7 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
                     e.mapObject.mapId.value.toString() == point.mapId.value)
                 ?.data;
             PharmacyEntity pharmacy = PharmacyModel.fromJson(dataMap!);
-            BottomSheetManager.showPharmacySheet(homeContext, pharmacy);
+            BottomSheetManager.showPharmacySheet(screenContext!, pharmacy);
           } else {
             add(SelectMarkerEvent(markerId: point.mapId.value));
           }

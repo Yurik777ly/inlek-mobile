@@ -75,5 +75,14 @@
 		<string>The app uses push notifications to inform you about important pharmacy-related events and orders.</string>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>inlek</string>
+				</array>
+			</dict>
+		</array>
 	</dict>
 </plist>

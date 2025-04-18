@@ -12,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 abstract class OrderRemoteDataSource {
   Future<List<OrderModel>> getOrderHistory();
   Future<OrderModel?> getOrderById(int id);
-  Future<String?> createOrder(OrderParam params);
+  Future<OrderModel?> createOrder(OrderParam params);
 }
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
@@ -101,7 +101,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   }
 
   @override
-  Future<String?> createOrder(OrderParam order) async {
+  Future<OrderModel?> createOrder(OrderParam order) async {
     String baseUrl = dotenv.env['BASE_URL']!;
     String url = '${baseUrl}order';
     final String? serverToken =
@@ -126,12 +126,10 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        if (data['link'] != null) return data['link'];
+        return OrderModel.fromJson(data['data']);
       } else {
         return null;
       }
-
-      throw ServerException();
     } catch (e) {
       log('Error during createOrder: $e', level: 1000);
       rethrow;

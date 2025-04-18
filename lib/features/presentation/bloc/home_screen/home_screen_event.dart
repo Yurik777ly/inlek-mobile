@@ -17,3 +17,12 @@ class ChangePageEvent extends HomeScreenEvent {
 }
 
 class CheckInternetConnection extends HomeScreenEvent {}
+
+class UploadContext extends HomeScreenEvent {
+  final BuildContext context;
+
+  const UploadContext({required this.context});
+
+  @override
+  List<Object> get props => [context];
+}

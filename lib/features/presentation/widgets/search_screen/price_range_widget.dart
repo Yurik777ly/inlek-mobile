@@ -7,9 +7,9 @@ import 'package:inlek/features/presentation/bloc/products_screen/products_screen
 import 'package:inlek/features/presentation/widgets/app_text_field_widget.dart';
 
 class PriceRangeWidget extends StatefulWidget {
-  const PriceRangeWidget({super.key, required this.homeContext});
+  const PriceRangeWidget({super.key, required this.screenContext});
 
-  final BuildContext homeContext;
+  final BuildContext screenContext;
 
   @override
   State<PriceRangeWidget> createState() => _PriceRangeWidgetState();
@@ -27,7 +27,7 @@ class _PriceRangeWidgetState extends State<PriceRangeWidget> {
   @override
   Widget build(BuildContext context) {
     ProductsScreenBloc productsBloc =
-        widget.homeContext.read<ProductsScreenBloc>();
+        widget.screenContext.read<ProductsScreenBloc>();
     return BlocBuilder<ProductsScreenBloc, ProductsScreenState>(
       bloc: productsBloc,
       builder: (context, state) {

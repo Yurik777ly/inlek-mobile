@@ -4,11 +4,13 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://www.jitpack.io' }
     }
     dependencies {
         // Обновление AGP
         classpath 'com.android.tools.build:gradle:8.1.0'  // Обновить до версии 8.1.0 или выше
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0'  // Проверьте актуальность Kotlin
+        classpath 'com.google.gms:google-services:4.3.14'
     }
 }
 
@@ -17,6 +19,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://www.jitpack.io' }
     }
 }
 

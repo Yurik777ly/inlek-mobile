@@ -27,9 +27,22 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
+            <!-- Это основной intent-filter для старта приложения -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <!-- Deep Links -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Ссылка будет начинаться с 'inlek://product' -->
+                <data
+                    android:scheme="inlek"
+                    android:host="product"
+                    android:pathPrefix="/"/>  <!-- добавьте pathPrefix, если нужно поддерживать дополнительные части URL -->
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

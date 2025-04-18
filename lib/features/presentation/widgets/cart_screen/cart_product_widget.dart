@@ -16,13 +16,11 @@ import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.da
 import 'package:inlek/features/presentation/widgets/cart_screen/change_count_product_widget.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/info_border_plate.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/only_pickup_chip.dart';
-import 'package:inlek/features/presentation/widgets/cart_screen/out_stock_chip.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/product_price.dart';
 import 'package:inlek/features/presentation/widgets/custom_checkbox.dart';
-import 'package:inlek/features/presentation/widgets/product_chip_widget.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class CartProductWidget extends StatefulWidget {
+class CartProductWidget extends StatelessWidget {
   const CartProductWidget({
     super.key,
     required this.index,
@@ -37,36 +35,23 @@ class CartProductWidget extends StatefulWidget {
   final BuildContext? screenContext;
 
   @override
-  State<CartProductWidget> createState() => _CartProductWidgetState();
-}
-
-class _CartProductWidgetState extends State<CartProductWidget> {
-  bool inStock = true;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    bool isLoadingProduct = widget.product.price == null;
+    bool isLoadingProduct = product.price == null;
 
     return BlocBuilder<CartScreenBloc, CartScreenState>(
-      bloc: widget.screenContext?.read<CartScreenBloc>(),
-      buildWhen: (previous, current) => widget.screenContext == null,
+      bloc: screenContext?.read<CartScreenBloc>(),
+      buildWhen: (previous, current) => screenContext == null,
       builder: (context, state) {
-        final bloc = (widget.screenContext ?? context).read<CartScreenBloc>();
+        final bloc = (screenContext ?? context).read<CartScreenBloc>();
 
         return GestureDetector(
           child: DismissibleTile(
             onDismissed: (_) => bloc.add(
-              DeleteProductEvent(context, widget.product.productId!),
+              DeleteProductEvent(context, product.productId!),
             ),
-            direction:
-                widget.productsListScreenType == ProductsListScreenType.cart
-                    ? DismissibleTileDirection.rightToLeft
-                    : DismissibleTileDirection.none,
+            direction: productsListScreenType == ProductsListScreenType.cart
+                ? DismissibleTileDirection.rightToLeft
+                : DismissibleTileDirection.none,
             key: UniqueKey(),
             borderRadius: BorderRadius.all(
               Radius.circular(16.r),
@@ -93,16 +78,15 @@ class _CartProductWidgetState extends State<CartProductWidget> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (inStock &&
-                            widget.productsListScreenType ==
-                                ProductsListScreenType.cart)
+                        if (productsListScreenType ==
+                            ProductsListScreenType.cart)
                           Skeleton.keep(
                             child: CustomCheckbox(
                               isChecked: state.selectedProductIds
-                                  .contains(widget.product.productId),
+                                  .contains(product.productId),
                               onChanged: (isChecked) => bloc.add(
                                 ToggleSelectionEvent(
-                                    isChecked, widget.product.productId!),
+                                    isChecked, product.productId!),
                               ),
                             ),
                           ),
@@ -113,7 +97,7 @@ class _CartProductWidgetState extends State<CartProductWidget> {
                               height: 104.w,
                               width: 104.w,
                               imageUrl:
-                                  '${dotenv.env['PUBLIC_URL']!}${widget.product.image}',
+                                  '${dotenv.env['PUBLIC_URL']!}${product.image}',
                               fit: BoxFit.fitHeight,
                               cacheManager: CustomCacheManager(),
                               errorWidget: (context, url, error) =>
@@ -125,7 +109,7 @@ class _CartProductWidgetState extends State<CartProductWidget> {
                                     color: UiConstants.pink2Color),
                               ),
                             ),
-                            if (!inStock)
+                            /*if (!inStock)
                               Container(
                                 height: 104.w,
                                 width: 104.w,
@@ -139,15 +123,15 @@ class _CartProductWidgetState extends State<CartProductWidget> {
                                 spacing: 4.w,
                                 runSpacing: 4.w,
                                 children: [
-                                  if (widget.product.productSticker != null)
+                                  if (product.productSticker != null)
                                     ProductChipWidget(
                                       productChipType:
                                           ProductChipTypeExtension.fromString(
-                                              widget.product.productSticker!),
+                                              product.productSticker!),
                                     ),
                                 ],
                               ),
-                            )
+                            )*/
                           ],
                         ),
                         SizedBox(width: 8.w),
@@ -155,26 +139,18 @@ class _CartProductWidgetState extends State<CartProductWidget> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                  (widget.product.pagetitle ??
-                                          widget.product.name)
-                                      .orDash(),
+                              Text((product.pagetitle ?? product.name).orDash(),
                                   style: UiConstants.textStyle8.copyWith(
-                                    color: inStock
-                                        ? UiConstants.darkBlueColor
-                                        : UiConstants.darkBlue2Color
-                                            .withOpacity(.6),
-                                  ),
+                                      color: UiConstants.darkBlueColor),
                                   maxLines: 4,
                                   overflow: TextOverflow.ellipsis),
                               SizedBox(height: 8.h),
-                              if (!inStock)
+                              /*if (!inStock)
                                 Padding(
                                   padding: getMarginOrPadding(bottom: 4),
                                   child: OutStockChip(),
-                                ),
-                              if (widget.product.recipe != 'Безрецептурный' &&
-                                  inStock)
+                                ),*/
+                              if (product.delivery == TypeReceiving.pickup)
                                 Padding(
                                   padding: getMarginOrPadding(bottom: 4),
                                   child: Row(
@@ -205,32 +181,30 @@ class _CartProductWidgetState extends State<CartProductWidget> {
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: widget
-                                            .productsListScreenType ==
+                                crossAxisAlignment: productsListScreenType ==
                                         ProductsListScreenType.order
                                     ? CrossAxisAlignment.end
                                     : CrossAxisAlignment
                                         .center, // TODO: если нет скидки, то CrossAxisAlignment.end
                                 children: [
                                   Expanded(
-                                    child:
-                                        ProductPrice(product: widget.product),
+                                    child: ProductPrice(product: product),
                                   ),
-                                  if (inStock &&
-                                      widget.productsListScreenType !=
-                                          ProductsListScreenType.order)
+                                  if (productsListScreenType !=
+                                      ProductsListScreenType.order)
                                     Padding(
                                       padding: getMarginOrPadding(
                                           top: 2, bottom: 2, left: 8),
                                       child: ChangeCountProductWidget(
-                                          product: widget.product,
+                                          product: product,
                                           cartOrProductType:
-                                              CartOrProductType.cart),
+                                              CartOrProductType.cart,
+                                          screenContext: screenContext),
                                     ),
-                                  if (widget.productsListScreenType ==
+                                  if (productsListScreenType ==
                                       ProductsListScreenType.order)
                                     Text(
-                                      '${widget.product.quantity ?? widget.product.count} шт.',
+                                      '${product.quantity ?? product.count} шт.',
                                       style: UiConstants.textStyle8.copyWith(
                                         color: UiConstants.darkBlueColor
                                             .withOpacity(.6),
@@ -243,7 +217,7 @@ class _CartProductWidgetState extends State<CartProductWidget> {
                         ),
                       ],
                     ),
-                    if (widget.product.discount != null &&
+                    if (product.discount != null &&
                         state.selectedPromoCodes.isNotEmpty)
                       Padding(
                         padding: getMarginOrPadding(top: 8),

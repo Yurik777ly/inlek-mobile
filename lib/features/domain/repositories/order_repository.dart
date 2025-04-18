@@ -6,5 +6,5 @@ import 'package:inlek/features/domain/entities/order_entity.dart';
 abstract class OrderRepository {
   Future<Either<Failure, List<OrderEntity>>> getOrderHistory();
   Future<Either<Failure, OrderEntity?>> getOrderById(int id);
-  Future<Either<Failure, String?>> createOrder(OrderParam params);
+  Future<Either<Failure, OrderEntity?>> createOrder(OrderParam params);
 }

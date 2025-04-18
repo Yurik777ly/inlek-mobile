@@ -50,7 +50,7 @@ class OrdersScreen extends StatelessWidget {
                               ),
                               onTapFilterButton: () =>
                                   BottomSheetManager.showOrdersFilterSheet(
-                                      homeBloc.context, context),
+                                      UiConstants.homeContext!, context),
                             ),
                             Expanded(
                               child: homeState is InternetUnavailable

@@ -1,10 +1,14 @@
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/pharmacy_utils.dart';
 import 'package:inlek/core/models/custom_marker_model.dart';
 import 'package:inlek/features/data/models/pharmacy_model.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
+import 'package:inlek/features/domain/entities/product_entity.dart';
+import 'package:inlek/features/domain/usecases/cart/get_cart_pharmacies.dart';
+import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart';
 
 part 'pharmacies_screen_event.dart';
@@ -12,9 +16,12 @@ part 'pharmacies_screen_state.dart';
 
 class PharmaciesScreenBloc
     extends Bloc<PharmaciesScreenEvent, PharmaciesScreenState> {
+  final BuildContext? context;
+  final GetCartPharmaciesUC getCartPharmaciesUC;
   final TextEditingController queryController = TextEditingController();
 
-  PharmaciesScreenBloc() : super(PharmaciesScreenState()) {
+  PharmaciesScreenBloc({required this.getCartPharmaciesUC, this.context})
+      : super(PharmaciesScreenState()) {
     on<ChangeSelectorIndexEvent>((event, emit) {
       emit(state.copyWith(selectorIndex: event.selectorIndex));
     });
@@ -29,12 +36,47 @@ class PharmaciesScreenBloc
       _filterAndEmit(emit);
     });
 
-    on<LoadPharmaciesDataEvent>((event, emit) {
-      emit(state.copyWith(
-        pharmacies: event.pharmacies,
-        filteredPharmacies: event.pharmacies,
-        mapObjects: _generateMapObjects(event.pharmacies),
-      ));
+    on<ToggleShowWorkingNowOnlyEvent>((event, emit) {
+      emit(state.copyWith(showWorkingNowOnly: event.value));
+      _filterAndEmit(emit);
+    });
+
+    on<ToggleShowWithAllProductsOnlyEvent>((event, emit) {
+      emit(state.copyWith(showWithAllProductsOnly: event.value));
+      _filterAndEmit(emit);
+    });
+
+    on<LoadPharmaciesDataEvent>((event, emit) async {
+      state.copyWith(isLoading: true, hasError: false);
+
+      if (event.pharmacies != null) {
+        emit(
+          state.copyWith(
+            isLoading: false,
+            hasError: false,
+            pharmacies: event.pharmacies,
+            filteredPharmacies: event.pharmacies,
+            mapObjects: _generateMapObjects(event.pharmacies ?? []),
+          ),
+        );
+      } else {
+        final failureOrLoads = await getCartPharmaciesUC();
+
+        failureOrLoads.fold(
+          (_) => emit(
+            state.copyWith(isLoading: false, hasError: true),
+          ),
+          (pharmacies) => emit(
+            state.copyWith(
+              isLoading: false,
+              hasError: false,
+              pharmacies: pharmacies,
+              filteredPharmacies: pharmacies,
+              mapObjects: _generateMapObjects(pharmacies),
+            ),
+          ),
+        );
+      }
     });
   }
 
@@ -51,20 +93,48 @@ class PharmaciesScreenBloc
   }
 
   List<PharmacyEntity> _filterPharmacies(
-    List<PharmacyEntity> pharmacies,
-    String query,
-    TypeReceiving sortType,
-  ) {
+      List<PharmacyEntity> pharmacies, String query, TypeReceiving sortType) {
+    Set<int> selectedProductIds =
+        context?.read<CartScreenBloc>().state.selectedProductIds ?? {};
+
     final lowerQuery = query.toLowerCase();
+
     return pharmacies.where((e) {
       final isMatchingQuery = (e.pharmacyName ?? e.pageTitle ?? '')
           .toLowerCase()
           .contains(lowerQuery);
+
       final isMatchingSortType = sortType == TypeReceiving.all ||
           e.pharmacyDelivery ==
               (sortType == TypeReceiving.delivery ? 'Доставка' : 'Самовывоз');
 
-      return isMatchingQuery && isMatchingSortType;
+      final isWorkingNow = !state.showWorkingNowOnly ||
+          PharmacyUtils.isPharmacyOpen(e.schedule ?? '');
+
+      // Проверяем, что в аптеке есть все выбранные товары
+      final bool allSelectedProductsExist = selectedProductIds.every(
+        (id) => e.products.any((product) => product.productId == id),
+      );
+
+      // Фильтруем продукты, которые совпадают с выбранными
+      final List<ProductEntity> filteredProducts = e.products
+          .where((product) => selectedProductIds.contains(product.productId))
+          .toList();
+
+      // Проверяем, что у всех этих продуктов availability = 'full'
+      final bool allAvailable = filteredProducts.every(
+        (product) => product.availability == 'full',
+      );
+
+      // Финальный флаг: и все есть, и все full
+      final bool allProductsAvailable =
+          (allSelectedProductsExist && allAvailable) ||
+              !state.showWithAllProductsOnly;
+
+      return isMatchingQuery &&
+          isMatchingSortType &&
+          isWorkingNow &&
+          allProductsAvailable;
     }).toList();
   }
 

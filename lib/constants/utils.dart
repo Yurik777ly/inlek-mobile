@@ -1,14 +1,24 @@
+import 'dart:io';
+import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/presentation/widgets/app_button_widget.dart';
+import 'package:inlek/locator_service.dart';
 import 'package:intl/intl.dart';
+import 'package:jivosdk_plugin/bridge.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart';
 
 class Utils {
@@ -29,7 +39,7 @@ class Utils {
 
   static String? emailValidate(String? value) {
     if (value == null || value.isEmpty) {
-      return null;
+      return 'Поле не должно быть пустым';
     }
 
     // Регулярное выражение для проверки email
@@ -37,7 +47,7 @@ class Utils {
     RegExp regex = RegExp(emailPattern);
 
     if (!regex.hasMatch(value)) {
-      return 'Enter a valid e-mail address';
+      return 'Введите валидный email';
     }
     return null; // Если email корректный, возвращаем null (валидация успешна)
   }
@@ -183,7 +193,7 @@ class Utils {
         OrderStatus.received,
       ];
 
-      if (paymentType != PaymentType.online) {
+      if (![PaymentType.bepaid, PaymentType.oplati].contains(paymentType)) {
         statuses.remove(OrderStatus.awaitingPayment);
       }
     }
@@ -392,5 +402,49 @@ class Utils {
     String endDay = dayFormat.format(lastDayOfMonth);
 
     return 'с $startDay по $endDay $month';
+  }
+
+  static void openJivoChat() {
+    // Configure for authorized user
+    Jivo.session.setContactInfo(
+        name: sl<SharedPreferences>().getString(SharedPreferencesKeys.fullName),
+        email: sl<SharedPreferences>().getString(SharedPreferencesKeys.email),
+        phone: sl<SharedPreferences>().getString(SharedPreferencesKeys.phone),
+        brief: "Pharmacy mobile app user");
+
+    // ... or, configure for anonymous user
+    Jivo.session.setup(
+        channelId: dotenv.env['JIVO_CHANNEL_ID']!,
+        userToken:
+            sl<SharedPreferences>().getString(SharedPreferencesKeys.userId) ??
+                '');
+
+    Jivo.display.present();
+  }
+
+  static Future<void> openDocFile(String path, {String? name}) async {
+    try {
+      // Читаем файл из assets
+      final ByteData data = await rootBundle.load(path);
+      final Uint8List bytes = data.buffer.asUint8List();
+
+      // Получаем временный каталог
+      final Directory tempDir = await getTemporaryDirectory();
+      final File tempFile = File(
+          '${tempDir.path}/${name ?? Random().nextInt(1000000).toString()}.pdf');
+
+      // Записываем файл
+      await tempFile.writeAsBytes(bytes, flush: true);
+
+      // Открываем файл
+      final a = await OpenFile.open(tempFile.path);
+      if (kDebugMode) {
+        print(a);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Ошибка при открытии файла: $e');
+      }
+    }
   }
 }

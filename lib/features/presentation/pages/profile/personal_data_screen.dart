@@ -35,16 +35,15 @@ class PersonalDataScreen extends StatelessWidget {
           child: BlocConsumer<PersonalDataScreenBloc, PersonalDataScreenState>(
             listener: (context, state) => switch (state) {
               DeleteAccountState _ =>
-                Navigator.of(context.read<HomeScreenBloc>().context)
-                    .pushAndRemoveUntil(
-                        Routes.createRoute(
-                          const LoginScreen(),
-                          settings: RouteSettings(
-                            name: Routes.loginScreen,
-                            arguments: {'redirect_type': LoginScreenType.login},
-                          ),
-                        ),
-                        (_) => false),
+                Navigator.of(UiConstants.homeContext!).pushAndRemoveUntil(
+                    Routes.createRoute(
+                      const LoginScreen(),
+                      settings: RouteSettings(
+                        name: Routes.loginScreen,
+                        arguments: {'redirect_type': LoginScreenType.login},
+                      ),
+                    ),
+                    (_) => false),
               _ => {},
             },
             builder: (context, state) {

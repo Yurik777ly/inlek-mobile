@@ -15,6 +15,8 @@ class CartScreenState extends Equatable {
   final List<PromocodeEntity> selectedPromoCodes;
   final TypeReceiving cartType;
   final PaymentType paymentType;
+  final int deliveryPayment;
+  final GeoObject? address;
 
   const CartScreenState({
     this.isLoading = true,
@@ -31,6 +33,8 @@ class CartScreenState extends Equatable {
     this.availablePromoCodes = const [],
     this.cartType = TypeReceiving.delivery,
     this.paymentType = PaymentType.courier,
+    this.deliveryPayment = 0,
+    this.address,
   });
 
   CartScreenState copyWith({
@@ -48,6 +52,8 @@ class CartScreenState extends Equatable {
     List<PromocodeEntity>? selectedPromoCodes,
     TypeReceiving? cartType,
     PaymentType? paymentType,
+    int? deliveryPayment,
+    GeoObject? address,
   }) {
     return CartScreenState(
       isLoading: isLoading ?? this.isLoading,
@@ -66,6 +72,8 @@ class CartScreenState extends Equatable {
       availablePromoCodes: availablePromoCodes ?? this.availablePromoCodes,
       cartType: cartType ?? this.cartType,
       paymentType: paymentType ?? this.paymentType,
+      deliveryPayment: deliveryPayment ?? this.deliveryPayment,
+      address: address ?? this.address,
     );
   }
 
@@ -85,5 +93,7 @@ class CartScreenState extends Equatable {
         availablePromoCodes,
         cartType,
         paymentType,
+        deliveryPayment,
+        address,
       ];
 }

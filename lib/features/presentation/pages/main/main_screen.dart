@@ -1,8 +1,12 @@
+import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/category_entity.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
@@ -144,24 +148,24 @@ class MainScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                //floatingActionButton: homeState is HomeScreenInitial
-                //    ? Padding(
-                //        padding: getMarginOrPadding(bottom: 100, right: 5),
-                //        child: BlurryContainer(
-                //          blur: 8,
-                //          padding: EdgeInsets.zero,
-                //          borderRadius: BorderRadius.circular(1000.r),
-                //          child: FloatingActionButton(
-                //            shape: CircleBorder(),
-                //            elevation: 0,
-                //            backgroundColor:
-                //                UiConstants.purpleColor.withOpacity(.4),
-                //            onPressed: () {},
-                //            child: SvgPicture.asset(Paths.chatIconPath),
-                //          ),
-                //        ),
-                //      )
-                //    : null,
+                floatingActionButton: homeState is HomeScreenInitial
+                    ? Padding(
+                        padding: getMarginOrPadding(bottom: 100, right: 5),
+                        child: BlurryContainer(
+                          blur: 8,
+                          padding: EdgeInsets.zero,
+                          borderRadius: BorderRadius.circular(1000.r),
+                          child: FloatingActionButton(
+                            shape: CircleBorder(),
+                            elevation: 0,
+                            backgroundColor:
+                                UiConstants.purpleColor.withOpacity(.4),
+                            onPressed: Utils.openJivoChat,
+                            child: SvgPicture.asset(Paths.chatIconPath),
+                          ),
+                        ),
+                      )
+                    : null,
               );
             },
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
@@ -63,6 +64,15 @@ class DeliveryCustomerBlock extends StatelessWidget {
                   hintText: 'Введите Email',
                   controller: cartBloc.emailController,
                   validator: Utils.emailValidate),
+              if (cartBloc.state.cartType == TypeReceiving.pickup)
+                Padding(
+                  padding: getMarginOrPadding(top: 24),
+                  child: AppTextFieldWidget(
+                      title: 'Комментарий к заказу',
+                      hintText: 'Укажите, что необходимо учесть при доставке',
+                      controller: cartBloc.commentController,
+                      minLines: 4),
+                )
             ],
           ),
         ),

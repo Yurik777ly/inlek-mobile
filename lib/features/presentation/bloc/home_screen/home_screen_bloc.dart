@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:inlek/constants/paths.dart';
@@ -15,8 +14,6 @@ part 'home_screen_event.dart';
 part 'home_screen_state.dart';
 
 class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
-  final BuildContext context;
-
   final ConnectivityService connectivityService = ConnectivityService();
   final List<GlobalKey<NavigatorState>> navigatorKeys =
       List.generate(4, (index) => GlobalKey<NavigatorState>());
@@ -40,7 +37,7 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
   ];
   List<String> iconsNames = ['Главная', 'Каталог', 'Корзина', 'Профиль'];
 
-  HomeScreenBloc({required this.context}) : super(HomeScreenInitial()) {
+  HomeScreenBloc() : super(HomeScreenInitial()) {
     on<CheckInternetConnection>((event, emit) async {
       final hasConnection = await connectivityService.hasInternetConnection();
       if (hasConnection) {
@@ -53,6 +50,7 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
     _startPeriodicCheck();
 
     on<ChangePageEvent>(_onPageChanged);
+    on<UploadContext>(_onUploadContext);
   }
 
   void _onPageChanged(ChangePageEvent event, Emitter<HomeScreenState> emit) {
@@ -68,6 +66,10 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
     _timer = Timer.periodic(Duration(seconds: 2), (timer) {
       add(CheckInternetConnection());
     });
+  }
+
+  void _onUploadContext(UploadContext event, Emitter<HomeScreenState> emit) {
+    emit(HomeScreenInitial().copyWith(context: event.context));
   }
 
   @override

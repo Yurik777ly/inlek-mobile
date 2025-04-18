@@ -1,19 +1,19 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/info_about_order_screen/info_about_order_screen_bloc.dart';
+import 'package:inlek/features/presentation/bloc/pharmacy_map/pharmacy_map_bloc.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/delivery_bottom_sheet/delivery_plate_widget.dart';
 import 'package:inlek/features/presentation/widgets/custom_app_bar.dart';
+import 'package:inlek/features/presentation/widgets/info_about_order_screen/cost_courier_delivery_block.dart';
+import 'package:inlek/features/presentation/widgets/info_about_order_screen/courier_delivery_terms_block.dart';
 import 'package:inlek/features/presentation/widgets/info_about_order_screen/courier_delivery_time_block.dart';
 import 'package:inlek/features/presentation/widgets/info_about_order_screen/courier_delivery_zones_block.dart';
 import 'package:inlek/features/presentation/widgets/info_about_order_screen/orders_with_delivery_accepted_block.dart';
-import 'package:inlek/features/presentation/widgets/info_about_order_screen/cost_courier_delivery_block.dart';
-import 'package:inlek/features/presentation/widgets/info_about_order_screen/courier_delivery_terms_block.dart';
 import 'package:inlek/features/presentation/widgets/info_about_order_screen/types_delivery_block.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/internet_no_internet_connection_widget.dart';
 import 'package:inlek/locator_service.dart';
@@ -31,11 +31,28 @@ class _InfoAboutOrderScreenState extends State<InfoAboutOrderScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
       builder: (context, homeState) {
-        return BlocProvider(
-          create: (context) => InfoAboutOrderScreenBloc(getPharmaciesUC: sl())
-            ..add(LoadDataEvent()),
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+                create: (context) => InfoAboutOrderScreenBloc(
+                      getPharmaciesUC: sl(),
+                      courierZoneManager: sl(),
+                    )..add(LoadDataEvent())),
+            BlocProvider(
+              create: (context) => PharmacyMapBloc(
+                  mapScreenType: MapScreenType.courierDeliveryZones),
+            ),
+          ],
           child:
-              BlocBuilder<InfoAboutOrderScreenBloc, InfoAboutOrderScreenState>(
+              BlocConsumer<InfoAboutOrderScreenBloc, InfoAboutOrderScreenState>(
+            listener: (context, state) async {
+              await Future.delayed(Duration(milliseconds: 300));
+              context.read<PharmacyMapBloc>().add(
+                    InitPharmacyMapEvent(
+                      points: state.mapObjects ?? [],
+                    ),
+                  );
+            },
             builder: (context, state) {
               return Scaffold(
                 backgroundColor: UiConstants.backgroundColor,

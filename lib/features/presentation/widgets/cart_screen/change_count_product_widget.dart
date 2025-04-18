@@ -16,14 +16,18 @@ class ChangeCountProductWidget extends StatelessWidget {
   const ChangeCountProductWidget(
       {super.key,
       required this.product,
-      this.cartOrProductType = CartOrProductType.product});
+      this.cartOrProductType = CartOrProductType.product,
+      this.screenContext});
 
   final ProductEntity product;
   final CartOrProductType cartOrProductType;
+  final BuildContext? screenContext;
 
   @override
   Widget build(BuildContext context) {
-    int count = (context.read<CartScreenBloc>().state.cartData?.products ?? [])
+    final cartBloc = (screenContext ?? context).read<CartScreenBloc>();
+
+    int count = (cartBloc.state.cartData?.products ?? [])
             .firstWhereOrNull((e) => e.productId == product.productId)
             ?.quantity ??
         0;
@@ -31,8 +35,10 @@ class ChangeCountProductWidget extends StatelessWidget {
     return Skeleton.keep(
       child: GestureDetector(
         onTap: cartOrProductType == CartOrProductType.product && count == 0
-            ? () => context.read<CartScreenBloc>().add(
-                  AddCartEvent(context: context, productId: product.productId!),
+            ? () => cartBloc.add(
+                  AddCartEvent(
+                      context: screenContext ?? context,
+                      productId: product.productId!),
                 )
             : null,
         child: Container(
@@ -63,7 +69,7 @@ class ChangeCountProductWidget extends StatelessWidget {
                                 : UiConstants.textStyle3)
                             .copyWith(color: UiConstants.whiteColor, height: 1),
                       ),
-                      if (product.recipe != 'Безрецептурный')
+                      if (product.delivery == TypeReceiving.pickup)
                         Expanded(
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
@@ -80,11 +86,11 @@ class ChangeCountProductWidget extends StatelessWidget {
                   return Row(
                     children: [
                       GestureDetector(
-                        onTap: () => context.read<CartScreenBloc>().add(
-                              DeleteCartEvent(
-                                  context: context,
-                                  productId: product.productId!),
-                            ),
+                        onTap: () => cartBloc.add(
+                          DeleteCartEvent(
+                              context: screenContext ?? context,
+                              productId: product.productId!),
+                        ),
                         child: SvgPicture.asset(
                           Paths.minusIconPath,
                           width: cartOrProductType == CartOrProductType.cart
@@ -141,11 +147,11 @@ class ChangeCountProductWidget extends StatelessWidget {
                           ? Spacer()
                           : SizedBox(width: 3.w),
                       GestureDetector(
-                        onTap: () => context.read<CartScreenBloc>().add(
-                              AddCartEvent(
-                                  context: context,
-                                  productId: product.productId!),
-                            ),
+                        onTap: () => cartBloc.add(
+                          AddCartEvent(
+                              context: screenContext ?? context,
+                              productId: product.productId!),
+                        ),
                         child: SvgPicture.asset(Paths.plusIconPath,
                             width: cartOrProductType == CartOrProductType.cart
                                 ? 16.w

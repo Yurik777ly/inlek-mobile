@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 
 class OrderEntity extends Equatable {
@@ -38,6 +39,8 @@ class OrderEntity extends Equatable {
   final List<ProductEntity>? products;
   final PaymentType? paymentType;
   final TypeReceiving? typeReceipt;
+  final PharmacyEntity? pharmacy;
+  final String? link;
 
   const OrderEntity({
     this.orderId,
@@ -75,6 +78,8 @@ class OrderEntity extends Equatable {
     this.products,
     this.paymentType,
     this.typeReceipt,
+    this.pharmacy,
+    this.link,
   });
 
   @override
@@ -113,6 +118,8 @@ class OrderEntity extends Equatable {
         isPaid,
         products,
         paymentType,
-        typeReceipt
+        typeReceipt,
+        pharmacy,
+        link,
       ];
 }

@@ -1,7 +1,10 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/constants/utils.dart';
 import 'package:inlek/features/presentation/bloc/personal_data_screen/personal_data_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/custom_checkbox.dart';
 
@@ -50,6 +53,10 @@ class _CheckboxesBlockState extends State<CheckboxesBlock> {
                   text: 'Политики обработки персональных данных',
                   style: UiConstants.textStyle3
                       .copyWith(color: UiConstants.darkBlueColor),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () => Utils.openDocFile(
+                        Paths.personalDataProcessingPolicy,
+                        name: 'Пполитика_обработки_персональных_данных'),
                 ),
               ],
             ),

@@ -34,7 +34,7 @@ class OrderRepositoryImpl implements OrderRepository {
 
   // 📌 Создание заказа
   @override
-  Future<Either<Failure, String?>> createOrder(OrderParam params) async =>
+  Future<Either<Failure, OrderModel?>> createOrder(OrderParam params) async =>
       await errorHandler.handle(
         () async => await orderRemoteDataSource.createOrder(params),
       );

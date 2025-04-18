@@ -8,7 +8,7 @@ enum ProductChipType { hit, seasonalOffer, stock, nova }
 
 enum TypeReceiving { all, delivery, pickup }
 
-enum PaymentType { courier, online }
+enum PaymentType { courier, oplati, bepaid }
 
 enum PharmacyProductsAvailability { partially, fully }
 
@@ -27,7 +27,7 @@ enum OrderStatus {
   awaitingPayment // Ожидает оплаты
 }
 
-enum DeliveryZoneType { green, yellow }
+enum DeliveryZoneType { green, yellow, none }
 
 enum ProductSortType { popularity, priceDecrease, priceIncrease }
 

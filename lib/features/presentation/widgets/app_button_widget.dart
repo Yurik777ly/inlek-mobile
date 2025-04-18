@@ -5,7 +5,8 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class AppButtonWidget extends StatelessWidget {
   final bool isActive;
-  final String text;
+  final String? text;
+  final Widget? textWidget;
   final VoidCallback? onTap;
   final bool isExpanded;
   final double? borderRadius;
@@ -17,7 +18,8 @@ class AppButtonWidget extends StatelessWidget {
   const AppButtonWidget({
     super.key,
     this.isActive = true,
-    required this.text,
+    this.text,
+    this.textWidget,
     this.onTap,
     this.isExpanded = true,
     this.borderRadius,
@@ -53,10 +55,11 @@ class AppButtonWidget extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 13.5.h),
-            child: Text(
-              text,
-              style: UiConstants.textStyle3.copyWith(height: 1),
-            ),
+            child: textWidget ??
+                Text(
+                  text ?? '',
+                  style: UiConstants.textStyle3.copyWith(height: 1),
+                ),
           ),
         ),
       ),

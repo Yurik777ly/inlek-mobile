@@ -88,11 +88,19 @@ android {
         release {
             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            // add the following two lines
+            minifyEnabled false
+            shrinkResources false
         }
         debug {
             signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+
+    buildFeatures {
+       dataBinding = true
+   }
 }
 
 flutter {

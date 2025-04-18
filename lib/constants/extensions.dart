@@ -64,25 +64,39 @@ extension TypeReceivingExtension on TypeReceiving {
   static TypeReceiving? fromTitle(String? title) {
     switch (title) {
       case 'Самовывоз':
+        return TypeReceiving.pickup;
+      case 'delivery':
         return TypeReceiving.delivery;
-      default:
+      case 'Доставка':
+        return TypeReceiving.delivery;
+      case 'self':
         return TypeReceiving.pickup;
     }
+    return null;
   }
 }
 
 extension PaymentTypeExtension on PaymentType {
   static const Map<PaymentType, String> titles = {
     PaymentType.courier: 'Курьеру',
-    PaymentType.online: 'Онлайн',
+    PaymentType.oplati: 'Онлайн',
+    PaymentType.bepaid: 'Онлайн',
   };
 
   String get title => titles[this] ?? 'Неизвестный способ оплаты';
 
   static PaymentType? fromTitle(String? title) {
-    return title == titles[PaymentType.online]
-        ? PaymentType.online
-        : PaymentType.courier;
+    switch (title) {
+      case 'cash':
+        return PaymentType.courier;
+      case 'Курьеру':
+        return PaymentType.courier;
+      case 'bepaid':
+        return PaymentType.bepaid;
+      case 'oplati':
+        return PaymentType.oplati;
+    }
+    return null;
   }
 }
 
@@ -124,6 +138,33 @@ extension ProductChipTypeExtension on ProductChipType {
 
       default:
         return ProductChipType.stock;
+    }
+  }
+}
+
+extension DeliveryZonePriceExtension on DeliveryZoneType {
+  static const Map<DeliveryZoneType, double> zonePrices = {
+    DeliveryZoneType.green: 0, // Бесплатная доставка для зелёной зоны
+    DeliveryZoneType.yellow: 8, // Стоимость доставки для жёлтой зоны
+    DeliveryZoneType.none: -1, // Для неизвестных зон, например, не определить
+  };
+
+  double get price {
+    return zonePrices[this] ?? -1;
+  }
+
+  /// Метод, который пробрасывает цену по зоне
+  int getPrice(double totalPrice) {
+    if (totalPrice < 40) {
+      if (this == DeliveryZoneType.green) {
+        return 8;
+      } else if (this == DeliveryZoneType.yellow) {
+        return 8;
+      } else {
+        return 0;
+      }
+    } else {
+      return 0;
     }
   }
 }

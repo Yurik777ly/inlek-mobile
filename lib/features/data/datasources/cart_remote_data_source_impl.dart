@@ -7,6 +7,7 @@ import 'package:inlek/core/error/exception.dart';
 import 'package:inlek/core/params/cart_params.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/data/models/cart_model.dart';
+import 'package:inlek/features/data/models/pharmacy_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class CartRemoteDataSource {
@@ -14,6 +15,7 @@ abstract class CartRemoteDataSource {
   Future<void> addCart(CartParams params);
   Future<void> deleteCart(CartParams params);
   Future<void> clearCart();
+  Future<List<PharmacyModel>> getCartPharmacies();
 }
 
 class CartRemoteDataSourceImpl implements CartRemoteDataSource {
@@ -166,6 +168,45 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
       }
     } catch (e) {
       log('Error during clearCart: $e', level: 1000);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<PharmacyModel>> getCartPharmacies() async {
+    String baseUrl = dotenv.env['BASE_URL']!;
+    final String? serverToken =
+        sharedPreferences.getString(SharedPreferencesKeys.accessToken);
+
+    final uri = Uri.parse('${baseUrl}cart/pharmacies');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $serverToken'
+    };
+
+    log('GET Request: $uri',
+        name: 'CartRemoteDataSourceImpl.getCartPharmacies');
+    log('Headers: $headers',
+        name: 'CartRemoteDataSourceImpl.getCartPharmacies');
+
+    try {
+      final response = await client.get(uri, headers: headers);
+
+      log('Response Status Code: ${response.statusCode}',
+          name: 'CartRemoteDataSourceImpl.getCartPharmacies');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        List<dynamic> dataList = data['data']['cart'][0]['pharmacies'];
+
+        return dataList.map((e) => PharmacyModel.fromJson(e)).toList();
+      } else {
+        throw ServerException();
+      }
+    } catch (e) {
+      log('Error during getCartPharmacies: $e', level: 1000);
       rethrow;
     }
   }

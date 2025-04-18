@@ -153,7 +153,7 @@ class ProductScreen extends StatelessWidget {
                                                 ),
                                               ),
                                             if ((productState.product
-                                                        ?.brandProducts ??
+                                                        ?.similarProducts ??
                                                     [])
                                                 .isNotEmpty)
                                               Padding(
@@ -167,7 +167,7 @@ class ProductScreen extends StatelessWidget {
                                                   child: ProductsListWidget(
                                                       products: productState
                                                               .product
-                                                              ?.brandProducts ??
+                                                              ?.similarProducts ??
                                                           []),
                                                 ),
                                               ),
@@ -185,7 +185,8 @@ class ProductScreen extends StatelessWidget {
                                                       'Сообщить о поступлении',
                                                   onTap: () => BottomSheetManager
                                                       .showProductReceiptNotificationSheet(
-                                                          homeBloc.context),
+                                                          homeBloc
+                                                              .state.context!),
                                                 )
                                               : BlocBuilder<CartScreenBloc,
                                                   CartScreenState>(

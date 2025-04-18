@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,41 +22,13 @@ import 'package:inlek/features/presentation/widgets/main_screen/block_widget.dar
 import 'package:inlek/features/presentation/widgets/main_screen/internet_no_internet_connection_widget.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class CartScreen extends StatefulWidget {
+class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
-
-  @override
-  State<CartScreen> createState() => _CartScreenState();
-}
-
-class _CartScreenState extends State<CartScreen> {
-  bool isLoading = true;
-  late Timer _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _timer = Timer(Duration(seconds: 2), () {
-      _timer.cancel();
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
       builder: (context, homeState) {
-        final homeBloc = context.read<HomeScreenBloc>();
         return BlocBuilder<CartScreenBloc, CartScreenState>(
           builder: (context, cartState) {
             CartScreenBloc cartBloc = context.read<CartScreenBloc>();
@@ -69,7 +39,7 @@ class _CartScreenState extends State<CartScreen> {
 
             for (ProductEntity product in cartState.cartData?.products ?? []) {
               bool isLoadingProduct = product.price == null;
-              if (product.recipe == 'Безрецептурный' ||
+              if (product.delivery == TypeReceiving.delivery ||
                   isLoadingProduct ||
                   cartState.cartType == TypeReceiving.pickup) {
                 inStockProducts.add(product);
@@ -78,9 +48,18 @@ class _CartScreenState extends State<CartScreen> {
               }
             }
 
-            bool isShowCreateOrderButton = !(pickUpAndInStockProducts.any((e) =>
-                    cartState.selectedProductIds.contains(e.productId)) &&
-                cartState.cartType == TypeReceiving.delivery);
+            bool isDeliverySelected =
+                cartState.cartType == TypeReceiving.delivery &&
+                    pickUpAndInStockProducts.any(
+                      (e) => cartState.selectedProductIds.contains(e.productId),
+                    );
+
+            bool isPickupWithoutSelectedPharmacy =
+                cartState.cartType == TypeReceiving.pickup &&
+                    cartState.selectedPharmacy == null;
+
+            bool isShowCreateOrderButton =
+                !(isDeliverySelected || isPickupWithoutSelectedPharmacy);
 
             return BlocProvider(
               create: (context) => SelectorCubit(
@@ -94,7 +73,7 @@ class _CartScreenState extends State<CartScreen> {
                     body: SafeArea(
                       child: Skeletonizer(
                         ignorePointers: false,
-                        enabled: isLoading,
+                        enabled: cartState.isLoading,
                         child: Builder(
                           builder: (context) {
                             return Column(
@@ -105,8 +84,7 @@ class _CartScreenState extends State<CartScreen> {
                                             .isNotEmpty
                                         ? GestureDetector(
                                             onTap: () => BottomSheetManager
-                                                .showClearCartSheet(
-                                                    homeBloc.context),
+                                                .showClearCartSheet(context),
                                             child: Text(
                                               'Очистить корзину',
                                               style: UiConstants.textStyle3
@@ -361,27 +339,5 @@ class _CartScreenState extends State<CartScreen> {
         );
       },
     );
-  }
-
-  goToRegistration(BuildContext screenContext, BuildContext homeContext,
-      CartScreenBloc cartBloc) {
-    /*
-    if (cartBloc.state.cartType == TypeReceiving.delivery) {
-      if (cartBloc.state.products
-          .where((e) => e.isPrescription)
-          .map((e) => e.id)
-          .toList()
-          .any(
-            (e) => cartBloc.state.selectedProductIds.contains(e),
-          )) {
-        BottomSheetManager.showNotAllProductsAvailableDeliverySheet(
-            screenContext, homeContext);
-        // Все выбранные товары доступны для доставки
-      } else {
-        BottomSheetManager.showDeliverySheet(homeContext);
-      }
-      // Здесь вывод доступных аптек
-    } else {}
-    */
   }
 }

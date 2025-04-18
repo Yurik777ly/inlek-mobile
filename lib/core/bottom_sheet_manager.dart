@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,15 +7,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/extensions.dart';
-import 'package:inlek/constants/json_utils.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
+import 'package:inlek/core/courier_zone_manager.dart';
 import 'package:inlek/core/formatters/date_input_formatter.dart';
 import 'package:inlek/core/geocoder_manager.dart';
-import 'package:inlek/core/models/courier_zone_model.dart';
 import 'package:inlek/core/models/custom_marker_model.dart';
+import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/order_entity.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
@@ -26,7 +25,9 @@ import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.da
 import 'package:inlek/features/presentation/bloc/orders_screen/orders_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/personal_data_screen/personal_data_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/pharmacies_screen/pharmacies_screen_bloc.dart';
+import 'package:inlek/features/presentation/bloc/pharmacy_map/pharmacy_map_bloc.dart';
 import 'package:inlek/features/presentation/bloc/products_screen/products_screen_bloc.dart';
+import 'package:inlek/features/presentation/pages/profile/orders/orders_screen.dart';
 import 'package:inlek/features/presentation/widgets/app_button_widget.dart';
 import 'package:inlek/features/presentation/widgets/app_text_field_widget.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/cart_pharmacy_widget.dart';
@@ -42,9 +43,11 @@ import 'package:inlek/features/presentation/widgets/cart_screen/selector_widget.
 import 'package:inlek/features/presentation/widgets/cart_screen/summary_block/card_summary_block.dart';
 import 'package:inlek/features/presentation/widgets/custom_app_bar.dart';
 import 'package:inlek/features/presentation/widgets/custom_bottom_sheet.dart';
+import 'package:inlek/features/presentation/widgets/custom_checkbox.dart';
 import 'package:inlek/features/presentation/widgets/custom_radio_button.dart';
 import 'package:inlek/features/presentation/widgets/dropdown_block_item.dart';
 import 'package:inlek/features/presentation/widgets/dropdown_block_template.dart';
+import 'package:inlek/features/presentation/widgets/info_about_order_screen/courier_delivery_zone_item.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/block_widget.dart';
 import 'package:inlek/features/presentation/widgets/map/pharmacy_map_widget.dart';
 import 'package:inlek/features/presentation/widgets/orders_screen/order_info_list.dart';
@@ -59,9 +62,9 @@ import 'package:yandex_geocoder/yandex_geocoder.dart';
 import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart' as ym;
 
 class BottomSheetManager {
-  static showClearCartSheet(BuildContext homeContext) {
+  static showClearCartSheet(BuildContext screenContext) {
     showModalBottomSheet(
-      context: homeContext,
+      context: UiConstants.homeContext!,
       builder: (sheetContext) {
         return CustomBottomSheet(
           height: 231.h,
@@ -84,8 +87,8 @@ class BottomSheetManager {
               AppButtonWidget(
                 text: 'Удалить',
                 onTap: () {
-                  homeContext.read<CartScreenBloc>().add(
-                        ClearProductsEvent(homeContext),
+                  screenContext.read<CartScreenBloc>().add(
+                        ClearProductsEvent(screenContext),
                       );
                   Navigator.pop(sheetContext);
                 },
@@ -155,9 +158,9 @@ class BottomSheetManager {
   }
 
   static showDeletePromoCodeSheet(
-      BuildContext homeContext, PromocodeEntity promo) {
+      BuildContext screenContext, PromocodeEntity promo) {
     return showModalBottomSheet(
-      context: homeContext,
+      context: UiConstants.homeContext!,
       builder: (sheetContext) {
         return CustomBottomSheet(
           height: 186.h,
@@ -179,7 +182,7 @@ class BottomSheetManager {
                 text: 'Удалить',
                 isFilled: false,
                 onTap: () {
-                  homeContext.read<CartScreenBloc>().add(
+                  screenContext.read<CartScreenBloc>().add(
                         DeletePromoCodeEvent(promo: promo),
                       );
                   Navigator.pop(sheetContext);
@@ -192,76 +195,119 @@ class BottomSheetManager {
     );
   }
 
-  static showDeliverySheet(BuildContext homeContext) {
+  static showDeliverySheet(BuildContext screenContext) {
     GlobalKey<FormState> formKey = GlobalKey();
-
+    CartScreenBloc cartBloc = screenContext.read<CartScreenBloc>();
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
-      context: homeContext,
+      context: UiConstants.homeContext!,
       builder: (sheetContext) {
-        return CustomBottomSheet(
-          padding: getMarginOrPadding(left: 20, right: 20, top: 8, bottom: 94),
-          color: UiConstants.backgroundColor,
-          child: Expanded(
-            child: Form(
-              key: formKey,
-              child: ListView(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                children: [
-                  Text(
-                    'Доставка',
-                    style: UiConstants.textStyle1
-                        .copyWith(color: UiConstants.darkBlueColor),
+        return BlocBuilder<CartScreenBloc, CartScreenState>(
+          bloc: cartBloc,
+          builder: (context, state) {
+            return CustomBottomSheet(
+              padding:
+                  getMarginOrPadding(left: 20, right: 20, top: 8, bottom: 16),
+              color: UiConstants.backgroundColor,
+              child: Expanded(
+                child: Form(
+                  key: formKey,
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    children: [
+                      Text(
+                        'Доставка',
+                        style: UiConstants.textStyle1
+                            .copyWith(color: UiConstants.darkBlueColor),
+                      ),
+                      SizedBox(height: 16.h),
+                      InfoPlateWidget(
+                          text:
+                              'Доставка производится только по Минску и Минскому району'),
+                      SizedBox(height: 16.h),
+                      DeliveryCustomerBlock(screenContext: screenContext),
+                      if (cartBloc.state.cartType == TypeReceiving.delivery)
+                        Padding(
+                          padding: getMarginOrPadding(top: 16),
+                          child: DeliveryAddressBlock(
+                            screenContext: screenContext,
+                            onPickAddressOnMap: () =>
+                                showSelectAddressOnMapSheet(screenContext,
+                                    sheetContext: sheetContext),
+                          ),
+                        ),
+                      if (cartBloc.state.cartType == TypeReceiving.delivery)
+                        Padding(
+                          padding: getMarginOrPadding(top: 16),
+                          child: DeliveryPaymentBlock(
+                            screenContext: screenContext,
+                            changedOnlineMethodTap: () =>
+                                showPickOnlinePaymentSheet(screenContext),
+                          ),
+                        ),
+                      SizedBox(height: 16.h),
+                      SizedBox(
+                        height: cartBloc.state.cartType == TypeReceiving.pickup
+                            ? null
+                            : 60.h,
+                        child: AppButtonWidget(
+                          textWidget: Builder(builder: (context) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Оформить заказ',
+                                  style: UiConstants.textStyle3
+                                      .copyWith(height: 1),
+                                ),
+                                if (cartBloc.state.cartType ==
+                                    TypeReceiving.delivery)
+                                  Expanded(
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(
+                                        'Стоимость доставки - ${cartBloc.state.deliveryPayment}р.',
+                                        style: UiConstants.textStyle8.copyWith(
+                                            color: UiConstants.whiteColor,
+                                            height: 1),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            );
+                          }),
+                          isActive: true,
+                          onTap: () {
+                            if (formKey.currentState?.validate() ?? false) {
+                              screenContext.read<CartScreenBloc>().add(
+                                  CreateOrderEvent(
+                                      screenContext: screenContext));
+                              Navigator.pop(sheetContext);
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 16.h),
-                  InfoPlateWidget(
-                      text:
-                          'Доставка производится только по Минску и Минскому району'),
-                  SizedBox(height: 16.h),
-                  DeliveryCustomerBlock(screenContext: homeContext),
-                  SizedBox(height: 16.h),
-                  DeliveryAddressBlock(
-                    screenContext: homeContext,
-                    onPickAddressOnMap: () =>
-                        showSelectAddressOnMapSheet(homeContext, sheetContext),
-                  ),
-                  SizedBox(height: 16.h),
-                  DeliveryPaymentBlock(
-                    screenContext: homeContext,
-                    changedOnlineMethodTap: () =>
-                        showPickOnlinePaymentSheet(homeContext, sheetContext),
-                  ),
-                  SizedBox(height: 16.h),
-                  AppButtonWidget(
-                    text: 'Оформить заказ',
-                    isActive: true,
-                    onTap: () {
-                      if (formKey.currentState?.validate() ?? false) {
-                        homeContext
-                            .read<CartScreenBloc>()
-                            .add(CreateOrderEvent());
-                        showThanksForOrderSheet(homeContext);
-                      }
-                    },
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );
   }
 
-  static showPickOnlinePaymentSheet(
-      BuildContext homeContext, BuildContext screenContext) {
+  static showPickOnlinePaymentSheet(BuildContext screenContext) {
+    CartScreenBloc cartBloc = screenContext.read<CartScreenBloc>();
+
     return showModalBottomSheet(
-      context: screenContext,
+      context: UiConstants.homeContext!,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          height: 250.h,
+          height: 220.h,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -295,14 +341,20 @@ class BottomSheetManager {
               OnlinePaymentMethodButton(
                 child: SvgPicture.asset(Paths.oplatiIconPath),
                 onTap: () {
-                  Navigator.pop(screenContext);
+                  cartBloc.add(
+                    ChangePaymentTypeEvent(PaymentType.oplati),
+                  );
+                  Navigator.pop(sheetContext);
                 },
               ),
               OnlinePaymentMethodButton(
                 child:
                     Image.asset(Paths.eripIconPath, width: 88.w, height: 44.h),
                 onTap: () {
-                  Navigator.pop(screenContext);
+                  cartBloc.add(
+                    ChangePaymentTypeEvent(PaymentType.bepaid),
+                  );
+                  Navigator.pop(sheetContext);
                 },
               ),
             ],
@@ -312,135 +364,270 @@ class BottomSheetManager {
     );
   }
 
-  static showSelectAddressOnMapSheet(
-      BuildContext homeContext, BuildContext screenContext) async {
+  static showSelectAddressOnMapSheet(BuildContext screenContext,
+      {BuildContext? sheetContext}) async {
     // контроллер для адреса
     TextEditingController searchAddressController = TextEditingController();
     // стейт-менеджер для работы с корзиной
-    CartScreenBloc cartScreenBloc = homeContext.read<CartScreenBloc>();
-    // модель полигонов доставки
-    CourierZoneModel courierZoneModel = await JsonUtils.loadCourierZones();
+    CartScreenBloc cartScreenBloc = screenContext.read<CartScreenBloc>();
     // таймер для задержки по обратному геокодированию
     Timer? debounce;
 
     // Стейт для отслеживания выбранного адреса
     List<GeoObject?> suggestionObjects = [];
+
     GeoObject? selectedAddress;
 
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
-      context: homeContext,
+      context: sheetContext!,
       builder: (sheetContext) {
         return StatefulBuilder(
           builder: (context, setState) {
-            return CustomBottomSheet(
-              padding:
-                  getMarginOrPadding(left: 20, right: 20, top: 8, bottom: 94),
-              color: UiConstants.backgroundColor,
-              child: Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Выбрать на карте',
-                      style: UiConstants.textStyle1
-                          .copyWith(color: UiConstants.darkBlueColor),
-                    ),
-                    SizedBox(height: 16.h),
-                    InfoPlateWidget(
-                        text:
-                            'Доставка производится только по Минску и Минскому району'),
-                    SizedBox(height: 16.h),
-                    Skeleton.ignorePointer(
-                      child: Skeleton.shade(
-                        child: CitySearchField(
-                          hint: 'Искать улицу или район',
-                          controller: searchAddressController,
-                          suggestionObjects: suggestionObjects,
-                          suggestionFetcher: (query) async {
-                            if (query.length <= 2) return [];
-
-                            debounce?.cancel();
-
-                            final completer = Completer<List<String>>();
-                            debounce =
-                                Timer(Duration(milliseconds: 1500), () async {
-                              final geocoderManager = sl<GeocoderManager>();
-                              GeocodeResponse? response = await geocoderManager
-                                  .getGeocodeFromAddress(query);
-
-                              suggestionObjects = response?.response
-                                      ?.geoObjectCollection?.featureMember
-                                      ?.map((e) => e.geoObject)
-                                      .toList() ??
-                                  [];
-
-                              // Извлекаем все адреса из ответа
-                              List<String> addresses = suggestionObjects
-                                  .map((e) =>
-                                      e?.metaDataProperty?.geocoderMetaData
-                                          ?.address?.formatted ??
-                                      '')
-                                  .where((address) => address.isNotEmpty)
-                                  .toList();
-
-                              setState(() {});
-
-                              completer.complete(addresses);
-                            });
-
-                            return completer.future;
-                          },
-                          onSuggestionTap: (p0) {
-                            if ((p0 as GeoObject?)
-                                    ?.metaDataProperty
-                                    ?.geocoderMetaData
-                                    ?.address
-                                    ?.components
-                                    ?.any((component) =>
-                                        component.kind == KindResponse.house) ??
-                                false) {
-                              setState(() => selectedAddress = p0);
-                            }
-                          },
-                          onChangeField: (p0) {
-                            if (selectedAddress != null) {
-                              setState(() => selectedAddress = null);
-                            }
-                          },
+            selectedAddress = cartScreenBloc.selectedAddress;
+            return BlocProvider(
+              create: (mapContext) => PharmacyMapBloc(
+                  screenContext: screenContext,
+                  mapScreenType: MapScreenType.order)
+                ..add(
+                  InitPharmacyMapEvent(
+                    points: [
+                      if (selectedAddress != null)
+                        CustomMapObject(
+                          mapObject: ym.PlacemarkMapObject(
+                            mapId: ym.MapObjectId("213"),
+                            point: ym.Point(
+                                latitude: selectedAddress!.point!.latitude!,
+                                longitude: selectedAddress!.point!.longitude!),
+                          ),
                         ),
+                      ...sl<CourierZoneManager>().mapObjects
+                    ],
+                  ),
+                ),
+              child: BlocBuilder<PharmacyMapBloc, PharmacyMapState>(
+                builder: (context, state) {
+                  return CustomBottomSheet(
+                    padding: getMarginOrPadding(
+                        left: 20, right: 20, top: 8, bottom: 16),
+                    color: UiConstants.backgroundColor,
+                    child: Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Выбрать на карте',
+                            style: UiConstants.textStyle1
+                                .copyWith(color: UiConstants.darkBlueColor),
+                          ),
+                          SizedBox(height: 16.h),
+                          InfoPlateWidget(
+                              text:
+                                  'Доставка производится только по Минску и Минскому району'),
+                          SizedBox(height: 16.h),
+                          Skeleton.ignorePointer(
+                            child: Skeleton.shade(
+                              child: CitySearchField(
+                                hintText: 'Искать улицу или район',
+                                controller: searchAddressController,
+                                suggestionObjects: suggestionObjects,
+                                suggestionFetcher: (query) async {
+                                  if (query.length <= 2) return [];
+
+                                  debounce?.cancel();
+
+                                  final completer = Completer<List<String>>();
+                                  debounce = Timer(Duration(milliseconds: 1500),
+                                      () async {
+                                    final geocoderManager =
+                                        sl<GeocoderManager>();
+                                    GeocodeResponse? response =
+                                        await geocoderManager
+                                            .getGeocodeFromAddress(query);
+
+                                    suggestionObjects = response?.response
+                                            ?.geoObjectCollection?.featureMember
+                                            ?.map((e) => e.geoObject)
+                                            .toList() ??
+                                        [];
+
+                                    // Извлекаем все адреса из ответа
+                                    List<String> addresses = suggestionObjects
+                                        .map((e) =>
+                                            e
+                                                ?.metaDataProperty
+                                                ?.geocoderMetaData
+                                                ?.address
+                                                ?.formatted ??
+                                            '')
+                                        .where((address) => address.isNotEmpty)
+                                        .toList();
+
+                                    setState(() {});
+
+                                    completer.complete(addresses);
+                                  });
+
+                                  return completer.future;
+                                },
+                                onSuggestionTap: (p0) {
+                                  final geoObject = p0 as GeoObject?;
+
+                                  // Check if the address contains a "house" component
+                                  if (geoObject
+                                          ?.metaDataProperty
+                                          ?.geocoderMetaData
+                                          ?.address
+                                          ?.components
+                                          ?.any((component) =>
+                                              component.kind ==
+                                              KindResponse.house) ??
+                                      false) {
+                                    setState(
+                                      () {
+                                        // Extract the city name from the address components
+                                        final cityComponent = geoObject
+                                            ?.metaDataProperty
+                                            ?.geocoderMetaData
+                                            ?.address
+                                            ?.components
+                                            ?.firstWhere((component) =>
+                                                component.kind ==
+                                                KindResponse.locality);
+
+                                        // If the city component exists, assign it to the controller
+                                        if (cityComponent != null) {
+                                          cartScreenBloc.cityController
+                                              .text = cityComponent
+                                                  .name ??
+                                              ''; // Fallback to empty string if name is null
+                                        } else {
+                                          cartScreenBloc.cityController.text =
+                                              ''; // If no city component found, set text to empty string
+                                        }
+
+                                        // Extract the street and house number from the address components
+                                        final streetComponent = geoObject
+                                            ?.metaDataProperty
+                                            ?.geocoderMetaData
+                                            ?.address
+                                            ?.components
+                                            ?.firstWhere((component) =>
+                                                component.kind ==
+                                                KindResponse.street);
+
+                                        final houseComponent = geoObject
+                                            ?.metaDataProperty
+                                            ?.geocoderMetaData
+                                            ?.address
+                                            ?.components
+                                            ?.firstWhere((component) =>
+                                                component.kind ==
+                                                KindResponse.house);
+
+                                        // Format and assign to streetHomeController
+                                        if (streetComponent != null &&
+                                            houseComponent != null) {
+                                          cartScreenBloc
+                                                  .streetHomeController.text =
+                                              '${streetComponent.name}, ${houseComponent.name}';
+                                        } else if (streetComponent != null) {
+                                          cartScreenBloc.streetHomeController
+                                              .text = streetComponent
+                                                  .name ??
+                                              ''; // If street found but not house
+                                        } else if (houseComponent != null) {
+                                          cartScreenBloc.streetHomeController
+                                              .text = houseComponent
+                                                  .name ??
+                                              ''; // If house found but not street
+                                        } else {
+                                          cartScreenBloc
+                                                  .streetHomeController.text =
+                                              ''; // If neither street nor house found
+                                        }
+
+                                        // Set the selected address as well
+                                        cartScreenBloc.add(
+                                            UpdateDeliveryPriceEvent(
+                                                address: p0));
+
+                                        selectedAddress = p0;
+
+                                        context.read<PharmacyMapBloc>().add(
+                                              InitPharmacyMapEvent(
+                                                points: [
+                                                  if (selectedAddress != null)
+                                                    CustomMapObject(
+                                                      mapObject:
+                                                          ym.PlacemarkMapObject(
+                                                        mapId: ym.MapObjectId(
+                                                            "213"),
+                                                        point: ym.Point(
+                                                            latitude:
+                                                                selectedAddress!
+                                                                    .point!
+                                                                    .latitude!,
+                                                            longitude:
+                                                                selectedAddress!
+                                                                    .point!
+                                                                    .longitude!),
+                                                      ),
+                                                    ),
+                                                  ...sl<CourierZoneManager>()
+                                                      .mapObjects
+                                                ],
+                                              ),
+                                            );
+                                      },
+                                    );
+                                  }
+                                },
+                                onChangeField: (p0) {
+                                  setState(
+                                    () {
+                                      cartScreenBloc.selectedAddress = null;
+                                      selectedAddress = null;
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 16.h),
+                          Expanded(child: PharmacyMapWidget()),
+                          SizedBox(height: 16.h),
+                          CourierDeliveryZoneItem(
+                              title: 'Зелёная зона',
+                              subtitle:
+                                  'Бесплатно — для заказов от 40 руб.\nПлатно — для заказов до 40 руб.',
+                              deliveryZoneType: DeliveryZoneType.green),
+                          SizedBox(height: 16.h),
+                          CourierDeliveryZoneItem(
+                              title: 'Желтая зона',
+                              subtitle: 'Платная доставка',
+                              deliveryZoneType: DeliveryZoneType.yellow),
+                          SizedBox(height: 16.h),
+                          if (cartScreenBloc.selectedAddress != null)
+                            AppButtonWidget(
+                              text: 'Подтвердить',
+                              isActive: true,
+                              onTap: () =>
+                                  Navigator.pop(UiConstants.homeContext!),
+                            )
+                          else
+                            AppButtonWidget(
+                              text: 'Оформить самовывоз',
+                              isActive: true,
+                              onTap: () =>
+                                  Navigator.pop(UiConstants.homeContext!),
+                            )
+                        ],
                       ),
                     ),
-                    SizedBox(height: 16.h),
-                    Expanded(
-                      child: PharmacyMapWidget(points: [
-                        if (selectedAddress != null)
-                          CustomMapObject(
-                              mapObject: ym.PlacemarkMapObject(
-                                  mapId: ym.MapObjectId("213"),
-                                  point: ym.Point(
-                                      latitude:
-                                          selectedAddress!.point!.latitude!,
-                                      longitude:
-                                          selectedAddress!.point!.longitude!)))
-                      ], mapScreenType: MapScreenType.order),
-                    ),
-                    SizedBox(height: 16.h),
-                    if (selectedAddress != null)
-                      AppButtonWidget(
-                        text: 'Подтвердить',
-                        isActive: true,
-                        onTap: () => Navigator.pop(screenContext),
-                      )
-                    else
-                      AppButtonWidget(
-                        text: 'Оформить самовывоз',
-                        isActive: true,
-                        onTap: () => Navigator.pop(screenContext),
-                      )
-                  ],
-                ),
+                  );
+                },
               ),
             );
           },
@@ -449,12 +636,13 @@ class BottomSheetManager {
     );
   }
 
-  static showThanksForOrderSheet(BuildContext homeContext) {
-    CartScreenBloc cartBloc = homeContext.read<CartScreenBloc>();
+  static showThanksForOrderSheet(
+      BuildContext screenContext, OrderEntity order) {
+    CartScreenBloc cartBloc = screenContext.read<CartScreenBloc>();
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
-      context: homeContext,
+      context: UiConstants.homeContext!,
       builder: (sheetContext) {
         final List<ProductEntity> cartProducts =
             cartBloc.state.cartData?.products ?? [];
@@ -478,7 +666,7 @@ class BottomSheetManager {
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  'Статус заказов можно отслеживать в профиле в разделе «Заказы» или на главной странице.',
+                  'Статус заказов можно отслеживать в профиле в разделе «Заказы».',
                   style: UiConstants.textStyle2.copyWith(
                     color: UiConstants.darkBlue2Color.withOpacity(.6),
                   ),
@@ -488,7 +676,7 @@ class BottomSheetManager {
                     title: 'Товары',
                     products: orderedProducts,
                     productsListScreenType: ProductsListScreenType.order,
-                    screenContext: homeContext),
+                    screenContext: screenContext),
                 SizedBox(height: 16.h),
                 Text(
                   'Информация о заказе',
@@ -503,12 +691,8 @@ class BottomSheetManager {
                     borderRadius: BorderRadius.circular(16.r),
                   ),
                   child: OrderInfoList(
-                    pharmacy: cartBloc.state.selectedPharmacy,
-                    order: OrderEntity(
-                        orderId: Random().nextInt(10000),
-                        createdAt: DateTime.now(),
-                        typeReceipt: cartBloc.state.cartType,
-                        paymentType: cartBloc.state.paymentType),
+                    pharmacy: order.pharmacy,
+                    order: order,
                     address:
                         "${cartBloc.cityController.text}, ${cartBloc.streetHomeController.text}",
                   ),
@@ -519,7 +703,15 @@ class BottomSheetManager {
                   isActive: true,
                   onTap: () {
                     Navigator.pop(sheetContext);
-                    Navigator.pop(homeContext);
+                    UiConstants.homeContext!
+                        .read<HomeScreenBloc>()
+                        .add(ChangePageEvent(3));
+                    Navigator.of(UiConstants.homeContext!).push(
+                      Routes.createRoute(
+                        OrdersScreen(),
+                        settings: RouteSettings(name: Routes.ordersScreen),
+                      ),
+                    );
                   },
                 )
               ],
@@ -530,38 +722,74 @@ class BottomSheetManager {
     );
   }
 
-  static showSelectPharmacySheet(BuildContext homeContext) {
-    CartScreenBloc cartBloc = homeContext.read<CartScreenBloc>();
+  static showSelectPharmacySheet(BuildContext screenContext) {
+    CartScreenBloc cartBloc = screenContext.read<CartScreenBloc>();
     TextEditingController queryController = TextEditingController();
 
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
-      context: homeContext,
+      context: UiConstants.homeContext!,
       builder: (sheetContext) {
         int selectorIndex = 0;
-
         return BlocBuilder<CartScreenBloc, CartScreenState>(
           bloc: cartBloc,
           builder: (context, cartState) {
             return CustomBottomSheet(
-              padding: getMarginOrPadding(left: 20, right: 20, top: 8),
+              padding:
+                  getMarginOrPadding(left: 20, right: 20, top: 8, bottom: 0),
               color: UiConstants.whiteColor,
               child: Expanded(
                 child: BlocProvider(
                   create: (context) => SelectorCubit(index: selectorIndex),
                   child: BlocBuilder<SelectorCubit, SelectorState>(
                     builder: (context, state) {
-                      return BlocProvider(
-                        create: (context) => PharmaciesScreenBloc()
-                          ..add(
-                            LoadPharmaciesDataEvent(cartState.pharmacies),
+                      return MultiBlocProvider(
+                        providers: [
+                          BlocProvider(
+                            create: (context) => PharmaciesScreenBloc(
+                                getCartPharmaciesUC: sl(),
+                                context: screenContext)
+                              ..add(
+                                LoadPharmaciesDataEvent(
+                                    selectedProductIds:
+                                        cartState.selectedProductIds),
+                              ),
                           ),
-                        child: BlocBuilder<PharmaciesScreenBloc,
+                          BlocProvider(
+                            create: (context) => PharmacyMapBloc(
+                                screenContext: screenContext,
+                                mapScreenType: MapScreenType.cart),
+                          ),
+                        ],
+                        child: BlocConsumer<PharmaciesScreenBloc,
                             PharmaciesScreenState>(
+                          listener: (context, state) async {
+                            await Future.delayed(Duration(milliseconds: 300));
+                            context.read<PharmacyMapBloc>().add(
+                                  InitPharmacyMapEvent(
+                                      points: state.mapObjects),
+                                );
+                          },
                           builder: (context, state) {
                             PharmaciesScreenBloc pharmaciesBloc =
                                 context.read<PharmaciesScreenBloc>();
+
+                            final List<PharmacyEntity> filteredPharmacies =
+                                state.filteredPharmacies.where((pharmacy) {
+                              final List<ProductEntity> pharmacyProducts =
+                                  pharmacy.products;
+                              final Set<int> selectedIds =
+                                  cartState.selectedProductIds;
+
+                              final bool hasSelectedProduct =
+                                  pharmacyProducts.any(
+                                (product) =>
+                                    selectedIds.contains(product.productId),
+                              );
+
+                              return hasSelectedProduct;
+                            }).toList();
 
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -576,7 +804,7 @@ class BottomSheetManager {
                                   title: 'Выбор аптеки',
                                   titleStyle: UiConstants.textStyle9,
                                   clickableText:
-                                      '${state.filteredPharmacies.length} аптек',
+                                      '${filteredPharmacies.length} аптек',
                                   child: CustomAppBar(
                                     controller: queryController,
                                     hintText: 'Искать аптеки',
@@ -584,7 +812,7 @@ class BottomSheetManager {
                                     contentPadding: EdgeInsets.zero,
                                     isShowFilterButton: true,
                                     onTapFilterButton: () =>
-                                        showPharmacySortSheet(context),
+                                        showPharmacySort2Sheet(context),
                                     onChangedField: (value) =>
                                         pharmaciesBloc.add(
                                       ChangePharmacyQueryEvent(value),
@@ -601,36 +829,45 @@ class BottomSheetManager {
                                   ),
                                 ),
                                 SizedBox(height: 16.h),
-                                if (selectorIndex == 0)
-                                  Expanded(
-                                    child: ListView.separated(
-                                        padding: getMarginOrPadding(bottom: 94),
-                                        shrinkWrap: true,
-                                        itemBuilder: (context, index) =>
-                                            CartPharmacyWidget(
-                                                pharmacy: state
-                                                    .filteredPharmacies[index],
-                                                onButtonTap: () =>
-                                                    showPharmacySheet(
-                                                      homeContext,
-                                                      state.filteredPharmacies[
-                                                          index],
-                                                    ),
-                                                screenContext: homeContext),
-                                        separatorBuilder: (context, index) =>
-                                            SizedBox(height: 8.h),
-                                        itemCount:
-                                            state.filteredPharmacies.length),
-                                  )
-                                else
-                                  Expanded(
-                                    child: Padding(
-                                      padding: getMarginOrPadding(bottom: 94),
-                                      child: PharmacyMapWidget(
-                                          points: state.mapObjects,
-                                          mapScreenType: MapScreenType.cart),
-                                    ),
+                                Expanded(
+                                  child: Builder(
+                                    builder: (context) {
+                                      if (state.isLoading) {
+                                        return Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      }
+                                      return selectorIndex == 0
+                                          ? ListView.separated(
+                                              padding: getMarginOrPadding(
+                                                  bottom: 16),
+                                              shrinkWrap: true,
+                                              itemBuilder: (context, index) =>
+                                                  CartPharmacyWidget(
+                                                      pharmacy:
+                                                          filteredPharmacies[
+                                                              index],
+                                                      onButtonTap: () =>
+                                                          showPharmacySheet(
+                                                            screenContext,
+                                                            filteredPharmacies[
+                                                                index],
+                                                          ),
+                                                      screenContext:
+                                                          screenContext),
+                                              separatorBuilder:
+                                                  (context, index) =>
+                                                      SizedBox(height: 8.h),
+                                              itemCount:
+                                                  filteredPharmacies.length)
+                                          : Padding(
+                                              padding: getMarginOrPadding(
+                                                  bottom: 16),
+                                              child: PharmacyMapWidget(),
+                                            );
+                                    },
                                   ),
+                                )
                               ],
                             );
                           },
@@ -647,15 +884,17 @@ class BottomSheetManager {
     );
   }
 
-  static showPharmacySheet(BuildContext homeContext, PharmacyEntity pharmacy) {
+  static showPharmacySheet(
+      BuildContext screenContext, PharmacyEntity pharmacy) {
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
-      context: homeContext,
+      context: UiConstants.homeContext!,
       builder: (sheetContext) {
-        final cartBloc = homeContext.read<CartScreenBloc>();
+        final cartBloc = screenContext.read<CartScreenBloc>();
 
         return BlocBuilder<CartScreenBloc, CartScreenState>(
+          bloc: cartBloc,
           builder: (context, state) {
             List<ProductEntity> products =
                 cartBloc.state.cartData?.products ?? [];
@@ -667,22 +906,6 @@ class BottomSheetManager {
                 .toList();
 
             List<ProductEntity> noAvailableProducts = [];
-
-            //List<ProductEntity> noAvailableProducts = selectedProducts
-            //    .where((product) =>
-            //        !pharmacy.availableProducts.contains(product.productId))
-            //    .toList();
-//
-            // Обновляем свойство inStock для каждого продукта
-            //for (var product in noAvailableProducts) {
-            //  product.inStock = false;
-            //}
-
-            //List<Product> availableProducts = selectedProducts
-            //    .where((product) => pharmacy.availableProducts
-            //        .map((e) => e.id)
-            //        .contains(product.id))
-            //    .toList();
 
             List<ProductEntity> availableProducts = [];
             return CustomBottomSheet(
@@ -707,7 +930,7 @@ class BottomSheetManager {
                     ),
                     SizedBox(height: 16.h),
                     PharmacyAvailableProductsChip(
-                        allProductsAvailable: noAvailableProducts.isEmpty),
+                        allProductsAvailable: pharmacy.availability == 'full'),
                     SizedBox(height: 32.h),
                     // список с законченными товарами
                     if (noAvailableProducts.isNotEmpty)
@@ -718,14 +941,14 @@ class BottomSheetManager {
                             subtitle:
                                 'Эти товары останутся в корзине, их можно будет оформить отдельным заказом в другой аптеке.',
                             products: noAvailableProducts,
-                            screenContext: homeContext,
+                            screenContext: screenContext,
                             productsListScreenType:
                                 ProductsListScreenType.pharmacy),
                       ),
                     ProductsListWidget(
                         title: 'В наличии',
                         products: selectedProducts,
-                        screenContext: homeContext,
+                        screenContext: screenContext,
                         productsListScreenType:
                             ProductsListScreenType.pharmacy),
                     // подсчёт стоимости
@@ -733,7 +956,7 @@ class BottomSheetManager {
                       Padding(
                         padding: getMarginOrPadding(bottom: 16, top: 16),
                         child: CardSummaryBlock(
-                            screenContext: homeContext,
+                            screenContext: screenContext,
                             canUsePromoCodes: false),
                       ),
 
@@ -742,8 +965,8 @@ class BottomSheetManager {
                       isActive: true,
                       onTap: () {
                         cartBloc.add(SelectPharmacy(pharmacy));
-                        Navigator.pop(context);
-                        Navigator.pop(homeContext);
+                        Navigator.pop(sheetContext);
+                        Navigator.pop(UiConstants.homeContext!);
                       },
                     )
                   ],
@@ -784,14 +1007,12 @@ class BottomSheetManager {
     );
   }
 
-  static showConfirmationCodeSheet(
-      BuildContext homeContext,
-      BuildContext screenContext,
+  static showConfirmationCodeSheet(BuildContext screenContext,
       PersonalDataScreenBloc personalDataBloc) async {
     final bloc = screenContext.read<CodeScreenBloc>();
 
     showModalBottomSheet(
-      context: homeContext,
+      context: UiConstants.homeContext!,
       builder: (sheetContext) {
         return BlocBuilder<CodeScreenBloc, CodeScreenState>(
           bloc: bloc,
@@ -868,14 +1089,14 @@ class BottomSheetManager {
     );
   }
 
-  static showProductsFilterSheet(BuildContext homeContext,
+  static showProductsFilterSheet(BuildContext screenContext,
       {ProductsScreenBloc? productsScreenBloc}) {
     ProductsScreenBloc productsScreenBloc =
-        homeContext.read<ProductsScreenBloc>();
+        screenContext.read<ProductsScreenBloc>();
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
-      context: homeContext.read<HomeScreenBloc>().context,
+      context: UiConstants.homeContext!,
       builder: (sheetContext) {
         return BlocBuilder<ProductsScreenBloc, ProductsScreenState>(
           bloc: productsScreenBloc,
@@ -909,7 +1130,7 @@ class BottomSheetManager {
                       ],
                     ),
                     SizedBox(height: 16.h),
-                    PriceRangeWidget(homeContext: homeContext),
+                    PriceRangeWidget(screenContext: screenContext),
                     SizedBox(height: 11.h),
                     DropdownBlockTemplate(
                       title: 'Форма выпуска',
@@ -1077,17 +1298,18 @@ class BottomSheetManager {
     );
   }
 
-  static showPharmacySortSheet(BuildContext homeContext) {
+  static showPharmacySortSheet(
+      BuildContext homeContext, BuildContext screenContext) {
     showModalBottomSheet(
       context: homeContext,
       builder: (sheetContext) {
         PharmaciesScreenBloc pharmaciesBloc =
-            homeContext.read<PharmaciesScreenBloc>();
+            screenContext.read<PharmaciesScreenBloc>();
         return BlocBuilder<PharmaciesScreenBloc, PharmaciesScreenState>(
           bloc: pharmaciesBloc,
           builder: (context, state) {
             return CustomBottomSheet(
-              height: 240.h,
+              height: 200.h,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1127,6 +1349,60 @@ class BottomSheetManager {
                     groupValue: state.pharmacySortType,
                     onChanged: () => pharmaciesBloc.add(
                       ChangePharmacySortTypeEvent(TypeReceiving.delivery),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  static showPharmacySort2Sheet(BuildContext screenContext) {
+    showModalBottomSheet(
+      context: UiConstants.homeContext!,
+      builder: (sheetContext) {
+        PharmaciesScreenBloc pharmaciesBloc =
+            screenContext.read<PharmaciesScreenBloc>();
+        return BlocBuilder<PharmaciesScreenBloc, PharmaciesScreenState>(
+          bloc: pharmaciesBloc,
+          builder: (context, state) {
+            return CustomBottomSheet(
+              height: 200.h,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Фильтр',
+                    style: UiConstants.textStyle5
+                        .copyWith(color: UiConstants.darkBlueColor),
+                  ),
+                  SizedBox(height: 16.h),
+                  CustomCheckbox(
+                    title: Text(
+                      'Работает сейчас',
+                      style: UiConstants.textStyle11
+                          .copyWith(color: UiConstants.darkBlueColor),
+                    ),
+                    textStyle: UiConstants.textStyle2,
+                    isChecked: pharmaciesBloc.state.showWorkingNowOnly,
+                    onChanged: (isChecked) => pharmaciesBloc.add(
+                      ToggleShowWorkingNowOnlyEvent(isChecked ?? false),
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  CustomCheckbox(
+                    title: Text(
+                      'Все товары в наличии',
+                      style: UiConstants.textStyle11
+                          .copyWith(color: UiConstants.darkBlueColor),
+                    ),
+                    textStyle: UiConstants.textStyle2,
+                    isChecked: pharmaciesBloc.state.showWithAllProductsOnly,
+                    onChanged: (isChecked) => pharmaciesBloc.add(
+                      ToggleShowWithAllProductsOnlyEvent(isChecked ?? false),
                     ),
                   ),
                 ],
@@ -1371,12 +1647,11 @@ class BottomSheetManager {
     );
   }
 
-  static showPharmacyInfoSheet(
-      BuildContext homeContext, PharmacyEntity pharmacy) {
+  static showPharmacyInfoSheet(PharmacyEntity pharmacy) {
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
-      context: homeContext,
+      context: UiConstants.homeContext!,
       builder: (sheetContext) {
         return CustomBottomSheet(
           padding: EdgeInsets.zero,

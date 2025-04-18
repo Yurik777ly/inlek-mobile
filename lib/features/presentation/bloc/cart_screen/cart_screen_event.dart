@@ -7,9 +7,10 @@ abstract class CartScreenEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class LoadCartDataEvent extends CartScreenEvent {}
-
-class LoadPharmaciesEvent extends CartScreenEvent {}
+class LoadCartDataEvent extends CartScreenEvent {
+  final bool isFirstLoading;
+  const LoadCartDataEvent({this.isFirstLoading = false});
+}
 
 class AddCartEvent extends CartScreenEvent {
   final BuildContext context;
@@ -33,7 +34,11 @@ class ToggleSelectionEvent extends CartScreenEvent {
   const ToggleSelectionEvent(this.isChecked, this.productId);
 }
 
-class PickAllProductsEvent extends CartScreenEvent {}
+class PickAllProductsEvent extends CartScreenEvent {
+  final bool force;
+
+  const PickAllProductsEvent({this.force = false});
+}
 
 class ClearProductsEvent extends CartScreenEvent {
   final BuildContext context;
@@ -93,8 +98,14 @@ class ToggleShowPharmaciesProductsInStockEvent extends CartScreenEvent {
 }
 
 class CreateOrderEvent extends CartScreenEvent {
-  const CreateOrderEvent();
+  final BuildContext screenContext;
+  const CreateOrderEvent({required this.screenContext});
 
   @override
   List<Object?> get props => [];
+}
+
+class UpdateDeliveryPriceEvent extends CartScreenEvent {
+  final GeoObject? address;
+  const UpdateDeliveryPriceEvent({this.address});
 }
