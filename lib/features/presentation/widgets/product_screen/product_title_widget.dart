@@ -25,13 +25,15 @@ class ProductTitleWidget extends StatelessWidget {
         Row(
           children: [
             Text(
-              'от ${Utils.formatPrice(product?.oldPrice ?? product?.price)}',
+              'от ${Utils.formatPrice(product?.price)}',
               style: UiConstants.textStyle9.copyWith(
-                  color: product?.oldPrice != null
+                  color: product?.oldPrice != null &&
+                          product?.oldPrice != product?.price
                       ? UiConstants.pink2Color
                       : UiConstants.blackColor),
             ),
-            if (product?.oldPrice != null)
+            if (product?.oldPrice != null &&
+                product?.oldPrice != product?.price)
               Padding(
                 padding: getMarginOrPadding(left: 4),
                 child: Text(
@@ -42,7 +44,8 @@ class ProductTitleWidget extends StatelessWidget {
                       decoration: TextDecoration.lineThrough),
                 ),
               ),
-            if (product?.discount != null)
+            if (product?.discount != null &&
+                product?.oldPrice != product?.price)
               Padding(
                 padding: getMarginOrPadding(left: 12),
                 child: ProductSaleChip(discount: product?.discount ?? 0),

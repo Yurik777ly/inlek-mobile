@@ -82,6 +82,7 @@ import 'package:inlek/features/presentation/bloc/pharmacies_screen/pharmacies_sc
 import 'package:inlek/features/presentation/bloc/product_screen/product_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/products_screen/products_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/profile_screen/profile_screen_bloc.dart';
+import 'package:inlek/features/presentation/bloc/sale_screen/sale_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/sales_screen/sales_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/search_screen/search_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/select_region_screen/select_region_screen_bloc.dart';
@@ -207,6 +208,11 @@ Future<void> init() async {
   sl.registerFactory(
     () => SalesScreenBloc(
       getActionsUC: sl<GetActionsUC>(),
+    ),
+  );
+  sl.registerFactory(
+    () => SaleScreenBloc(
+      getOneActionUC: sl<GetOneActionUC>(),
     ),
   );
   sl.registerFactory(

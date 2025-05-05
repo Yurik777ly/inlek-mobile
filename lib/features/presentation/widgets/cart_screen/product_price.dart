@@ -14,7 +14,7 @@ class ProductPrice extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        if (product.oldPrice != null)
+        if (product.oldPrice != null && product.oldPrice != product.price)
           Text(
             Utils.formatPrice(product.oldPrice),
             style: UiConstants.textStyle8.copyWith(
@@ -27,7 +27,8 @@ class ProductPrice extends StatelessWidget {
           child: Text(
             'от ${Utils.formatPrice(product.price)}',
             style: UiConstants.textStyle14.copyWith(
-                color: product.oldPrice != null
+                color: product.oldPrice != null &&
+                        product.oldPrice != product.price
                     ? UiConstants.pink2Color
                     : UiConstants.blackColor),
           ),

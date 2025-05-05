@@ -459,8 +459,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
   void _onUpdateDeliveryPrice(
       UpdateDeliveryPriceEvent event, Emitter<CartScreenState> emit) async {
-    DeliveryZoneType deliveryZone = courierZoneManager
-        .getZoneTypeByCoordinates(event.address?.point ?? state.address?.point);
+    DeliveryZoneType deliveryZone = courierZoneManager.getZoneTypeByCoordinates(
+        event.address?.point ?? selectedAddress?.point);
 
     final selectedProducts = state.cartData?.products
             ?.where((product) =>

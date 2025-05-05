@@ -12,13 +12,15 @@ class ProductsGridWidget extends StatelessWidget {
   final bool isLoadingProducts;
   final List<ProductEntity> products;
   final ScrollController controller;
+  final ScrollPhysics? scrollPhysics;
 
   const ProductsGridWidget(
       {super.key,
       required this.products,
       required this.isLoading,
       required this.isLoadingProducts,
-      required this.controller});
+      required this.controller,
+      this.scrollPhysics});
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,7 @@ class ProductsGridWidget extends StatelessWidget {
       child: Skeleton.ignorePointer(
         child: Skeleton.shade(
           child: GridView.builder(
+            physics: scrollPhysics,
             controller: controller,
             padding: getMarginOrPadding(bottom: 94),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

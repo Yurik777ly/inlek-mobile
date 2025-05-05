@@ -91,8 +91,6 @@ class Paths {
       '${_imagesPath}dropdown_arrow.svg';
 
   // json
-  static const String searchProductJsonPath = '${_jsonPath}search.json';
-  static const String recommendedProductJsonPath = '${_jsonPath}blank.json';
   static const String courierZonesJsonPath = '${_jsonPath}apteka.json';
 
   //PDF

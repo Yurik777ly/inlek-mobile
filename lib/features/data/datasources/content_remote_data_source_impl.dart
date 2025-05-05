@@ -224,7 +224,7 @@ class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        return ActionModel.fromJson(data['data']);
+        return ActionModel.fromJson(data['data']['action']);
       } else {
         throw ServerException();
       }

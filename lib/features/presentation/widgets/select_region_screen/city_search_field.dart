@@ -60,6 +60,7 @@ class _CitySearchFieldState extends State<CitySearchField> {
         width: widget.widthOverlay ?? MediaQuery.of(context).size.width - 40.w,
         child: CompositedTransformFollower(
           link: _layerLink,
+          showWhenUnlinked: false,
           offset: widget.offset,
           child: Material(
             color: UiConstants.whiteColor,

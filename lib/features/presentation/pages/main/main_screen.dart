@@ -12,7 +12,7 @@ import 'package:inlek/features/domain/entities/category_entity.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/main_screen/main_screen_bloc.dart';
 import 'package:inlek/features/presentation/pages/catalog/products/products_screen.dart';
-import 'package:inlek/features/presentation/pages/profile/sales_screen.dart';
+import 'package:inlek/features/presentation/pages/profile/sales/sales_screen.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/block_widget.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/categories_grid_widget.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/custom_banner_widget.dart';

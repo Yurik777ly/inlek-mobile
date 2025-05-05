@@ -237,12 +237,27 @@ class ProductsScreenBloc
         return matchesPrice && matchesBrand && matchesCountry && matchesForm;
       }).toList();
 
+      // 🔽 СОРТИРОВКА ПРОДУКТОВ
+      switch (state.productSortType) {
+        case ProductSortType.priceIncrease:
+          filteredProducts
+              .sort((a, b) => (a.price ?? 0).compareTo(b.price ?? 0));
+          break;
+
+        case ProductSortType.priceDecrease:
+          filteredProducts
+              .sort((a, b) => (b.price ?? 0).compareTo(a.price ?? 0));
+          break;
+
+        case ProductSortType.popularity:
+          break;
+      }
+
       searchProducts = SearchProductsEntity(
-        currentPage: 1,
-        lastPage: 1,
-        total: filteredProducts.length,
-        products: filteredProducts,
-      );
+          currentPage: 1,
+          lastPage: 1,
+          total: filteredProducts.length,
+          products: filteredProducts);
 
       emit(
         state.copyWith(

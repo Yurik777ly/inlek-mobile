@@ -4,7 +4,7 @@ import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/routes.dart';
-import 'package:inlek/features/presentation/pages/profile/sales_screen.dart';
+import 'package:inlek/features/presentation/pages/profile/sales/sales_screen.dart';
 
 class StocksPlateWidget extends StatelessWidget {
   const StocksPlateWidget({super.key});

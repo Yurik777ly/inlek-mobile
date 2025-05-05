@@ -6,8 +6,14 @@ import 'package:inlek/features/presentation/widgets/products_screen/sort_button.
 import 'package:skeletonizer/skeletonizer.dart';
 
 class SortWidget extends StatelessWidget {
-  const SortWidget({super.key, required this.onTap});
+  const SortWidget(
+      {super.key,
+      required this.onTap,
+      required this.caption,
+      required this.iconPath});
 
+  final String caption;
+  final String iconPath;
   final Function() onTap;
 
   @override
@@ -16,29 +22,24 @@ class SortWidget extends StatelessWidget {
       child: Skeleton.leaf(
         child: GestureDetector(
           onTap: onTap,
-          child: Row(
-            children: [
-              Container(
-                padding:
-                    getMarginOrPadding(left: 8, top: 8, bottom: 8, right: 16),
-                decoration: BoxDecoration(
-                  color: UiConstants.whiteColor,
-                  borderRadius: BorderRadius.circular(200.r),
+          child: Container(
+            padding: getMarginOrPadding(left: 8, top: 8, bottom: 8, right: 16),
+            decoration: BoxDecoration(
+              color: UiConstants.whiteColor,
+              borderRadius: BorderRadius.circular(200.r),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SortButton(onTap: onTap, iconPath: iconPath),
+                SizedBox(width: 8.w),
+                Text(
+                  caption,
+                  style: UiConstants.textStyle3
+                      .copyWith(color: UiConstants.darkBlueColor),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SortButton(onTap: onTap),
-                    SizedBox(width: 8.w),
-                    Text(
-                      'Сортировка',
-                      style: UiConstants.textStyle3
-                          .copyWith(color: UiConstants.darkBlueColor),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

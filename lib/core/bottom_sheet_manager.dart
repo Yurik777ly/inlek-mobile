@@ -249,9 +249,13 @@ class BottomSheetManager {
                         ),
                       SizedBox(height: 16.h),
                       SizedBox(
-                        height: cartBloc.state.cartType == TypeReceiving.pickup
-                            ? null
-                            : 60.h,
+                        height:
+                            cartBloc.state.cartType == TypeReceiving.pickup ||
+                                    (cartBloc.state.cartType ==
+                                            TypeReceiving.delivery &&
+                                        cartBloc.selectedAddress == null)
+                                ? null
+                                : 60.h,
                         child: AppButtonWidget(
                           textWidget: Builder(builder: (context) {
                             return Column(
@@ -263,7 +267,8 @@ class BottomSheetManager {
                                       .copyWith(height: 1),
                                 ),
                                 if (cartBloc.state.cartType ==
-                                    TypeReceiving.delivery)
+                                        TypeReceiving.delivery &&
+                                    cartBloc.selectedAddress != null)
                                   Expanded(
                                     child: FittedBox(
                                       fit: BoxFit.scaleDown,
@@ -1248,10 +1253,9 @@ class BottomSheetManager {
     );
   }
 
-  static showProductSortSheet(
-      BuildContext homeContext, BuildContext screenContext) {
+  static showProductSortSheet(BuildContext screenContext) {
     showModalBottomSheet(
-      context: homeContext,
+      context: UiConstants.homeContext!,
       builder: (sheetContext) {
         ProductsScreenBloc productsBloc =
             screenContext.read<ProductsScreenBloc>();

@@ -28,7 +28,9 @@ class SummaryPricesBlock extends StatelessWidget {
         final productsTotal = selectedProducts.fold<double>(
           0,
           (sum, product) =>
-              sum + (product.price ?? 0) * (product.quantity ?? 1),
+              sum +
+              (product.oldPrice ?? product.price ?? 0) *
+                  (product.quantity ?? 1),
         );
 
         // Считаем скидку от старой цены
@@ -63,9 +65,13 @@ class SummaryPricesBlock extends StatelessWidget {
           },
         );
 
+        final deliveryPrice = state.cartType == TypeReceiving.delivery
+            ? state.deliveryPayment.toDouble()
+            : 0.0;
+
         // Итоговая сумма
         final totalPrice =
-            productsTotal + state.deliveryPayment - discount - promoDiscount;
+            productsTotal + deliveryPrice - discount - promoDiscount;
 
         return Column(
           children: [
@@ -76,8 +82,8 @@ class SummaryPricesBlock extends StatelessWidget {
             if (state.cartType == TypeReceiving.delivery)
               Padding(
                 padding: getMarginOrPadding(top: 8),
-                child: SummaryPriceItem(
-                    title: 'Доставка', price: state.deliveryPayment.toDouble()),
+                child:
+                    SummaryPriceItem(title: 'Доставка', price: deliveryPrice),
               ),
             SizedBox(height: 8.h),
             SummaryPriceItem(

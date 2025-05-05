@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
@@ -92,10 +93,10 @@ class ProductsScreen extends StatelessWidget {
                                               ),
                                               SizedBox(height: 16.h),
                                               SortWidget(
+                                                caption: 'Сортировка',
+                                                iconPath: Paths.sortIconPath,
                                                 onTap: () => BottomSheetManager
                                                     .showProductSortSheet(
-                                                        UiConstants
-                                                            .homeContext!,
                                                         context),
                                               ),
                                               SizedBox(height: 16.h),

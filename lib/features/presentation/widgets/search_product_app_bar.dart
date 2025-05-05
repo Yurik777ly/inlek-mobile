@@ -98,7 +98,7 @@ class SearchProductAppBar extends StatelessWidget {
                               : null,
                           onChangedField: (p0) =>
                               searchBloc.add(ChangeQueryEvent(p0)),
-                          onTapOutside: (event) {},
+                          onTapOutside: () {},
                           onTap: () =>
                               searchBloc.add(ToggleExpandCollapseEvent(true)),
                         ),

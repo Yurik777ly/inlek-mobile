@@ -9,7 +9,7 @@ import 'package:inlek/features/presentation/pages/profile/info_about_order_scree
 import 'package:inlek/features/presentation/pages/profile/news/news_screen.dart';
 import 'package:inlek/features/presentation/pages/profile/orders/orders_screen.dart';
 import 'package:inlek/features/presentation/pages/profile/personal_data_screen.dart';
-import 'package:inlek/features/presentation/pages/profile/sales_screen.dart';
+import 'package:inlek/features/presentation/pages/profile/sales/sales_screen.dart';
 import 'package:inlek/features/presentation/widgets/category_screen/subcategory_item.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 

@@ -13,10 +13,12 @@ class BlockWidget extends StatelessWidget {
     this.contentPadding,
     this.titleStyle,
     this.spacing,
+    this.clickableTextColor,
   });
 
   final String title;
   final String? clickableText;
+  final Color? clickableTextColor;
   final Function()? onTap;
   final Widget? child;
   final EdgeInsets? contentPadding;
@@ -48,7 +50,8 @@ class BlockWidget extends StatelessWidget {
                       child: Text(
                         clickableText ?? '',
                         style: UiConstants.textStyle3.copyWith(
-                          color: UiConstants.darkBlue2Color.withOpacity(.6),
+                          color: clickableTextColor ??
+                              UiConstants.darkBlue2Color.withOpacity(.6),
                         ),
                       ),
                     ),

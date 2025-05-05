@@ -184,8 +184,14 @@ class CartScreen extends StatelessWidget {
                                                                 bottom: 16),
                                                         child: BlockWidget(
                                                             title: 'Аптека',
-                                                            clickableText:
-                                                                'Изменить',
+                                                            clickableText: cartState
+                                                                        .selectedPharmacy !=
+                                                                    null
+                                                                ? 'Изменить'
+                                                                : 'Выбрать аптеку',
+                                                            clickableTextColor:
+                                                                UiConstants
+                                                                    .pink2Color,
                                                             onTap: () =>
                                                                 BottomSheetManager
                                                                     .showSelectPharmacySheet(
@@ -272,21 +278,47 @@ class CartScreen extends StatelessWidget {
                                                               true),
                                                     ),
                                                     // кнопка оформления
-                                                    if (cartState
-                                                        .selectedProductIds
-                                                        .isNotEmpty)
-                                                      AppButtonWidget(
-                                                        isActive: cartState
+
+                                                    AppButtonWidget(
+                                                      text:
+                                                          'Перейти к оформлению',
+                                                      onTap: () {
+                                                        if (cartState
                                                             .selectedProductIds
-                                                            .isNotEmpty,
-                                                        text:
-                                                            'Перейти к оформлению',
-                                                        onTap: !isShowCreateOrderButton
-                                                            ? null
-                                                            : () => BottomSheetManager
-                                                                .showDeliverySheet(
-                                                                    context),
-                                                      ),
+                                                            .isEmpty) {
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                            const SnackBar(
+                                                              content: Text(
+                                                                  'Пожалуйста, выберите хотя бы один товар'),
+                                                            ),
+                                                          );
+                                                        } else if (isPickupWithoutSelectedPharmacy) {
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                            const SnackBar(
+                                                              content: Text(
+                                                                  'Пожалуйста, выберите аптеку для самовывоза'),
+                                                            ),
+                                                          );
+                                                        } else if (isDeliverySelected) {
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                            const SnackBar(
+                                                              content: Text(
+                                                                  'Для доставки выберите аптеку с нужным товаром'),
+                                                            ),
+                                                          );
+                                                        } else {
+                                                          BottomSheetManager
+                                                              .showDeliverySheet(
+                                                                  context);
+                                                        }
+                                                      },
+                                                    ),
                                                   ],
                                                 );
                                               },

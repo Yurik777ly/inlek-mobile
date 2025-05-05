@@ -24,28 +24,34 @@ class ActionModel extends ActionEntity {
 
   String toRawJson() => json.encode(toJson());
 
-  factory ActionModel.fromJson(Map<String, dynamic> json) => ActionModel(
-        actionId: json["action_id"],
-        pageTitle: json["pagetitle"],
-        alias: json["alias"],
-        discount: json["discount"],
-        endActionDate: json["end_action_date"] != null
-            ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                .tryParse(json["end_action_date"])
-            : null,
-        createDttm: json["create_dttm"] != null
-            ? DateFormat('yyyy-MM-dd HH:mm:ss').tryParse(json["create_dttm"])
-            : null,
-        image: json["image"],
-        image1400300: json["image_1400_300"],
-        image960400: json["image_960_400"],
-        goodsIds: json["goods_ids"],
-        actionProducts: json['action_products'] != null
-            ? (json['action_products'] as List)
-                .map((e) => ProductModel.fromJson(e))
-                .toList()
-            : [],
-      );
+  factory ActionModel.fromJson(Map<String, dynamic> json) {
+    Map<String, dynamic>? action = json;
+    List<dynamic>? products = json['action_products'];
+    if (json.containsKey('action')) {
+      action = action['action'];
+      products = action?['action_products'];
+    }
+    return ActionModel(
+      actionId: action?["action_id"],
+      pageTitle: action?["pagetitle"],
+      alias: action?["alias"],
+      discount: action?["discount"],
+      endActionDate: action?["end_action_date"] != null
+          ? DateFormat('yyyy-MM-dd HH:mm:ss')
+              .tryParse(action?["end_action_date"])
+          : null,
+      createDttm: action?["create_dttm"] != null
+          ? DateFormat('yyyy-MM-dd HH:mm:ss').tryParse(action?["create_dttm"])
+          : null,
+      image: action?["image"],
+      image1400300: action?["image_1400_300"],
+      image960400: action?["image_960_400"],
+      goodsIds: action?["goods_ids"],
+      actionProducts: products != null
+          ? products.map((e) => ProductModel.fromJson(e)).toList()
+          : [],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "action_id": actionId,
