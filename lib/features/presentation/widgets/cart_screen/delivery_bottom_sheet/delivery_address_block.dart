@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
@@ -69,8 +70,9 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                 offset: const Offset(0, 80),
                 controller: cartBloc.streetHomeController,
                 validator: (p0) {
-                  if (cartBloc.selectedAddress == null) {
-                    return 'Выберите корректный адрес';
+                  if (cartBloc.selectedAddress == null ||
+                      cartBloc.state.deliveryZone == DeliveryZoneType.none) {
+                    return 'Сюда не доставляем';
                   }
                   return null;
                 },

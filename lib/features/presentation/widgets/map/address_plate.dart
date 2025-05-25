@@ -4,28 +4,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
-import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 
 class AddressPlate extends StatelessWidget {
-  final PharmacyEntity pharmacy;
-  final Function() onClose;
+  final String title;
+  final String body;
+  final Function()? onClose;
 
   const AddressPlate(
-      {super.key, required this.pharmacy, required this.onClose});
+      {super.key, required this.title, required this.body, this.onClose});
 
   @override
   Widget build(BuildContext context) {
-    final String address = pharmacy.address ?? '';
-    final List<String> addressSplit = address.split(', ');
-
-    String city = '';
-    String street = '';
-
-    if (addressSplit.length > 1) {
-      city = addressSplit.first;
-      street = addressSplit.skip(1).join(', ');
-    }
-
     return Container(
       padding: getMarginOrPadding(all: 8),
       decoration: BoxDecoration(
@@ -41,29 +30,32 @@ class AddressPlate extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  city,
+                  title,
                   style: UiConstants.textStyle5
                       .copyWith(color: UiConstants.darkBlueColor),
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  street,
+                  body,
                   style: UiConstants.textStyle2
                       .copyWith(color: UiConstants.darkBlueColor),
                 ),
               ],
             ),
           ),
-          SizedBox(width: 8.w),
-          GestureDetector(
-            onTap: onClose,
-            child: SvgPicture.asset(
-              Paths.closeIconPath,
-              width: 24.w,
-              height: 24.w,
-              color: UiConstants.darkBlue2Color.withOpacity(.6),
+          if (onClose != null)
+            Padding(
+              padding: getMarginOrPadding(left: 8),
+              child: GestureDetector(
+                onTap: onClose,
+                child: SvgPicture.asset(
+                  Paths.closeIconPath,
+                  width: 24.w,
+                  height: 24.w,
+                  color: UiConstants.darkBlue2Color.withOpacity(.6),
+                ),
+              ),
             ),
-          ),
         ],
       ),
     );

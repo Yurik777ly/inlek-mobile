@@ -39,11 +39,18 @@ class CartScreen extends StatelessWidget {
 
             for (ProductEntity product in cartState.cartData?.products ?? []) {
               bool isLoadingProduct = product.price == null;
-              if (product.delivery == TypeReceiving.delivery ||
-                  isLoadingProduct ||
-                  cartState.cartType == TypeReceiving.pickup) {
+              bool isInStock =
+                  product.availability == 'full' || isLoadingProduct;
+
+              // Определяем, в каком списке должен быть продукт
+              if (isInStock) {
                 inStockProducts.add(product);
               } else {
+                noInStockProducts.add(product);
+              }
+
+              // Добавляем в список для самовывоза, если тип получения — самовывоз и товар в наличии
+              if (cartState.cartType == TypeReceiving.pickup && isInStock) {
                 pickUpAndInStockProducts.add(product);
               }
             }
@@ -57,9 +64,6 @@ class CartScreen extends StatelessWidget {
             bool isPickupWithoutSelectedPharmacy =
                 cartState.cartType == TypeReceiving.pickup &&
                     cartState.selectedPharmacy == null;
-
-            bool isShowCreateOrderButton =
-                !(isDeliverySelected || isPickupWithoutSelectedPharmacy);
 
             return BlocProvider(
               create: (context) => SelectorCubit(
@@ -274,8 +278,18 @@ class CartScreen extends StatelessWidget {
                                                           getMarginOrPadding(
                                                               bottom: 32),
                                                       child: CardSummaryBlock(
-                                                          canUsePromoCodes:
-                                                              true),
+                                                        canUsePromoCodes: true,
+                                                        products: cartState
+                                                                .cartData
+                                                                ?.products
+                                                                ?.where((product) => cartState
+                                                                    .selectedProductIds
+                                                                    .contains(
+                                                                        product
+                                                                            .productId))
+                                                                .toList() ??
+                                                            [],
+                                                      ),
                                                     ),
                                                     // кнопка оформления
 

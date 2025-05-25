@@ -16,7 +16,9 @@ import 'package:inlek/features/presentation/widgets/map/map_button.dart';
 import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart';
 
 class PharmacyMapWidget extends StatelessWidget {
-  const PharmacyMapWidget({super.key});
+  const PharmacyMapWidget({super.key, this.onTapMap});
+
+  final Function(Point point)? onTapMap;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,8 @@ class PharmacyMapWidget extends StatelessWidget {
                         () => EagerGestureRecognizer(),
                       ),
                     },
-                    /*onMapTap: (argument) async {
+                    onMapTap: onTapMap,
+                    /* (argument) async {
                         final geocoderManager = sl<GeocoderManager>();
         
                         GeocodeResponse? response =
@@ -73,7 +76,7 @@ class PharmacyMapWidget extends StatelessWidget {
         
                         print('Город: $city');
                         print('Адрес: $address');
-                      }*/
+                      },*/
                     mapObjects: state.markers),
               ),
             ),
@@ -98,7 +101,8 @@ class PharmacyMapWidget extends StatelessWidget {
                       assetName: Paths.minusIconPath,
                       color: Color(0xFF222222).withOpacity(.6),
                       onPressed: () => bloc.add(ZoomOutEvent())),
-                  if (state.showStackWindow)
+                  if (state.showStackWindow ||
+                      bloc.mapScreenType == MapScreenType.order)
                     Padding(
                       padding: getMarginOrPadding(top: 16),
                       child: Builder(
@@ -106,7 +110,7 @@ class PharmacyMapWidget extends StatelessWidget {
                           final dataMap = state.points
                               .firstWhereOrNull((e) =>
                                   e.mapObject.mapId.value.toString() ==
-                                  state.selectedMarkerId)
+                                  (state.selectedMarkerId ?? '213'))
                               ?.data;
 
                           if (bloc.mapScreenType ==
@@ -114,15 +118,68 @@ class PharmacyMapWidget extends StatelessWidget {
                             PharmacyEntity pharmacy =
                                 PharmacyModel.fromJson(dataMap!);
 
+                            final addressParts =
+                                (pharmacy.address ?? '').split(', ');
+
+                            // Пропускаем первый элемент (например, индекс или страна)
+                            final cleanedAddress =
+                                addressParts.skip(1).join(', ');
+
+                            String city = '';
+                            String street = '';
+
+                            final addressSplit = cleanedAddress.split(', ');
+                            if (addressSplit.length > 1) {
+                              city = addressSplit.first;
+                              street = addressSplit.skip(1).join(', ');
+                            } else if (addressSplit.isNotEmpty) {
+                              city = addressSplit.first;
+                            }
+
                             return AddressPlate(
-                              pharmacy: pharmacy,
+                              title: city,
+                              body: street,
                               onClose: () => bloc..add(SelectMarkerEvent()),
                             );
                           } else if (bloc.mapScreenType ==
                               MapScreenType.product) {
                             return Container();
+                          } else if (bloc.mapScreenType ==
+                              MapScreenType.order) {
+                            final hasError = dataMap?['hasError'] ?? false;
+                            final address = dataMap?['address'];
+
+                            if (hasError) {
+                              return AddressPlate(
+                                  title: 'Сюда пока не доставляем',
+                                  body:
+                                      'Оформите самовывоз из аптеки вашего города');
+                            } else if (address != null) {
+                              final rawAddress = address?.toString() ?? '';
+
+                              final addressParts = rawAddress.split(', ');
+
+                              // Пропускаем первый элемент (например, индекс или страна)
+                              final cleanedAddress =
+                                  addressParts.skip(1).join(', ');
+
+                              String city = '';
+                              String street = '';
+
+                              final addressSplit = cleanedAddress.split(', ');
+                              if (addressSplit.length > 1) {
+                                city = addressSplit.first;
+                                street = addressSplit.skip(1).join(', ');
+                              } else if (addressSplit.isNotEmpty) {
+                                city = addressSplit.first;
+                              }
+
+                              return AddressPlate(title: city, body: street);
+                            } else {
+                              return Container();
+                            }
                           } else {
-                            return Container();
+                            return SizedBox.shrink();
                           }
                         },
                       ),

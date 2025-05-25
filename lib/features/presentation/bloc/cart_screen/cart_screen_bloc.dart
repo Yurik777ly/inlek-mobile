@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
@@ -6,12 +7,15 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/extensions.dart';
+import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/core/courier_zone_manager.dart';
+import 'package:inlek/core/params/cart_detailed_params.dart';
 import 'package:inlek/core/params/cart_params.dart';
 import 'package:inlek/core/params/order_param.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
+import 'package:inlek/features/data/models/pharmacy_model.dart';
 import 'package:inlek/features/domain/entities/cart_entity.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
@@ -70,6 +74,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     required this.sharedPreferences,
     required this.courierZoneManager,
   }) : super(CartScreenState()) {
+    on<InitEvent>(_inInit);
     on<LoadCartDataEvent>(_onLoadData);
     on<AddCartEvent>(_onAddCart);
     on<DeleteCartEvent>(_onDeleteCart);
@@ -127,12 +132,33 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         : '';
   }
 
+  Future<void> _inInit(InitEvent event, Emitter<CartScreenState> emit) async {
+    PharmacyEntity? savedPharmacy;
+    final savedPharmacyJson =
+        sharedPreferences.getString(SharedPreferencesKeys.pharmacy);
+    if (savedPharmacyJson != null) {
+      savedPharmacy = PharmacyModel.fromJson(json.decode(savedPharmacyJson));
+
+      emit(state.copyWith(selectedPharmacy: savedPharmacy));
+      add(LoadCartDataEvent(isFirstLoading: true));
+    }
+  }
+
   Future<void> _onLoadData(
     LoadCartDataEvent event,
     Emitter<CartScreenState> emit,
   ) async {
     add(UpdateDeliveryPriceEvent());
-    final failureOrCart = await getCartUC();
+
+    final failureOrCart = await getCartUC(
+      CartDetailedParams(
+          pharmacyId: state.cartType == TypeReceiving.pickup
+              ? state.selectedPharmacy?.pharmacyId
+              : null,
+          promocodes:
+              state.selectedPromoCodes.map((e) => e.promocode).join('|'),
+          deliveryZone: state.deliveryZone),
+    );
 
     failureOrCart.fold(
       (_) => emit(state.copyWith(
@@ -141,42 +167,55 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         final oldProducts = state.cartData?.products ?? [];
         final newProducts = cartData.products ?? [];
 
+        final fixedNewProducts = newProducts.map((product) {
+          if (product.stockCount != null &&
+              product.quantity != null &&
+              product.quantity! > product.stockCount!) {
+            return product.copyWith(
+                quantity: product.stockCount, availability: 'full');
+          }
+          return product;
+        }).toList();
+
         final mergedProducts = oldProducts.map((oldProduct) {
-          final updated = newProducts.firstWhereOrNull(
+          final updated = fixedNewProducts.firstWhereOrNull(
             (newProduct) => newProduct.productId == oldProduct.productId,
           );
 
+          ProductEntity resultProduct;
+
           if (oldProduct.isLoading && updated != null) {
-            return updated;
+            resultProduct = updated;
+          } else {
+            resultProduct = oldProduct;
           }
-          return oldProduct;
+
+          return resultProduct;
         }).toList();
 
         // Обновляем список доступных промокодов
-        final availablePromoCodes = mergedProducts
+        /*final availablePromoCodes = mergedProducts
             .expand((product) => product.promocodesJson ?? [])
             .cast<PromocodeEntity>()
-            .toList();
+            .toList();*/
 
         // Фильтруем выбранные промокоды
-        final updatedSelectedPromoCodes = state.selectedPromoCodes
+        /*final updatedSelectedPromoCodes = state.selectedPromoCodes
             .where(
-              (selectedPromo) => availablePromoCodes.any(
+              (selectedPromo) => cartData.allPromocodes.any(
                 (availablePromo) =>
                     availablePromo.promotionId == selectedPromo.promotionId,
               ),
             )
-            .toList();
+            .toList();*/
 
         emit(state.copyWith(
-          isLoading: false,
-          cartData: cartData.copyWith(
+            isLoading: false,
+            cartData: cartData.copyWith(
               products:
-                  event.isFirstLoading ? cartData.products : mergedProducts),
-          errorText: null,
-          availablePromoCodes: availablePromoCodes,
-          selectedPromoCodes: updatedSelectedPromoCodes,
-        ));
+                  event.isFirstLoading ? fixedNewProducts : mergedProducts,
+            ),
+            errorText: null));
       },
     );
 
@@ -212,20 +251,20 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
   bool _isAllProductsChecked(Set<int> selectedProductIds) {
     return state.cartData?.products
-            ?.every((e) => selectedProductIds.contains(e.productId)) ??
+            .every((e) => selectedProductIds.contains(e.productId)) ??
         false;
   }
 
   void _handleCartUpdateFailure(
       Emitter<CartScreenState> emit,
       List<ProductEntity> updatedProducts,
-      BuildContext context,
+      BuildContext? context,
       String errorMessage) {
     emit(state.copyWith(
         cartData: state.cartData?.copyWith(products: updatedProducts),
         isLoading: false));
     Utils.showCustomDialog(
-        screenContext: context,
+        screenContext: context ?? UiConstants.homeContext!,
         text: errorMessage,
         action: (context) => Navigator.of(context).pop());
   }
@@ -243,7 +282,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
     // Выполняем логику удаления товара из корзины
     ProductEntity? product = state.cartData?.products
-        ?.firstWhereOrNull((e) => e.productId == event.productId);
+        .firstWhereOrNull((e) => e.productId == event.productId);
     if (product == null) return;
 
     int newQuantity = event.count ?? (product.quantity ?? 0) - 1;
@@ -362,7 +401,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     add(UpdateDeliveryPriceEvent());
     Set<int> selectedProductIds = state.isAllProductsChecked && !event.force
         ? {}
-        : state.cartData!.products!.map((e) => e.productId!).toSet();
+        : state.cartData!.products.map((e) => e.productId!).toSet();
     emit(state.copyWith(
         selectedProductIds: selectedProductIds,
         isAllProductsChecked:
@@ -392,7 +431,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       DeleteProductEvent event, Emitter<CartScreenState> emit) async {
     add(UpdateDeliveryPriceEvent());
     ProductEntity? product = state.cartData?.products
-        ?.firstWhereOrNull((e) => e.productId == event.productId);
+        .firstWhereOrNull((e) => e.productId == event.productId);
     if (product != null) {
       add(DeleteCartEvent(
           context: event.context,
@@ -404,26 +443,23 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
   }
 
   void _onAddPromoCode(AddPromoCodeEvent event, Emitter<CartScreenState> emit) {
-    PromocodeEntity? promo = state.availablePromoCodes.firstWhereOrNull(
+    PromocodeEntity? promo = state.cartData?.allPromocodes.firstWhereOrNull(
         (promo) =>
             promo.promocode.toLowerCase().trim() ==
             event.promo.toLowerCase().trim());
-    if (promo != null) {
-      //final now = DateTime.now();
-      //if (now.isAfter(promo.begin) && now.isBefore(promo.end)) {
-      if (!state.selectedPromoCodes.contains(promo)) {
+    if (promo == null) {
+      emit(state.copyWith(promocodeErrorText: 'Невозможно применить промокод'));
+    } else {
+      final promocodeAlreadyUsed =
+          state.cartData!.enteredPromocodes.contains(promo.promocode);
+      if (promocodeAlreadyUsed) {
+        emit(state.copyWith(promocodeErrorText: 'Промокод уже применен'));
+      } else {
         promocodeController.clear();
         emit(state.copyWith(
-          selectedPromoCodes: List.from(state.selectedPromoCodes)..add(promo),
-        ));
-      } else {
-        emit(state.copyWith(promocodeErrorText: 'Промокод уже применен'));
+            selectedPromoCodes: [...state.selectedPromoCodes, promo]));
+        add(LoadCartDataEvent(isFirstLoading: true));
       }
-      //} else {
-      //  emit(state.copyWith(promocodeErrorText: 'Промокод истек'));
-      //}
-    } else {
-      emit(state.copyWith(promocodeErrorText: 'Невозможно применить промокод'));
     }
   }
 
@@ -440,11 +476,22 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       selectedPromoCodes: List.from(state.selectedPromoCodes)
         ..remove(event.promo),
     ));
+    add(LoadCartDataEvent(isFirstLoading: true));
   }
 
   void _onChangeCartType(
       ChangeCartTypeEvent event, Emitter<CartScreenState> emit) async {
-    emit(state.copyWith(cartType: event.cartType));
+    // Create a new list of products with isLoading set to true
+    final updatedProducts = state.cartData?.products
+        .map((product) => product.copyWith(isLoading: true))
+        .toList();
+
+    // Update the state with the new products list
+    emit(state.copyWith(
+        cartData: state.cartData?.copyWith(products: updatedProducts),
+        cartType: event.cartType));
+
+    add(LoadCartDataEvent(isFirstLoading: true));
   }
 
   void _onChangePaymentType(
@@ -452,18 +499,35 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     emit(state.copyWith(paymentType: event.paymentType));
   }
 
-  void _onSelectPharmacy(
+  Future _onSelectPharmacy(
       SelectPharmacy event, Emitter<CartScreenState> emit) async {
-    emit(state.copyWith(selectedPharmacy: event.pharmacy));
+    // сохраняем объект аптеки в prefs
+    await sharedPreferences.setString(SharedPreferencesKeys.pharmacy,
+        json.encode((event.pharmacy as PharmacyModel).toJson()));
+
+    // Create a new list of products with isLoading set to true
+    final updatedProducts = state.cartData?.products
+        .map((product) => product.copyWith(isLoading: true))
+        .toList();
+
+    // Update the state with the new products list
+    emit(state.copyWith(
+      selectedPharmacy: event.pharmacy,
+      cartData: state.cartData?.copyWith(products: updatedProducts),
+    ));
+
+    add(LoadCartDataEvent(isFirstLoading: true));
   }
 
   void _onUpdateDeliveryPrice(
       UpdateDeliveryPriceEvent event, Emitter<CartScreenState> emit) async {
     DeliveryZoneType deliveryZone = courierZoneManager.getZoneTypeByCoordinates(
         event.address?.point ?? selectedAddress?.point);
+    emit(state.copyWith(isLoading: true));
+    emit(state.copyWith(deliveryZone: deliveryZone, isLoading: false));
 
     final selectedProducts = state.cartData?.products
-            ?.where((product) =>
+            .where((product) =>
                 state.selectedProductIds.contains(product.productId))
             .toList() ??
         [];
@@ -474,43 +538,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       (sum, product) => sum + (product.price ?? 0) * (product.quantity ?? 1),
     );
 
-    // Считаем цену доставки
-    final deliveryPrice = state.cartType == TypeReceiving.delivery ? 0.0 : 0.0;
-
-    // Считаем скидку от старой цены
-    final discount = selectedProducts.fold<double>(
-      0,
-      (sum, product) {
-        final oldPrice = product.oldPrice ?? product.price ?? 0;
-        final price = product.price ?? 0;
-        return sum +
-            (oldPrice > price
-                ? (oldPrice - price) * (product.quantity ?? 1)
-                : 0);
-      },
-    );
-
-    // Считаем скидку по промокоду
-    final promoDiscount = selectedProducts.fold<double>(
-      0,
-      (sum, product) {
-        final appliedPromo = state.availablePromoCodes.firstWhereOrNull(
-          (promo) =>
-              promo.productId == product.productId &&
-              state.selectedPromoCodes.contains(promo),
-        );
-
-        if (appliedPromo != null) {
-          final productDiscount =
-              (product.price ?? 0) * (appliedPromo.promocodePercent / 100);
-          return sum + productDiscount * (product.quantity ?? 1);
-        }
-        return sum;
-      },
-    );
-
     // Итоговая сумма
-    final totalPrice = productsTotal + deliveryPrice - discount - promoDiscount;
+    final totalPrice = productsTotal;
     // Получаем сообщение с ценой для зоны
     final priceMessage = deliveryZone.getPrice(totalPrice);
 
@@ -541,7 +570,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
           apartment: flatController.text,
           floor: floorController.text,
           intercom: doorPhoneController.text,
-          comment: commentController.text);
+          comment: commentController.text,
+          deliveryZone: state.deliveryZone);
     } else {
       params = OrderParam(
           ids: state.selectedProductIds,

@@ -10,13 +10,9 @@ class GeocoderManager {
     try {
       return (await _geocoder.getGeocode(
         ReverseGeocodeRequest(
-          pointGeocode: (lat: lat, lon: lon),
-          lang: lang,
-          kind: KindRequest.house,
-          ll: SearchAreaLL(latitude: 53.9006, longitude: 27.5590),
-          spn: SearchAreaSPN(
-              differenceLatitude: 9.584443, differenceLongitude: 4.910062),
-        ),
+            pointGeocode: (lat: lat, lon: lon),
+            lang: lang,
+            kind: KindRequest.house),
       ));
     } catch (e) {
       print('Ошибка при обратном геокодировании: $e');

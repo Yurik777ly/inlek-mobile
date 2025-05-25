@@ -11,10 +11,11 @@ class CartScreenState extends Equatable {
   final PharmacyEntity? selectedPharmacy;
   final bool isShowPharmaciesWorkingNow;
   final bool isShowPharmaciesProductsInStock;
-  final List<PromocodeEntity> availablePromoCodes;
+
   final List<PromocodeEntity> selectedPromoCodes;
   final TypeReceiving cartType;
   final PaymentType paymentType;
+  final DeliveryZoneType deliveryZone;
   final int deliveryPayment;
 
   const CartScreenState({
@@ -29,9 +30,9 @@ class CartScreenState extends Equatable {
     this.isShowPharmaciesWorkingNow = false,
     this.isShowPharmaciesProductsInStock = false,
     this.selectedPromoCodes = const [],
-    this.availablePromoCodes = const [],
     this.cartType = TypeReceiving.delivery,
     this.paymentType = PaymentType.courier,
+    this.deliveryZone = DeliveryZoneType.none,
     this.deliveryPayment = 0,
   });
 
@@ -46,10 +47,10 @@ class CartScreenState extends Equatable {
     PharmacyEntity? selectedPharmacy,
     bool? isShowPharmaciesWorkingNow,
     bool? isShowPharmaciesProductsInStock,
-    List<PromocodeEntity>? availablePromoCodes,
     List<PromocodeEntity>? selectedPromoCodes,
     TypeReceiving? cartType,
     PaymentType? paymentType,
+    DeliveryZoneType? deliveryZone,
     int? deliveryPayment,
     GeoObject? address,
   }) {
@@ -67,9 +68,9 @@ class CartScreenState extends Equatable {
       isShowPharmaciesProductsInStock: isShowPharmaciesProductsInStock ??
           this.isShowPharmaciesProductsInStock,
       selectedPromoCodes: selectedPromoCodes ?? this.selectedPromoCodes,
-      availablePromoCodes: availablePromoCodes ?? this.availablePromoCodes,
       cartType: cartType ?? this.cartType,
       paymentType: paymentType ?? this.paymentType,
+      deliveryZone: deliveryZone ?? this.deliveryZone,
       deliveryPayment: deliveryPayment ?? this.deliveryPayment,
     );
   }
@@ -87,9 +88,9 @@ class CartScreenState extends Equatable {
         isShowPharmaciesWorkingNow,
         isShowPharmaciesProductsInStock,
         selectedPromoCodes,
-        availablePromoCodes,
         cartType,
         paymentType,
+        deliveryZone,
         deliveryPayment,
       ];
 }

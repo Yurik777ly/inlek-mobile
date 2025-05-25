@@ -7,17 +7,20 @@ abstract class CartScreenEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class InitEvent extends CartScreenEvent {
+  const InitEvent();
+}
+
 class LoadCartDataEvent extends CartScreenEvent {
   final bool isFirstLoading;
   const LoadCartDataEvent({this.isFirstLoading = false});
 }
 
 class AddCartEvent extends CartScreenEvent {
-  final BuildContext context;
+  final BuildContext? context;
   final int productId;
   final int? count;
-  const AddCartEvent(
-      {required this.context, required this.productId, this.count});
+  const AddCartEvent({this.context, required this.productId, this.count});
 }
 
 class DeleteCartEvent extends CartScreenEvent {

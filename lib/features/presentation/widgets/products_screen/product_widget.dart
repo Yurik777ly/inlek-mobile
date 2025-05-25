@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
@@ -78,7 +79,11 @@ class ProductWidget extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            ProductPrice(product: product),
+                            ProductPrice(
+                                price: product.price,
+                                oldPrice: product.oldPrice,
+                                productsListScreenType:
+                                    ProductsListScreenType.pharmacy),
                             if (product.discount != null)
                               ProductSaleChip(discount: product.discount ?? 0)
                           ],

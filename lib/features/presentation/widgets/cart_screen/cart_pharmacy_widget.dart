@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
-import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/app_button_widget.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/pharmacy_available_products_chip.dart';
@@ -29,7 +28,7 @@ class CartPharmacyWidget extends StatelessWidget {
       bloc: screenContext?.read<CartScreenBloc>(),
       buildWhen: (previous, current) => screenContext == null,
       builder: (context, state) {
-        final Set<int> selectedProductIds =
+        /*final Set<int> selectedProductIds =
             cartBloc?.state.selectedProductIds ?? {};
 
         // Проверяем, что в аптеке есть все выбранные товары
@@ -40,16 +39,15 @@ class CartPharmacyWidget extends StatelessWidget {
         // Фильтруем продукты, которые совпадают с выбранными
         final List<ProductEntity> filteredProducts = pharmacy.products
             .where((product) => selectedProductIds.contains(product.productId))
-            .toList();
+            .toList();*/
 
         // Проверяем, что у всех этих продуктов availability = 'full'
-        final bool allAvailable = filteredProducts.every(
+        final bool allAvailable = pharmacy.products.every(
           (product) => product.availability == 'full',
         );
 
         // Финальный флаг: и все есть, и все full
-        final bool allProductsAvailable =
-            allSelectedProductsExist && allAvailable;
+        final bool allProductsAvailable = allAvailable;
 
         //bool allProductsAvailable = state.selectedProductIds.every(
         //    (e) => pharmacy.availableProducts.map((e) => e.id).contains(e));

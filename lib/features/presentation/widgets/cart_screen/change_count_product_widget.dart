@@ -27,10 +27,12 @@ class ChangeCountProductWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final cartBloc = (screenContext ?? context).read<CartScreenBloc>();
 
-    int count = (cartBloc.state.cartData?.products ?? [])
-            .firstWhereOrNull((e) => e.productId == product.productId)
-            ?.quantity ??
-        0;
+    final cartProduct = (cartBloc.state.cartData?.products ?? [])
+        .firstWhereOrNull((e) => e.productId == product.productId);
+
+    int count = cartProduct?.quantity ?? 0;
+    final isAddDisabled = (cartProduct?.quantity ?? 0) >=
+        (cartProduct?.stockCount ?? product.stockCount ?? double.infinity);
 
     return Skeleton.keep(
       child: GestureDetector(
@@ -82,6 +84,13 @@ class ChangeCountProductWidget extends StatelessWidget {
                         ),
                     ],
                   );
+                } else if ((cartProduct ?? product).isLoading) {
+                  return SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                        color: UiConstants.pink2Color),
+                  );
                 } else {
                   return Row(
                     children: [
@@ -132,7 +141,10 @@ class ChangeCountProductWidget extends StatelessWidget {
                                   fit: BoxFit.scaleDown,
                                   child: Text(
                                     Utils.formatPrice(
-                                        (product.price ?? 0.0) * count),
+                                        (cartProduct?.prices?.price ??
+                                                product.price ??
+                                                0.0) *
+                                            count),
                                     style: UiConstants.textStyle8.copyWith(
                                         color: UiConstants.whiteColor
                                             .withOpacity(.6),
@@ -147,11 +159,14 @@ class ChangeCountProductWidget extends StatelessWidget {
                           ? Spacer()
                           : SizedBox(width: 3.w),
                       GestureDetector(
-                        onTap: () => cartBloc.add(
-                          AddCartEvent(
-                              context: screenContext ?? context,
-                              productId: product.productId!),
-                        ),
+                        onTap: isAddDisabled
+                            ? () {}
+                            : () => cartBloc.add(
+                                  AddCartEvent(
+                                    context: screenContext ?? context,
+                                    productId: product.productId!,
+                                  ),
+                                ),
                         child: SvgPicture.asset(Paths.plusIconPath,
                             width: cartOrProductType == CartOrProductType.cart
                                 ? 16.w
@@ -160,8 +175,12 @@ class ChangeCountProductWidget extends StatelessWidget {
                                 ? 16.w
                                 : 24.w,
                             color: cartOrProductType == CartOrProductType.cart
-                                ? UiConstants.darkBlueColor
-                                : UiConstants.whiteColor),
+                                ? isAddDisabled
+                                    ? UiConstants.blackColor.withOpacity(.4)
+                                    : UiConstants.darkBlueColor
+                                : isAddDisabled
+                                    ? UiConstants.whiteColor.withOpacity(.4)
+                                    : UiConstants.whiteColor),
                       ),
                     ],
                   );

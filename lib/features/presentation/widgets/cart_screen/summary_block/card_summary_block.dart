@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
+import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/app_button_widget.dart';
 import 'package:inlek/features/presentation/widgets/app_text_field_widget.dart';
@@ -12,11 +13,14 @@ import 'package:inlek/features/presentation/widgets/cart_screen/summary_block/su
 
 class CardSummaryBlock extends StatelessWidget {
   const CardSummaryBlock(
-      {super.key, this.screenContext, required this.canUsePromoCodes});
+      {super.key,
+      this.screenContext,
+      required this.canUsePromoCodes,
+      required this.products});
 
   final BuildContext? screenContext;
-
   final bool canUsePromoCodes;
+  final List<ProductEntity> products;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +83,8 @@ class CardSummaryBlock extends StatelessWidget {
                     separatorBuilder: (context, index) => SizedBox(height: 4.h),
                     itemCount: state.selectedPromoCodes.length),
               if (canUsePromoCodes) SizedBox(height: 24.h),
-              SummaryPricesBlock(screenContext: screenContext),
+              SummaryPricesBlock(
+                  screenContext: screenContext, products: products),
             ],
           ),
         );

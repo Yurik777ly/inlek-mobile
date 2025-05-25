@@ -1,4 +1,6 @@
 import 'package:inlek/constants/extensions.dart';
+import 'package:inlek/features/data/models/product_prices_model.dart';
+import 'package:inlek/features/data/models/product_totals_model.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 
 class ProductModel extends ProductEntity {
@@ -34,10 +36,13 @@ class ProductModel extends ProductEntity {
     super.brandProducts,
     super.relatedProducts,
     super.similarProducts,
+    super.stockCount,
     super.quantity,
     super.promocodesJson,
     super.requiredQuantity,
     super.availability,
+    super.prices,
+    super.totals,
   });
 
   @override
@@ -60,8 +65,29 @@ class ProductModel extends ProductEntity {
     if (discount != null) {
       discount = int.tryParse(discount.toString());
     }
+
+    var stockCountRaw = data['stock_count'] ?? json['stock_count'];
+    int? stockCount;
+
+    if (stockCountRaw != null) {
+      if (stockCountRaw is int) {
+        stockCount = stockCountRaw;
+      } else if (stockCountRaw is double) {
+        stockCount = stockCountRaw.floor(); // округление до меньшего int
+      } else if (stockCountRaw is String) {
+        // Пробуем как double, потом округляем
+        final parsedDouble = double.tryParse(stockCountRaw);
+        if (parsedDouble != null) {
+          stockCount = parsedDouble.round();
+        } else {
+          stockCount = int.tryParse(
+              stockCountRaw); // fallback, если это строка типа "15"
+        }
+      }
+    }
+
     return ProductModel(
-      productId: json["product_id"] ?? json["id"],
+      productId: json["product_id"] ?? json["id"] ?? data['product_id'],
       mnn: json["mnn"],
       mnnLat: json["mnn_lat"],
       name: json["product_title"],
@@ -90,7 +116,7 @@ class ProductModel extends ProductEntity {
       count: int.tryParse(
           (json["count"] ?? json["stock_count"])?.toString() ?? "0"),
       requiredQuantity: json['required_quantity'],
-      availability: json["availability"],
+      availability: data['availability'] ?? json["availability"],
       pagetitle: json["pagetitle"],
       brandProducts: data['brand_products'] != null
           ? (data['brand_products'] as List)
@@ -107,15 +133,15 @@ class ProductModel extends ProductEntity {
               .map((e) => ProductModel.fromJson(e))
               .toList()
           : [],
+      stockCount: stockCount,
       quantity: data['quantity'],
-      promocodesJson: data['promocodes_json'] != null
-          ? (data['promocodes_json'] as List)
-              .map((e) => PromocodeModel.fromJson(
-                    (e as Map<String, dynamic>)
-                      ..addAll({'product_id': json["product_id"]}),
-                  ) as PromocodeEntity)
-              .toList()
-          : [],
+      promocodesJson: [],
+      prices: data["prices"] != null
+          ? ProductPricesModel.fromJson(data["prices"])
+          : null,
+      totals: data["product_totals"] != null
+          ? ProductTotalsModel.fromJson(data["product_totals"])
+          : null,
     );
   }
 
@@ -158,21 +184,21 @@ class ProductModel extends ProductEntity {
           'related_products': relatedProducts,
           'similar_products': similarProducts,
           'quantity': quantity,
-          'promocodes_json': promocodesJson
-              ?.map((e) => (e as PromocodeModel).toJson())
-              .toList(),
+          'promocodes_json': [],
+          "prices": (prices as ProductPricesModel?)?.toJson(),
+          "product_totals": (totals as ProductTotalsModel?)?.toJson(),
         }
       };
 }
 
 class PromocodeModel extends PromocodeEntity {
   const PromocodeModel({
-    required super.productId,
-    required super.end,
-    required super.begin,
-    required super.usages,
+    super.productId,
+    super.end,
+    super.begin,
+    super.usages,
     required super.promocode,
-    required super.minAmount,
+    super.minAmount,
     required super.promotionId,
     required super.promocodePercent,
   });
@@ -180,19 +206,19 @@ class PromocodeModel extends PromocodeEntity {
   factory PromocodeModel.fromJson(Map<String, dynamic> json) {
     return PromocodeModel(
       productId: json['product_id'],
-      end: DateTime.parse(json['end']),
-      begin: DateTime.parse(json['begin']),
+      end: json['end'] != null ? DateTime.parse(json['end']) : null,
+      begin: json['begin'] != null ? DateTime.tryParse(json['begin']) : null,
       usages: json['usages'],
-      promocode: json['promocode'],
+      promocode: json['promocode'] ?? json['promocode_name'],
       minAmount: json['min_amount'],
-      promotionId: json['promotion_id'],
-      promocodePercent: json['promocode_percent'],
+      promotionId: json['promotion_id'] ?? json['promocode_id'],
+      promocodePercent: json['promocode_percent'] ?? json['discount'],
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'end': end.toIso8601String(),
-        'begin': begin.toIso8601String(),
+        'end': end?.toIso8601String(),
+        'begin': begin?.toIso8601String(),
         'usages': usages,
         'promocode': promocode,
         'min_amount': minAmount,

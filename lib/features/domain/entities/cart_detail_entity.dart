@@ -1,20 +1,32 @@
 import 'package:equatable/equatable.dart';
 
 class CartDetailEntity extends Equatable {
-  final int? id;
+  final int? cartId;
   final int? userId;
-  final String? promo;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
+  final String? appliedPromocodes;
+  final DateTime? cartCreatedAt;
+  final DateTime? cartUpdatedAt;
+  final Map<String, dynamic>? totals;
+  final Map<String, dynamic>? pharmacy;
 
   const CartDetailEntity({
-    this.id,
+    this.cartId,
     this.userId,
-    this.promo,
-    this.createdAt,
-    this.updatedAt,
+    this.appliedPromocodes,
+    this.cartCreatedAt,
+    this.cartUpdatedAt,
+    this.totals,
+    this.pharmacy,
   });
 
   @override
-  List<Object?> get props => [id, userId, promo, createdAt, updatedAt];
+  List<Object?> get props => [
+        cartId,
+        userId,
+        appliedPromocodes,
+        cartCreatedAt,
+        cartUpdatedAt,
+        totals,
+        pharmacy,
+      ];
 }

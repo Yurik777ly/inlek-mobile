@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/features/domain/entities/product_prices_entity.dart';
+import 'package:inlek/features/domain/entities/product_totals_entity.dart';
 
 class ProductEntity extends Equatable {
   final int? productId;
@@ -35,10 +37,13 @@ class ProductEntity extends Equatable {
   final List<ProductEntity>? brandProducts;
   final List<ProductEntity>? relatedProducts;
   final List<ProductEntity>? similarProducts;
+  final int? stockCount;
   final int? quantity;
   final List<PromocodeEntity>? promocodesJson;
   final PropertiesEntity? properties;
   final bool isLoading;
+  final ProductPricesEntity? prices;
+  final ProductTotalsEntity? totals;
 
   const ProductEntity({
     this.productId,
@@ -74,51 +79,58 @@ class ProductEntity extends Equatable {
     this.brandProducts,
     this.relatedProducts,
     this.similarProducts,
+    this.stockCount,
     this.quantity,
     this.promocodesJson,
     this.properties,
     this.isLoading = false,
+    this.prices,
+    this.totals,
   });
 
   // Метод для копирования объекта с возможностью изменения полей
-  ProductEntity copyWith(
-      {int? productId,
-      String? mnn,
-      String? mnnLat,
-      String? name,
-      String? description,
-      String? code,
-      String? dose,
-      String? form,
-      String? brand,
-      String? image,
-      String? recipe,
-      String? country,
-      TypeReceiving? delivery,
-      double? price,
-      double? oldPrice,
-      int? discount,
-      int? parent,
-      String? termin,
-      String? temperature,
-      String? releaseForm,
-      String? productInsert,
-      String? productSticker,
-      String? productRegister,
-      String? productTrademark,
-      String? productDateRegister,
-      String? productTimeRegister,
-      int? count,
-      int? requiredQuantity,
-      String? availability,
-      String? pagetitle,
-      List<ProductEntity>? brandProducts,
-      List<ProductEntity>? relatedProducts,
-      List<ProductEntity>? similarProducts,
-      int? quantity,
-      List<PromocodeEntity>? promocodesJson,
-      PropertiesEntity? properties,
-      bool? isLoading}) {
+  ProductEntity copyWith({
+    int? productId,
+    String? mnn,
+    String? mnnLat,
+    String? name,
+    String? description,
+    String? code,
+    String? dose,
+    String? form,
+    String? brand,
+    String? image,
+    String? recipe,
+    String? country,
+    TypeReceiving? delivery,
+    double? price,
+    double? oldPrice,
+    int? discount,
+    int? parent,
+    String? termin,
+    String? temperature,
+    String? releaseForm,
+    String? productInsert,
+    String? productSticker,
+    String? productRegister,
+    String? productTrademark,
+    String? productDateRegister,
+    String? productTimeRegister,
+    int? count,
+    int? requiredQuantity,
+    String? availability,
+    String? pagetitle,
+    List<ProductEntity>? brandProducts,
+    List<ProductEntity>? relatedProducts,
+    List<ProductEntity>? similarProducts,
+    int? stockCount,
+    int? quantity,
+    List<PromocodeEntity>? promocodesJson,
+    PropertiesEntity? properties,
+    bool? isLoading,
+    ProductPricesEntity? prices,
+    ProductTotalsEntity? totals,
+  }) {
     return ProductEntity(
       productId: productId ?? this.productId,
       mnn: mnn ?? this.mnn,
@@ -153,10 +165,13 @@ class ProductEntity extends Equatable {
       brandProducts: brandProducts ?? this.brandProducts,
       relatedProducts: relatedProducts ?? this.relatedProducts,
       similarProducts: similarProducts ?? this.similarProducts,
+      stockCount: stockCount ?? this.stockCount,
       quantity: quantity ?? this.quantity,
       promocodesJson: promocodesJson ?? this.promocodesJson,
       properties: properties ?? this.properties,
       isLoading: isLoading ?? this.isLoading,
+      prices: prices ?? this.prices,
+      totals: totals ?? this.totals,
     );
   }
 
@@ -195,30 +210,33 @@ class ProductEntity extends Equatable {
         brandProducts,
         relatedProducts,
         similarProducts,
+        stockCount,
         quantity,
         promocodesJson,
         properties,
         isLoading,
+        prices,
+        totals
       ];
 }
 
 class PromocodeEntity extends Equatable {
-  final int productId;
-  final DateTime end;
-  final DateTime begin;
-  final int usages;
+  final int? productId;
+  final DateTime? end;
+  final DateTime? begin;
+  final int? usages;
   final String promocode;
-  final int minAmount;
+  final int? minAmount;
   final int promotionId;
   final int promocodePercent;
 
   const PromocodeEntity({
-    required this.productId,
-    required this.end,
-    required this.begin,
-    required this.usages,
+    this.productId,
+    this.end,
+    this.begin,
+    this.usages,
     required this.promocode,
-    required this.minAmount,
+    this.minAmount,
     required this.promotionId,
     required this.promocodePercent,
   });

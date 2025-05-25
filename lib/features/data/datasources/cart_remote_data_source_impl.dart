@@ -3,7 +3,9 @@ import 'dart:developer';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:inlek/constants/enums.dart';
 import 'package:inlek/core/error/exception.dart';
+import 'package:inlek/core/params/cart_detailed_params.dart';
 import 'package:inlek/core/params/cart_params.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/data/models/cart_model.dart';
@@ -11,7 +13,7 @@ import 'package:inlek/features/data/models/pharmacy_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class CartRemoteDataSource {
-  Future<CartModel> getCart();
+  Future<CartModel> getCart(CartDetailedParams params);
   Future<void> addCart(CartParams params);
   Future<void> deleteCart(CartParams params);
   Future<void> clearCart();
@@ -26,12 +28,14 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
       {required this.client, required this.sharedPreferences});
 
   @override
-  Future<CartModel> getCart() async {
+  Future<CartModel> getCart(CartDetailedParams params) async {
     String baseUrl = dotenv.env['BASE_URL']!;
     final String? serverToken =
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
 
-    final uri = Uri.parse('${baseUrl}cart');
+    final uri = Uri.parse(
+        '${baseUrl}cart/detailed?delivery_zone=${params.deliveryZone == DeliveryZoneType.none ? '' : params.deliveryZone.name}&pharmacy_id=${params.pharmacyId}&promocodes=${params.promocodes}');
+
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -50,9 +54,9 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
           name: 'CartRemoteDataSourceImpl.getCart');
 
       if (response.statusCode == 200) {
-        final cart = json.decode(response.body)['data'];
-        if (cart != null) {
-          return CartModel.fromJson(cart);
+        final data = json.decode(response.body)['data'];
+        if (data != null) {
+          return CartModel.fromJson(data);
         } else {
           return CartModel();
         }

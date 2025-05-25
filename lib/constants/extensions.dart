@@ -155,16 +155,15 @@ extension DeliveryZonePriceExtension on DeliveryZoneType {
 
   /// Метод, который пробрасывает цену по зоне
   int getPrice(double totalPrice) {
-    if (totalPrice < 40) {
-      if (this == DeliveryZoneType.green) {
-        return 8;
-      } else if (this == DeliveryZoneType.yellow) {
+    if (this == DeliveryZoneType.none) return 0;
+    if (this == DeliveryZoneType.yellow) {
+      return 8;
+    } else {
+      if (totalPrice < 40) {
         return 8;
       } else {
         return 0;
       }
-    } else {
-      return 0;
     }
   }
 }

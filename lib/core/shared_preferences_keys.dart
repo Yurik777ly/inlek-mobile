@@ -6,4 +6,5 @@ class SharedPreferencesKeys {
   static const String email = 'email';
   static const String city = 'city';
   static const String popularRequests = 'popularRequests';
+  static const String pharmacy = 'pharmacy';
 }

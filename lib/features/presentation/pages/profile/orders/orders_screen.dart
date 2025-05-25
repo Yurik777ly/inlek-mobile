@@ -56,8 +56,10 @@ class OrdersScreen extends StatelessWidget {
                               child: homeState is InternetUnavailable
                                   ? InternetNoInternetConnectionWidget()
                                   : Builder(builder: (context) {
-                                      List<OrderEntity> orders =
-                                          List.from(ordersState.filteredOrders);
+                                      List<OrderEntity> orders = List.from(
+                                          ordersState.filteredOrders)
+                                        ..sort((a, b) =>
+                                            b.orderId!.compareTo(a.orderId!));
 
                                       if (ordersState.isOnlyActive) {
                                         orders = orders

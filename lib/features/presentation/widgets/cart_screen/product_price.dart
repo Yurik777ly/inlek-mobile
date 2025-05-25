@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
-import 'package:inlek/features/domain/entities/product_entity.dart';
 
 class ProductPrice extends StatelessWidget {
-  final ProductEntity product;
+  final double? oldPrice;
+  final double? price;
 
-  const ProductPrice({super.key, required this.product});
+  final ProductsListScreenType productsListScreenType;
+
+  const ProductPrice(
+      {super.key,
+      required this.productsListScreenType,
+      this.oldPrice,
+      this.price});
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +21,9 @@ class ProductPrice extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        if (product.oldPrice != null && product.oldPrice != product.price)
+        if (oldPrice != null && oldPrice != price)
           Text(
-            Utils.formatPrice(product.oldPrice),
+            Utils.formatPrice(oldPrice),
             style: UiConstants.textStyle8.copyWith(
                 color: UiConstants.darkBlue2Color.withOpacity(.6),
                 fontWeight: FontWeight.w500,
@@ -25,10 +32,12 @@ class ProductPrice extends StatelessWidget {
         FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(
-            'от ${Utils.formatPrice(product.price)}',
+            '${[
+              ProductsListScreenType.cart,
+              ProductsListScreenType.order
+            ].contains(productsListScreenType) ? '' : 'от '}${Utils.formatPrice(price)}',
             style: UiConstants.textStyle14.copyWith(
-                color: product.oldPrice != null &&
-                        product.oldPrice != product.price
+                color: oldPrice != null && oldPrice != price
                     ? UiConstants.pink2Color
                     : UiConstants.blackColor),
           ),

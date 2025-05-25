@@ -72,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   createOrderUC: sl(),
                   sharedPreferences: sl(),
                   courierZoneManager: sl(),
-                )..add(LoadCartDataEvent(isFirstLoading: true))),
+                )..add(InitEvent())),
         BlocProvider(
           create: (context) => SearchScreenBloc(
               searchProductsV2UC: sl(), sharedPreferences: sl())

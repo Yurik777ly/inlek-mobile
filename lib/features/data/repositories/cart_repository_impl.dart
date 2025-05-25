@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:inlek/core/error/failure.dart';
+import 'package:inlek/core/params/cart_detailed_params.dart';
 import 'package:inlek/core/params/cart_params.dart';
 import 'package:inlek/core/platform/error_handler.dart';
 import 'package:inlek/core/platform/network_info.dart';
@@ -35,9 +36,10 @@ class CartRepositoryImpl implements CartRepository {
 
   // 📌 Получение продуктов корзины
   @override
-  Future<Either<Failure, CartEntity>> getCart() async =>
+  Future<Either<Failure, CartEntity>> getCart(
+          CartDetailedParams params) async =>
       await errorHandler.handle(
-        () async => await cartRemoteDataSource.getCart(),
+        () async => await cartRemoteDataSource.getCart(params),
       );
 
   // 📌 Получение продуктов корзины

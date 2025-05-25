@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:inlek/constants/enums.dart';
 
 class OrderParam extends Equatable {
   final int? pharmacyId;
@@ -17,6 +18,7 @@ class OrderParam extends Equatable {
   final String? comment;
   final Set<int> ids;
   final List<String> promocodes;
+  final DeliveryZoneType? deliveryZone;
 
   const OrderParam({
     this.pharmacyId,
@@ -35,6 +37,7 @@ class OrderParam extends Equatable {
     this.comment,
     required this.ids,
     required this.promocodes,
+    this.deliveryZone,
   });
 
   @override
@@ -55,6 +58,7 @@ class OrderParam extends Equatable {
         comment,
         ids,
         promocodes,
+        deliveryZone,
       ];
 
   Map<String, dynamic> toJson() {
@@ -75,6 +79,7 @@ class OrderParam extends Equatable {
       'comment': comment,
       'ids': ids.toList(),
       'promocodes': promocodes,
+      'delivery_zone': deliveryZone?.name,
     };
 
     map.removeWhere((key, value) => value == null);
@@ -98,6 +103,7 @@ class OrderParam extends Equatable {
     String? comment,
     Set<int>? ids,
     List<String>? promocodes,
+    DeliveryZoneType? deliveryZone,
   }) {
     return OrderParam(
       pharmacyId: pharmacyId ?? this.pharmacyId,
@@ -116,6 +122,7 @@ class OrderParam extends Equatable {
       comment: comment ?? this.comment,
       ids: ids ?? this.ids,
       promocodes: promocodes ?? this.promocodes,
+      deliveryZone: deliveryZone ?? this.deliveryZone,
     );
   }
 }

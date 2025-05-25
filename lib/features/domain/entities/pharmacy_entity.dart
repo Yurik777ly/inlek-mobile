@@ -13,6 +13,7 @@ class PharmacyEntity extends Equatable {
   final double? priceOld;
   final int? productId;
   final int? stockCount;
+  final int? requiredQuantity;
   final String? availability;
   final String? productName;
   final String? pharmacyName;
@@ -32,6 +33,7 @@ class PharmacyEntity extends Equatable {
     this.priceOld,
     this.productId,
     this.stockCount,
+    this.requiredQuantity,
     this.availability,
     this.productName,
     this.pharmacyName,
@@ -52,6 +54,7 @@ class PharmacyEntity extends Equatable {
     double? priceOld,
     int? productId,
     int? stockCount,
+    int? requiredQuantity,
     String? availability,
     String? productName,
     String? pharmacyName,
@@ -71,6 +74,7 @@ class PharmacyEntity extends Equatable {
         priceOld: priceOld ?? this.priceOld,
         productId: productId ?? this.productId,
         stockCount: stockCount ?? this.stockCount,
+        requiredQuantity: requiredQuantity ?? this.requiredQuantity,
         availability: availability ?? this.availability,
         productName: productName ?? this.productName,
         pharmacyName: pharmacyName ?? this.pharmacyName,
@@ -92,6 +96,7 @@ class PharmacyEntity extends Equatable {
         priceOld,
         productId,
         stockCount,
+        requiredQuantity,
         availability,
         productName,
         pharmacyName,
