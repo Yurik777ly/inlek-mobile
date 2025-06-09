@@ -51,8 +51,10 @@ class _CitySearchFieldState extends State<CitySearchField> {
   final LayerLink _layerLink = LayerLink();
   List<String> _filteredSuggestions = [];
   bool _isLoading = false;
+  final FocusNode _focusNode = FocusNode();
 
   void _showOverlay() {
+    if (!_focusNode.hasFocus) return;
     _removeOverlay();
 
     _overlayEntry = OverlayEntry(
@@ -150,8 +152,21 @@ class _CitySearchFieldState extends State<CitySearchField> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      if (!_focusNode.hasFocus) {
+        Future.delayed(Duration(milliseconds: 100), () {
+          _removeOverlay();
+        });
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _removeOverlay();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -160,6 +175,7 @@ class _CitySearchFieldState extends State<CitySearchField> {
     return CompositedTransformTarget(
       link: _layerLink,
       child: AppTextFieldWidget(
+        focusNode: _focusNode,
         title: widget.title,
         hintText: widget.hintText,
         controller: widget.controller,
