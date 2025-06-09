@@ -100,9 +100,9 @@ class PharmaciesScreenBloc
     final lowerQuery = query.toLowerCase();
 
     return pharmacies.where((e) {
-      final isMatchingQuery = (e.pharmacyName ?? e.pageTitle ?? '')
-          .toLowerCase()
-          .contains(lowerQuery);
+      final hasEnoughQuery = lowerQuery.length <
+              3 || // фильтрация по названию включается с 3 символов
+          (e.address ?? '').toLowerCase().contains(lowerQuery);
 
       final isMatchingSortType = sortType == TypeReceiving.all ||
           e.pharmacyDelivery ==
@@ -111,27 +111,23 @@ class PharmaciesScreenBloc
       final isWorkingNow = !state.showWorkingNowOnly ||
           PharmacyUtils.isPharmacyOpen(e.schedule ?? '');
 
-      // Проверяем, что в аптеке есть все выбранные товары
       final bool allSelectedProductsExist = selectedProductIds.every(
         (id) => e.products.any((product) => product.productId == id),
       );
 
-      // Фильтруем продукты, которые совпадают с выбранными
       final List<ProductEntity> filteredProducts = e.products
           .where((product) => selectedProductIds.contains(product.productId))
           .toList();
 
-      // Проверяем, что у всех этих продуктов availability = 'full'
       final bool allAvailable = filteredProducts.every(
         (product) => product.availability == 'full',
       );
 
-      // Финальный флаг: и все есть, и все full
       final bool allProductsAvailable =
           (allSelectedProductsExist && allAvailable) ||
               !state.showWithAllProductsOnly;
 
-      return isMatchingQuery &&
+      return hasEnoughQuery &&
           isMatchingSortType &&
           isWorkingNow &&
           allProductsAvailable;
