@@ -777,7 +777,7 @@ class BottomSheetManager {
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
-      context: UiConstants.homeContext!,
+      context: screenContext,
       builder: (sheetContext) {
         final List<ProductEntity> cartProducts =
             cartBloc.state.cartData?.products ?? [];
@@ -841,12 +841,16 @@ class BottomSheetManager {
                     UiConstants.homeContext!
                         .read<HomeScreenBloc>()
                         .add(ChangePageEvent(3));
-                    Navigator.of(UiConstants.homeContext!).push(
-                      Routes.createRoute(
-                        OrdersScreen(),
-                        settings: RouteSettings(name: Routes.ordersScreen),
-                      ),
-                    );
+                    UiConstants.homeContext!
+                        .read<HomeScreenBloc>()
+                        .navigatorKeys[3]
+                        .currentState!
+                        .push(
+                          Routes.createRoute(
+                            OrdersScreen(),
+                            settings: RouteSettings(name: Routes.ordersScreen),
+                          ),
+                        );
                   },
                 )
               ],
@@ -1031,7 +1035,7 @@ class BottomSheetManager {
         return BlocBuilder<CartScreenBloc, CartScreenState>(
           bloc: cartBloc,
           builder: (context, state) {
-            final cartProducts = cartBloc.state.cartData!.products!;
+            final cartProducts = cartBloc.state.cartData!.products;
 
             // Создаём новый список, не затрагивая оригинальный
             final updatedCartProducts = cartProducts.map((product) {
