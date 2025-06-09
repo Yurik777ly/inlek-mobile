@@ -17,6 +17,7 @@ class OrderInfoItem extends StatelessWidget {
     this.imageForegroundColor,
     this.imageBackgroundColor,
     this.onTap,
+    this.showArrow = true,
     this.subtitleWidget,
   });
 
@@ -28,6 +29,7 @@ class OrderInfoItem extends StatelessWidget {
   final Color? imageForegroundColor;
   final Color? imageBackgroundColor;
   final Function()? onTap;
+  final bool showArrow;
   final Widget? subtitleWidget;
 
   @override
@@ -38,9 +40,10 @@ class OrderInfoItem extends StatelessWidget {
         children: [
           Expanded(
             child: Row(
-              crossAxisAlignment: [title, subtitle].any((e) => e == null)
-                  ? CrossAxisAlignment.center
-                  : CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  [title, subtitle ?? subtitleWidget].any((e) => e == null)
+                      ? CrossAxisAlignment.center
+                      : CrossAxisAlignment.start,
               children: [
                 Skeleton.unite(
                   child: Container(
@@ -94,7 +97,7 @@ class OrderInfoItem extends StatelessWidget {
               ],
             ),
           ),
-          if (onTap != null)
+          if (onTap != null && showArrow)
             RightArrowButton(color: UiConstants.whiteColor, onTap: onTap)
         ],
       ),

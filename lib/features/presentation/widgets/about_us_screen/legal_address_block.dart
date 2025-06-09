@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/launch_url_utils.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -17,14 +18,20 @@ class LegalAddressBlock extends StatelessWidget {
       title: 'Юридический адрес',
       children: [
         OrderInfoItem(
-            imagePath: Paths.mailIconPath,
-            title: 'Email',
-            subtitle: 'inlek@inlek.by'),
+          imagePath: Paths.mailIconPath,
+          title: 'Email',
+          subtitle: 'inlek@inlek.by',
+          showArrow: false,
+          onTap: () => LaunchUrlUtils.sendEmail(toEmail: 'inlek@inlek.by'),
+        ),
         SizedBox(height: 8.h),
         OrderInfoItem(
-            imagePath: Paths.phoneIconPath,
-            title: 'Телефон приемной',
-            subtitle: '+375 (44) 755-17-27'),
+          imagePath: Paths.phoneIconPath,
+          title: 'Телефон приемной',
+          subtitle: '+375 (44) 755-17-27',
+          showArrow: false,
+          onTap: () => LaunchUrlUtils.makePhoneCall('+375 (44) 755-17-27'),
+        ),
         SizedBox(height: 8.h),
         OrderInfoItem(
             imagePath: Paths.pointIconPath,

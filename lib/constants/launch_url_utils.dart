@@ -26,4 +26,38 @@ class LaunchUrlUtils {
       await launchUrl(webUrl, mode: LaunchMode.externalApplication);
     }
   }
+
+  static Future<void> makePhoneCall(String phoneNumber) async {
+    final uri = Uri(scheme: 'tel', path: phoneNumber);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Не удалось запустить телефонное приложение для номера: $phoneNumber';
+    }
+  }
+
+  static Future<void> sendEmail({
+    required String toEmail,
+    String? subject,
+    String? body,
+  }) async {
+    final uri = Uri(
+      scheme: 'mailto',
+      path: toEmail,
+      query: {
+        if (subject != null) 'subject': subject,
+        if (body != null) 'body': body,
+      }
+          .entries
+          .map((e) =>
+              '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+          .join('&'),
+    );
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Не удалось открыть приложение почты для адреса: $toEmail';
+    }
+  }
 }

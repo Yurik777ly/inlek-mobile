@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/launch_url_utils.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/features/presentation/widgets/about_us_screen/about_us_block_template.dart';
 import 'package:inlek/features/presentation/widgets/orders_screen/order_info_item.dart';
@@ -19,19 +20,29 @@ class OnlinePharmBlock extends StatelessWidget {
             subtitle: 'Пн–Вс: 09:00–21:00'),
         SizedBox(height: 8.h),
         OrderInfoItem(
-            imagePath: Paths.mailIconPath,
-            title: 'Email',
-            subtitle: 'apteka-online@inlek.by'),
+          imagePath: Paths.mailIconPath,
+          title: 'Email',
+          subtitle: 'apteka-online@inlek.by',
+          showArrow: false,
+          onTap: () =>
+              LaunchUrlUtils.sendEmail(toEmail: 'apteka-online@inlek.by'),
+        ),
         SizedBox(height: 8.h),
         OrderInfoItem(
-            imagePath: Paths.phoneIconPath,
-            title: 'Колл-центр мобильные операторы',
-            subtitle: '481'),
+          imagePath: Paths.phoneIconPath,
+          title: 'Колл-центр мобильные операторы',
+          subtitle: '481',
+          showArrow: false,
+          onTap: () => LaunchUrlUtils.makePhoneCall('481'),
+        ),
         SizedBox(height: 8.h),
         OrderInfoItem(
-            imagePath: Paths.phoneIconPath,
-            title: 'Колл-центр',
-            subtitle: '+375 (17) 388-76-78'),
+          imagePath: Paths.phoneIconPath,
+          title: 'Колл-центр',
+          subtitle: '+375 (17) 388-76-78',
+          showArrow: false,
+          onTap: () => LaunchUrlUtils.makePhoneCall('+375 (17) 388-76-78'),
+        ),
         SizedBox(height: 8.h),
         OrderInfoItem(
             imagePath: Paths.pointIconPath,

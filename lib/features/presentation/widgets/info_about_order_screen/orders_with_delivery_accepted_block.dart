@@ -1,5 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/launch_url_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/widgets/about_us_screen/about_us_block_template.dart';
 import 'package:inlek/features/presentation/widgets/info_about_order_screen/how_place_order_plate_widget.dart';
@@ -40,10 +42,13 @@ class OrdersWithDeliveryAcceptedBlock extends StatelessWidget {
                         .copyWith(color: UiConstants.darkBlueColor),
                   ),
                   TextSpan(
-                    text: '+375 (17) 393-36-19',
+                    text: '+375 (17) 393-36-19',
                     style: UiConstants.textStyle3.copyWith(
                         color: UiConstants.pink2Color,
                         fontWeight: FontWeight.w800),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () =>
+                          LaunchUrlUtils.makePhoneCall('+375 (17) 393-36-19'),
                   ),
                   TextSpan(
                     text:
