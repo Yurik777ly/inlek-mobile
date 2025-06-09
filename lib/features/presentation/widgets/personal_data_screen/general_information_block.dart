@@ -7,6 +7,7 @@ import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/formatters/date_input_formatter.dart';
 import 'package:inlek/features/presentation/bloc/personal_data_screen/personal_data_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/app_text_field_widget.dart';
@@ -38,14 +39,20 @@ class GeneralInformationBlock extends StatelessWidget {
           child: Column(
             children: [
               AppTextFieldWidget(
-                  title: 'Имя',
-                  hintText: 'Введите имя',
-                  controller: personalDataBloc.fNameController),
+                title: 'Имя',
+                hintText: 'Введите имя',
+                controller: personalDataBloc.fNameController,
+                validator: (p0) =>
+                    Utils.nameValidate(p0, isSensitiveEmptyValue: false),
+              ),
               SizedBox(height: 24.h),
               AppTextFieldWidget(
-                  title: 'Фамилия',
-                  hintText: 'Введите фамилию',
-                  controller: personalDataBloc.sNameController),
+                title: 'Фамилия',
+                hintText: 'Введите фамилию',
+                controller: personalDataBloc.sNameController,
+                validator: (p0) =>
+                    Utils.nameValidate(p0, isSensitiveEmptyValue: false),
+              ),
               SizedBox(height: 24.h),
               AppTextFieldWidget(
                 title: 'Дата рождения',
@@ -60,6 +67,7 @@ class GeneralInformationBlock extends StatelessWidget {
                   padding: getMarginOrPadding(top: 10, bottom: 10),
                   child: SvgPicture.asset(Paths.calendarIconPath),
                 ),
+                validator: Utils.dateValidate,
                 onChangedField: (p0) =>
                     personalDataBloc.birthdayController.text = p0,
               ),

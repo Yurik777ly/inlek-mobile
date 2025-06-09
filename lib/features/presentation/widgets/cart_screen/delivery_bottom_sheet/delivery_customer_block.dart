@@ -39,13 +39,13 @@ class DeliveryCustomerBlock extends StatelessWidget {
                   title: 'Имя',
                   hintText: 'Введите имя',
                   controller: cartBloc.fNameController,
-                  validator: Utils.validate),
+                  validator: Utils.nameValidate),
               SizedBox(height: 24.h),
               AppTextFieldWidget(
                   title: 'Фамилия',
                   hintText: 'Введите фамилию',
                   controller: cartBloc.sNameController,
-                  validator: Utils.validate),
+                  validator: Utils.nameValidate),
               SizedBox(height: 24.h),
               AppTextFieldWidget(
                   title: 'Телефон',

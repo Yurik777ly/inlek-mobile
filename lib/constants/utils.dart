@@ -23,6 +23,7 @@ import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart';
 
 class Utils {
   static RegExp phoneRegexp = RegExp(r'^\+375 \(\d{2}\) \d{3}-\d{2}-\d{2}$');
+  static RegExp nameAndSurnameRegexp = RegExp(r'^[a-zA-Zа-яА-ЯёЁ\-]+$');
 
   static TextStyle htmlTextStyle = UiConstants.textStyle2;
 
@@ -50,6 +51,53 @@ class Utils {
       return 'Введите валидный email';
     }
     return null; // Если email корректный, возвращаем null (валидация успешна)
+  }
+
+  static String? nameValidate(String? value,
+      {bool isSensitiveEmptyValue = true}) {
+    if (value == null || value.isEmpty) {
+      if (!isSensitiveEmptyValue) {
+        return null;
+      }
+      return 'Поле не должно быть пустым';
+    }
+    if (!nameAndSurnameRegexp.hasMatch(value)) {
+      return 'Только текст и дефис';
+    }
+    return null;
+  }
+
+  static String? dateValidate(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return null;
+    }
+
+    // Убираем пробелы и проверяем формат
+    final trimmed = value.replaceAll(' ', '');
+    final dateRegexp = RegExp(r'^\d{2}/\d{2}/\d{4}$');
+    if (!dateRegexp.hasMatch(trimmed)) {
+      return 'Введите дату в формате ДД / ММ / ГГГГ';
+    }
+
+    try {
+      final parts = trimmed.split('/');
+      final day = int.parse(parts[0]);
+      final month = int.parse(parts[1]);
+      final year = int.parse(parts[2]);
+
+      final parsedDate = DateTime(year, month, day);
+
+      // Проверим, что дата соответствует введённым значениям
+      if (parsedDate.day != day ||
+          parsedDate.month != month ||
+          parsedDate.year != year) {
+        return 'Некорректная дата';
+      }
+
+      return null; // дата корректна
+    } catch (_) {
+      return 'Некорректная дата';
+    }
   }
 
   static String? validate(String? value) {
