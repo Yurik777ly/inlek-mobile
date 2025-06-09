@@ -54,12 +54,11 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
   }
 
   void _onPageChanged(ChangePageEvent event, Emitter<HomeScreenState> emit) {
+    navigatorKeys[selectedPageIndex]
+        .currentState!
+        .popUntil((route) => route.isFirst);
     selectedPageIndex = event.pageIndex;
     emit(HomeScreenPageChanged(selectedPageIndex));
-  }
-
-  void onChangePage(int index) {
-    add(ChangePageEvent(index));
   }
 
   void _startPeriodicCheck() {

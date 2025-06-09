@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final bloc = context.read<HomeScreenBloc>();
     const homeTabIndex = 0;
 
-    bloc.onChangePage(homeTabIndex);
+    bloc.add(ChangePageEvent(homeTabIndex));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final navigator = bloc.navigatorKeys[homeTabIndex].currentState;
@@ -103,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       if (isFirstRouteInCurrentTab) {
                         if (selectedIndex != 0) {
-                          bloc.onChangePage(0);
+                          bloc.add(ChangePageEvent(0));
                           return false;
                         } else {
                           // Покидаем приложение
@@ -193,15 +193,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           [])
                                                       .length
                                                   : null,
-                                              onTap: () {
-                                                bloc
-                                                    .navigatorKeys[
-                                                        selectedIndex]
-                                                    .currentState!
-                                                    .popUntil((route) =>
-                                                        route.isFirst);
-                                                bloc.onChangePage(index);
-                                              },
+                                              onTap: () => bloc
+                                                  .add(ChangePageEvent(index)),
                                               isActive: selectedIndex == index),
                                         ),
                                       );

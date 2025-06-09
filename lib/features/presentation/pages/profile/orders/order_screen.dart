@@ -139,7 +139,8 @@ class OrderScreen extends StatelessWidget {
                                                         .popUntil((route) =>
                                                             route.isFirst);
 
-                                                    homeBloc.onChangePage(2);
+                                                    homeBloc.add(
+                                                        ChangePageEvent(2));
                                                   },
                                                 ),
                                               ),

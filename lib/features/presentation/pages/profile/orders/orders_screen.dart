@@ -11,6 +11,7 @@ import 'package:inlek/features/presentation/bloc/orders_screen/orders_screen_blo
 import 'package:inlek/features/presentation/widgets/custom_app_bar.dart';
 import 'package:inlek/features/presentation/widgets/custom_checkbox.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/internet_no_internet_connection_widget.dart';
+import 'package:inlek/features/presentation/widgets/order_screen/empty_orders.dart';
 import 'package:inlek/features/presentation/widgets/orders_screen/order_item.dart';
 import 'package:inlek/locator_service.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -55,73 +56,103 @@ class OrdersScreen extends StatelessWidget {
                             Expanded(
                               child: homeState is InternetUnavailable
                                   ? InternetNoInternetConnectionWidget()
-                                  : Builder(builder: (context) {
-                                      List<OrderEntity> orders = List.from(
-                                          ordersState.filteredOrders)
-                                        ..sort((a, b) =>
-                                            b.orderId!.compareTo(a.orderId!));
+                                  : Builder(
+                                      builder: (context) {
+                                        List<OrderEntity> orders = List.from(
+                                            ordersState.filteredOrders)
+                                          ..sort((a, b) =>
+                                              b.orderId!.compareTo(a.orderId!));
 
-                                      if (ordersState.isOnlyActive) {
-                                        orders = orders
-                                            .where((e) => ![
-                                                  OrderStatus.canceled,
-                                                ].contains(e.status))
-                                            .toList();
-                                      }
+                                        if (ordersState.isOnlyActive) {
+                                          orders = orders
+                                              .where((e) => ![
+                                                    OrderStatus.canceled,
+                                                  ].contains(e.status))
+                                              .toList();
+                                        }
 
-                                      if (ordersState.orders.isEmpty) {
-                                        return Center(
-                                          child: Text(
-                                            'Заказов нет',
-                                            style: UiConstants.textStyle3
-                                                .copyWith(
-                                                    color: UiConstants
-                                                        .darkBlueColor,
-                                                    fontWeight:
-                                                        FontWeight.w800),
-                                          ),
-                                        );
-                                      }
-
-                                      return ListView(
-                                        shrinkWrap: true,
-                                        padding: getMarginOrPadding(
-                                            bottom: 94,
-                                            right: 20,
-                                            left: 20,
-                                            top: 16),
-                                        children: [
-                                          CustomCheckbox(
-                                            title: Text(
-                                              'Только активные',
-                                              style: UiConstants.textStyle2
+                                        if (ordersState.orders.isEmpty) {
+                                          return Center(
+                                            child: Text(
+                                              'Заказов нет',
+                                              style: UiConstants.textStyle3
                                                   .copyWith(
                                                       color: UiConstants
-                                                          .blackColor),
+                                                          .darkBlueColor,
+                                                      fontWeight:
+                                                          FontWeight.w800),
                                             ),
-                                            isChecked: ordersState.isOnlyActive,
-                                            onChanged: (isChecked) =>
-                                                ordersBloc.add(
-                                              ChangeOnlyActiveOrdersEvent(
-                                                  isChecked),
-                                            ),
+                                          );
+                                        }
+
+                                        return Padding(
+                                          padding: getMarginOrPadding(
+                                              bottom: 94,
+                                              right: 20,
+                                              left: 20,
+                                              top: 16),
+                                          child: Column(
+                                            children: [
+                                              CustomCheckbox(
+                                                title: Text(
+                                                  'Только активные',
+                                                  style: UiConstants.textStyle2
+                                                      .copyWith(
+                                                          color: UiConstants
+                                                              .blackColor),
+                                                ),
+                                                isChecked:
+                                                    ordersState.isOnlyActive,
+                                                onChanged: (isChecked) =>
+                                                    ordersBloc.add(
+                                                  ChangeOnlyActiveOrdersEvent(
+                                                      isChecked),
+                                                ),
+                                              ),
+                                              SizedBox(height: 16.h),
+                                              Expanded(
+                                                child: ordersState
+                                                        .orders.isNotEmpty
+                                                    ? EmptyOrders()
+                                                    : orders.isEmpty
+                                                        ? Center(
+                                                            child: Text(
+                                                              'Проверьте правильность номера заказа',
+                                                              style: UiConstants
+                                                                  .textStyle3
+                                                                  .copyWith(
+                                                                      color: UiConstants
+                                                                          .darkBlueColor,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w800),
+                                                            ),
+                                                          )
+                                                        : ListView.separated(
+                                                            padding:
+                                                                EdgeInsets.zero,
+                                                            physics:
+                                                                NeverScrollableScrollPhysics(),
+                                                            shrinkWrap: true,
+                                                            itemBuilder: (context,
+                                                                    index) =>
+                                                                OrderItem(
+                                                                    order: orders[
+                                                                        index]),
+                                                            separatorBuilder:
+                                                                (context,
+                                                                        index) =>
+                                                                    SizedBox(
+                                                                        height: 8
+                                                                            .h),
+                                                            itemCount:
+                                                                orders.length),
+                                              ),
+                                            ],
                                           ),
-                                          SizedBox(height: 16.h),
-                                          ListView.separated(
-                                              padding: EdgeInsets.zero,
-                                              physics:
-                                                  NeverScrollableScrollPhysics(),
-                                              shrinkWrap: true,
-                                              itemBuilder: (context, index) =>
-                                                  OrderItem(
-                                                      order: orders[index]),
-                                              separatorBuilder:
-                                                  (context, index) =>
-                                                      SizedBox(height: 8.h),
-                                              itemCount: orders.length)
-                                        ],
-                                      );
-                                    }),
+                                        );
+                                      },
+                                    ),
                             )
                           ],
                         );

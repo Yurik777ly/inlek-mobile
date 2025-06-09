@@ -127,7 +127,8 @@ class MainScreen extends StatelessWidget {
                                               left: 20, right: 20),
                                           title: 'Что у вас болит?',
                                           clickableText: 'Весь каталог',
-                                          onTap: () => homeBloc.onChangePage(1),
+                                          onTap: () =>
+                                              homeBloc.add(ChangePageEvent(1)),
                                           child: CategoriesGridWidget(
                                             categories: state.isLoading
                                                 ? List.generate(
