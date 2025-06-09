@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/app_route_observer.dart';
@@ -98,18 +97,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   return WillPopScope(
                     onWillPop: () async {
-                      if (selectedIndex == 0) {
-                        SystemChannels.platform
-                            .invokeMethod('SystemNavigator.pop');
-                      } else {
-                        final isFirstRouteInCurrentTab = !await bloc
-                            .navigatorKeys[selectedIndex].currentState!
-                            .maybePop();
-                        if (isFirstRouteInCurrentTab) {
+                      final isFirstRouteInCurrentTab = !await bloc
+                          .navigatorKeys[selectedIndex].currentState!
+                          .maybePop();
+
+                      if (isFirstRouteInCurrentTab) {
+                        if (selectedIndex != 0) {
                           bloc.onChangePage(0);
                           return false;
+                        } else {
+                          // Покидаем приложение
+                          return true;
                         }
                       }
+
                       return false;
                     },
                     child: Scaffold(
