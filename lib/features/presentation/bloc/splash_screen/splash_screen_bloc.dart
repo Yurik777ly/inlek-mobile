@@ -32,6 +32,10 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
   }
 
   Future<bool> _getUserData() async {
+    sharedPreferences.remove(SharedPreferencesKeys.email);
+    sharedPreferences.remove(SharedPreferencesKeys.phone);
+    sharedPreferences.remove(SharedPreferencesKeys.fullName);
+    sharedPreferences.remove(SharedPreferencesKeys.userId);
     final failureOrLoads = await getMeUC();
 
     return failureOrLoads.fold((_) => false, (_) => true);

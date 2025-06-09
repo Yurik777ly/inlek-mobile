@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/error/failure.dart';
 import 'package:inlek/features/data/models/profile_model.dart';
@@ -239,7 +240,7 @@ class PersonalDataScreenBloc
       (code) async {
         if (!requestedCode) {
           if (confirmedCode != null) {
-            Navigator.of(screenContext!).pop();
+            Navigator.of(UiConstants.homeContext!).pop();
           }
           await getProfile();
           Utils.showCustomDialog(

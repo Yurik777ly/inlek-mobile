@@ -96,40 +96,6 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
     on<ScrollUpListEvent>((_, __) => controller.animateTo(0,
         duration: const Duration(milliseconds: 700), curve: Curves.easeOut));
-
-    // Load shared preferences data
-    final String? fullName =
-        sharedPreferences.getString(SharedPreferencesKeys.fullName);
-    final String? email =
-        sharedPreferences.getString(SharedPreferencesKeys.email);
-    final String? city =
-        sharedPreferences.getString(SharedPreferencesKeys.city);
-    final String? phone =
-        sharedPreferences.getString(SharedPreferencesKeys.phone);
-
-    // Initialize controllers with SharedPreferences data
-    fNameController.text = fullName != null && fullName.split(' ').isNotEmpty
-        ? fullName.split(' ').first
-        : '';
-
-    sNameController.text = fullName != null && fullName.split(' ').length > 1
-        ? fullName.split(' ')[1]
-        : '';
-
-    if (fNameController.text == 'null') {
-      fNameController.text = '';
-    }
-    if (sNameController.text == 'null') {
-      sNameController.text = '';
-    }
-
-    cityController.text = city != null && city != 'null' ? city : '';
-
-    emailController.text = email != null && email != 'null' ? email : '';
-
-    phoneController.text = phone != null && phone != 'null'
-        ? Utils.formatPhoneNumber(phone, toServerFormat: false)
-        : '';
   }
 
   Future<void> _inInit(InitEvent event, Emitter<CartScreenState> emit) async {

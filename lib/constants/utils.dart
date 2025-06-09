@@ -108,9 +108,14 @@ class Utils {
   }
 
   static String? validatePhone(String? value) {
-    if ((value ?? '').length < 19) {
-      return 'Введите номер телефона';
+    final phone = value?.trim() ?? '';
+
+    final regex = RegExp(r'^\+375 \((25|29|33|44)\) \d{3}-\d{2}-\d{2}$');
+
+    if (!regex.hasMatch(phone)) {
+      return 'Введите корректный номер телефона';
     }
+
     return null;
   }
 

@@ -22,7 +22,7 @@ class DeliveryCustomerBlock extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '1. Получатель',
+          '1. Получатель',
           style:
               UiConstants.textStyle5.copyWith(color: UiConstants.darkBlueColor),
         ),

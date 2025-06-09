@@ -17,6 +17,7 @@ import 'package:inlek/core/formatters/date_input_formatter.dart';
 import 'package:inlek/core/geocoder_manager.dart';
 import 'package:inlek/core/models/custom_marker_model.dart';
 import 'package:inlek/core/routes.dart';
+import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/domain/entities/order_entity.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
@@ -58,6 +59,7 @@ import 'package:inlek/features/presentation/widgets/search_screen/price_range_wi
 import 'package:inlek/features/presentation/widgets/select_region_screen/city_search_field.dart';
 import 'package:inlek/locator_service.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:yandex_geocoder/yandex_geocoder.dart';
 import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart' as ym;
@@ -242,10 +244,47 @@ class BottomSheetManager {
 
   static showDeliverySheet(BuildContext screenContext) {
     GlobalKey<FormState> formKey = GlobalKey();
-    ScrollController controller = ScrollController();
-    final GlobalKey targetKey = GlobalKey();
 
     CartScreenBloc cartBloc = screenContext.read<CartScreenBloc>();
+
+    final sharedPreferences = sl<SharedPreferences>();
+
+    // Load shared preferences data
+    final String? fullName =
+        sharedPreferences.getString(SharedPreferencesKeys.fullName);
+    final String? email =
+        sharedPreferences.getString(SharedPreferencesKeys.email);
+    final String? city =
+        sharedPreferences.getString(SharedPreferencesKeys.city);
+    final String? phone =
+        sharedPreferences.getString(SharedPreferencesKeys.phone);
+
+    // Initialize controllers with SharedPreferences data
+    cartBloc.fNameController.text =
+        fullName != null && fullName.split(' ').isNotEmpty
+            ? fullName.split(' ').first
+            : '';
+
+    cartBloc.sNameController.text =
+        fullName != null && fullName.split(' ').length > 1
+            ? fullName.split(' ')[1]
+            : '';
+
+    if (cartBloc.fNameController.text == 'null') {
+      cartBloc.fNameController.text = '';
+    }
+    if (cartBloc.sNameController.text == 'null') {
+      cartBloc.sNameController.text = '';
+    }
+
+    cartBloc.cityController.text = city != null && city != 'null' ? city : '';
+
+    cartBloc.emailController.text =
+        email != null && email != 'null' ? email : '';
+
+    cartBloc.phoneController.text = phone != null && phone != 'null'
+        ? Utils.formatPhoneNumber(phone, toServerFormat: false)
+        : '';
 
     showModalBottomSheet(
       useSafeArea: true,
@@ -263,7 +302,6 @@ class BottomSheetManager {
                 child: Form(
                   key: formKey,
                   child: ListView(
-                    controller: controller,
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
                     children: [
@@ -275,10 +313,9 @@ class BottomSheetManager {
                       SizedBox(height: 16.h),
                       InfoPlateWidget(
                           text:
-                              'Доставка производится только по Минску и Минскому району'),
+                              'Доставка производится только по Минску и Минскому району'),
                       SizedBox(height: 16.h),
-                      DeliveryCustomerBlock(
-                          key: targetKey, screenContext: screenContext),
+                      DeliveryCustomerBlock(screenContext: screenContext),
                       if (cartBloc.state.cartType == TypeReceiving.delivery)
                         Padding(
                           padding: getMarginOrPadding(top: 16),
