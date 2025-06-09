@@ -114,11 +114,19 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
           } else if (error.toString().contains('СМС')) {
             return 'null';
             throw SendingCodeTooOftenException();
+          } else if (error.toString().contains('совпадают')) {
+            throw PasswordMatchesPreviousOneException();
+          } else if (error
+              .toString()
+              .contains('Текущий пароль пользователя указан неверно')) {
+            throw UncorrectedPasswordException();
+          } else if (error.toString().contains('Примите условия')) {
+            throw AcceptPersonalDataException();
           }
           log('Error: AcceptPersonalDataException occurred',
               name: 'ProfileRemoteDataSourceImpl.updateMe',
               error: response.body);
-          throw AcceptPersonalDataException();
+          throw ServerException();
 
         default:
           throw ServerException();
@@ -127,6 +135,7 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       log('Error during updateMe: $e', level: 1000);
       rethrow;
     }
+    return null;
   }
 
   @override

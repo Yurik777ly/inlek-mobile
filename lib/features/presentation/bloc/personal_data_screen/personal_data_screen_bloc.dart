@@ -217,6 +217,10 @@ class PersonalDataScreenBloc
         String error = switch (failure) {
           SendingCodeTooOftenFailure _ =>
             'Слишком частая отправка кода или превышено число попыток за день',
+          PasswordMatchesPreviousOneFailure _ =>
+            'Старый и новый пароли совпадают',
+          UncorrectedPasswordFailure _ =>
+            'Текущий пароль пользователя указан неверно',
           AcceptPersonalDataFailure _ =>
             'Примите условия политики обработки персональных данных',
           _ => 'Ошибка обновления данных'
