@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/personal_data_screen/personal_data_screen_bloc.dart';
@@ -98,8 +99,17 @@ class PersonalDataScreen extends StatelessWidget {
                                           backgroundColor:
                                               UiConstants.backgroundColor,
                                           textColor: UiConstants.darkBlueColor,
-                                          onTap: () => personalDataBloc
-                                              .add(DeleteAccountEvent()),
+                                          onTap: () async {
+                                            bool? isSuccess =
+                                                await BottomSheetManager
+                                                    .showDeleteAccountSheet(
+                                                        context);
+
+                                            if (isSuccess == true) {
+                                              personalDataBloc
+                                                  .add(DeleteAccountEvent());
+                                            }
+                                          },
                                         ),
                                       ],
                                     ),

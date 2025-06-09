@@ -14,6 +14,7 @@ class AppButtonWidget extends StatelessWidget {
   final bool showBorder;
   final Color? textColor;
   final Color? backgroundColor;
+  final AlignmentGeometry alignment;
 
   const AppButtonWidget({
     super.key,
@@ -27,6 +28,7 @@ class AppButtonWidget extends StatelessWidget {
     this.showBorder = false,
     this.textColor,
     this.backgroundColor,
+    this.alignment = Alignment.center,
   });
 
   @override
@@ -37,22 +39,25 @@ class AppButtonWidget extends StatelessWidget {
         child: ElevatedButton(
           onPressed: isActive ? onTap : null,
           style: ElevatedButton.styleFrom(
-            elevation: 0,
-            disabledForegroundColor: UiConstants.darkBlue2Color.withOpacity(.6),
-            foregroundColor: textColor ??
-                (isFilled ? UiConstants.whiteColor : UiConstants.darkBlueColor),
-            disabledBackgroundColor:
-                UiConstants.oliveGreenColor.withOpacity(.05),
-            backgroundColor: isFilled
-                ? backgroundColor ?? UiConstants.purpleColor
-                : UiConstants.whiteColor,
-            fixedSize: Size(double.infinity, double.infinity),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(borderRadius ?? 30.r),
-                side: showBorder
-                    ? BorderSide(color: UiConstants.purpleColor)
-                    : BorderSide.none),
-          ),
+              elevation: 0,
+              disabledForegroundColor:
+                  UiConstants.darkBlue2Color.withOpacity(.6),
+              foregroundColor: textColor ??
+                  (isFilled
+                      ? UiConstants.whiteColor
+                      : UiConstants.darkBlueColor),
+              disabledBackgroundColor:
+                  UiConstants.oliveGreenColor.withOpacity(.05),
+              backgroundColor: isFilled
+                  ? backgroundColor ?? UiConstants.purpleColor
+                  : UiConstants.whiteColor,
+              fixedSize: Size(double.infinity, double.infinity),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(borderRadius ?? 30.r),
+                  side: showBorder
+                      ? BorderSide(color: UiConstants.purpleColor)
+                      : BorderSide.none),
+              alignment: alignment),
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 13.5.h),
             child: textWidget ??

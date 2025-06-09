@@ -63,6 +63,50 @@ import 'package:yandex_geocoder/yandex_geocoder.dart';
 import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart' as ym;
 
 class BottomSheetManager {
+  static Future<bool?> showDeleteAccountSheet(BuildContext context) {
+    return showModalBottomSheet(
+      useRootNavigator: true,
+      context: context,
+      builder: (sheetContext) {
+        return CustomBottomSheet(
+          height: 158.h,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Вы дейстивильно хотите удалить аккаунт?',
+                style: UiConstants.textStyle5
+                    .copyWith(color: UiConstants.darkBlueColor),
+              ),
+              SizedBox(height: 16.h),
+              Row(
+                children: [
+                  Expanded(
+                    child: AppButtonWidget(
+                      alignment: Alignment.centerLeft,
+                      onTap: () {
+                        Navigator.pop(sheetContext, true);
+                      },
+                      text: 'Удалить',
+                      backgroundColor: UiConstants.whiteColor,
+                      textColor: UiConstants.blackColor.withOpacity(.6),
+                    ),
+                  ),
+                  Expanded(
+                    child: AppButtonWidget(
+                        onTap: () => Navigator.pop(sheetContext, false),
+                        text: 'Нет',
+                        backgroundColor: UiConstants.purpleColor),
+                  )
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   static showClearCartSheet(BuildContext screenContext) {
     showModalBottomSheet(
       context: UiConstants.homeContext!,
