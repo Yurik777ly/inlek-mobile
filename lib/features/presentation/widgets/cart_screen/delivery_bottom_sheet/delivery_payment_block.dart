@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -22,61 +23,60 @@ class DeliveryPaymentBlock extends StatefulWidget {
 }
 
 class _DeliveryPaymentBlockState extends State<DeliveryPaymentBlock> {
-  late CartScreenBloc cartBloc;
-  late PaymentType paymentType;
-
-  @override
-  void initState() {
-    cartBloc = widget.screenContext.read<CartScreenBloc>();
-    paymentType = cartBloc.state.paymentType;
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '3. Способ оплаты',
-          style:
-              UiConstants.textStyle5.copyWith(color: UiConstants.darkBlueColor),
-        ),
-        SizedBox(height: 16.h),
-        Row(
+    return BlocBuilder<CartScreenBloc, CartScreenState>(
+      bloc: widget.screenContext.read<CartScreenBloc>(),
+      builder: (context, state) {
+        final cartBloc = widget.screenContext.read<CartScreenBloc>();
+        final paymentType = cartBloc.state.paymentType;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: DeliveryPaymentBlockItem(
-                imagePath: Paths.courierIconPath,
-                title: 'Курьеру',
-                subtitle: 'Картой или наличными',
-                isChecked: paymentType == PaymentType.courier,
-                onTap: () {
-                  setState(() => paymentType = PaymentType.courier);
-                  cartBloc.add(
-                    ChangePaymentTypeEvent(PaymentType.courier),
-                  );
-                },
-              ),
+            Text(
+              '3. Способ оплаты',
+              style: UiConstants.textStyle5
+                  .copyWith(color: UiConstants.darkBlueColor),
             ),
-            SizedBox(width: 8.w),
-            Expanded(
-              child: DeliveryPaymentBlockItem(
-                  imagePath: Paths.cardIconPath,
-                  title: 'Онлайн',
-                  isChecked: [PaymentType.bepaid, PaymentType.oplati]
-                      .contains(paymentType),
-                  onTap: () {
-                    setState(() => paymentType = PaymentType.bepaid);
-                    cartBloc.add(
-                      ChangePaymentTypeEvent(PaymentType.bepaid),
-                    );
-                  },
-                  changedOnlineMethodTap: widget.changedOnlineMethodTap),
-            ),
+            SizedBox(height: 16.h),
+            Row(
+              children: [
+                Expanded(
+                  child: DeliveryPaymentBlockItem(
+                    imagePath: Paths.courierIconPath,
+                    title: 'Курьеру',
+                    subtitle: 'Картой или наличными',
+                    isChecked: paymentType == PaymentType.courier,
+                    onTap: () {
+                      cartBloc.add(
+                        ChangePaymentTypeEvent(PaymentType.courier),
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(width: 8.w),
+                Expanded(
+                  child: DeliveryPaymentBlockItem(
+                      imagePath: Paths.cardIconPath,
+                      title: 'Онлайн',
+                      titleWidget: paymentType == PaymentType.bepaid
+                          ? Image.asset(Paths.eripIconPath, height: 50)
+                          : paymentType == PaymentType.oplati
+                              ? SvgPicture.asset(Paths.oplatiIconPath)
+                              : null,
+                      isChecked: [PaymentType.bepaid, PaymentType.oplati]
+                          .contains(paymentType),
+                      onTap: () {
+                        setState(() {});
+                        widget.changedOnlineMethodTap();
+                      },
+                      changedOnlineMethodTap: widget.changedOnlineMethodTap),
+                ),
+              ],
+            )
           ],
-        )
-      ],
+        );
+      },
     );
   }
 }

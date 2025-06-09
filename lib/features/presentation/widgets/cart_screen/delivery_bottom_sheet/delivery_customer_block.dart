@@ -63,7 +63,9 @@ class DeliveryCustomerBlock extends StatelessWidget {
                   description: 'Обязательно при оплате онлайн в приложении',
                   hintText: 'Введите Email',
                   controller: cartBloc.emailController,
-                  validator: Utils.emailValidate),
+                  validator: cartBloc.state.paymentType == PaymentType.courier
+                      ? null
+                      : Utils.emailValidate),
               if (cartBloc.state.cartType == TypeReceiving.pickup)
                 Padding(
                   padding: getMarginOrPadding(top: 24),

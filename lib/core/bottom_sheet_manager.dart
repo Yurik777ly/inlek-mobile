@@ -198,7 +198,11 @@ class BottomSheetManager {
 
   static showDeliverySheet(BuildContext screenContext) {
     GlobalKey<FormState> formKey = GlobalKey();
+    ScrollController controller = ScrollController();
+    final GlobalKey targetKey = GlobalKey();
+
     CartScreenBloc cartBloc = screenContext.read<CartScreenBloc>();
+
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
@@ -215,6 +219,7 @@ class BottomSheetManager {
                 child: Form(
                   key: formKey,
                   child: ListView(
+                    controller: controller,
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
                     children: [
@@ -228,7 +233,8 @@ class BottomSheetManager {
                           text:
                               'Доставка производится только по Минску и Минскому району'),
                       SizedBox(height: 16.h),
-                      DeliveryCustomerBlock(screenContext: screenContext),
+                      DeliveryCustomerBlock(
+                          key: targetKey, screenContext: screenContext),
                       if (cartBloc.state.cartType == TypeReceiving.delivery)
                         Padding(
                           padding: getMarginOrPadding(top: 16),
@@ -244,8 +250,16 @@ class BottomSheetManager {
                           padding: getMarginOrPadding(top: 16),
                           child: DeliveryPaymentBlock(
                             screenContext: screenContext,
-                            changedOnlineMethodTap: () =>
-                                showPickOnlinePaymentSheet(screenContext),
+                            changedOnlineMethodTap: () async {
+                              PaymentType? paymentType =
+                                  await showPickOnlinePaymentSheet(
+                                      screenContext);
+
+                              if (paymentType != null) {
+                                cartBloc
+                                    .add(ChangePaymentTypeEvent(paymentType));
+                              }
+                            },
                           ),
                         ),
                       SizedBox(height: 16.h),
@@ -310,9 +324,8 @@ class BottomSheetManager {
     );
   }
 
-  static showPickOnlinePaymentSheet(BuildContext screenContext) {
-    CartScreenBloc cartBloc = screenContext.read<CartScreenBloc>();
-
+  static Future<PaymentType?> showPickOnlinePaymentSheet(
+      BuildContext screenContext) async {
     return showModalBottomSheet(
       context: UiConstants.homeContext!,
       builder: (sheetContext) {
@@ -345,26 +358,20 @@ class BottomSheetManager {
                   ),
                 ),
                 onTap: () {
-                  Navigator.pop(screenContext);
+                  Navigator.pop(sheetContext, PaymentType.bepaid);
                 },
               ),*/
               OnlinePaymentMethodButton(
                 child: SvgPicture.asset(Paths.oplatiIconPath),
                 onTap: () {
-                  cartBloc.add(
-                    ChangePaymentTypeEvent(PaymentType.oplati),
-                  );
-                  Navigator.pop(sheetContext);
+                  Navigator.pop(sheetContext, PaymentType.oplati);
                 },
               ),
               OnlinePaymentMethodButton(
                 child:
                     Image.asset(Paths.eripIconPath, width: 88.w, height: 44.h),
                 onTap: () {
-                  cartBloc.add(
-                    ChangePaymentTypeEvent(PaymentType.bepaid),
-                  );
-                  Navigator.pop(sheetContext);
+                  Navigator.pop(sheetContext, PaymentType.bepaid);
                 },
               ),
             ],

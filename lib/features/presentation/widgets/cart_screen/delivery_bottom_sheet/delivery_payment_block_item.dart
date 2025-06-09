@@ -9,7 +9,8 @@ class DeliveryPaymentBlockItem extends StatelessWidget {
   const DeliveryPaymentBlockItem({
     super.key,
     required this.imagePath,
-    required this.title,
+    this.title,
+    this.titleWidget,
     this.subtitle,
     required this.isChecked,
     required this.onTap,
@@ -17,7 +18,8 @@ class DeliveryPaymentBlockItem extends StatelessWidget {
   });
 
   final String imagePath;
-  final String title;
+  final String? title;
+  final Widget? titleWidget;
   final String? subtitle;
   final bool isChecked;
 
@@ -50,18 +52,20 @@ class DeliveryPaymentBlockItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      SvgPicture.asset(imagePath, width: 24.w, height: 24.w),
-                      SizedBox(width: 8.w),
-                      Text(
-                        title,
-                        style: UiConstants.textStyle3.copyWith(
-                            color: UiConstants.darkBlueColor,
-                            fontWeight: FontWeight.w800),
+                  titleWidget ??
+                      Row(
+                        children: [
+                          SvgPicture.asset(imagePath,
+                              width: 24.w, height: 24.w),
+                          SizedBox(width: 8.w),
+                          Text(
+                            title ?? '',
+                            style: UiConstants.textStyle3.copyWith(
+                                color: UiConstants.darkBlueColor,
+                                fontWeight: FontWeight.w800),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
                   Padding(
                     padding: getMarginOrPadding(top: 4),
                     child: Text(
