@@ -72,13 +72,7 @@ class ProductsScreenBloc
 
   void _onChangeProductSortTypeEvent(
       ChangeProductSortTypeEvent event, Emitter<ProductsScreenState> emit) {
-    productsController.animateTo(0,
-        duration: Duration(milliseconds: 300), curve: Curves.bounceIn);
-
-    emit(state.copyWith(
-        isLoadingProducts: true,
-        productSortType: event.productSortType,
-        searchProducts: state.searchProducts?.copyWith(products: [])));
+    emit(state.copyWith(productSortType: event.productSortType));
 
     // Повторно вызываем загрузку данных с новым типом сортировки
     add(LoadProductsEvent(page: 1));
@@ -144,6 +138,13 @@ class ProductsScreenBloc
       if (currentPage != 1) {
         emit(state.copyWith(isLoadingProducts: true));
         oldProducts = state.searchProducts?.products ?? [];
+      } else {
+        productsController.animateTo(0,
+            duration: Duration(milliseconds: 300), curve: Curves.bounceIn);
+
+        emit(state.copyWith(
+            isLoadingProducts: true,
+            searchProducts: state.searchProducts?.copyWith(products: [])));
       }
 
       final failureOrLoads = await searchProductsUC(
@@ -358,6 +359,7 @@ class ProductsScreenBloc
           minSelectedPrice: state.minAllowedPrice,
           maxSelectedPrice: state.maxAllowedPrice),
     );
+    add(LoadProductsEvent(page: 1));
   }
 
   @override

@@ -17,12 +17,12 @@ class LoadProductsEvent extends ProductsScreenEvent {
 }
 
 class ChangeProductSortTypeEvent extends ProductsScreenEvent {
-  final ProductSortType productSortType;
+  final ProductSortType? productSortType;
 
-  const ChangeProductSortTypeEvent(this.productSortType);
+  const ChangeProductSortTypeEvent({this.productSortType});
 
   @override
-  List<Object> get props => [productSortType];
+  List<Object?> get props => [productSortType];
 }
 
 class ChangePriceEvent extends ProductsScreenEvent {

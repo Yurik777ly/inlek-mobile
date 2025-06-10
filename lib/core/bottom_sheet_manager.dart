@@ -1370,9 +1370,10 @@ class BottomSheetManager {
                               .copyWith(color: UiConstants.darkBlueColor),
                         ),
                         GestureDetector(
-                          onTap: () => productsScreenBloc.add(
-                            ClearEvent(),
-                          ),
+                          onTap: () {
+                            productsScreenBloc.add(ClearEvent());
+                            Navigator.pop(context);
+                          },
                           child: Text(
                             'Сбросить',
                             style: UiConstants.textStyle3.copyWith(
@@ -1483,10 +1484,7 @@ class BottomSheetManager {
                     AppButtonWidget(
                       text: 'Показать результаты',
                       onTap: () {
-                        productsScreenBloc.add(
-                          ChangeProductSortTypeEvent(
-                              ProductSortType.popularity),
-                        );
+                        productsScreenBloc.add(ChangeProductSortTypeEvent());
 
                         Navigator.pop(context);
                       },
@@ -1534,7 +1532,8 @@ class BottomSheetManager {
                           value: sortType,
                           groupValue: state.productSortType,
                           onChanged: () => productsBloc.add(
-                            ChangeProductSortTypeEvent(sortType),
+                            ChangeProductSortTypeEvent(
+                                productSortType: sortType),
                           ),
                         );
                       },
