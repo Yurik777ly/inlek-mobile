@@ -160,7 +160,11 @@ class ChangeCountProductWidget extends StatelessWidget {
                           : SizedBox(width: 3.w),
                       GestureDetector(
                         onTap: isAddDisabled
-                            ? () {}
+                            ? () => ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Больше нет в наличии'),
+                                  ),
+                                )
                             : () => cartBloc.add(
                                   AddCartEvent(
                                     context: screenContext ?? context,
