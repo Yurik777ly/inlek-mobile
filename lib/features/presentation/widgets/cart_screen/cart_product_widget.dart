@@ -62,10 +62,11 @@ class CartProductWidget extends StatelessWidget {
         return GestureDetector(
           child: DismissibleTile(
             onDismissed: (_) => bloc.add(
-              DeleteProductEvent(context, product.productId!),
+              DeleteCartEvent(
+                  context: context, productId: product.productId!, count: 0),
             ),
             direction: productsListScreenType == ProductsListScreenType.cart
-                ? DismissibleTileDirection.rightToLeft
+                ? DismissibleTileDirection.horizontal
                 : DismissibleTileDirection.none,
             key: UniqueKey(),
             borderRadius: BorderRadius.all(
@@ -78,6 +79,13 @@ class CartProductWidget extends StatelessWidget {
             rtlOverlay: SvgPicture.asset(Paths.deleteIconPath,
                 height: 24.w, width: 24.w, color: UiConstants.whiteColor),
             rtlOverlayDismissed: SvgPicture.asset(Paths.deleteIconPath,
+                height: 24.w, width: 24.w, color: UiConstants.whiteColor),
+            ltrBackground: const ColoredBox(color: UiConstants.redColor),
+            ltrOverlayIndent: 0,
+            ltrDismissedColor: UiConstants.redColor,
+            ltrOverlay: SvgPicture.asset(Paths.deleteIconPath,
+                height: 24.w, width: 24.w, color: UiConstants.whiteColor),
+            ltrOverlayDismissed: SvgPicture.asset(Paths.deleteIconPath,
                 height: 24.w, width: 24.w, color: UiConstants.whiteColor),
             child: Container(
               padding: getMarginOrPadding(all: 8),
