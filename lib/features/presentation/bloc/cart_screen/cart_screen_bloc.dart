@@ -159,22 +159,6 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
           return resultProduct;
         }).toList();
 
-        // Обновляем список доступных промокодов
-        /*final availablePromoCodes = mergedProducts
-            .expand((product) => product.promocodesJson ?? [])
-            .cast<PromocodeEntity>()
-            .toList();*/
-
-        // Фильтруем выбранные промокоды
-        /*final updatedSelectedPromoCodes = state.selectedPromoCodes
-            .where(
-              (selectedPromo) => cartData.allPromocodes.any(
-                (availablePromo) =>
-                    availablePromo.promotionId == selectedPromo.promotionId,
-              ),
-            )
-            .toList();*/
-
         emit(state.copyWith(
             isLoading: false,
             cartData: cartData.copyWith(

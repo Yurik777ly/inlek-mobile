@@ -44,14 +44,15 @@ class CartScreen extends StatelessWidget {
 
               // Определяем, в каком списке должен быть продукт
               if (isInStock) {
-                inStockProducts.add(product);
+                // Добавляем в список для самовывоза, если тип получения — самовывоз и товар в наличии
+                if (product.delivery == TypeReceiving.pickup &&
+                    cartState.cartType == TypeReceiving.delivery) {
+                  pickUpAndInStockProducts.add(product);
+                } else {
+                  inStockProducts.add(product);
+                }
               } else {
                 noInStockProducts.add(product);
-              }
-
-              // Добавляем в список для самовывоза, если тип получения — самовывоз и товар в наличии
-              if (cartState.cartType == TypeReceiving.pickup && isInStock) {
-                pickUpAndInStockProducts.add(product);
               }
             }
 
@@ -282,7 +283,7 @@ class CartScreen extends StatelessWidget {
                                                         products: cartState
                                                                 .cartData
                                                                 ?.products
-                                                                ?.where((product) => cartState
+                                                                .where((product) => cartState
                                                                     .selectedProductIds
                                                                     .contains(
                                                                         product
@@ -323,7 +324,7 @@ class CartScreen extends StatelessWidget {
                                                               .showSnackBar(
                                                             const SnackBar(
                                                               content: Text(
-                                                                  'Для доставки выберите аптеку с нужным товаром'),
+                                                                  'Не все товары доступны для доставки'),
                                                             ),
                                                           );
                                                         } else {
