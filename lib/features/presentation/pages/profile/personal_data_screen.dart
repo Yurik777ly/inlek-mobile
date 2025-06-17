@@ -91,7 +91,11 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                 canPop: false,
                 onPopInvokedWithResult: (didPop, _) {
                   if (!didPop) {
-                    personalDataBloc.add(BackButtonPressedEvent());
+                    if (formKey.currentState?.validate() ?? false) {
+                      personalDataBloc.add(
+                        BackButtonPressedEvent(context: context),
+                      );
+                    }
                   }
                 },
                 child: Scaffold(
@@ -109,10 +113,19 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                             child: Column(
                               children: [
                                 CustomAppBar(
-                                    backgroundColor:
-                                        UiConstants.backgroundColor,
-                                    title: 'Личные данные',
-                                    showBack: true),
+                                  backgroundColor: UiConstants.backgroundColor,
+                                  title: 'Личные данные',
+                                  showBack: true,
+                                  onTapBack: () {
+                                    if (formKey.currentState?.validate() ??
+                                        false) {
+                                      personalDataBloc.add(
+                                        BackButtonPressedEvent(
+                                            context: context),
+                                      );
+                                    }
+                                  },
+                                ),
                                 Expanded(
                                   child: homeState is InternetUnavailable
                                       ? InternetNoInternetConnectionWidget()
@@ -145,7 +158,8 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                                                         ?.validate() ??
                                                     false) {
                                                   personalDataBloc.add(
-                                                    SubmitEvent(),
+                                                    SubmitEvent(
+                                                        context: context),
                                                   );
                                                 }
                                               },

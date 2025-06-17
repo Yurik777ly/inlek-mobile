@@ -141,7 +141,9 @@ class PersonalDataScreenBloc
       (event, emit) {
         emit(
           state.copyWith(
-              isCheckedPolicyCheckbox: event.isCheckedPolicyCheckbox),
+              isCheckedPolicyCheckbox: event.isCheckedPolicyCheckbox,
+              showPolicyError: false,
+              installedPhone: state.installedPhone),
         );
       },
     );
@@ -164,6 +166,18 @@ class PersonalDataScreenBloc
 
     on<SubmitEvent>(
       (event, emit) async {
+        // Проверяем политику при попытке сохранить данные
+        if (!state.isCheckedPolicyCheckbox) {
+          ScaffoldMessenger.of(event.context).showSnackBar(
+            const SnackBar(
+              content: Text('Примите условия обработки персональных данных'),
+            ),
+          );
+          emit(state.copyWith(
+              showPolicyError: true, installedPhone: state.installedPhone));
+          return;
+        }
+
         final isValidPhone = Utils.phoneRegexp.hasMatch(phoneController.text);
         if (state.installedPhone != phoneController.text && isValidPhone) {
           Utils.showCustomDialog(
@@ -198,6 +212,19 @@ class PersonalDataScreenBloc
 
     on<BackButtonPressedEvent>(
       (event, emit) async {
+        // Проверяем политику при попытке уйти со страницы
+        if (!state.isCheckedPolicyCheckbox) {
+          ScaffoldMessenger.of(event.context).showSnackBar(
+            const SnackBar(
+              content: Text('Примите условия обработки персональных данных'),
+            ),
+          );
+          emit(state.copyWith(
+              showPolicyError: true, installedPhone: state.installedPhone));
+
+          return;
+        }
+
         if (hasUnsavedChanges()) {
           bool? shouldSave =
               await BottomSheetManager.showUnsavedChangesSheet(screenContext!);
@@ -262,8 +289,7 @@ class PersonalDataScreenBloc
             gender: initialGender,
             isCheckedNotificationCheckbox: profile.statusNotifications ?? false,
             isCheckedPolicyCheckbox: profile.acceptPolicy ?? false,
-            installedPhone: Utils.formatPhoneNumber(profile.phoneNumber,
-                toServerFormat: false),
+            installedPhone: initialPhone,
           ),
         );
       },
@@ -317,6 +343,7 @@ class PersonalDataScreenBloc
           if (confirmedCode != null) {
             Navigator.of(UiConstants.homeContext!).pop();
           }
+
           await getProfile();
 
           // Reset initial values after successful save
@@ -333,6 +360,9 @@ class PersonalDataScreenBloc
           oldPasswordController.clear();
           newPasswordController.clear();
           newPasswordConfirmController.clear();
+
+          // Clear policy error
+          emit(state.copyWith(showPolicyError: false));
 
           Utils.showCustomDialog(
             screenContext: screenContext!,

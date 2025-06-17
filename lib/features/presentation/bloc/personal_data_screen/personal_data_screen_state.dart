@@ -10,6 +10,7 @@ class PersonalDataScreenState extends Equatable {
   final bool showError;
   final String? confirmPhoneCode;
   final String? installedPhone;
+  final bool showPolicyError;
 
   const PersonalDataScreenState({
     this.isLoading = true,
@@ -21,6 +22,7 @@ class PersonalDataScreenState extends Equatable {
     this.showError = false,
     this.confirmPhoneCode,
     this.installedPhone,
+    this.showPolicyError = false,
   });
 
   PersonalDataScreenState copyWith({
@@ -33,6 +35,7 @@ class PersonalDataScreenState extends Equatable {
     bool? showError,
     String? confirmPhoneCode,
     String? installedPhone,
+    bool? showPolicyError,
   }) {
     return PersonalDataScreenState(
       isLoading: isLoading ?? this.isLoading,
@@ -46,6 +49,7 @@ class PersonalDataScreenState extends Equatable {
       showError: showError ?? this.showError,
       confirmPhoneCode: confirmPhoneCode,
       installedPhone: installedPhone ?? this.installedPhone,
+      showPolicyError: showPolicyError ?? this.showPolicyError,
     );
   }
 
@@ -59,7 +63,8 @@ class PersonalDataScreenState extends Equatable {
         passwordErrorText,
         showError,
         confirmPhoneCode,
-        installedPhone
+        installedPhone,
+        showPolicyError,
       ];
 }
 

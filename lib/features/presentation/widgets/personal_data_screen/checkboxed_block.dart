@@ -66,6 +66,7 @@ class _CheckboxesBlockState extends State<CheckboxesBlock> {
           onChanged: (isChecked) => personalDataBloc.add(
             ChangePolicyCheckboxEvent(isChecked ?? false),
           ),
+          showError: personalDataBloc.state.showPolicyError,
         )
       ],
     );

@@ -14,7 +14,8 @@ class CustomCheckbox extends StatelessWidget {
       this.textStyle,
       this.borderRadius,
       this.scale = 1.5,
-      this.isEnabled = true});
+      this.isEnabled = true,
+      this.showError = false});
 
   final Widget? title;
   final bool isChecked;
@@ -24,52 +25,62 @@ class CustomCheckbox extends StatelessWidget {
   final double? borderRadius;
   final double scale;
   final bool isEnabled;
+  final bool showError;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => isEnabled ? onChanged(!isChecked) : null,
-      child: Skeleton.unite(
-        child: Row(
-          children: [
-            Transform.scale(
-              scale: scale,
-              child: SizedBox(
-                height: 24.w,
-                width: 24.w,
-                child: Checkbox(
-                    checkColor: UiConstants.whiteColor, // Цвет галочки
-                    fillColor: WidgetStateProperty.resolveWith((states) {
-                      // Цвет фона в зависимости от состояния
-                      if (states.contains(WidgetState.selected)) {
-                        // Состояние включено
-                        return isEnabled
-                            ? UiConstants.purpleColor
-                            : UiConstants.mutedVioletColor;
-                      }
-                      return UiConstants.whiteColor; // Состояние выключено
-                    }),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(borderRadius ?? 4.r),
-                    ),
-                    side: isChecked
-                        ? BorderSide.none
-                        : BorderSide(
-                            color: UiConstants.darkBlueColor.withOpacity(.3),
-                          ),
-                    value: isChecked,
-                    onChanged: isEnabled ? onChanged : null),
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () => isEnabled ? onChanged(!isChecked) : null,
+          child: Skeleton.unite(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Transform.scale(
+                  scale: scale,
+                  child: SizedBox(
+                    height: 24.w,
+                    width: 24.w,
+                    child: Checkbox(
+                        checkColor: UiConstants.whiteColor, // Цвет галочки
+                        fillColor: WidgetStateProperty.resolveWith((states) {
+                          // Цвет фона в зависимости от состояния
+                          if (states.contains(WidgetState.selected)) {
+                            // Состояние включено
+                            return isEnabled
+                                ? UiConstants.purpleColor
+                                : UiConstants.mutedVioletColor;
+                          }
+                          return UiConstants.whiteColor; // Состояние выключено
+                        }),
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(borderRadius ?? 4.r),
+                        ),
+                        side: isChecked
+                            ? BorderSide.none
+                            : BorderSide(
+                                color: showError
+                                    ? UiConstants.redColor
+                                    : UiConstants.darkBlueColor.withOpacity(.3),
+                              ),
+                        value: isChecked,
+                        onChanged: isEnabled ? onChanged : null),
+                  ),
+                ),
+                if (title != null)
+                  Expanded(
+                    child: Padding(
+                        padding: getMarginOrPadding(left: spacing ?? 8),
+                        child: title),
+                  )
+              ],
             ),
-            if (title != null)
-              Expanded(
-                child: Padding(
-                    padding: getMarginOrPadding(left: spacing ?? 8),
-                    child: title),
-              )
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }

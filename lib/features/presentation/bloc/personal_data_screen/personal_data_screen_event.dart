@@ -22,7 +22,11 @@ class ChangeGenderEvent extends PersonalDataScreenEvent {
   const ChangeGenderEvent(this.gender);
 }
 
-class SubmitEvent extends PersonalDataScreenEvent {}
+class SubmitEvent extends PersonalDataScreenEvent {
+  final BuildContext context;
+
+  const SubmitEvent({required this.context});
+}
 
 class PasswordChangedEvent extends PersonalDataScreenEvent {}
 
@@ -35,4 +39,8 @@ class DeleteAccountEvent extends PersonalDataScreenEvent {}
 
 class FormFieldChangedEvent extends PersonalDataScreenEvent {}
 
-class BackButtonPressedEvent extends PersonalDataScreenEvent {}
+class BackButtonPressedEvent extends PersonalDataScreenEvent {
+  final BuildContext context;
+
+  const BackButtonPressedEvent({required this.context});
+}

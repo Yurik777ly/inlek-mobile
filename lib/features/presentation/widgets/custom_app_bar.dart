@@ -23,6 +23,7 @@ class CustomAppBar extends StatelessWidget {
     this.onTapFilterButton,
     this.onChangedField,
     this.onTapField,
+    this.onTapBack,
     this.screenContext,
   });
 
@@ -39,6 +40,7 @@ class CustomAppBar extends StatelessWidget {
   final Function()? onTapFilterButton;
   final Function(String value)? onChangedField;
   final Function()? onTapField;
+  final Function()? onTapBack;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +59,7 @@ class CustomAppBar extends StatelessWidget {
                     Padding(
                       padding: getMarginOrPadding(right: 4),
                       child: GestureDetector(
-                        onTap: () => Navigator.pop(context),
+                        onTap: onTapBack ?? () => Navigator.pop(context),
                         child: SvgPicture.asset(Paths.arrowBackIconPath,
                             color: UiConstants.darkBlue2Color.withOpacity(.6),
                             width: 24.w,
