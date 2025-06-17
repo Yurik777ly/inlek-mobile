@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
-import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/news_entity.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/news_internal_screen/news_internal_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/custom_app_bar.dart';
+import 'package:inlek/features/presentation/widgets/custom_flutter_html.dart';
 import 'package:inlek/features/presentation/widgets/date_icon_widget.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/banner_item.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/block_widget.dart';
@@ -90,27 +89,10 @@ class NewsInternalScreen extends StatelessWidget {
                                         if (Skeletonizer.of(context).enabled)
                                           SizedBox(height: 16.h),
                                         Skeleton.replace(
-                                          child: Html(
-                                            data: state.isLoading
-                                                ? Utils.mockHtml
-                                                : state.news?.content ?? '',
-                                            style: {
-                                              "p": Utils.htmlStyle,
-                                              "li": Utils.htmlStyle,
-                                              "*": Style(
-                                                margin: Margins(
-                                                  blockStart: Margin(0),
-                                                  blockEnd: Margin(0),
-                                                  left: Margin(0),
-                                                  right: Margin(0),
-                                                ),
-                                                padding: HtmlPaddings(
-                                                  blockStart: HtmlPadding(0),
-                                                  blockEnd: HtmlPadding(0),
-                                                ),
-                                              ),
-                                            },
-                                          ),
+                                          child: CustomFlutterHtml(
+                                              isLoading: state.isLoading,
+                                              content:
+                                                  state.news?.content ?? ''),
                                         ),
                                         SizedBox(height: 32.h),
                                         BlockWidget(

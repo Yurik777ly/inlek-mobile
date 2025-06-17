@@ -3,16 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
-import 'package:inlek/constants/utils.dart';
 import 'package:inlek/features/presentation/bloc/banner_screen/banner_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/custom_app_bar.dart';
+import 'package:inlek/features/presentation/widgets/custom_flutter_html.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/banner_item.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/block_widget.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/daily_products_list_widget.dart';
@@ -115,25 +114,9 @@ class _BannerScreenState extends State<BannerScreen> {
                                           child: Padding(
                                             padding: getMarginOrPadding(
                                                 left: 20, right: 20),
-                                            child: Html(
-                                              data: _htmlContent ?? '',
-                                              style: {
-                                                "p": Utils.htmlStyle,
-                                                "li": Utils.htmlStyle,
-                                                "*": Style(
-                                                  margin: Margins(
-                                                    blockStart: Margin(0),
-                                                    blockEnd: Margin(0),
-                                                    left: Margin(0),
-                                                    right: Margin(0),
-                                                  ),
-                                                  padding: HtmlPaddings(
-                                                    blockStart: HtmlPadding(0),
-                                                    blockEnd: HtmlPadding(0),
-                                                  ),
-                                                ),
-                                              },
-                                            ),
+                                            child: CustomFlutterHtml(
+                                                isLoading: false,
+                                                content: _htmlContent ?? ''),
                                           ),
                                         ),
                                         BlockWidget(

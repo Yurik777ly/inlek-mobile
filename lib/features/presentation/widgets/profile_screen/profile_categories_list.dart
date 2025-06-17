@@ -4,6 +4,7 @@ import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/pages/profile/about_us_screen.dart';
+import 'package:inlek/features/presentation/pages/profile/articles/articles_screen.dart';
 import 'package:inlek/features/presentation/pages/profile/how_place_order_screen.dart';
 import 'package:inlek/features/presentation/pages/profile/info_about_order_screen.dart';
 import 'package:inlek/features/presentation/pages/profile/news/news_screen.dart';
@@ -83,7 +84,7 @@ class ProfileCategoriesList extends StatelessWidget {
               ),
             ),
           ),
-          /*SizedBox(height: 8.h),
+          SizedBox(height: 8.h),
           SubcategoryItem(
             title: 'Полезные статьи',
             titleStyle: UiConstants.textStyle3,
@@ -94,7 +95,7 @@ class ProfileCategoriesList extends StatelessWidget {
                 settings: RouteSettings(name: Routes.articlesScreen),
               ),
             ),
-          ),*/
+          ),
           SizedBox(height: 8.h),
           SubcategoryItem(
             title: 'Новости',
