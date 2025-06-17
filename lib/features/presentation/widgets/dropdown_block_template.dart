@@ -20,42 +20,15 @@ class DropdownBlockTemplate extends StatefulWidget {
 }
 
 class _DropdownBlockTemplateState extends State<DropdownBlockTemplate>
-    with SingleTickerProviderStateMixin {
+    with AutomaticKeepAliveClientMixin {
   bool isVisible = true;
-  late AnimationController _controller;
-  late Animation<double> _animation;
 
   @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    );
-
-    if (isVisible) {
-      _controller.forward();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  bool get wantKeepAlive => true;
 
   void _toggleVisibility() {
     setState(() {
       isVisible = !isVisible;
-      if (isVisible) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
     });
   }
 
@@ -88,13 +61,17 @@ class _DropdownBlockTemplateState extends State<DropdownBlockTemplate>
             ],
           ),
         ),
-        SizeTransition(
-          sizeFactor: _animation,
-          axisAlignment: -1.0, // начало анимации сверху
-          child: Padding(
-            padding: getMarginOrPadding(top: 8),
-            child: widget.child,
-          ),
+        AnimatedSize(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          child: isVisible
+              ? RepaintBoundary(
+                  child: Padding(
+                    padding: getMarginOrPadding(top: 8),
+                    child: widget.child,
+                  ),
+                )
+              : const SizedBox.shrink(),
         ),
       ],
     );
