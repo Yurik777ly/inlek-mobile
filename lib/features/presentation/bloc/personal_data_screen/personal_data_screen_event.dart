@@ -32,3 +32,7 @@ class ConfirmPhoneChangeEvent extends PersonalDataScreenEvent {
 }
 
 class DeleteAccountEvent extends PersonalDataScreenEvent {}
+
+class FormFieldChangedEvent extends PersonalDataScreenEvent {}
+
+class BackButtonPressedEvent extends PersonalDataScreenEvent {}

@@ -19,8 +19,33 @@ import 'package:inlek/features/presentation/widgets/personal_data_screen/general
 import 'package:inlek/locator_service.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class PersonalDataScreen extends StatelessWidget {
+class PersonalDataScreen extends StatefulWidget {
   const PersonalDataScreen({super.key});
+
+  @override
+  State<PersonalDataScreen> createState() => _PersonalDataScreenState();
+}
+
+class _PersonalDataScreenState extends State<PersonalDataScreen> {
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  bool isFormValid = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Validate form after widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _validateForm();
+    });
+  }
+
+  void _validateForm() {
+    if (formKey.currentState != null) {
+      setState(() {
+        isFormValid = formKey.currentState!.validate();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,74 +74,109 @@ class PersonalDataScreen extends StatelessWidget {
             },
             builder: (context, state) {
               final personalDataBloc = context.read<PersonalDataScreenBloc>();
-              return Scaffold(
-                backgroundColor: UiConstants.backgroundColor,
-                body: SafeArea(
-                  child: Skeletonizer(
-                    ignorePointers: false,
-                    enabled: state.isLoading,
-                    child: Builder(
-                      builder: (context) {
-                        return Column(
-                          children: [
-                            CustomAppBar(
-                                backgroundColor: UiConstants.backgroundColor,
-                                title: 'Личные данные',
-                                showBack: true),
-                            Expanded(
-                              child: homeState is InternetUnavailable
-                                  ? InternetNoInternetConnectionWidget()
-                                  : ListView(
-                                      shrinkWrap: true,
-                                      padding: getMarginOrPadding(
-                                          bottom: 94,
-                                          right: 20,
-                                          left: 20,
-                                          top: 16),
-                                      children: [
-                                        GeneralInformationBlock(
-                                            screenContext: context),
-                                        SizedBox(height: 16.h),
-                                        ContactsBlock(screenContext: context),
-                                        SizedBox(height: 16.h),
-                                        ChangePasswordBlock(
-                                            screenContext: context),
-                                        SizedBox(height: 16.h),
-                                        CheckboxesBlock(screenContext: context),
-                                        SizedBox(height: 32.h),
-                                        AppButtonWidget(
-                                          isActive: state.isButtonActive,
-                                          text: 'Сохранить',
-                                          onTap: () {
-                                            personalDataBloc.add(
-                                              SubmitEvent(),
-                                            );
-                                          },
-                                        ),
-                                        SizedBox(height: 8.h),
-                                        AppButtonWidget(
-                                          text: 'Удалить аккаунт',
-                                          backgroundColor:
-                                              UiConstants.backgroundColor,
-                                          textColor: UiConstants.darkBlueColor,
-                                          onTap: () async {
-                                            bool? isSuccess =
-                                                await BottomSheetManager
-                                                    .showDeleteAccountSheet(
-                                                        context);
 
-                                            if (isSuccess == true) {
-                                              personalDataBloc
-                                                  .add(DeleteAccountEvent());
-                                            }
-                                          },
+              // Validate form whenever state changes
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (formKey.currentState != null) {
+                  bool newFormValid = formKey.currentState!.validate();
+                  if (newFormValid != isFormValid) {
+                    setState(() {
+                      isFormValid = newFormValid;
+                    });
+                  }
+                }
+              });
+
+              return PopScope(
+                canPop: false,
+                onPopInvokedWithResult: (didPop, _) {
+                  if (!didPop) {
+                    personalDataBloc.add(BackButtonPressedEvent());
+                  }
+                },
+                child: Scaffold(
+                  backgroundColor: UiConstants.backgroundColor,
+                  body: SafeArea(
+                    child: Skeletonizer(
+                      ignorePointers: false,
+                      enabled: state.isLoading,
+                      child: Builder(
+                        builder: (context) {
+                          return Form(
+                            key: formKey,
+                            autovalidateMode: AutovalidateMode.always,
+                            onChanged: _validateForm,
+                            child: Column(
+                              children: [
+                                CustomAppBar(
+                                    backgroundColor:
+                                        UiConstants.backgroundColor,
+                                    title: 'Личные данные',
+                                    showBack: true),
+                                Expanded(
+                                  child: homeState is InternetUnavailable
+                                      ? InternetNoInternetConnectionWidget()
+                                      : ListView(
+                                          shrinkWrap: true,
+                                          padding: getMarginOrPadding(
+                                              bottom: 94,
+                                              right: 20,
+                                              left: 20,
+                                              top: 16),
+                                          children: [
+                                            GeneralInformationBlock(
+                                                screenContext: context),
+                                            SizedBox(height: 16.h),
+                                            ContactsBlock(
+                                                screenContext: context),
+                                            SizedBox(height: 16.h),
+                                            ChangePasswordBlock(
+                                                screenContext: context),
+                                            SizedBox(height: 16.h),
+                                            CheckboxesBlock(
+                                                screenContext: context),
+                                            SizedBox(height: 32.h),
+                                            AppButtonWidget(
+                                              isActive: state.isButtonActive &&
+                                                  isFormValid,
+                                              text: 'Сохранить',
+                                              onTap: () {
+                                                if (formKey.currentState
+                                                        ?.validate() ??
+                                                    false) {
+                                                  personalDataBloc.add(
+                                                    SubmitEvent(),
+                                                  );
+                                                }
+                                              },
+                                            ),
+                                            SizedBox(height: 8.h),
+                                            AppButtonWidget(
+                                              text: 'Удалить аккаунт',
+                                              backgroundColor:
+                                                  UiConstants.backgroundColor,
+                                              textColor:
+                                                  UiConstants.darkBlueColor,
+                                              onTap: () async {
+                                                bool? isSuccess =
+                                                    await BottomSheetManager
+                                                        .showDeleteAccountSheet(
+                                                            context);
+
+                                                if (isSuccess == true) {
+                                                  personalDataBloc.add(
+                                                      DeleteAccountEvent());
+                                                }
+                                              },
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
+                                ),
+                              ],
                             ),
-                          ],
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),

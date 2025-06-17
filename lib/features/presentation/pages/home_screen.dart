@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/app_route_observer.dart';
@@ -95,23 +96,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   //final SearchScreenBloc searchBloc =
                   //    context.read<SearchScreenBloc>();
 
-                  return WillPopScope(
-                    onWillPop: () async {
-                      final isFirstRouteInCurrentTab = !await bloc
-                          .navigatorKeys[selectedIndex].currentState!
-                          .maybePop();
+                  return PopScope(
+                    canPop: false, // Разрешает вызывать onPopInvoked
+                    onPopInvokedWithResult: (didPop, _) {
+                      if (didPop)
+                        return; // если уже обработано системой, ничего не делаем
 
-                      if (isFirstRouteInCurrentTab) {
-                        if (selectedIndex != 0) {
-                          bloc.add(ChangePageEvent(0));
-                          return false;
-                        } else {
-                          // Покидаем приложение
-                          return true;
+                      final navigatorState =
+                          bloc.navigatorKeys[selectedIndex].currentState;
+
+                      navigatorState?.maybePop().then((popped) {
+                        final isFirstRouteInCurrentTab = !popped;
+
+                        if (isFirstRouteInCurrentTab) {
+                          if (selectedIndex != 0) {
+                            bloc.add(ChangePageEvent(0));
+                          } else {
+                            // Закрыть приложение
+                            SystemNavigator.pop();
+                          }
                         }
-                      }
-
-                      return false;
+                      });
                     },
                     child: Scaffold(
                       appBar: AppBar(

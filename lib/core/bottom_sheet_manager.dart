@@ -109,6 +109,52 @@ class BottomSheetManager {
     );
   }
 
+  static Future<bool?> showUnsavedChangesSheet(BuildContext context) {
+    return showModalBottomSheet(
+      useRootNavigator: true,
+      context: context,
+      builder: (sheetContext) {
+        return CustomBottomSheet(
+          height: 158.h,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Вы хотите уйти без сохранения изменений?',
+                style: UiConstants.textStyle5
+                    .copyWith(color: UiConstants.darkBlueColor),
+              ),
+              SizedBox(height: 16.h),
+              Row(
+                children: [
+                  Expanded(
+                    child: AppButtonWidget(
+                        alignment: Alignment.centerLeft,
+                        onTap: () {
+                          Navigator.pop(sheetContext, true); // Save and leave
+                        },
+                        text: 'Сохранить',
+                        backgroundColor: UiConstants.whiteColor,
+                        textColor: UiConstants.darkBlueColor),
+                  ),
+                  Expanded(
+                    child: AppButtonWidget(
+                      onTap: () => Navigator.pop(
+                          sheetContext, false), // Don't save, just leave
+                      text: 'Не сохранять',
+                      backgroundColor: UiConstants.purpleColor,
+                      textColor: UiConstants.whiteColor,
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   static showClearCartSheet(BuildContext screenContext) {
     showModalBottomSheet(
       context: UiConstants.homeContext!,

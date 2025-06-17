@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
+import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/core/error/failure.dart';
 import 'package:inlek/features/data/models/profile_model.dart';
 import 'package:inlek/features/domain/usecases/profile/delete_me.dart';
@@ -33,6 +34,30 @@ class PersonalDataScreenBloc
   TextEditingController newPasswordController = TextEditingController();
   TextEditingController newPasswordConfirmController = TextEditingController();
 
+  // Store initial values to compare with current values
+  String? initialFirstName = "";
+  String? initialLastName = "";
+  String? initialBirthday = "";
+  String? initialPhone = "";
+  String? initialEmail = "";
+  GenderType? initialGender;
+  bool? initialNotificationStatus;
+  bool? initialPolicyStatus;
+
+  bool hasUnsavedChanges() {
+    return initialFirstName != fNameController.text ||
+        initialLastName != sNameController.text ||
+        initialBirthday != birthdayController.text ||
+        initialPhone != phoneController.text ||
+        initialEmail != emailController.text ||
+        initialGender != state.gender ||
+        initialNotificationStatus != state.isCheckedNotificationCheckbox ||
+        initialPolicyStatus != state.isCheckedPolicyCheckbox ||
+        oldPasswordController.text.isNotEmpty ||
+        newPasswordController.text.isNotEmpty ||
+        newPasswordConfirmController.text.isNotEmpty;
+  }
+
   PersonalDataScreenBloc(
       {required this.getMeUC,
       required this.updateMeUC,
@@ -40,6 +65,7 @@ class PersonalDataScreenBloc
       BuildContext? context})
       : super(PersonalDataScreenLoadingState()) {
     screenContext = context;
+
     oldPasswordController.addListener(() {
       add(PasswordChangedEvent());
     });
@@ -53,39 +79,52 @@ class PersonalDataScreenBloc
     });
 
     on<PasswordChangedEvent>((event, emit) {
+      bool isPasswordValid = true;
+      String? passwordErrorText;
+      bool showError = false;
+
       if (oldPasswordController.text.isEmpty &&
           newPasswordController.text.isEmpty &&
           newPasswordConfirmController.text.isEmpty) {
-        emit(
-          state.copyWith(
-              isButtonActive: true, passwordErrorText: null, showError: false),
-        );
+        // All password fields are empty - no validation needed
+        isPasswordValid = true;
+        passwordErrorText = null;
+        showError = false;
       } else if (oldPasswordController.text.isEmpty &&
               [newPasswordController.text, newPasswordConfirmController.text]
                   .any((e) => e.isNotEmpty) ||
           oldPasswordController.text.isNotEmpty &&
               [newPasswordController.text, newPasswordConfirmController.text]
                   .any((e) => e.isEmpty)) {
-        emit(
-          state.copyWith(
-              isButtonActive: false,
-              passwordErrorText: 'Поле должно быть заполнено',
-              showError: true),
-        );
+        // Incomplete password change
+        isPasswordValid = false;
+        passwordErrorText = 'Поле должно быть заполнено';
+        showError = true;
       } else if (newPasswordController.text !=
           newPasswordConfirmController.text) {
-        emit(
-          state.copyWith(
-              isButtonActive: false,
-              passwordErrorText: 'Пароли не совпадают',
-              showError: true),
-        );
+        // Passwords don't match
+        isPasswordValid = false;
+        passwordErrorText = 'Пароли не совпадают';
+        showError = true;
       } else {
-        emit(
-          state.copyWith(
-              isButtonActive: true, passwordErrorText: null, showError: false),
-        );
+        // Password validation passed
+        isPasswordValid = true;
+        passwordErrorText = null;
+        showError = false;
       }
+
+      emit(
+        state.copyWith(
+          isButtonActive: isPasswordValid,
+          passwordErrorText: passwordErrorText,
+          showError: showError,
+        ),
+      );
+    });
+
+    on<FormFieldChangedEvent>((event, emit) {
+      // This event is now handled by the UI form validation
+      // We keep it for compatibility but don't need to do anything here
     });
 
     on<ChangeNotificationCheckboxEvent>(
@@ -156,6 +195,28 @@ class PersonalDataScreenBloc
         );
       },
     );
+
+    on<BackButtonPressedEvent>(
+      (event, emit) async {
+        if (hasUnsavedChanges()) {
+          bool? shouldSave =
+              await BottomSheetManager.showUnsavedChangesSheet(screenContext!);
+
+          if (shouldSave == true) {
+            // User chose to save, update profile and then leave
+            await updateProfile();
+            Navigator.of(screenContext!).pop();
+          } else if (shouldSave == false) {
+            // User chose not to save, just leave
+            Navigator.of(screenContext!).pop();
+          }
+          // If shouldSave is null (bottom sheet was dismissed), stay on screen
+        } else {
+          // No unsaved changes, just leave
+          Navigator.of(screenContext!).pop();
+        }
+      },
+    );
   }
 
   Future getProfile() async {
@@ -179,12 +240,26 @@ class PersonalDataScreenBloc
         phoneController.text =
             Utils.formatPhoneNumber(profile.phoneNumber, toServerFormat: false);
         emailController.text = profile.emailAddress ?? '';
+
+        // Store initial values
+        initialFirstName = profile.firstName ?? "";
+        initialLastName = profile.lastName ?? "";
+        initialBirthday = profile.birthday != null
+            ? profile.birthday!.replaceAll('.', ' / ')
+            : '';
+        initialPhone =
+            Utils.formatPhoneNumber(profile.phoneNumber, toServerFormat: false);
+        initialEmail = profile.emailAddress;
+        initialGender = GenderType.values
+                .firstWhereOrNull((e) => e.name == profile.gender) ??
+            GenderType.values.first;
+        initialNotificationStatus = profile.statusNotifications;
+        initialPolicyStatus = profile.acceptPolicy;
+
         emit(
           PersonalDataScreenState(
             isLoading: false,
-            gender: GenderType.values
-                    .firstWhereOrNull((e) => e.name == profile.gender) ??
-                GenderType.values.first,
+            gender: initialGender,
             isCheckedNotificationCheckbox: profile.statusNotifications ?? false,
             isCheckedPolicyCheckbox: profile.acceptPolicy ?? false,
             installedPhone: Utils.formatPhoneNumber(profile.phoneNumber,
@@ -243,6 +318,22 @@ class PersonalDataScreenBloc
             Navigator.of(UiConstants.homeContext!).pop();
           }
           await getProfile();
+
+          // Reset initial values after successful save
+          initialFirstName = fNameController.text;
+          initialLastName = sNameController.text;
+          initialBirthday = birthdayController.text;
+          initialPhone = phoneController.text;
+          initialEmail = emailController.text;
+          initialGender = state.gender;
+          initialNotificationStatus = state.isCheckedNotificationCheckbox;
+          initialPolicyStatus = state.isCheckedPolicyCheckbox;
+
+          // Clear password fields
+          oldPasswordController.clear();
+          newPasswordController.clear();
+          newPasswordConfirmController.clear();
+
           Utils.showCustomDialog(
             screenContext: screenContext!,
             title: 'Уведомление',
@@ -269,10 +360,14 @@ class PersonalDataScreenBloc
     newPasswordController.dispose();
     newPasswordConfirmController.dispose();
 
+    // Remove all listeners
     oldPasswordController.removeListener(() {
       add(PasswordChangedEvent());
     });
     newPasswordController.removeListener(() {
+      add(PasswordChangedEvent());
+    });
+    newPasswordConfirmController.removeListener(() {
       add(PasswordChangedEvent());
     });
 

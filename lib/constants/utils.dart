@@ -72,7 +72,6 @@ class Utils {
       return null;
     }
 
-    // Убираем пробелы и проверяем формат
     final trimmed = value.replaceAll(' ', '');
     final dateRegexp = RegExp(r'^\d{2}/\d{2}/\d{4}$');
     if (!dateRegexp.hasMatch(trimmed)) {
@@ -87,11 +86,15 @@ class Utils {
 
       final parsedDate = DateTime(year, month, day);
 
-      // Проверим, что дата соответствует введённым значениям
       if (parsedDate.day != day ||
           parsedDate.month != month ||
           parsedDate.year != year) {
         return 'Некорректная дата';
+      }
+
+      final now = DateTime.now();
+      if (parsedDate.isAfter(DateTime(now.year, now.month, now.day))) {
+        return 'Дата не может быть в будущем';
       }
 
       return null; // дата корректна
