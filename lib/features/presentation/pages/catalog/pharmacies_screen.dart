@@ -6,6 +6,7 @@ import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
+import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/pharmacies_screen/pharmacies_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/pharmacy_map/pharmacy_map_bloc.dart';
@@ -28,6 +29,7 @@ class PharmaciesScreen extends StatelessWidget {
     List<PharmacyEntity> pharmacies =
         arguments['pharmacies'] as List<PharmacyEntity>;
     MapScreenType mapScreenType = arguments['mapScreenType'] as MapScreenType;
+    ProductEntity product = arguments['product'] as ProductEntity;
 
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
       builder: (context, homeState) {
@@ -37,6 +39,7 @@ class PharmaciesScreen extends StatelessWidget {
             BlocProvider(
               create: (context) =>
                   PharmaciesScreenBloc(getCartPharmaciesUC: sl())
+                    ..add(CheckProductAvailableDeliveryEvent())
                     ..add(
                       LoadPharmaciesDataEvent(pharmacies: pharmacies),
                     ),
@@ -85,7 +88,8 @@ class PharmaciesScreen extends StatelessWidget {
                                 isShowFilterButton: true,
                                 onTapFilterButton: () =>
                                     BottomSheetManager.showPharmacySortSheet(
-                                        UiConstants.homeContext!, context),
+                                        UiConstants.homeContext!, context,
+                                        product: product),
                                 onChangedField: (value) => pharmaciesBloc.add(
                                   ChangePharmacyQueryEvent(value),
                                 ),

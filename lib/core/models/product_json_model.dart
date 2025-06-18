@@ -94,7 +94,6 @@ class ProductJsonModel {
   final dynamic shu;
   final String? image;
   final List<dynamic>? gallery;
-
   final bool? isAlcohol;
   final bool? isDietarySupplement;
   final bool? isAvailable;

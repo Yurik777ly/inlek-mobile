@@ -13,6 +13,7 @@ class CustomRadioButton extends StatelessWidget {
     required this.onChanged,
     this.textStyle,
     this.isLabelOnLeft = false,
+    this.isAvailable = true,
   });
 
   final String title;
@@ -21,11 +22,12 @@ class CustomRadioButton extends StatelessWidget {
   final Function() onChanged;
   final TextStyle? textStyle;
   final bool isLabelOnLeft;
+  final bool isAvailable;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => onChanged(),
+      onTap: isAvailable ? () => onChanged() : null,
       child: Skeleton.unite(
         child: Row(
           mainAxisAlignment: isLabelOnLeft
@@ -66,7 +68,7 @@ class CustomRadioButton extends StatelessWidget {
             ),
             activeColor: UiConstants.purpleColor,
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            onChanged: (value) => onChanged(),
+            onChanged: isAvailable ? (value) => onChanged() : null,
           ),
         ),
       ),

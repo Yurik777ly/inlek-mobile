@@ -50,3 +50,5 @@ class ToggleShowWithAllProductsOnlyEvent extends PharmaciesScreenEvent {
   @override
   List<Object?> get props => [value];
 }
+
+class CheckProductAvailableDeliveryEvent extends PharmaciesScreenEvent {}

@@ -4,13 +4,16 @@ import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
+import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/pages/catalog/pharmacies_screen.dart';
 import 'package:inlek/features/presentation/widgets/product_screen/product_receiving_method_item.dart';
 
 class ProductReceivingMethodsWidget extends StatelessWidget {
   final List<PharmacyEntity> pharmacies;
+  final ProductEntity product;
 
-  const ProductReceivingMethodsWidget({super.key, required this.pharmacies});
+  const ProductReceivingMethodsWidget(
+      {super.key, required this.pharmacies, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +31,8 @@ class ProductReceivingMethodsWidget extends StatelessWidget {
                   name: Routes.pharmaciesScreen,
                   arguments: {
                     "mapScreenType": MapScreenType.product,
-                    "pharmacies": pharmacies
+                    "pharmacies": pharmacies,
+                    "product": product
                   },
                 ),
               ),

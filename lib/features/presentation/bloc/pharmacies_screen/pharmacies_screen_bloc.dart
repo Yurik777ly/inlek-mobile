@@ -17,11 +17,20 @@ part 'pharmacies_screen_state.dart';
 class PharmaciesScreenBloc
     extends Bloc<PharmaciesScreenEvent, PharmaciesScreenState> {
   final BuildContext? context;
+  final ProductEntity? product;
   final GetCartPharmaciesUC getCartPharmaciesUC;
   final TextEditingController queryController = TextEditingController();
 
-  PharmaciesScreenBloc({required this.getCartPharmaciesUC, this.context})
+  PharmaciesScreenBloc(
+      {required this.getCartPharmaciesUC, this.context, this.product})
       : super(PharmaciesScreenState()) {
+    on<CheckProductAvailableDeliveryEvent>((event, emit) {
+      bool isRestrictedProduct = product!.isRecipe || product!.isAlcohol;
+      if (isRestrictedProduct) {
+        emit(state.copyWith(pharmacySortType: TypeReceiving.pickup));
+      }
+    });
+
     on<ChangeSelectorIndexEvent>((event, emit) {
       emit(state.copyWith(selectorIndex: event.selectorIndex));
     });
@@ -63,9 +72,10 @@ class PharmaciesScreenBloc
         final failureOrLoads = await getCartPharmaciesUC();
 
         failureOrLoads.fold(
-          (_) => emit(
-            state.copyWith(isLoading: false, hasError: true),
-          ),
+          (_) {
+            emit(state.copyWith(isLoading: false, hasError: true));
+            _filterAndEmit(emit);
+          },
           (pharmacies) => emit(
             state.copyWith(
               isLoading: false,

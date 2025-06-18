@@ -6,6 +6,7 @@ import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
+import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/product_screen/product_screen_bloc.dart';
@@ -96,6 +97,8 @@ class ProductScreen extends StatelessWidget {
                                                 pharmacies:
                                                     productState.pharmacies ??
                                                         [],
+                                                product: productState.product ??
+                                                    ProductEntity(),
                                               ),
                                             ),
                                             SizedBox(height: 16.h),

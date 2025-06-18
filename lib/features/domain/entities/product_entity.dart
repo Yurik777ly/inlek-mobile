@@ -15,6 +15,8 @@ class ProductEntity extends Equatable {
   final String? brand;
   final String? image;
   final String? recipe;
+  final bool isRecipe;
+  final bool isAlcohol;
   final String? country;
   final TypeReceiving? delivery;
   final double? price;
@@ -57,6 +59,8 @@ class ProductEntity extends Equatable {
     this.brand,
     this.image,
     this.recipe,
+    this.isRecipe = false,
+    this.isAlcohol = false,
     this.country,
     this.delivery,
     this.price,
@@ -101,6 +105,8 @@ class ProductEntity extends Equatable {
     String? brand,
     String? image,
     String? recipe,
+    bool? isRecipe,
+    bool? isAlcohol,
     String? country,
     TypeReceiving? delivery,
     double? price,
@@ -143,6 +149,8 @@ class ProductEntity extends Equatable {
       brand: brand ?? this.brand,
       image: image ?? this.image,
       recipe: recipe ?? this.recipe,
+      isRecipe: isRecipe ?? this.isRecipe,
+      isAlcohol: isAlcohol ?? this.isAlcohol,
       country: country ?? this.country,
       delivery: delivery ?? this.delivery,
       price: price ?? this.price,
@@ -188,6 +196,8 @@ class ProductEntity extends Equatable {
         brand,
         image,
         recipe,
+        isRecipe,
+        isAlcohol,
         country,
         delivery,
         price,

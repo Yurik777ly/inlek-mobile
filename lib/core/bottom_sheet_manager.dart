@@ -1596,12 +1596,23 @@ class BottomSheetManager {
   }
 
   static showPharmacySortSheet(
-      BuildContext homeContext, BuildContext screenContext) {
+      BuildContext homeContext, BuildContext screenContext,
+      {required ProductEntity product}) {
     showModalBottomSheet(
       context: homeContext,
       builder: (sheetContext) {
         PharmaciesScreenBloc pharmaciesBloc =
             screenContext.read<PharmaciesScreenBloc>();
+
+        // Check if product is prescription or alcohol-containing
+        bool isRestrictedProduct = product.isRecipe || product.isAlcohol;
+
+        // If it's a restricted product, set pickup as default and disable other options
+        if (isRestrictedProduct &&
+            pharmaciesBloc.state.pharmacySortType != TypeReceiving.pickup) {
+          pharmaciesBloc.add(ChangePharmacySortTypeEvent(TypeReceiving.pickup));
+        }
+
         return BlocBuilder<PharmaciesScreenBloc, PharmaciesScreenState>(
           bloc: pharmaciesBloc,
           builder: (context, state) {
@@ -1616,14 +1627,18 @@ class BottomSheetManager {
                         .copyWith(color: UiConstants.darkBlueColor),
                   ),
                   SizedBox(height: 16.h),
-                  CustomRadioButton(
-                    isLabelOnLeft: true,
-                    title: 'Все способы получения',
-                    textStyle: UiConstants.textStyle2,
-                    value: TypeReceiving.all,
-                    groupValue: state.pharmacySortType,
-                    onChanged: () => pharmaciesBloc.add(
-                      ChangePharmacySortTypeEvent(TypeReceiving.all),
+                  Opacity(
+                    opacity: isRestrictedProduct ? 0.5 : 1.0,
+                    child: CustomRadioButton(
+                      isAvailable: !isRestrictedProduct,
+                      isLabelOnLeft: true,
+                      title: 'Все способы получения',
+                      textStyle: UiConstants.textStyle2,
+                      value: TypeReceiving.all,
+                      groupValue: state.pharmacySortType,
+                      onChanged: () => pharmaciesBloc.add(
+                        ChangePharmacySortTypeEvent(TypeReceiving.all),
+                      ),
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -1638,14 +1653,18 @@ class BottomSheetManager {
                     ),
                   ),
                   SizedBox(height: 8.h),
-                  CustomRadioButton(
-                    isLabelOnLeft: true,
-                    title: 'Доставка',
-                    textStyle: UiConstants.textStyle2,
-                    value: TypeReceiving.delivery,
-                    groupValue: state.pharmacySortType,
-                    onChanged: () => pharmaciesBloc.add(
-                      ChangePharmacySortTypeEvent(TypeReceiving.delivery),
+                  Opacity(
+                    opacity: isRestrictedProduct ? 0.5 : 1.0,
+                    child: CustomRadioButton(
+                      isAvailable: !isRestrictedProduct,
+                      isLabelOnLeft: true,
+                      title: 'Доставка',
+                      textStyle: UiConstants.textStyle2,
+                      value: TypeReceiving.delivery,
+                      groupValue: state.pharmacySortType,
+                      onChanged: () => pharmaciesBloc.add(
+                        ChangePharmacySortTypeEvent(TypeReceiving.delivery),
+                      ),
                     ),
                   ),
                 ],

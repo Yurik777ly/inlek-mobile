@@ -34,6 +34,7 @@ class _DropdownBlockTemplateState extends State<DropdownBlockTemplate>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
