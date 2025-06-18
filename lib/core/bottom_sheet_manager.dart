@@ -199,9 +199,9 @@ class BottomSheetManager {
     );
   }
 
-  static showNotAllProductsAvailableDeliverySheet(
+  static Future<bool?> showNotAllProductsAvailableDeliverySheet(
       BuildContext screenContext, BuildContext homeContext) {
-    return showModalBottomSheet(
+    return showModalBottomSheet<bool>(
       context: homeContext,
       builder: (sheetContext) {
         return CustomBottomSheet(
@@ -209,7 +209,7 @@ class BottomSheetManager {
           child: Column(
             children: [
               Text(
-                'Не все товары доступны для доставки',
+                'Не все товары доступны для доставки',
                 style: UiConstants.textStyle5
                     .copyWith(color: UiConstants.darkBlueColor),
               ),
@@ -223,25 +223,13 @@ class BottomSheetManager {
               SizedBox(height: 16.h),
               AppButtonWidget(
                 text: 'Оформить самовывоз',
-                onTap: () {
-                  homeContext.read<CartScreenBloc>().add(
-                        ChangeCartTypeEvent(TypeReceiving.pickup),
-                      );
-                  homeContext.read<CartScreenBloc>().add(
-                        ScrollUpListEvent(),
-                      );
-                  screenContext.read<SelectorCubit>().onSelectorItemTap(
-                        [TypeReceiving.delivery, TypeReceiving.pickup]
-                            .indexOf(TypeReceiving.pickup),
-                      );
-                  Navigator.pop(sheetContext);
-                },
+                onTap: () => Navigator.pop(sheetContext, true),
               ),
               SizedBox(height: 8.h),
               AppButtonWidget(
                 text: 'Вернуться к оформлению',
                 isFilled: false,
-                onTap: () => Navigator.pop(sheetContext),
+                onTap: () => Navigator.pop(sheetContext, false),
               ),
             ],
           ),

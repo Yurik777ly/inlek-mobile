@@ -44,8 +44,10 @@ class CartScreen extends StatelessWidget {
 
               // Определяем, в каком списке должен быть продукт
               if (isInStock) {
+                bool isRestrictedProduct =
+                    product.isRecipe || product.isAlcohol;
                 // Добавляем в список для самовывоза, если тип получения — самовывоз и товар в наличии
-                if (product.delivery == TypeReceiving.pickup &&
+                if (isRestrictedProduct &&
                     cartState.cartType == TypeReceiving.delivery) {
                   pickUpAndInStockProducts.add(product);
                 } else {
@@ -73,6 +75,7 @@ class CartScreen extends StatelessWidget {
               ),
               child: BlocBuilder<SelectorCubit, SelectorState>(
                 builder: (context, state) {
+                  final selectorCubit = context.read<SelectorCubit>();
                   return Scaffold(
                     backgroundColor: UiConstants.backgroundColor,
                     body: SafeArea(
@@ -297,7 +300,7 @@ class CartScreen extends StatelessWidget {
                                                     AppButtonWidget(
                                                       text:
                                                           'Перейти к оформлению',
-                                                      onTap: () {
+                                                      onTap: () async {
                                                         if (cartState
                                                             .selectedProductIds
                                                             .isEmpty) {
@@ -319,14 +322,36 @@ class CartScreen extends StatelessWidget {
                                                             ),
                                                           );
                                                         } else if (isDeliverySelected) {
-                                                          ScaffoldMessenger.of(
-                                                                  context)
-                                                              .showSnackBar(
-                                                            const SnackBar(
-                                                              content: Text(
-                                                                  'Не все товары доступны для доставки'),
-                                                            ),
-                                                          );
+                                                          bool?
+                                                              isChangeToPickupType =
+                                                              await BottomSheetManager
+                                                                  .showNotAllProductsAvailableDeliverySheet(
+                                                                      context,
+                                                                      UiConstants
+                                                                          .homeContext!);
+
+                                                          if (isChangeToPickupType ==
+                                                              true) {
+                                                            cartBloc.add(
+                                                              ChangeCartTypeEvent(
+                                                                  TypeReceiving
+                                                                      .pickup),
+                                                            );
+                                                            cartBloc.add(
+                                                              ScrollUpListEvent(),
+                                                            );
+                                                            selectorCubit
+                                                                .onSelectorItemTap(
+                                                              [
+                                                                TypeReceiving
+                                                                    .delivery,
+                                                                TypeReceiving
+                                                                    .pickup
+                                                              ].indexOf(
+                                                                  TypeReceiving
+                                                                      .pickup),
+                                                            );
+                                                          }
                                                         } else {
                                                           BottomSheetManager
                                                               .showDeliverySheet(

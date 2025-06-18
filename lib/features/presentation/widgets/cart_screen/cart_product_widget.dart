@@ -12,8 +12,10 @@ import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/custom_cache_manager.dart';
+import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
+import 'package:inlek/features/presentation/pages/catalog/products/product_screen.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/change_count_product_widget.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/info_border_plate.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/only_pickup_chip.dart';
@@ -60,6 +62,13 @@ class CartProductWidget extends StatelessWidget {
         }
 
         return GestureDetector(
+          onTap: () => Navigator.of(context).push(
+            Routes.createRoute(
+              const ProductScreen(),
+              settings: RouteSettings(
+                  name: Routes.productScreen, arguments: product.productId),
+            ),
+          ),
           child: DismissibleTile(
             onDismissed: (_) => bloc.add(
               DeleteCartEvent(
