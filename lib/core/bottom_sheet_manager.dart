@@ -1085,9 +1085,10 @@ class BottomSheetManager {
                                 Align(
                                   alignment: AlignmentDirectional.center,
                                   child: Selector(
-                                    titlesList: const ['Список', 'Карта'],
-                                    onTap: (int index) => selectorIndex = index,
-                                  ),
+                                      titlesList: const ['Список', 'Карта'],
+                                      onTap: (int index) =>
+                                          selectorIndex = index,
+                                      selectedIndex: selectorIndex),
                                 ),
                                 SizedBox(height: 16.h),
                                 Expanded(

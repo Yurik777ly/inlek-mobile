@@ -113,16 +113,17 @@ class PharmaciesScreen extends StatelessWidget {
                                               alignment:
                                                   AlignmentDirectional.center,
                                               child: Selector(
-                                                titlesList: const [
-                                                  'Список',
-                                                  'Карта'
-                                                ],
-                                                onTap: (int index) =>
-                                                    pharmaciesBloc.add(
-                                                  ChangeSelectorIndexEvent(
-                                                      index),
-                                                ),
-                                              ),
+                                                  titlesList: const [
+                                                    'Список',
+                                                    'Карта'
+                                                  ],
+                                                  onTap: (int index) =>
+                                                      pharmaciesBloc.add(
+                                                        ChangeSelectorIndexEvent(
+                                                            index),
+                                                      ),
+                                                  selectedIndex: pharmaciesState
+                                                      .selectorIndex),
                                             ),
                                             SizedBox(height: 16.h),
                                             Expanded(

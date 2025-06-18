@@ -159,13 +159,24 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
           return resultProduct;
         }).toList();
 
-        emit(state.copyWith(
+        // If the cart is empty, set cartType to delivery
+        if (fixedNewProducts.isEmpty &&
+            state.cartType != TypeReceiving.delivery) {
+          emit(state.copyWith(
             isLoading: false,
-            cartData: cartData.copyWith(
-              products:
-                  event.isFirstLoading ? fixedNewProducts : mergedProducts,
-            ),
-            errorText: null));
+            cartType: TypeReceiving.delivery,
+            cartData: cartData.copyWith(products: []),
+            errorText: null,
+          ));
+        } else {
+          emit(state.copyWith(
+              isLoading: false,
+              cartData: cartData.copyWith(
+                products:
+                    event.isFirstLoading ? fixedNewProducts : mergedProducts,
+              ),
+              errorText: null));
+        }
       },
     );
 
@@ -251,9 +262,15 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       wasLastProductRemoved = true;
     }
 
+    // Check if cart becomes empty after this operation
+    bool isCartEmptyAfterRemoval = updatedProducts.isEmpty;
+
     emit(state.copyWith(
         cartData: state.cartData?.copyWith(products: updatedProducts),
-        selectedProductIds: updatedSelectedProductIds));
+        selectedProductIds: updatedSelectedProductIds,
+        cartType:
+            isCartEmptyAfterRemoval ? TypeReceiving.delivery : state.cartType));
+
     _debounceTimer =
         Timer(Duration(seconds: wasLastProductRemoved ? 0 : 2), () async {
       final result = await deleteCartUC(CartParams(
@@ -290,6 +307,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         updatedProducts.indexWhere((e) => e.productId == event.productId);
 
     bool wasFirstTimeAdded = productIndex == -1; // Товар отсутствовал в корзине
+    bool wasCartEmpty =
+        (state.cartData?.products ?? []).isEmpty; // Корзина была пустая
 
     if (!wasFirstTimeAdded) {
       ProductEntity product = updatedProducts[productIndex];
@@ -303,6 +322,12 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     emit(state.copyWith(
         cartData: state.cartData?.copyWith(products: updatedProducts),
         isLoading: false));
+
+    // If cart was empty and this is the first product, set cartType to delivery
+    if (wasCartEmpty && wasFirstTimeAdded) {
+      emit(state.copyWith(cartType: TypeReceiving.delivery));
+    }
+
     _debounceTimer = Timer(
       Duration(seconds: wasFirstTimeAdded ? 0 : 2),
       () async {
@@ -342,7 +367,11 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
           screenContext: event.context,
           text: 'Ошибка очистки корзины',
           action: (context) => Navigator.of(context).pop()),
-      (_) => add(LoadCartDataEvent(isFirstLoading: true)),
+      (_) {
+        // Set cartType to delivery when clearing cart
+        emit(state.copyWith(cartType: TypeReceiving.delivery));
+        add(LoadCartDataEvent(isFirstLoading: true));
+      },
     );
   }
 
@@ -441,7 +470,9 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         cartData: state.cartData?.copyWith(products: updatedProducts),
         cartType: event.cartType));
 
-    add(LoadCartDataEvent(isFirstLoading: true));
+    if ((updatedProducts ?? []).isNotEmpty) {
+      add(LoadCartDataEvent(isFirstLoading: true));
+    }
   }
 
   void _onChangePaymentType(

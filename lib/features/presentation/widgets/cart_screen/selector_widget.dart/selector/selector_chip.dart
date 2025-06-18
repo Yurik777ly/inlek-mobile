@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
-import 'package:inlek/features/presentation/widgets/cart_screen/selector_widget.dart/cubit/selector_cubit.dart';
 
 class SelectorChip extends StatelessWidget {
   final String text;
@@ -24,7 +22,6 @@ class SelectorChip extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           onTap(index);
-          BlocProvider.of<SelectorCubit>(context).onSelectorItemTap(index);
         },
         child: Container(
           padding: getMarginOrPadding(top: 10, bottom: 10),
