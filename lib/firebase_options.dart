@@ -38,19 +38,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDHEVbHkFJzIYM-nF_BRcp3-nola4yZsqg',
-    appId: '1:860456756553:android:a8ccf67d4079b9061de698',
-    messagingSenderId: '860456756553',
-    projectId: 'truck-spot-2e8b8',
-    storageBucket: 'truck-spot-2e8b8.appspot.com',
+    apiKey: 'AIzaSyDCtxsW3VhASvxW8428VAofYKQpImM3RsE',
+    appId: '1:1073949749636:android:71c7acbe3b56bb6b7f2dd1',
+    messagingSenderId: '1073949749636',
+    projectId: 'inlek-72490',
+    storageBucket: 'inlek-72490.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCpdRg-dIm3otDBhvRFjdGuXK9RadezurU',
-    appId: '1:860456756553:ios:4302876e848476411de698',
-    messagingSenderId: '860456756553',
-    projectId: 'truck-spot-2e8b8',
-    storageBucket: 'truck-spot-2e8b8.appspot.com',
-    iosBundleId: 'com.truck.truckspot',
+    apiKey: 'AIzaSyA4dM2AefWyu496zDqgPV95NzZwJJf_IEI',
+    appId: '1:1073949749636:ios:3082227b782fc2b87f2dd1',
+    messagingSenderId: '1073949749636',
+    projectId: 'inlek-72490',
+    storageBucket: 'inlek-72490.firebasestorage.app',
+    iosBundleId: 'com.inlek.app',
   );
+
 }
