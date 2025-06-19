@@ -98,11 +98,13 @@ class _ContactsBlockState extends State<ContactsBlock> {
               ),
               SizedBox(height: 16.h),
               AppTextFieldWidget(
-                  title: 'Email',
-                  hintText: 'Введите Email',
-                  controller: personalDataBloc.emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: Utils.emailValidate),
+                title: 'Email',
+                hintText: 'Введите Email',
+                controller: personalDataBloc.emailController,
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) =>
+                    Utils.emailValidate(value, isSensitiveEmptyValue: false),
+              ),
             ],
           ),
         ),

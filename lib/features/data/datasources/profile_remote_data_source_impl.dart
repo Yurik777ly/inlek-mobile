@@ -169,6 +169,10 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       } else {
         // очищаем токен
         sharedPreferences.remove(SharedPreferencesKeys.accessToken);
+        sharedPreferences.remove(SharedPreferencesKeys.email);
+        sharedPreferences.remove(SharedPreferencesKeys.phone);
+        sharedPreferences.remove(SharedPreferencesKeys.fullName);
+        sharedPreferences.remove(SharedPreferencesKeys.userId);
       }
     } catch (e) {
       log('Error during deleteMe: $e', level: 1000);
