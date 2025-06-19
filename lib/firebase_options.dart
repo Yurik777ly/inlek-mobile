@@ -39,7 +39,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDCtxsW3VhASvxW8428VAofYKQpImM3RsE',
-    appId: '1:1073949749636:android:71c7acbe3b56bb6b7f2dd1',
+    appId: '1:1073949749636:android:7c7992d069c1fa377f2dd1',
     messagingSenderId: '1073949749636',
     projectId: 'inlek-72490',
     storageBucket: 'inlek-72490.firebasestorage.app',
@@ -47,10 +47,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyA4dM2AefWyu496zDqgPV95NzZwJJf_IEI',
-    appId: '1:1073949749636:ios:3082227b782fc2b87f2dd1',
+    appId: '1:1073949749636:ios:10b1c428af61f0707f2dd1',
     messagingSenderId: '1073949749636',
     projectId: 'inlek-72490',
     storageBucket: 'inlek-72490.firebasestorage.app',
     iosBundleId: 'com.dkmfarm.inlek.app',
   );
+
 }
