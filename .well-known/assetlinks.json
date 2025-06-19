@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.dkmfarm.inlek.app",
+      "sha256_cert_fingerprints": [
+        "9A:B3:1E:D1:B2:B6:D8:42:38:C4:C2:38:53:E5:6C:0A:C5:FF:BE:08:89:6D:65:92:B9:0B:EB:80:D5:07:46:F7"
+      ]
+    }
+  }
+]

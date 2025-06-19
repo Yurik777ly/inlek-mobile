@@ -1,4 +1,4 @@
-package com.inlek.app
+package com.dkmfarm.inlek.app
 
 import io.flutter.embedding.android.FlutterActivity
 

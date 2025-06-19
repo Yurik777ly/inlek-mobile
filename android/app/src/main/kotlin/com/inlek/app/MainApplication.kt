@@ -1,4 +1,4 @@
-package com.inlek.app
+package com.dkmfarm.inlek.app
 
 import android.app.Application
 import com.yandex.mapkit.MapKitFactory

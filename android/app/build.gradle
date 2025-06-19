@@ -26,7 +26,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "com.inlek.app"
+    namespace "com.dkmfarm.inlek.app"
     compileSdk 35
     ndkVersion flutter.ndkVersion
 
@@ -58,7 +58,7 @@ android {
     }
 
      defaultConfig {
-        applicationId = "com.inlek.app"
+        applicationId = "com.dkmfarm.inlek.app"
         minSdkVersion 26
         targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()

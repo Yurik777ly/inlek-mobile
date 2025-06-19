@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -39,6 +40,7 @@ import 'package:inlek/features/presentation/pages/starts/splash_screen.dart';
 import 'package:inlek/firebase_options.dart';
 import 'package:inlek/locator_service.dart' as di;
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:uni_links5/uni_links.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -55,8 +57,83 @@ Future main() async {
 
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  StreamSubscription? _sub;
+
+  @override
+  void initState() {
+    super.initState();
+    _handleInitialUri();
+    _sub = uriLinkStream.listen((Uri? uri) {
+      if (uri != null) {
+        _handleDeeplink(uri);
+      }
+    });
+  }
+
+  Future<void> _handleInitialUri() async {
+    final initialUri = await getInitialUri();
+    if (initialUri != null) {
+      _handleDeeplink(initialUri);
+    }
+  }
+
+  void _handleDeeplink(Uri uri) {
+    final pathSegments = uri.pathSegments;
+    if (pathSegments.isEmpty) return;
+
+    switch (pathSegments[0]) {
+      case 'product':
+        if (pathSegments.length > 1) {
+          final id = pathSegments[1];
+          navigatorKey.currentState
+              ?.pushNamed(Routes.productScreen, arguments: id);
+        }
+        break;
+      case 'banner':
+        if (pathSegments.length > 1) {
+          final id = pathSegments[1];
+          navigatorKey.currentState
+              ?.pushNamed(Routes.bannerScreen, arguments: id);
+        }
+        break;
+      case 'article':
+        if (pathSegments.length > 1) {
+          final id = pathSegments[1];
+          navigatorKey.currentState
+              ?.pushNamed(Routes.articleScreen, arguments: id);
+        }
+        break;
+      case 'news':
+        if (pathSegments.length > 1) {
+          final id = pathSegments[1];
+          navigatorKey.currentState
+              ?.pushNamed(Routes.newsInternalScreen, arguments: id);
+        }
+        break;
+      case 'sale':
+        if (pathSegments.length > 1) {
+          final id = pathSegments[1];
+          navigatorKey.currentState
+              ?.pushNamed(Routes.saleScreen, arguments: id);
+        }
+        break;
+    }
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size designSize =

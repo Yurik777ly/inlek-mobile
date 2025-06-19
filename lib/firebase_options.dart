@@ -51,7 +51,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1073949749636',
     projectId: 'inlek-72490',
     storageBucket: 'inlek-72490.firebasestorage.app',
-    iosBundleId: 'com.inlek.app',
+    iosBundleId: 'com.dkmfarm.inlek.app',
   );
-
 }
