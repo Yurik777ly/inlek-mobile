@@ -33,10 +33,11 @@ class ArticlesListWidget extends StatelessWidget {
               article: noContainParentArticles[index],
               onTap: () => Navigator.of(context).push(
                 Routes.createRoute(
-                  ArticleScreen(
-                      id: noContainParentArticles[index].contentId,
-                      articles: articles),
-                  settings: RouteSettings(name: Routes.articleScreen),
+                  ArticleScreen(articles: articles),
+                  settings: RouteSettings(
+                    name: Routes.articleScreen,
+                    arguments: {'id': noContainParentArticles[index].contentId},
+                  ),
                 ),
               ),
             ),

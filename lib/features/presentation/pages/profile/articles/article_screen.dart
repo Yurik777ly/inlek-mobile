@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/paths.dart';
+import 'package:inlek/constants/share_utils.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/routes.dart';
@@ -21,22 +23,24 @@ import 'package:inlek/locator_service.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ArticleScreen extends StatelessWidget {
-  const ArticleScreen({super.key, this.id, this.articles});
+  const ArticleScreen({super.key, this.articles});
 
-  final int? id;
   final List<ArticleEntity>? articles;
 
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic>? args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+
+    int? articleId = args!['id'];
+
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
       builder: (context, homeState) {
         return BlocProvider(
           create: (context) => ArticleScreenBloc(
             screenContext: context,
             getOneArticleUC: sl(),
-          )..add(
-              LoadArticleEvent(id: id!),
-            ),
+          )..add(LoadArticleEvent(id: articleId!)),
           child: BlocBuilder<ArticleScreenBloc, ArticleScreenState>(
             builder: (context, state) {
               return Scaffold(
@@ -55,6 +59,8 @@ class ArticleScreen extends StatelessWidget {
                             CustomAppBar(
                               showBack: true,
                               action: SvgPicture.asset(Paths.shareIconPath),
+                              onTapAction: () => ShareUtils.shareUrl(
+                                  ShareUrlType.article, articleId.toString()),
                             ),
                             Expanded(
                               child: homeState is InternetUnavailable
@@ -103,7 +109,7 @@ class ArticleScreen extends StatelessWidget {
                                             },
                                           ),
                                           child: ArticlesListWidget(
-                                              parentArticleId: id,
+                                              parentArticleId: articleId,
                                               articles: articles ?? [],
                                               padding: EdgeInsets.zero,
                                               physics:

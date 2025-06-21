@@ -19,7 +19,7 @@ import 'package:jivosdk_plugin/bridge.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart';
+import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 class Utils {
   static RegExp phoneRegexp = RegExp(r'^\+375 \(\d{2}\) \d{3}-\d{2}-\d{2}$');

@@ -5,7 +5,7 @@ import 'package:inlek/core/models/custom_marker_model.dart';
 import 'package:inlek/features/data/models/pharmacy_model.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/usecases/content/get_pharmacies.dart';
-import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart';
+import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 part 'info_about_order_screen_event.dart';
 part 'info_about_order_screen_state.dart';

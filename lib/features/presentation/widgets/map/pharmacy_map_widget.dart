@@ -13,7 +13,7 @@ import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/presentation/bloc/pharmacy_map/pharmacy_map_bloc.dart';
 import 'package:inlek/features/presentation/widgets/map/address_plate.dart';
 import 'package:inlek/features/presentation/widgets/map/map_button.dart';
-import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart';
+import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 class PharmacyMapWidget extends StatelessWidget {
   const PharmacyMapWidget({super.key, this.onTapMap});
@@ -38,8 +38,7 @@ class PharmacyMapWidget extends StatelessWidget {
                 child: YandexMap(
                     onMapCreated: (controller) => bloc
                       ..add(AttachControllerEvent(mapController: controller)),
-                    onCameraPositionChanged: (position, reason, isGesture,
-                            visibleRegion) =>
+                    onCameraPositionChanged: (position, reason, isGesture) =>
                         bloc.add(UpdatePharmacyMapEvent(position: position)),
                     gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
                       Factory<OneSequenceGestureRecognizer>(

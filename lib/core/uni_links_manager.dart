@@ -1,4 +1,4 @@
-import 'dart:async';
+/*import 'dart:async';
 
 import 'package:uni_links5/uni_links.dart';
 
@@ -39,3 +39,4 @@ class UniLinksManager {
     _uriStreamController.close();
   }
 }
+*/

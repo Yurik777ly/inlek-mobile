@@ -5,7 +5,6 @@ import 'package:inlek/core/courier_zone_manager.dart';
 import 'package:inlek/core/geocoder_manager.dart';
 import 'package:inlek/core/platform/error_handler.dart';
 import 'package:inlek/core/platform/network_info.dart';
-import 'package:inlek/core/uni_links_manager.dart';
 import 'package:inlek/features/data/datasources/auth_remote_data_source_impl.dart';
 import 'package:inlek/features/data/datasources/cart_remote_data_source_impl.dart';
 import 'package:inlek/features/data/datasources/category_remote_data_source_impl.dart';
@@ -411,11 +410,11 @@ Future<void> init() async {
   sl.registerLazySingleton(
       () => YandexGeocoder(apiKey: dotenv.env['YANDEX_GEOCODER_API_KEY']!));
   sl.registerLazySingleton(() => GeocoderManager(sl<YandexGeocoder>()));
-  sl.registerSingletonAsync<UniLinksManager>(() async {
+  /*sl.registerSingletonAsync<UniLinksManager>(() async {
     final manager = UniLinksManager();
     await manager.init();
     return manager;
-  });
+  });*/
   sl.registerSingletonAsync<CourierZoneManager>(() async {
     final manager = CourierZoneManager();
     await manager.init();

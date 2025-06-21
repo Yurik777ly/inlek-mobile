@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/paths.dart';
+import 'package:inlek/constants/share_utils.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
@@ -30,7 +32,10 @@ class ProductScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int? productId = ModalRoute.of(context)!.settings.arguments as int?;
+    Map<String, dynamic>? args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+
+    int? productId = args!['id'];
 
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
       builder: (context, homeState) {
@@ -64,6 +69,8 @@ class ProductScreen extends StatelessWidget {
                             CustomAppBar(
                               showBack: true,
                               action: SvgPicture.asset(Paths.shareIconPath),
+                              onTapAction: () => ShareUtils.shareUrl(
+                                  ShareUrlType.product, productId.toString()),
                             ),
                             Expanded(
                               child: homeState is InternetUnavailable

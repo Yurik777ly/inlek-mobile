@@ -1,4 +1,4 @@
-import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart';
+import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 class CustomMapObject {
   final MapObject mapObject;

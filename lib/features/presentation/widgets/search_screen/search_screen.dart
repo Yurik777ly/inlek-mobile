@@ -171,7 +171,7 @@ class SearchScreen extends StatelessWidget {
                 const ProductScreen(),
                 settings: RouteSettings(
                   name: Routes.productScreen,
-                  arguments: id,
+                  arguments: {'id': id},
                 ),
               ),
             );

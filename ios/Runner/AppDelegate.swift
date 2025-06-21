@@ -11,28 +11,26 @@ import JivoSDK
       _ application: UIApplication,
       didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
         // Инициализация Yandex Maps API
         YMKMapKit.setLocale("ru_RU") // Ваш предпочтительный язык. Необязательно, по умолчанию язык системы
         YMKMapKit.setApiKey("39a54941-0819-4ad3-bec0-ea83ea36e655") // Ваш сгенерированный API ключ
         
+        GeneratedPluginRegistrant.register(with: self)
+
         // Инициализация JivoSDK
         Jivo.notifications.handleLaunch(options: launchOptions)
-        
-        GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
-    // Обработка регистрации устройства для получения пуш-уведомлений
-    override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+   override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         Jivo.notifications.setPushToken(data: deviceToken)
     }
     
-    // Обработка ошибки регистрации устройства для получения пуш-уведомлений
     override func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         Jivo.notifications.setPushToken(data: nil)
     }
     
-    // Обработка полученного пуш-уведомления
     override func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         if let result = Jivo.notifications.didReceiveRemoteNotification(userInfo: userInfo) {
             completionHandler(result)
@@ -42,9 +40,8 @@ import JivoSDK
         }
     }
     
-    // Обработка уведомлений, которые должны быть показаны, когда приложение активно
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        if let options = Jivo.notifications.willPresent(notification: notification, preferableOptions: .banner) {
+    override func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        if let options = Jivo.notifications.willPresent(notification: notification, preferableOptions: [.alert, .sound, .badge]) {
             completionHandler(options)
         }
         else {
@@ -52,9 +49,26 @@ import JivoSDK
         }
     }
     
-    // Обработка нажатия на уведомление
     override func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         Jivo.notifications.didReceive(response: response)
         completionHandler()
+    }
+    
+    // Обработка Universal Links
+    override func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
+            if let url = userActivity.webpageURL {
+                print("Received Universal Link: \(url)")
+                // Flutter app_links plugin автоматически обработает этот URL
+            }
+        }
+        return super.application(application, continue: userActivity, restorationHandler: restorationHandler)
+    }
+    
+    // Обработка URL схем (для обратной совместимости)
+    override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        print("Received URL: \(url)")
+        // Flutter app_links plugin автоматически обработает этот URL
+        return super.application(app, open: url, options: options)
     }
 }

@@ -34,9 +34,11 @@ class NewsListWidget extends StatelessWidget {
               news: noContainParentNews[index],
               onTap: () => Navigator.of(context).push(
                 Routes.createRoute(
-                  NewsInternalScreen(
-                      id: noContainParentNews[index].contentId!, news: news),
-                  settings: RouteSettings(name: Routes.newsInternalScreen),
+                  NewsInternalScreen(news: news),
+                  settings: RouteSettings(
+                    name: Routes.newsInternalScreen,
+                    arguments: {'id': noContainParentNews[index].contentId},
+                  ),
                 ),
               ),
             ),

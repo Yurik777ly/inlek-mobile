@@ -24,6 +24,7 @@ class CustomAppBar extends StatelessWidget {
     this.onChangedField,
     this.onTapField,
     this.onTapBack,
+    this.onTapAction,
     this.screenContext,
   });
 
@@ -41,6 +42,7 @@ class CustomAppBar extends StatelessWidget {
   final Function(String value)? onChangedField;
   final Function()? onTapField;
   final Function()? onTapBack;
+  final Function()? onTapAction;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +79,9 @@ class CustomAppBar extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Skeleton.ignore(child: action ?? Container())
+                  GestureDetector(
+                      onTap: onTapAction,
+                      child: Skeleton.ignore(child: action ?? Container()))
                 ],
               ),
             ),

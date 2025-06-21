@@ -34,3 +34,5 @@ enum ProductSortType { popularity, priceDecrease, priceIncrease }
 enum GenderType { male, female }
 
 enum MapScreenType { product, courierDeliveryZones, cart, order }
+
+enum ShareUrlType { product, banner, article, news, sale }

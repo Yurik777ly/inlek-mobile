@@ -8,7 +8,7 @@ import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/core/models/custom_marker_model.dart';
 import 'package:inlek/features/data/models/pharmacy_model.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
-import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart';
+import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 part 'pharmacy_map_event.dart';
 part 'pharmacy_map_state.dart';

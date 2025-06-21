@@ -62,7 +62,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:yandex_geocoder/yandex_geocoder.dart';
-import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart' as ym;
+import 'package:yandex_mapkit/yandex_mapkit.dart' as ym;
 
 class BottomSheetManager {
   static Future<bool?> showDeleteAccountSheet(BuildContext context) {

@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/paths.dart';
+import 'package:inlek/constants/share_utils.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/routes.dart';
@@ -22,13 +24,17 @@ import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class NewsInternalScreen extends StatelessWidget {
-  const NewsInternalScreen({super.key, this.id, this.news});
+  const NewsInternalScreen({super.key, this.news});
 
-  final int? id;
   final List<NewsEntity>? news;
 
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic>? args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+
+    int? id = args!['id'];
+
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
       builder: (context, homeState) {
         return BlocProvider(
@@ -56,6 +62,8 @@ class NewsInternalScreen extends StatelessWidget {
                             CustomAppBar(
                               showBack: true,
                               action: SvgPicture.asset(Paths.shareIconPath),
+                              onTapAction: () => ShareUtils.shareUrl(
+                                  ShareUrlType.news, id.toString()),
                             ),
                             Expanded(
                               child: homeState is InternetUnavailable

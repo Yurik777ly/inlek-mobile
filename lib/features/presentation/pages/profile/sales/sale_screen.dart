@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/paths.dart';
+import 'package:inlek/constants/share_utils.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
@@ -19,12 +21,15 @@ import 'package:inlek/locator_service.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class SaleScreen extends StatelessWidget {
-  const SaleScreen({super.key, this.id});
-
-  final int? id;
+  const SaleScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic>? args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+
+    int? id = args!['id'];
+
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
       builder: (context, homeState) {
         return BlocProvider(
@@ -52,6 +57,8 @@ class SaleScreen extends StatelessWidget {
                             CustomAppBar(
                               showBack: true,
                               action: SvgPicture.asset(Paths.shareIconPath),
+                              onTapAction: () => ShareUtils.shareUrl(
+                                  ShareUrlType.sale, id.toString()),
                             ),
                             Expanded(
                               child: homeState is InternetUnavailable

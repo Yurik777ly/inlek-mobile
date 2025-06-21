@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +21,6 @@ import 'package:inlek/features/presentation/pages/profile/sales/sale_screen.dart
 import 'package:inlek/features/presentation/widgets/bottom_navigation_bar_tile.dart';
 import 'package:inlek/features/presentation/widgets/search_screen/search_screen.dart';
 import 'package:inlek/locator_service.dart';
-import 'package:uni_links5/uni_links.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -32,6 +32,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageStorageBucket bucket = PageStorageBucket();
   StreamSubscription? _sub;
+  final _appLinks = AppLinks();
 
   @override
   void initState() {
@@ -39,88 +40,158 @@ class _HomeScreenState extends State<HomeScreen> {
     UiConstants.homeContext = context;
 
     _handleInitialUri();
-    _sub = uriLinkStream.listen((Uri? uri) {
+    _sub = _appLinks.uriLinkStream.listen((Uri? uri) {
       if (uri != null) {
+        print('Received URI from stream: $uri');
         _handleDeeplink(uri);
       }
     });
   }
 
   Future<void> _handleInitialUri() async {
-    final initialUri = await getInitialUri();
-    if (initialUri != null) {
-      _handleDeeplink(initialUri);
+    // Ждем инициализации UI перед обработкой диплинка
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _tryGetInitialUri();
+    });
+  }
+
+  Future<void> _tryGetInitialUri() async {
+    try {
+      print('Trying to get initial app link...');
+      final initialUri = await _appLinks.getInitialAppLink();
+      if (initialUri != null) {
+        print('Got initial URI: $initialUri');
+        _handleDeeplink(initialUri);
+        return;
+      }
+
+      // Если не получили initial URI, пробуем еще раз через небольшую задержку
+      // Это особенно важно для iOS
+      await Future.delayed(Duration(milliseconds: 500));
+      final retryUri = await _appLinks.getInitialAppLink();
+      if (retryUri != null) {
+        print('Got initial URI on retry: $retryUri');
+        _handleDeeplink(retryUri);
+        return;
+      }
+
+      print('No initial URI found');
+    } catch (e) {
+      print('Error handling initial URI: $e');
     }
   }
 
-  void _handleDeeplink(Uri uri) {
-    final pathSegments = uri.pathSegments;
-    if (pathSegments.isEmpty) return;
+  Future<void> _handleDeeplink(Uri uri) async {
+    if (!mounted) return;
 
-    final homeBloc = sl<HomeScreenBloc>();
+    print('Handling deeplink: $uri');
 
-    switch (pathSegments[0]) {
-      case 'product':
-        if (pathSegments.length > 1) {
-          final id = int.tryParse(pathSegments[1]);
-          if (id != null) {
-            homeBloc.navigatorKeys[homeBloc.selectedPageIndex].currentState
-                ?.push(
-              Routes.createRoute(
-                const ProductScreen(),
-                settings:
-                    RouteSettings(name: Routes.productScreen, arguments: id),
-              ),
-            );
+    // Ждем полной инициализации UI
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        // Добавляем небольшую задержку для iOS, чтобы убедиться, что все готово
+        Future.delayed(Duration(milliseconds: 100), () {
+          if (mounted) {
+            _processDeeplink(uri);
           }
+        });
+      }
+    });
+  }
+
+  void _processDeeplink(Uri uri) {
+    if (!mounted) return;
+
+    print('Processing deeplink: $uri');
+
+    final pathSegments = uri.pathSegments;
+    if (pathSegments.length < 2) {
+      print('Invalid deeplink format: insufficient path segments');
+      return;
+    }
+
+    final type = pathSegments[0];
+    final id = pathSegments[1];
+
+    print('Deeplink type: $type, id: $id');
+
+    // Получаем bloc через context для корректной работы
+    final homeBloc = context.read<HomeScreenBloc>();
+    final navigator =
+        homeBloc.navigatorKeys[homeBloc.selectedPageIndex].currentState;
+
+    // Проверяем, что navigator готов
+    if (navigator == null) {
+      print('Navigator not ready, retrying...');
+      // Если navigator еще не готов, пробуем еще раз через небольшую задержку
+      // Увеличиваем задержку для iOS
+      Future.delayed(Duration(milliseconds: 300), () {
+        if (mounted) {
+          _processDeeplink(uri);
         }
-        break;
+      });
+      return;
+    }
+
+    final routeMap = <String, Widget Function()>{
+      'product': () => const ProductScreen(),
+      'banner': () => const BannerScreen(),
+      'article': () => const ArticleScreen(),
+      'news': () => const NewsInternalScreen(),
+      'sale': () => const SaleScreen(),
+    };
+
+    final screenBuilder = routeMap[type];
+    if (screenBuilder != null) {
+      final routeName = _getRouteName(type);
+      final args = {'id': int.tryParse(id)};
+
+      if (args['id'] != null) {
+        print('Navigating to $routeName with args: $args');
+
+        // Добавляем дополнительную проверку для iOS
+        try {
+          navigator.push(
+            Routes.createRoute(
+              screenBuilder(),
+              settings: RouteSettings(
+                name: routeName,
+                arguments: args,
+              ),
+            ),
+          );
+          print('Navigation successful');
+        } catch (e) {
+          print('Navigation failed: $e');
+          // Если навигация не удалась, пробуем еще раз через задержку
+          Future.delayed(Duration(milliseconds: 500), () {
+            if (mounted) {
+              _processDeeplink(uri);
+            }
+          });
+        }
+      } else {
+        print('Invalid ID in deeplink: $id');
+      }
+    } else {
+      print('Unknown deeplink type: $type');
+    }
+  }
+
+  String? _getRouteName(String type) {
+    switch (type) {
+      case 'product':
+        return Routes.productScreen;
       case 'banner':
-        if (pathSegments.length > 1) {
-          final id = pathSegments[1];
-          homeBloc.navigatorKeys[homeBloc.selectedPageIndex].currentState?.push(
-            Routes.createRoute(
-              const BannerScreen(),
-              settings: RouteSettings(name: Routes.bannerScreen, arguments: id),
-            ),
-          );
-        }
-        break;
+        return Routes.bannerScreen;
       case 'article':
-        if (pathSegments.length > 1) {
-          final id = pathSegments[1];
-          homeBloc.navigatorKeys[homeBloc.selectedPageIndex].currentState?.push(
-            Routes.createRoute(
-              const ArticleScreen(),
-              settings:
-                  RouteSettings(name: Routes.articleScreen, arguments: id),
-            ),
-          );
-        }
-        break;
+        return Routes.articleScreen;
       case 'news':
-        if (pathSegments.length > 1) {
-          final id = pathSegments[1];
-          homeBloc.navigatorKeys[homeBloc.selectedPageIndex].currentState?.push(
-            Routes.createRoute(
-              const NewsInternalScreen(),
-              settings:
-                  RouteSettings(name: Routes.newsInternalScreen, arguments: id),
-            ),
-          );
-        }
-        break;
+        return Routes.newsInternalScreen;
       case 'sale':
-        if (pathSegments.length > 1) {
-          final id = pathSegments[1];
-          homeBloc.navigatorKeys[homeBloc.selectedPageIndex].currentState?.push(
-            Routes.createRoute(
-              const SaleScreen(),
-              settings: RouteSettings(name: Routes.saleScreen, arguments: id),
-            ),
-          );
-        }
-        break;
+        return Routes.saleScreen;
+      default:
+        return null;
     }
   }
 

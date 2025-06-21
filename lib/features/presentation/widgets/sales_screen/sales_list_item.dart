@@ -30,8 +30,11 @@ class SalesListItem extends StatelessWidget {
     return GestureDetector(
       onTap: () => Navigator.of(context).push(
         Routes.createRoute(
-          SaleScreen(id: action.actionId),
-          settings: RouteSettings(name: Routes.saleScreen),
+          SaleScreen(),
+          settings: RouteSettings(
+            name: Routes.saleScreen,
+            arguments: {'id': action.actionId},
+          ),
         ),
       ),
       child: Container(

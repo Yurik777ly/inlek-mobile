@@ -5,7 +5,7 @@ import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/core/models/custom_marker_model.dart';
 import 'package:yandex_geocoder/yandex_geocoder.dart' as yg;
-import 'package:yandex_mapkit_lite/yandex_mapkit_lite.dart';
+import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 import 'models/courier_zone_model.dart'; // путь к твоей модели
 

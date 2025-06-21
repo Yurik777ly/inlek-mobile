@@ -51,7 +51,7 @@ class CustomFlutterHtml extends StatelessWidget {
       ],
       data: isLoading ? Utils.mockHtml : content,
       style: {
-        "p": Utils.htmlStyle,
+        //"p": Utils.htmlStyle,
         "li": Utils.htmlStyle,
         "*": Style(
           margin: Margins(
