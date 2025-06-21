@@ -106,8 +106,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       savedPharmacy = PharmacyModel.fromJson(json.decode(savedPharmacyJson));
 
       emit(state.copyWith(selectedPharmacy: savedPharmacy));
-      add(LoadCartDataEvent(isFirstLoading: true));
     }
+    add(LoadCartDataEvent(isFirstLoading: true));
   }
 
   Future<void> _onLoadData(
@@ -212,6 +212,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
   bool _isAllProductsChecked(Set<int> selectedProductIds) {
     return state.cartData?.products
+            .where((e) => e.availability != 'absent')
             .every((e) => selectedProductIds.contains(e.productId)) ??
         false;
   }
@@ -246,7 +247,9 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         .firstWhereOrNull((e) => e.productId == event.productId);
     if (product == null) return;
 
-    int newQuantity = event.count ?? (product.quantity ?? 0) - 1;
+    int newQuantity = product.availability == 'absent'
+        ? 0
+        : event.count ?? (product.quantity ?? 0) - 1;
     List<ProductEntity> updatedProducts =
         List.from(state.cartData?.products ?? []);
     Set<int> updatedSelectedProductIds = Set.from(state.selectedProductIds);
@@ -380,7 +383,10 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     add(UpdateDeliveryPriceEvent());
     Set<int> selectedProductIds = state.isAllProductsChecked && !event.force
         ? {}
-        : state.cartData!.products.map((e) => e.productId!).toSet();
+        : state.cartData!.products
+            .where((e) => e.availability != 'absent')
+            .map((e) => e.productId!)
+            .toSet();
     emit(state.copyWith(
         selectedProductIds: selectedProductIds,
         isAllProductsChecked:

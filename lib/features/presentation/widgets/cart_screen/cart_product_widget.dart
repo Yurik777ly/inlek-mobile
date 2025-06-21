@@ -113,18 +113,21 @@ class CartProductWidget extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (productsListScreenType ==
-                                ProductsListScreenType.cart)
+                                    ProductsListScreenType.cart &&
+                                product.availability != 'absent')
                               Skeleton.keep(
-                                child: CustomCheckbox(
-                                  isChecked: state.selectedProductIds
-                                      .contains(product.productId),
-                                  onChanged: (isChecked) => bloc.add(
-                                    ToggleSelectionEvent(
-                                        isChecked, product.productId!),
+                                child: Padding(
+                                  padding: getMarginOrPadding(right: 8),
+                                  child: CustomCheckbox(
+                                    isChecked: state.selectedProductIds
+                                        .contains(product.productId),
+                                    onChanged: (isChecked) => bloc.add(
+                                      ToggleSelectionEvent(
+                                          isChecked, product.productId!),
+                                    ),
                                   ),
                                 ),
                               ),
-                            SizedBox(width: 8.w),
                             Stack(
                               children: [
                                 if (product.stockCount == 0)
@@ -188,8 +191,9 @@ class CartProductWidget extends StatelessWidget {
                                     Padding(
                                       padding: getMarginOrPadding(bottom: 4),
                                       child: OutStockChip(),
-                                    ),
-                                  if (product.delivery == TypeReceiving.pickup)
+                                    )
+                                  else if (product.delivery ==
+                                      TypeReceiving.pickup)
                                     Padding(
                                       padding: getMarginOrPadding(bottom: 4),
                                       child: Row(
@@ -226,15 +230,17 @@ class CartProductWidget extends StatelessWidget {
                                         : CrossAxisAlignment
                                             .center, // TODO: если нет скидки, то CrossAxisAlignment.end
                                     children: [
-                                      Expanded(
-                                        child: ProductPrice(
-                                            oldPrice: oldPrice,
-                                            price: price,
-                                            productsListScreenType:
-                                                productsListScreenType),
-                                      ),
+                                      if (product.availability != 'absent')
+                                        Expanded(
+                                          child: ProductPrice(
+                                              oldPrice: oldPrice,
+                                              price: price,
+                                              productsListScreenType:
+                                                  productsListScreenType),
+                                        ),
                                       if (productsListScreenType ==
-                                          ProductsListScreenType.cart)
+                                              ProductsListScreenType.cart &&
+                                          product.availability != 'absent')
                                         Padding(
                                           padding: getMarginOrPadding(
                                               top: 2, bottom: 2, left: 8),

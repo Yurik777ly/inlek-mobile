@@ -30,7 +30,12 @@ class ChangeCountProductWidget extends StatelessWidget {
     final cartProduct = (cartBloc.state.cartData?.products ?? [])
         .firstWhereOrNull((e) => e.productId == product.productId);
 
-    int count = cartProduct?.quantity ?? 0;
+    int count =
+        cartProduct?.availability == 'absent' ? 1 : cartProduct?.quantity ?? 0;
+    double? price = cartProduct?.availability == 'absent'
+        ? product.price
+        : cartProduct?.prices?.price ?? product.price;
+
     final isAddDisabled = (cartProduct?.quantity ?? 0) >=
         (cartProduct?.stockCount ?? product.stockCount ?? double.infinity);
 
@@ -60,7 +65,8 @@ class ChangeCountProductWidget extends StatelessWidget {
             child: Builder(
               builder: (context) {
                 if (cartOrProductType == CartOrProductType.product &&
-                    count == 0) {
+                    count == 0 &&
+                    cartProduct?.availability != 'absent') {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -140,11 +146,7 @@ class ChangeCountProductWidget extends StatelessWidget {
                                 child: FittedBox(
                                   fit: BoxFit.scaleDown,
                                   child: Text(
-                                    Utils.formatPrice(
-                                        (cartProduct?.prices?.price ??
-                                                product.price ??
-                                                0.0) *
-                                            count),
+                                    Utils.formatPrice((price ?? 0.0) * count),
                                     style: UiConstants.textStyle8.copyWith(
                                         color: UiConstants.whiteColor
                                             .withOpacity(.6),

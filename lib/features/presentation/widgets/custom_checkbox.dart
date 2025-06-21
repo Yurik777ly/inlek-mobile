@@ -36,7 +36,7 @@ class CustomCheckbox extends StatelessWidget {
           onTap: () => isEnabled ? onChanged(!isChecked) : null,
           child: Skeleton.unite(
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Transform.scale(
                   scale: scale,
