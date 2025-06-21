@@ -69,6 +69,7 @@ import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.da
 import 'package:inlek/features/presentation/bloc/catalog_screen/catalog_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/category_screen/category_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/code_screen/code_screen_bloc.dart';
+import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/info_about_order_screen/info_about_order_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/login_screen/login_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/main_screen/main_screen_bloc.dart';
@@ -101,6 +102,9 @@ Future<void> init() async {
       sharedPreferences: sl<SharedPreferences>(),
       getMeUC: sl<GetMeUC>(),
     ),
+  );
+  sl.registerFactory(
+    () => HomeScreenBloc(),
   );
   sl.registerFactory(
     () => LoginScreenBloc(

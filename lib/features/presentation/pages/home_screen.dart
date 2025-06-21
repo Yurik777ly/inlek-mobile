@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,15 +8,19 @@ import 'package:inlek/app_route_observer.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/routes.dart';
-import 'package:inlek/core/uni_links_manager.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/route_observer/route_observer_bloc.dart';
 import 'package:inlek/features/presentation/bloc/search_screen/search_screen_bloc.dart';
 import 'package:inlek/features/presentation/pages/catalog/products/product_screen.dart';
+import 'package:inlek/features/presentation/pages/main/banner_screen.dart';
+import 'package:inlek/features/presentation/pages/profile/articles/article_screen.dart';
+import 'package:inlek/features/presentation/pages/profile/news/news_internal_screen.dart';
+import 'package:inlek/features/presentation/pages/profile/sales/sale_screen.dart';
 import 'package:inlek/features/presentation/widgets/bottom_navigation_bar_tile.dart';
 import 'package:inlek/features/presentation/widgets/search_screen/search_screen.dart';
 import 'package:inlek/locator_service.dart';
+import 'package:uni_links5/uni_links.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,38 +31,103 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final PageStorageBucket bucket = PageStorageBucket();
+  StreamSubscription? _sub;
 
   @override
   void initState() {
     super.initState();
     UiConstants.homeContext = context;
 
-    sl<UniLinksManager>().uriStream.listen((uri) {
-      if (uri.host == 'product') {
-        final id = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
-        if (id != null) {
-          _redirectToProduct(id);
-        }
+    _handleInitialUri();
+    _sub = uriLinkStream.listen((Uri? uri) {
+      if (uri != null) {
+        _handleDeeplink(uri);
       }
     });
   }
 
-  void _redirectToProduct(String id) {
-    // Переход в нужный таб (например, Home)
-    final bloc = context.read<HomeScreenBloc>();
-    const homeTabIndex = 0;
+  Future<void> _handleInitialUri() async {
+    final initialUri = await getInitialUri();
+    if (initialUri != null) {
+      _handleDeeplink(initialUri);
+    }
+  }
 
-    bloc.add(ChangePageEvent(homeTabIndex));
+  void _handleDeeplink(Uri uri) {
+    final pathSegments = uri.pathSegments;
+    if (pathSegments.isEmpty) return;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final navigator = bloc.navigatorKeys[homeTabIndex].currentState;
-      navigator?.push(
-        Routes.createRoute(
-          ProductScreen(),
-          settings: RouteSettings(name: Routes.productsScreen, arguments: id),
-        ),
-      );
-    });
+    final homeBloc = sl<HomeScreenBloc>();
+
+    switch (pathSegments[0]) {
+      case 'product':
+        if (pathSegments.length > 1) {
+          final id = int.tryParse(pathSegments[1]);
+          if (id != null) {
+            homeBloc.navigatorKeys[homeBloc.selectedPageIndex].currentState
+                ?.push(
+              Routes.createRoute(
+                const ProductScreen(),
+                settings:
+                    RouteSettings(name: Routes.productScreen, arguments: id),
+              ),
+            );
+          }
+        }
+        break;
+      case 'banner':
+        if (pathSegments.length > 1) {
+          final id = pathSegments[1];
+          homeBloc.navigatorKeys[homeBloc.selectedPageIndex].currentState?.push(
+            Routes.createRoute(
+              const BannerScreen(),
+              settings: RouteSettings(name: Routes.bannerScreen, arguments: id),
+            ),
+          );
+        }
+        break;
+      case 'article':
+        if (pathSegments.length > 1) {
+          final id = pathSegments[1];
+          homeBloc.navigatorKeys[homeBloc.selectedPageIndex].currentState?.push(
+            Routes.createRoute(
+              const ArticleScreen(),
+              settings:
+                  RouteSettings(name: Routes.articleScreen, arguments: id),
+            ),
+          );
+        }
+        break;
+      case 'news':
+        if (pathSegments.length > 1) {
+          final id = pathSegments[1];
+          homeBloc.navigatorKeys[homeBloc.selectedPageIndex].currentState?.push(
+            Routes.createRoute(
+              const NewsInternalScreen(),
+              settings:
+                  RouteSettings(name: Routes.newsInternalScreen, arguments: id),
+            ),
+          );
+        }
+        break;
+      case 'sale':
+        if (pathSegments.length > 1) {
+          final id = pathSegments[1];
+          homeBloc.navigatorKeys[homeBloc.selectedPageIndex].currentState?.push(
+            Routes.createRoute(
+              const SaleScreen(),
+              settings: RouteSettings(name: Routes.saleScreen, arguments: id),
+            ),
+          );
+        }
+        break;
+    }
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
   }
 
   @override
