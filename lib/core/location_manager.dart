@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -32,7 +33,18 @@ class LocationManager {
     return true; // Permissions granted
   }
 
-  static Future<Position?> determinePosition() async {
+  Future<Position?> determinePosition() async {
+    return Position(
+        longitude: 29.20812652970049,
+        latitude: 53.1689884118156,
+        timestamp: DateTime.now(),
+        accuracy: 1,
+        altitude: 1,
+        altitudeAccuracy: 1,
+        heading: 1,
+        headingAccuracy: 1,
+        speed: 1,
+        speedAccuracy: 1);
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       return await Geolocator.getLastKnownPosition();

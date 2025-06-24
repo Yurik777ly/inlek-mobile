@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:inlek/core/courier_zone_manager.dart';
 import 'package:inlek/core/geocoder_manager.dart';
+import 'package:inlek/core/location_manager.dart';
 import 'package:inlek/core/platform/error_handler.dart';
 import 'package:inlek/core/platform/network_info.dart';
 import 'package:inlek/features/data/datasources/auth_remote_data_source_impl.dart';
@@ -191,6 +192,7 @@ Future<void> init() async {
     () => ProductScreenBloc(
       getOneProductUC: sl<GetOneProductUC>(),
       getProductPharmaciesUC: sl<GetProductPharmaciesUC>(),
+      locationManager: sl<LocationManager>(),
     ),
   );
   sl.registerFactory(
@@ -244,6 +246,7 @@ Future<void> init() async {
   sl.registerFactory(
     () => PharmaciesScreenBloc(
       getCartPharmaciesUC: sl<GetCartPharmaciesUC>(),
+      locationManager: sl<LocationManager>(),
     ),
   );
 
@@ -420,6 +423,7 @@ Future<void> init() async {
     await manager.init();
     return manager;
   });
+  sl.registerLazySingleton<LocationManager>(() => LocationManager());
 
   await sl.allReady();
 }

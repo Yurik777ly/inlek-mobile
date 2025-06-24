@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:inlek/core/error/exception.dart';
+import 'package:inlek/core/params/pharmacies_by_product_params.dart';
 import 'package:inlek/core/params/product_param.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/data/models/pharmacy_model.dart';
@@ -17,7 +18,8 @@ abstract class ProductRemoteDataSource {
   Future<ProductModel?> getProductById(int id);
   Future<SearchProductsModel> searchProducts(ProductParam param);
   Future<SearchProductsV2Model?> searchProductsV2(String query);
-  Future<List<PharmacyModel>> getProductPharmacies(int id);
+  Future<List<PharmacyModel>> getProductPharmacies(
+      PharmaciesByProductParams params);
 }
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
@@ -150,12 +152,14 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   }
 
   @override
-  Future<List<PharmacyModel>> getProductPharmacies(int id) async {
+  Future<List<PharmacyModel>> getProductPharmacies(
+      PharmaciesByProductParams params) async {
     String baseUrl = dotenv.env['BASE_URL']!;
     final String? serverToken =
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
 
-    final uri = Uri.parse('${baseUrl}product/$id/pharmacies');
+    final uri = Uri.parse(
+        '${baseUrl}product/${params.productId}/pharmacies?geo_lat=${params.geoLat}&geo_long=${params.geoLong}');
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',

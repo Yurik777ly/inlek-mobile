@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/pharmacy_utils.dart';
+import 'package:inlek/core/location_manager.dart';
 import 'package:inlek/core/models/custom_marker_model.dart';
+import 'package:inlek/core/params/pharmacies_by_cart_params.dart';
 import 'package:inlek/features/data/models/pharmacy_model.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
@@ -19,10 +21,15 @@ class PharmaciesScreenBloc
   final BuildContext? context;
   final ProductEntity? product;
   final GetCartPharmaciesUC getCartPharmaciesUC;
+  final LocationManager locationManager;
+
   final TextEditingController queryController = TextEditingController();
 
   PharmaciesScreenBloc(
-      {required this.getCartPharmaciesUC, this.context, this.product})
+      {required this.getCartPharmaciesUC,
+      required this.locationManager,
+      this.context,
+      this.product})
       : super(PharmaciesScreenState()) {
     on<CheckProductAvailableDeliveryEvent>((event, emit) {
       bool isRestrictedProduct = product!.isRecipe || product!.isAlcohol;
@@ -69,22 +76,30 @@ class PharmaciesScreenBloc
           ),
         );
       } else {
-        final failureOrLoads = await getCartPharmaciesUC();
+        final position = await locationManager.determinePosition();
+
+        final params = PharmaciesByCartParams(
+            geoLat: position?.latitude, geoLong: position?.longitude);
+
+        final failureOrLoads = await getCartPharmaciesUC(params);
 
         failureOrLoads.fold(
           (_) {
             emit(state.copyWith(isLoading: false, hasError: true));
             _filterAndEmit(emit);
           },
-          (pharmacies) => emit(
-            state.copyWith(
-              isLoading: false,
-              hasError: false,
-              pharmacies: pharmacies,
-              filteredPharmacies: pharmacies,
-              mapObjects: _generateMapObjects(pharmacies),
-            ),
-          ),
+          (pharmacies) {
+            emit(
+              state.copyWith(
+                isLoading: false,
+                hasError: false,
+                pharmacies: pharmacies,
+                filteredPharmacies: pharmacies,
+                mapObjects: _generateMapObjects(pharmacies),
+              ),
+            );
+            _filterAndEmit(emit);
+          },
         );
       }
     });

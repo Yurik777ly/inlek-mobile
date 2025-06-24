@@ -1010,6 +1010,7 @@ class BottomSheetManager {
                           BlocProvider(
                             create: (context) => PharmaciesScreenBloc(
                                 getCartPharmaciesUC: sl(),
+                                locationManager: sl(),
                                 context: screenContext)
                               ..add(
                                 LoadPharmaciesDataEvent(

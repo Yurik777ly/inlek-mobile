@@ -42,10 +42,11 @@ class ProductScreen extends StatelessWidget {
         final homeBloc = context.read<HomeScreenBloc>();
         return BlocProvider(
           create: (context) => ProductScreenBloc(
-              productId: productId,
-              getOneProductUC: sl(),
-              getProductPharmaciesUC: sl())
-            ..add(LoadDataEvent()),
+            productId: productId,
+            getOneProductUC: sl(),
+            getProductPharmaciesUC: sl(),
+            locationManager: sl(),
+          )..add(LoadDataEvent()),
           child: BlocBuilder<ProductScreenBloc, ProductScreenState>(
             builder: (context, productState) {
               final productBloc = context.read<ProductScreenBloc>();

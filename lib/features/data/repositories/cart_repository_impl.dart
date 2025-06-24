@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:inlek/core/error/failure.dart';
 import 'package:inlek/core/params/cart_detailed_params.dart';
 import 'package:inlek/core/params/cart_params.dart';
+import 'package:inlek/core/params/pharmacies_by_cart_params.dart';
 import 'package:inlek/core/platform/error_handler.dart';
 import 'package:inlek/core/platform/network_info.dart';
 import 'package:inlek/features/data/datasources/cart_remote_data_source_impl.dart';
@@ -50,8 +51,9 @@ class CartRepositoryImpl implements CartRepository {
 
   // 📌 Получение доступных аптек
   @override
-  Future<Either<Failure, List<PharmacyEntity>>> getCartPharmacies() async =>
+  Future<Either<Failure, List<PharmacyEntity>>> getCartPharmacies(
+          PharmaciesByCartParams params) async =>
       await errorHandler.handle(
-        () async => await cartRemoteDataSource.getCartPharmacies(),
+        () async => await cartRemoteDataSource.getCartPharmacies(params),
       );
 }

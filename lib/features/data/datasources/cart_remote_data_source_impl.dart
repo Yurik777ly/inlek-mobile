@@ -7,6 +7,7 @@ import 'package:inlek/constants/enums.dart';
 import 'package:inlek/core/error/exception.dart';
 import 'package:inlek/core/params/cart_detailed_params.dart';
 import 'package:inlek/core/params/cart_params.dart';
+import 'package:inlek/core/params/pharmacies_by_cart_params.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/data/models/cart_model.dart';
 import 'package:inlek/features/data/models/pharmacy_model.dart';
@@ -17,7 +18,7 @@ abstract class CartRemoteDataSource {
   Future<void> addCart(CartParams params);
   Future<void> deleteCart(CartParams params);
   Future<void> clearCart();
-  Future<List<PharmacyModel>> getCartPharmacies();
+  Future<List<PharmacyModel>> getCartPharmacies(PharmaciesByCartParams params);
 }
 
 class CartRemoteDataSourceImpl implements CartRemoteDataSource {
@@ -177,12 +178,14 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
   }
 
   @override
-  Future<List<PharmacyModel>> getCartPharmacies() async {
+  Future<List<PharmacyModel>> getCartPharmacies(
+      PharmaciesByCartParams params) async {
     String baseUrl = dotenv.env['BASE_URL']!;
     final String? serverToken =
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
 
-    final uri = Uri.parse('${baseUrl}cart/pharmacies');
+    final uri = Uri.parse(
+        '${baseUrl}cart/pharmacies?geo_lat=${params.geoLat}&geo_long=${params.geoLong}');
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
