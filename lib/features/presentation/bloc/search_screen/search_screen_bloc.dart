@@ -54,7 +54,7 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
 
     emit(state.copyWith(isLoading: true));
 
-    _debounceTimer = Timer(const Duration(milliseconds: 1500), () {
+    _debounceTimer = Timer(const Duration(milliseconds: 1000), () {
       _saveRequestToSharedPrefs(event.text);
       add(ExecuteSearchEvent(
           event.text)); // Вместо await выполняем через новое событие

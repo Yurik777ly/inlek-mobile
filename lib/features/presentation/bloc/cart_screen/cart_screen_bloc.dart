@@ -274,8 +274,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         cartType:
             isCartEmptyAfterRemoval ? TypeReceiving.delivery : state.cartType));
 
-    _debounceTimer =
-        Timer(Duration(seconds: wasLastProductRemoved ? 0 : 2), () async {
+    _debounceTimer = Timer(
+        Duration(milliseconds: wasLastProductRemoved ? 0 : 300), () async {
       final result = await deleteCartUC(CartParams(
           productId: event.productId.toString(),
           quantity: newQuantity.toString()));
@@ -332,7 +332,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     }
 
     _debounceTimer = Timer(
-      Duration(seconds: wasFirstTimeAdded ? 0 : 2),
+      Duration(milliseconds: wasFirstTimeAdded ? 0 : 300),
       () async {
         final failureOrCart = await addCartUC(CartParams(
             productId: event.productId.toString(),
