@@ -108,6 +108,7 @@ Future<void> init() async {
   sl.registerFactory(
     () => LoginScreenBloc(
       loginUC: sl<LoginUC>(),
+      getMeUC: sl<GetMeUC>(),
     ),
   );
   sl.registerFactory(
@@ -130,6 +131,7 @@ Future<void> init() async {
   sl.registerFactory(
     () => ProfileScreenBloc(
       logoutUC: sl<LogoutUC>(),
+      sharedPreferences: sl<SharedPreferences>(),
     ),
   );
   sl.registerFactory(

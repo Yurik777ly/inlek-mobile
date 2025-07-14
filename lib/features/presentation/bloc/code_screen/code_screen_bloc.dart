@@ -160,9 +160,11 @@ class CodeScreenBloc extends Bloc<CodeScreenEvent, CodeScreenState> {
         _ => 'Неизвестная ошибка',
       },
       (code) {
-        ScaffoldMessenger.of(screenContext).showSnackBar(
-          SnackBar(content: Text(code.toString())),
-        );
+        ScaffoldMessenger.of(screenContext)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(content: Text(code.toString())),
+          );
         return code.toString();
       },
     );

@@ -41,7 +41,7 @@ class PharmacyModel extends PharmacyEntity {
         price: (json["price"] as num?)?.toDouble(),
         priceOld: (json["price_old"] as num?)?.toDouble(),
         productId: json["product_id"],
-        stockCount: int.tryParse(json["stock_count"]?.toString() ?? "0"),
+        stockCount: _parseStockCount(json["stock_count"]),
         requiredQuantity: json["required_quantity"],
         availability: json["availability"],
         productName: json["product_name"],
@@ -76,4 +76,21 @@ class PharmacyModel extends PharmacyEntity {
         "products":
             products.map((e) => (e as ProductModel?)?.toJson()).toList(),
       };
+
+  static int? _parseStockCount(dynamic value) {
+    if (value == null) return null;
+
+    if (value is int) return value;
+
+    if (value is double) {
+      return value.floor();
+    }
+
+    if (value is String) {
+      final doubleVal = double.tryParse(value);
+      return doubleVal?.floor();
+    }
+
+    return null;
+  }
 }

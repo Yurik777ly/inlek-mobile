@@ -30,7 +30,7 @@ class AppTemplate extends StatelessWidget {
           statusBarIconBrightness: Brightness.light,
           systemNavigationBarColor: Colors.transparent),
       child: Scaffold(
-        resizeToAvoidBottomInset: true,
+        resizeToAvoidBottomInset: false,
         body: Container(
           decoration: BoxDecoration(
             image: DecorationImage(

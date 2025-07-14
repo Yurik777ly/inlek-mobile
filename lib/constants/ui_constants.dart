@@ -34,18 +34,21 @@ class UiConstants {
     fontSize: 28.sp,
     height: 30.8.sp / 28.sp,
     fontWeight: FontWeight.w800,
+    fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle2 = TextStyle(
     fontSize: 14.sp,
     height: 18.2.sp / 14.sp,
     fontWeight: FontWeight.w400,
+    fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle3 = TextStyle(
     fontSize: 14.sp,
     height: 16.8.sp / 14.sp,
     fontWeight: FontWeight.w600,
+    fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle4 = TextStyle(
@@ -53,36 +56,42 @@ class UiConstants {
     height: 29.05.sp / 24.sp,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.1,
+    fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle5 = TextStyle(
     fontSize: 18.sp,
     height: 19.8.sp / 18.sp,
     fontWeight: FontWeight.w800,
+    fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle6 = TextStyle(
     fontSize: 10.sp,
     height: 13.64.sp / 10.sp,
     fontWeight: FontWeight.w600,
+    fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle7 = TextStyle(
     fontSize: 8.sp,
     height: 10.91.sp / 8.sp,
     fontWeight: FontWeight.w600,
+    fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle8 = TextStyle(
     fontSize: 12.sp,
     height: 16.37.sp / 12.sp,
     fontWeight: FontWeight.w600,
+    fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle9 = TextStyle(
     fontSize: 22.sp,
     height: 24.2.sp / 22.sp,
     fontWeight: FontWeight.w800,
+    fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle10 = TextStyle(
@@ -96,6 +105,7 @@ class UiConstants {
     fontSize: 14.sp,
     height: 19.1.sp / 14.sp,
     fontWeight: FontWeight.w800,
+    fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle11 = TextStyle(

@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -7,17 +8,22 @@ import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/error/failure.dart';
 import 'package:inlek/core/params/authentification_param.dart';
 import 'package:inlek/features/domain/usecases/auth/login.dart';
+import 'package:inlek/features/domain/usecases/profile/get_me.dart';
 
 part 'login_screen_event.dart';
 part 'login_screen_state.dart';
 
 class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
   final LoginUC loginUC;
+  final GetMeUC getMeUC;
 
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  LoginScreenBloc({required this.loginUC, Map<String, dynamic>? args})
+  LoginScreenBloc(
+      {required this.loginUC,
+      required this.getMeUC,
+      Map<String, dynamic>? args})
       : super(const LoginScreenState()) {
     if (args?['redirect_type'] == LoginScreenType.accountExists) {
       phoneController.text = args?['phone'] ?? '';
@@ -86,6 +92,8 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
                 showError: true, passwordErrorText: 'Неизвестная ошибка')),
           },
           (_) {
+            // получаем данные для shared
+            getMeUC();
             emit(state.copyWith(showError: false));
             emit(LogInState());
           },

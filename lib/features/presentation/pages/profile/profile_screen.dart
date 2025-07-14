@@ -6,6 +6,7 @@ import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/profile_screen/profile_screen_bloc.dart';
@@ -22,10 +23,11 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
       builder: (context, homeState) {
-        HomeScreenBloc homeBloc = context.read<HomeScreenBloc>();
+        // HomeScreenBloc homeBloc = context.read<HomeScreenBloc>();
         return BlocProvider(
           create: (context) => ProfileScreenBloc(
             logoutUC: sl(),
+            sharedPreferences: sl(),
           ),
           child: BlocConsumer<ProfileScreenBloc, ProfileScreenState>(
             listener: (context, state) => switch (state) {
@@ -54,7 +56,13 @@ class ProfileScreen extends StatelessWidget {
                             backgroundColor: UiConstants.backgroundColor,
                             title: 'Профиль',
                             action: GestureDetector(
-                              onTap: () => bloc.add(LogoutEvent()),
+                              onTap: () async {
+                                bool? confirm = await BottomSheetManager
+                                    .showExitAccountSheet(context);
+                                if (confirm == true) {
+                                  bloc.add(LogoutEvent());
+                                }
+                              },
                               child: SvgPicture.asset(Paths.exitIconPath,
                                   height: 24.w, width: 24.w),
                             ),

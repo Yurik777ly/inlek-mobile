@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
-import 'package:inlek/constants/ui_constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class CustomCheckbox extends StatelessWidget {
@@ -38,38 +38,12 @@ class CustomCheckbox extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Transform.scale(
-                  scale: scale,
-                  child: SizedBox(
-                    height: 24.w,
-                    width: 24.w,
-                    child: Checkbox(
-                        checkColor: UiConstants.whiteColor, // Цвет галочки
-                        fillColor: WidgetStateProperty.resolveWith((states) {
-                          // Цвет фона в зависимости от состояния
-                          if (states.contains(WidgetState.selected)) {
-                            // Состояние включено
-                            return isEnabled
-                                ? UiConstants.purpleColor
-                                : UiConstants.mutedVioletColor;
-                          }
-                          return UiConstants.whiteColor; // Состояние выключено
-                        }),
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(borderRadius ?? 4.r),
-                        ),
-                        side: isChecked
-                            ? BorderSide.none
-                            : BorderSide(
-                                color: showError
-                                    ? UiConstants.redColor
-                                    : UiConstants.darkBlueColor.withOpacity(.3),
-                              ),
-                        value: isChecked,
-                        onChanged: isEnabled ? onChanged : null),
-                  ),
-                ),
+                SvgPicture.asset(
+                    isChecked
+                        ? Paths.checkboxActiveIconPath
+                        : Paths.checkboxInactiveIconPath,
+                    height: 24,
+                    width: 24),
                 if (title != null)
                   Expanded(
                     child: Padding(

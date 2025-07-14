@@ -89,6 +89,10 @@ class Paths {
       '${_imagesPath}how_place_order_background.png';
   static const String dropdownArrowIconPath =
       '${_imagesPath}dropdown_arrow.svg';
+  static const String checkboxActiveIconPath =
+      '${_imagesPath}checkbox_active.svg';
+  static const String checkboxInactiveIconPath =
+      '${_imagesPath}checkbox_inactive.svg';
 
   // json
   static const String courierZonesJsonPath = '${_jsonPath}apteka.json';

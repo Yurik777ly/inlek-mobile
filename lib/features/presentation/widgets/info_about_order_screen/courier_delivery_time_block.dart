@@ -18,13 +18,13 @@ class CourierDeliveryTimeBlock extends StatelessWidget {
           title: 'Ежедневно',
           titleStyle: UiConstants.textStyle3.copyWith(
               color: UiConstants.darkBlueColor, fontWeight: FontWeight.w800),
-          subtitle: 'Пн-Вс: 10.00-22.00',
+          subtitle: 'Пн-Вс: 10:00-22:00',
           subtitleStyle:
               UiConstants.textStyle2.copyWith(color: UiConstants.darkBlueColor),
         ),
         SizedBox(height: 16.h),
         Text(
-          'Заказы, оформленные до 16:00, доставляются в день заказа. Заказы, оформленные после 16:00, доставляются на следующий день.\n\nПо согласованию с покупателем время доставки может быть изменено.и',
+          'Заказы, оформленные до 16:00, доставляются в день заказа. Заказы, оформленные после 16:00, доставляются на следующий день.\n\nПо согласованию с покупателем время доставки может быть изменено.',
           style:
               UiConstants.textStyle2.copyWith(color: UiConstants.darkBlueColor),
         ),

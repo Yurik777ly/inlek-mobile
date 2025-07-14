@@ -276,52 +276,69 @@ class _CartScreenState extends State<CartScreen> {
 
                                               AppButtonWidget(
                                                 text: 'Перейти к оформлению',
-                                                onTap: () async {
-                                                  if (cartState
-                                                      .selectedProductIds
-                                                      .isEmpty) {
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                      const SnackBar(
-                                                        content: Text(
-                                                            'Пожалуйста, выберите хотя бы один товар'),
-                                                      ),
-                                                    );
-                                                  } else if (isPickupWithoutSelectedPharmacy) {
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                      const SnackBar(
-                                                        content: Text(
-                                                            'Пожалуйста, выберите аптеку для самовывоза'),
-                                                      ),
-                                                    );
-                                                  } else if (isDeliverySelected) {
-                                                    bool? isChangeToPickupType =
-                                                        await BottomSheetManager
-                                                            .showNotAllProductsAvailableDeliverySheet(
-                                                                context,
-                                                                UiConstants
-                                                                    .homeContext!);
+                                                textWidget:
+                                                    cartState.isOrderCompleting
+                                                        ? Center(
+                                                            child: SizedBox(
+                                                              width: 15,
+                                                              height: 15,
+                                                              child: CircularProgressIndicator(
+                                                                  color: UiConstants
+                                                                      .pink2Color),
+                                                            ),
+                                                          )
+                                                        : null,
+                                                onTap:
+                                                    cartState.isOrderCompleting
+                                                        ? () {}
+                                                        : () async {
+                                                            if (cartState
+                                                                .selectedProductIds
+                                                                .isEmpty) {
+                                                              ScaffoldMessenger
+                                                                  .of(context)
+                                                                ..hideCurrentSnackBar()
+                                                                ..showSnackBar(
+                                                                  const SnackBar(
+                                                                    content: Text(
+                                                                        'Пожалуйста, выберите хотя бы один товар'),
+                                                                  ),
+                                                                );
+                                                            } else if (isPickupWithoutSelectedPharmacy) {
+                                                              ScaffoldMessenger
+                                                                  .of(context)
+                                                                ..hideCurrentSnackBar()
+                                                                ..showSnackBar(
+                                                                  const SnackBar(
+                                                                    content: Text(
+                                                                        'Пожалуйста, выберите аптеку для самовывоза'),
+                                                                  ),
+                                                                );
+                                                            } else if (isDeliverySelected) {
+                                                              bool?
+                                                                  isChangeToPickupType =
+                                                                  await BottomSheetManager.showNotAllProductsAvailableDeliverySheet(
+                                                                      context,
+                                                                      UiConstants
+                                                                          .homeContext!);
 
-                                                    if (isChangeToPickupType ==
-                                                        true) {
-                                                      cartBloc.add(
-                                                        ChangeCartTypeEvent(
-                                                            TypeReceiving
-                                                                .pickup),
-                                                      );
-                                                      cartBloc.add(
-                                                        ScrollUpListEvent(),
-                                                      );
-                                                    }
-                                                  } else {
-                                                    BottomSheetManager
-                                                        .showDeliverySheet(
-                                                            context);
-                                                  }
-                                                },
+                                                              if (isChangeToPickupType ==
+                                                                  true) {
+                                                                cartBloc.add(
+                                                                  ChangeCartTypeEvent(
+                                                                      TypeReceiving
+                                                                          .pickup),
+                                                                );
+                                                                cartBloc.add(
+                                                                  ScrollUpListEvent(),
+                                                                );
+                                                              }
+                                                            } else {
+                                                              BottomSheetManager
+                                                                  .showDeliverySheet(
+                                                                      context);
+                                                            }
+                                                          },
                                               ),
                                             ],
                                           );

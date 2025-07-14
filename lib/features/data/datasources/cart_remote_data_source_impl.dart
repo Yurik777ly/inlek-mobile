@@ -10,6 +10,7 @@ import 'package:inlek/core/params/cart_params.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/data/models/cart_model.dart';
 import 'package:inlek/features/data/models/pharmacy_model.dart';
+import 'package:inlek/features/data/models/product_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class CartRemoteDataSource {
@@ -200,15 +201,72 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
       log('Response Status Code: ${response.statusCode}',
           name: 'CartRemoteDataSourceImpl.getCartPharmacies');
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+      final data = json.decode(response.body);
+      final cartItems = data['data']['cart'] as List<dynamic>;
 
-        List<dynamic> dataList = data['data']['cart'][0]['pharmacies'];
+      // Для хранения уникальных аптек
+      final Map<int, PharmacyModel> pharmaciesMap = {};
 
-        return dataList.map((e) => PharmacyModel.fromJson(e)).toList();
-      } else {
-        throw ServerException();
+      for (var item in cartItems) {
+        final productId = item['product_id'];
+        final quantity = item['required_quantity'];
+
+        final product = ProductModel(
+          productId: productId,
+          requiredQuantity: quantity,
+        );
+
+        final pharmacyList = item['pharmacies'] as List<dynamic>;
+
+        for (var pharmacyJson in pharmacyList) {
+          final pharmacy = PharmacyModel.fromJson(pharmacyJson);
+          final pharmacyId = pharmacy.pharmacyId!;
+
+          if (!pharmaciesMap.containsKey(pharmacyId)) {
+            // Создаем новую аптеку и добавляем продукт
+            pharmaciesMap[pharmacyId] = PharmacyModel(
+              pharmacyId: pharmacy.pharmacyId,
+              pharmacyName: pharmacy.pharmacyName,
+              availability: pharmacy.availability,
+              address: pharmacy.address,
+              price: pharmacy.price,
+              priceOld: pharmacy.priceOld,
+              coordinates: pharmacy.coordinates,
+              pharmacyDelivery: pharmacy.pharmacyDelivery,
+              schedule: pharmacy.schedule,
+              products: [
+                ProductModel(
+                    productId: productId,
+                    requiredQuantity: quantity,
+                    stockCount: pharmacy.stockCount,
+                    availability:
+                        product.requiredQuantity! <= pharmacy.stockCount!
+                            ? 'full'
+                            : 'part',
+                    oldPrice: pharmacy.priceOld,
+                    price: pharmacy.price),
+              ],
+            );
+          } else {
+            // Аптека уже есть, добавим продукт
+            pharmaciesMap[pharmacyId]!.products.add(
+                  ProductModel(
+                      productId: productId,
+                      requiredQuantity: quantity,
+                      stockCount: pharmacy.stockCount,
+                      availability:
+                          product.requiredQuantity! <= pharmacy.stockCount!
+                              ? 'full'
+                              : 'part',
+                      oldPrice: pharmacy.priceOld,
+                      price: pharmacy.price),
+                );
+          }
+        }
       }
+
+      // Вернем список аптек
+      return pharmaciesMap.values.toList();
     } catch (e) {
       log('Error during getCartPharmacies: $e', level: 1000);
       rethrow;

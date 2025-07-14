@@ -168,11 +168,13 @@ class PersonalDataScreenBloc
       (event, emit) async {
         // Проверяем политику при попытке сохранить данные
         if (!state.isCheckedPolicyCheckbox) {
-          ScaffoldMessenger.of(event.context).showSnackBar(
-            const SnackBar(
-              content: Text('Примите условия обработки персональных данных'),
-            ),
-          );
+          ScaffoldMessenger.of(screenContext!)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              const SnackBar(
+                content: Text('Примите условия обработки персональных данных'),
+              ),
+            );
           emit(state.copyWith(
               showPolicyError: true, installedPhone: state.installedPhone));
           return;
@@ -214,11 +216,13 @@ class PersonalDataScreenBloc
       (event, emit) async {
         // Проверяем политику при попытке уйти со страницы
         if (!state.isCheckedPolicyCheckbox) {
-          ScaffoldMessenger.of(event.context).showSnackBar(
-            const SnackBar(
-              content: Text('Примите условия обработки персональных данных'),
-            ),
-          );
+          ScaffoldMessenger.of(screenContext!)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              const SnackBar(
+                content: Text('Примите условия обработки персональных данных'),
+              ),
+            );
           emit(state.copyWith(
               showPolicyError: true, installedPhone: state.installedPhone));
 

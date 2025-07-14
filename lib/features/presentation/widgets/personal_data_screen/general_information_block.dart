@@ -58,7 +58,6 @@ class GeneralInformationBlock extends StatelessWidget {
                 title: 'Дата рождения',
                 hintText: 'ДД / ММ / ГГГГ',
                 controller: personalDataBloc.birthdayController,
-                keyboardType: TextInputType.datetime,
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
                   DateInputFormatter()

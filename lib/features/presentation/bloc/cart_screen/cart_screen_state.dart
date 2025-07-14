@@ -2,6 +2,7 @@ part of 'cart_screen_bloc.dart';
 
 class CartScreenState extends Equatable {
   final bool isLoading;
+  final bool isOrderCompleting;
   final String? errorText;
   final String? promocodeErrorText;
   final CartEntity? cartData;
@@ -11,7 +12,6 @@ class CartScreenState extends Equatable {
   final PharmacyEntity? selectedPharmacy;
   final bool isShowPharmaciesWorkingNow;
   final bool isShowPharmaciesProductsInStock;
-
   final List<PromocodeEntity> selectedPromoCodes;
   final TypeReceiving cartType;
   final PaymentType paymentType;
@@ -20,6 +20,7 @@ class CartScreenState extends Equatable {
 
   const CartScreenState({
     this.isLoading = true,
+    this.isOrderCompleting = false,
     this.errorText,
     this.promocodeErrorText,
     this.cartData,
@@ -38,6 +39,7 @@ class CartScreenState extends Equatable {
 
   CartScreenState copyWith({
     bool? isLoading,
+    bool? isOrderCompleting,
     String? errorText,
     String? promocodeErrorText,
     CartEntity? cartData,
@@ -56,6 +58,7 @@ class CartScreenState extends Equatable {
   }) {
     return CartScreenState(
       isLoading: isLoading ?? this.isLoading,
+      isOrderCompleting: isOrderCompleting ?? this.isOrderCompleting,
       errorText: errorText,
       promocodeErrorText: promocodeErrorText,
       cartData: cartData ?? this.cartData,
@@ -78,6 +81,7 @@ class CartScreenState extends Equatable {
   @override
   List<Object?> get props => [
         isLoading,
+        isOrderCompleting,
         errorText,
         promocodeErrorText,
         cartData,

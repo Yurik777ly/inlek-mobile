@@ -23,7 +23,7 @@ class CostCourierDeliveryBlock extends StatelessWidget {
         SizedBox(height: 8.h),
         TextWithParagraphDotWidget(
             boldPart: '8,00 (восемь) рублей',
-            regularPart: 'при заказе доставки в желтую зону'),
+            regularPart: ' при заказе доставки в желтую зону'),
         SizedBox(height: 8.h),
         TextWithParagraphDotWidget(
             regularPart:

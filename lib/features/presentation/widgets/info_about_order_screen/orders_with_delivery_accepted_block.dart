@@ -30,7 +30,7 @@ class OrdersWithDeliveryAcceptedBlock extends StatelessWidget {
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: 'С 08.00 до 22.00 ежедневно',
+                    text: 'С 08:00 до 22:00 ежедневно',
                     style: UiConstants.textStyle3.copyWith(
                         color: UiConstants.darkBlueColor,
                         fontWeight: FontWeight.w800),

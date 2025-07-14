@@ -72,7 +72,7 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                 validator: (p0) {
                   if (cartBloc.selectedAddress == null ||
                       cartBloc.state.deliveryZone == DeliveryZoneType.none) {
-                    return 'Сюда не доставляем';
+                    return 'Сюда пока не доставляем';
                   }
                   return null;
                 },
@@ -105,7 +105,7 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                         .toList();
 
                     // Если первый адрес содержит компонент "дом" — применяем его сразу
-                    final first = suggestionObjects.isNotEmpty
+                    /*final first = suggestionObjects.isNotEmpty
                         ? suggestionObjects.first
                         : null;
 
@@ -148,11 +148,11 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                           cartBloc.streetHomeController.text = '';
                         }
 
-                        cartBloc.add(UpdateDeliveryPriceEvent(address: first));
-                        cartBloc.selectedAddress = first;
-                        selectedAddress = first;
+                        //cartBloc.add(UpdateDeliveryPriceEvent(address: first));
+                        //cartBloc.selectedAddress = first;
+                        //selectedAddress = first;
                       });
-                    }
+                    }*/
 
                     completer.complete(addresses);
                   });

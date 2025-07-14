@@ -83,7 +83,9 @@ class CartProductWidget extends StatelessWidget {
             borderRadius: BorderRadius.all(
               Radius.circular(16.r),
             ),
-            delayBeforeResize: const Duration(milliseconds: 500),
+            delayBeforeResize: Duration.zero,
+            overlayTransitionDuration: Duration.zero,
+            movementDuration: Duration.zero,
             rtlBackground: const ColoredBox(color: UiConstants.redColor),
             rtlOverlayIndent: 0,
             rtlDismissedColor: UiConstants.redColor,
@@ -93,6 +95,7 @@ class CartProductWidget extends StatelessWidget {
                 height: 24.w, width: 24.w, color: UiConstants.whiteColor),
             ltrBackground: const ColoredBox(color: UiConstants.redColor),
             ltrOverlayIndent: 0,
+            resizeDuration: Duration(milliseconds: 1),
             ltrDismissedColor: UiConstants.redColor,
             ltrOverlay: SvgPicture.asset(Paths.deleteIconPath,
                 height: 24.w, width: 24.w, color: UiConstants.whiteColor),

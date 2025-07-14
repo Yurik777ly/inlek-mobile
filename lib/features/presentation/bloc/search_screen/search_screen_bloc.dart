@@ -55,7 +55,6 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
     emit(state.copyWith(isLoading: true));
 
     _debounceTimer = Timer(const Duration(milliseconds: 1000), () {
-      _saveRequestToSharedPrefs(event.text);
       add(ExecuteSearchEvent(
           event.text)); // Вместо await выполняем через новое событие
     });
@@ -63,6 +62,12 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
 
   void _onExecuteSearch(
       ExecuteSearchEvent event, Emitter<SearchScreenState> emit) async {
+    emit(
+      state.copyWith(
+        searchResult: SearchProductsV2Entity(categories: [], products: []),
+      ),
+    );
+
     // заполняем в стейте historyRequests из SharedPreferencesKeys
     emit(state.copyWith(
         historyRequests: sharedPreferences
@@ -71,8 +76,13 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
     final failureOrLoads = await searchProductsV2UC(event.text);
 
     failureOrLoads.fold(
-      (_) => emit(state.copyWith(isLoading: false)),
-      (result) => emit(state.copyWith(searchResult: result, isLoading: false)),
+      (_) => emit(
+        state.copyWith(isLoading: false),
+      ),
+      (result) {
+        emit(state.copyWith(searchResult: result, isLoading: false));
+        _saveRequestToSharedPrefs(event.text);
+      },
     );
   }
 

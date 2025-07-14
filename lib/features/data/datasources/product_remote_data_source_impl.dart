@@ -214,7 +214,9 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(utf8.decode(response.bodyBytes));
-        if (data['data'] != null) {
+        if (data['data'] is List) {
+          return null;
+        } else if (data['data'] is Map<String, dynamic>) {
           Map<String, dynamic> dataMap = data['data'];
 
           return SearchProductsV2Model.fromJson(dataMap);

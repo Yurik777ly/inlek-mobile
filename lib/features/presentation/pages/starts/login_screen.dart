@@ -30,6 +30,7 @@ class LoginScreen extends StatelessWidget {
       create: (context) => LoginScreenBloc(
         args: args,
         loginUC: sl(),
+        getMeUC: sl(),
       ),
       child: BlocConsumer<LoginScreenBloc, LoginScreenState>(
         listener: (context, state) async {

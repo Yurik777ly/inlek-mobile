@@ -41,20 +41,18 @@ class Utils {
   static String? emailValidate(String? value,
       {bool isSensitiveEmptyValue = true}) {
     if (value == null || value.isEmpty) {
-      if (!isSensitiveEmptyValue) {
-        return null;
-      }
-      return 'Поле не должно быть пустым';
+      return isSensitiveEmptyValue ? 'Поле не должно быть пустым' : null;
     }
 
-    // Регулярное выражение для проверки email
-    String emailPattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
-    RegExp regex = RegExp(emailPattern);
+    final pattern =
+        r'^[a-zA-Zа-яА-ЯёЁ0-9._%+-]+@[a-zA-Zа-яА-ЯёЁ0-9.-]+\.[a-zA-Zа-яА-ЯёЁ]{2,}$';
+
+    final regex = RegExp(pattern);
 
     if (!regex.hasMatch(value)) {
       return 'Введите валидный email';
     }
-    return null; // Если email корректный, возвращаем null (валидация успешна)
+    return null;
   }
 
   static String? nameValidate(String? value,

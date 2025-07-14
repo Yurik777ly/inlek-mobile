@@ -535,6 +535,9 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
   Future<void> _onCreateOrder(
       CreateOrderEvent event, Emitter<CartScreenState> emit) async {
+    // показываем лоадер на кнопке
+    emit(state.copyWith(isOrderCompleting: true));
+
     OrderParam params;
     if (state.cartType == TypeReceiving.delivery) {
       params = OrderParam(
@@ -594,5 +597,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         }
       },
     );
+    // скрываем лоадер на кнопке
+    emit(state.copyWith(isOrderCompleting: false));
   }
 }

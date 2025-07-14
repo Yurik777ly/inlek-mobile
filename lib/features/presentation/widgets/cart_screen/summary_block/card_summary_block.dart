@@ -46,6 +46,7 @@ class CardSummaryBlock extends StatelessWidget {
                   controller: cartBloc.promocodeController,
                   hintMaxLines: 1,
                   suffixPadding: getMarginOrPadding(left: 16, right: 4),
+                  hasSuffixConstrains: false,
                   suffixWidget: Padding(
                     padding: getMarginOrPadding(top: 4, bottom: 4),
                     child: AppButtonWidget(

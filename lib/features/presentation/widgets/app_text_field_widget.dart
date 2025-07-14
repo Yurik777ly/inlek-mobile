@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -47,6 +47,7 @@ class AppTextFieldWidget extends StatefulWidget {
     this.hintMaxLines,
     this.suffixPadding,
     this.isActionTitleActive = true,
+    this.hasSuffixConstrains = true,
   });
 
   final String? hintText;
@@ -85,6 +86,7 @@ class AppTextFieldWidget extends StatefulWidget {
   final FocusNode? focusNode;
   final int? hintMaxLines;
   final EdgeInsets? suffixPadding;
+  final bool hasSuffixConstrains;
   final bool isActionTitleActive;
 
   @override
@@ -189,30 +191,34 @@ class _GidTextFieldState extends State<AppTextFieldWidget> {
                   getMarginOrPadding(left: 16, right: 16, top: 10, bottom: 10),
               hintStyle: (widget.textStyle ?? UiConstants.textStyle3).copyWith(
                   color: UiConstants.darkBlue2Color.withOpacity(.6), height: 1),
+              suffixIconConstraints: widget.hasSuffixConstrains
+                  ? BoxConstraints(
+                      maxHeight: 24.h,
+                      maxWidth: 48.w, // чуть больше, чтобы влез `Padding`
+                    )
+                  : null,
               suffixIcon: Skeleton.ignore(
                 child: InkWell(
                   onTap: widget.isObscuredText
-                      ? () => setState(
-                            () => isShowPassword = !isShowPassword,
-                          )
+                      ? () => setState(() => isShowPassword = !isShowPassword)
                       : null,
-                  child: SizedBox(
-                    child: widget.isObscuredText
-                        ? Padding(
-                            padding: getMarginOrPadding(top: 10, bottom: 10),
-                            child: SvgPicture.asset(
+                  child: Padding(
+                    padding:
+                        widget.suffixPadding ?? getMarginOrPadding(right: 10),
+                    child: SizedBox(
+                      width: widget.hasSuffixConstrains ? 24.w : null,
+                      height: widget.hasSuffixConstrains ? 24.h : null,
+                      child: widget.isObscuredText
+                          ? SvgPicture.asset(
                               isShowPassword
                                   ? Paths.visibilityOffIconPath
                                   : Paths.visibilityOnIconPath,
+                              width: 24.w,
+                              height: 24.h,
                               color: UiConstants.darkBlueColor.withOpacity(.4),
-                            ),
-                          )
-                        : widget.suffixWidget != null
-                            ? Padding(
-                                padding: widget.suffixPadding ??
-                                    getMarginOrPadding(left: 16, right: 16),
-                                child: widget.suffixWidget)
-                            : null,
+                            )
+                          : widget.suffixWidget,
+                    ),
                   ),
                 ),
               ),
