@@ -29,19 +29,24 @@ class CustomRadioButton extends StatelessWidget {
     return GestureDetector(
       onTap: isAvailable ? () => onChanged() : null,
       child: Skeleton.unite(
-        child: Row(
-          mainAxisAlignment: isLabelOnLeft
-              ? MainAxisAlignment.spaceBetween
-              : MainAxisAlignment.start,
-          children: isLabelOnLeft
-              ? [
-                  _buildLabel(),
-                  _buildRadio(),
-                ]
-              : [
-                  _buildRadio(),
-                  _buildLabel(),
-                ],
+        child: Card(
+          margin: EdgeInsets.zero,
+          color: Colors.transparent,
+          shadowColor: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: isLabelOnLeft
+                ? MainAxisAlignment.spaceBetween
+                : MainAxisAlignment.start,
+            children: isLabelOnLeft
+                ? [
+                    _buildLabel(),
+                    _buildRadio(),
+                  ]
+                : [
+                    _buildRadio(),
+                    _buildLabel(),
+                  ],
+          ),
         ),
       ),
     );
