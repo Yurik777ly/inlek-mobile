@@ -87,16 +87,18 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                 }
               });
 
-              return PopScope(
-                canPop: false,
-                onPopInvokedWithResult: (didPop, _) {
-                  if (!didPop) {
-                    if (formKey.currentState?.validate() ?? false) {
-                      personalDataBloc.add(
-                        BackButtonPressedEvent(context: context),
-                      );
-                    }
+              return WillPopScope(
+                onWillPop: () async {
+                  final isValid = formKey.currentState?.validate() ?? false;
+
+                  if (isValid) {
+                    personalDataBloc.add(
+                      BackButtonPressedEvent(context: context),
+                    );
                   }
+
+                  // Возвращаем false, чтобы предотвратить автоматический pop
+                  return false;
                 },
                 child: Scaffold(
                   backgroundColor: UiConstants.backgroundColor,

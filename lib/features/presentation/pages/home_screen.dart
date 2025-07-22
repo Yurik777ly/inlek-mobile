@@ -206,6 +206,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
+          create: (context) => HomeScreenBloc(),
+        ),
+        BlocProvider(
             create: (context) => CartScreenBloc(
                   getCartUC: sl(),
                   addCartUC: sl(),
@@ -238,27 +241,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   //final SearchScreenBloc searchBloc =
                   //    context.read<SearchScreenBloc>();
 
-                  return PopScope(
-                    canPop: false, // Разрешает вызывать onPopInvoked
-                    onPopInvokedWithResult: (didPop, _) {
-                      if (didPop)
-                        return; // если уже обработано системой, ничего не делаем
-
-                      final navigatorState =
-                          bloc.navigatorKeys[selectedIndex].currentState;
-
-                      navigatorState?.maybePop().then((popped) {
-                        final isFirstRouteInCurrentTab = !popped;
-
+                  return WillPopScope(
+                    onWillPop: () async {
+                      if (selectedIndex == 0) {
+                        SystemChannels.platform
+                            .invokeMethod('SystemNavigator.pop');
+                      } else {
+                        final isFirstRouteInCurrentTab = !await bloc
+                            .navigatorKeys[selectedIndex].currentState!
+                            .maybePop();
                         if (isFirstRouteInCurrentTab) {
-                          if (selectedIndex != 0) {
-                            bloc.add(ChangePageEvent(0));
-                          } else {
-                            // Закрыть приложение
-                            SystemNavigator.pop();
-                          }
+                          bloc.add(ChangePageEvent(0));
+                          return false;
                         }
-                      });
+                      }
+                      return false;
                     },
                     child: Scaffold(
                       appBar: AppBar(

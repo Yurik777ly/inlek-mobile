@@ -28,7 +28,7 @@ class DropdownBlockTemplate extends StatefulWidget {
 
 class _DropdownBlockTemplateState extends State<DropdownBlockTemplate>
     with AutomaticKeepAliveClientMixin {
-  bool isVisible = true;
+  bool isVisible = false;
 
   @override
   bool get wantKeepAlive => true;

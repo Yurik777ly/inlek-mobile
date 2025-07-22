@@ -110,8 +110,6 @@ class OrdersScreen extends StatelessWidget {
                                                   )
                                                 : ListView.separated(
                                                     padding: EdgeInsets.zero,
-                                                    physics:
-                                                        const NeverScrollableScrollPhysics(),
                                                     shrinkWrap: true,
                                                     itemCount: orders.length,
                                                     separatorBuilder: (_, __) =>
