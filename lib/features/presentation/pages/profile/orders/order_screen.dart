@@ -121,7 +121,14 @@ class OrderScreen extends StatelessWidget {
                                               title: 'Информация о заказе',
                                               spacing: 8,
                                               child: OrderInfoList(
-                                                  order: orderState.order),
+                                                order: orderState.order,
+                                                address: [
+                                                  orderState
+                                                      .order?.deliveryCity,
+                                                  orderState
+                                                      .order?.deliveryStreet
+                                                ].join(', '),
+                                              ),
                                             ),
                                             SizedBox(height: 32.h),
                                             if (orderState.order?.status ==

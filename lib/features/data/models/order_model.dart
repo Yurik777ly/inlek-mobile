@@ -49,7 +49,7 @@ class OrderModel extends OrderEntity {
       orderId: json['order_id'],
       customerId: json['customer_id'],
       createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
+          ? DateTime.parse(json['created_at'] + 'Z').toLocal()
           : null,
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'])
