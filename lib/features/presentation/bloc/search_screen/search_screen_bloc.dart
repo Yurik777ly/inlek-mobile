@@ -42,8 +42,6 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
   }
 
   void _onChangeQuery(ChangeQueryEvent event, Emitter<SearchScreenState> emit) {
-    searchController.text = event.text;
-
     emit(state.copyWith(query: event.text));
 
     _debounceTimer?.cancel(); // Отмена предыдущего таймера
