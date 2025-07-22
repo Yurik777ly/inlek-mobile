@@ -40,9 +40,9 @@ class EmptyCartWidget extends StatelessWidget {
                 AppButtonWidget(
                   isActive: true,
                   text: 'За покупками',
-                  onTap: () => context.read<HomeScreenBloc>().add(
-                        ChangePageEvent(1),
-                      ),
+                  onTap: () => context
+                      .read<HomeScreenBloc>()
+                      .add(ChangePageEvent(1, forcePopToRoot: true)),
                 )
               ],
             ),

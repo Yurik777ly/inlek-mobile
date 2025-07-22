@@ -34,7 +34,7 @@ class EmptyOrders extends StatelessWidget {
             onTap: () {
               //Navigator.pop(context);
               context.read<HomeScreenBloc>().add(
-                    ChangePageEvent(1),
+                    ChangePageEvent(1, forcePopToRoot: true),
                   );
             },
           ),

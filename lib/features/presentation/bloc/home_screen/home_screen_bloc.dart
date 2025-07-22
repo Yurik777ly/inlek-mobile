@@ -54,7 +54,7 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
   }
 
   void _onPageChanged(ChangePageEvent event, Emitter<HomeScreenState> emit) {
-    if (event.pageIndex == selectedPageIndex) {
+    if (event.pageIndex == selectedPageIndex || event.forcePopToRoot) {
       navigatorKeys[event.pageIndex]
           .currentState!
           .popUntil((route) => route.isFirst);

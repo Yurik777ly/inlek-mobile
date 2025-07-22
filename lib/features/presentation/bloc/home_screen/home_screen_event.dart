@@ -9,8 +9,9 @@ abstract class HomeScreenEvent extends Equatable {
 
 class ChangePageEvent extends HomeScreenEvent {
   final int pageIndex;
+  final bool forcePopToRoot;
 
-  const ChangePageEvent(this.pageIndex);
+  const ChangePageEvent(this.pageIndex, {this.forcePopToRoot = false});
 
   @override
   List<Object> get props => [pageIndex];
