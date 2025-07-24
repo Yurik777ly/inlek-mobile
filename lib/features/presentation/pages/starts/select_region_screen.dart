@@ -50,7 +50,7 @@ class SelectRegionScreen extends StatelessWidget {
                               width: 24.w, height: 24.w),
                           SizedBox(width: 8.w),
                           Text(
-                            'Минск',
+                            state.detectedCity ?? 'Определение...',
                             style: UiConstants.textStyle5
                                 .copyWith(color: UiConstants.darkBlueColor),
                           ),

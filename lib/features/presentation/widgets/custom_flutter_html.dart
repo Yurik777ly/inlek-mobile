@@ -41,8 +41,7 @@ class CustomFlutterHtml extends StatelessWidget {
                     progressIndicatorBuilder: (context, url, progress) =>
                         Center(
                       child: CircularProgressIndicator(
-                        color: UiConstants.pink2Color,
-                      ),
+                          color: UiConstants.pink2Color),
                     ),
                   )
                 : const SizedBox.shrink();

@@ -28,3 +28,5 @@ class ConfirmRegionEvent extends SelectRegionScreenEvent {
   @override
   List<Object> get props => [context];
 }
+
+class DetectCurrentCityEvent extends SelectRegionScreenEvent {}
