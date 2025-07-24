@@ -1,6 +1,6 @@
 enum LoginScreenType { login, accountExists }
 
-enum SelectRegionScreenType { signUp, main }
+enum SelectRegionScreenType { signUp, reset, main }
 
 enum PasswordScreenType { signUp, reset }
 

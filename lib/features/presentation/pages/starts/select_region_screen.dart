@@ -101,7 +101,12 @@ class SelectRegionScreen extends StatelessWidget {
                               SelectRegionScreenType.signUp) {
                             Navigator.of(context).pushAndRemoveUntil(
                                 Routes.createRoute(
-                                  const HomeScreen(),
+                                  HomeScreen(
+                                      initPersonalDataScreen:
+                                          selectRegionScreenType ==
+                                              SelectRegionScreenType.signUp),
+                                  settings: RouteSettings(
+                                      arguments: Routes.homeScreen),
                                 ),
                                 (route) => false);
                           } else {
@@ -118,7 +123,12 @@ class SelectRegionScreen extends StatelessWidget {
                               SelectRegionScreenType.signUp) {
                             Navigator.of(context).pushAndRemoveUntil(
                                 Routes.createRoute(
-                                  const HomeScreen(),
+                                  HomeScreen(
+                                      initPersonalDataScreen:
+                                          selectRegionScreenType ==
+                                              SelectRegionScreenType.signUp),
+                                  settings: RouteSettings(
+                                      arguments: Routes.homeScreen),
                                 ),
                                 (route) => false);
                           } else {

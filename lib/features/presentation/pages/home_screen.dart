@@ -24,7 +24,9 @@ import 'package:inlek/features/presentation/widgets/search_screen/search_screen.
 import 'package:inlek/locator_service.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, this.initPersonalDataScreen = false});
+
+  final bool initPersonalDataScreen;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -207,7 +209,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => HomeScreenBloc(),
+          create: (context) => HomeScreenBloc()
+            ..add(InitHomeEvent(
+                initPersonalDataScreen: widget.initPersonalDataScreen)),
         ),
         BlocProvider(
             create: (context) => CartScreenBloc(

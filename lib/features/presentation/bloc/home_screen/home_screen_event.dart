@@ -7,6 +7,12 @@ abstract class HomeScreenEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class InitHomeEvent extends HomeScreenEvent {
+  final bool initPersonalDataScreen;
+
+  const InitHomeEvent({required this.initPersonalDataScreen});
+}
+
 class ChangePageEvent extends HomeScreenEvent {
   final int pageIndex;
   final bool forcePopToRoot;

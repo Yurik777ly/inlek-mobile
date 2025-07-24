@@ -35,8 +35,12 @@ class PasswordScreen extends StatelessWidget {
           if (state is NavigateHomeState) {
             Navigator.of(context).pushAndRemoveUntil(
                 Routes.createRoute(
-                  const SelectRegionScreen(
-                      selectRegionScreenType: SelectRegionScreenType.signUp),
+                  SelectRegionScreen(
+                    selectRegionScreenType:
+                        passwordScreenType == PasswordScreenType.signUp
+                            ? SelectRegionScreenType.signUp
+                            : SelectRegionScreenType.reset,
+                  ),
                 ),
                 (route) => route.isFirst);
           } else if (state is NavigateLoginState) {

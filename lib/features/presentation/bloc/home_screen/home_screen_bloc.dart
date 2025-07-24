@@ -5,9 +5,11 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/core/connectivity_service.dart';
+import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/pages/cart/cart_screen.dart';
 import 'package:inlek/features/presentation/pages/catalog/catalog_screen.dart';
 import 'package:inlek/features/presentation/pages/main/main_screen.dart';
+import 'package:inlek/features/presentation/pages/profile/personal_data_screen.dart';
 import 'package:inlek/features/presentation/pages/profile/profile_screen.dart';
 
 part 'home_screen_event.dart';
@@ -51,6 +53,20 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
 
     on<ChangePageEvent>(_onPageChanged);
     on<UploadContext>(_onUploadContext);
+    on<InitHomeEvent>(_onInitHome);
+  }
+
+  void _onInitHome(InitHomeEvent event, Emitter<HomeScreenState> emit) {
+    if (event.initPersonalDataScreen) {
+      add(ChangePageEvent(3));
+
+      navigatorKeys[3].currentState?.push(
+            Routes.createRoute(
+              const PersonalDataScreen(),
+              settings: const RouteSettings(name: Routes.personalDataScreen),
+            ),
+          );
+    }
   }
 
   void _onPageChanged(ChangePageEvent event, Emitter<HomeScreenState> emit) {
