@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -78,7 +78,7 @@ class ProductsScreen extends StatelessWidget {
                                                         color: UiConstants
                                                             .darkBlueColor),
                                               ),
-                                              SizedBox(height: 8.h),
+                                              SizedBox(height: 8.dp),
                                               Text(
                                                 Utils.getProductCountText(state
                                                         .searchProducts
@@ -91,7 +91,7 @@ class ProductsScreen extends StatelessWidget {
                                                       .withOpacity(.6),
                                                 ),
                                               ),
-                                              SizedBox(height: 16.h),
+                                              SizedBox(height: 16.dp),
                                               SortWidget(
                                                 caption: 'Сортировка',
                                                 iconPath: Paths.sortIconPath,
@@ -99,7 +99,7 @@ class ProductsScreen extends StatelessWidget {
                                                     .showProductSortSheet(
                                                         context),
                                               ),
-                                              SizedBox(height: 16.h),
+                                              SizedBox(height: 16.dp),
                                               Expanded(
                                                 child: ProductsGridWidget(
                                                     isLoading: state.isLoading,

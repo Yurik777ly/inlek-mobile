@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -32,9 +33,9 @@ class InfoBorderPlate extends StatelessWidget {
                   color: UiConstants.pink2Color.withOpacity(.05),
                   shape: BoxShape.circle),
               child: SvgPicture.asset(imagePath,
-                  color: UiConstants.pink2Color, width: 16.w, height: 16.w),
+                  color: UiConstants.pink2Color, width: 16.dp, height: 16.dp),
             ),
-            SizedBox(width: 8.w),
+            SizedBox(width: 8.dp),
             Expanded(
               child: Text(
                 title,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/bloc/passwrod_screen/password_screen_bloc.dart';
@@ -69,14 +69,14 @@ class PasswordScreen extends StatelessWidget {
                     isObscuredText: true,
                     controller: bloc.password1Controller,
                     errorText: state.passwordErrorText),
-                SizedBox(height: 24.h),
+                SizedBox(height: 24.dp),
                 AppTextFieldWidget(
                     title: 'Повторите пароль',
                     hintText: 'Введите пароль',
                     isObscuredText: true,
                     controller: bloc.password2Controller,
                     errorText: state.passwordErrorText),
-                SizedBox(height: 32.h),
+                SizedBox(height: 32.dp),
                 AppButtonWidget(
                   isActive: state.isButtonActive,
                   text: 'Подтвердить',

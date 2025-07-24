@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/bloc/products_screen/products_screen_bloc.dart';
@@ -40,7 +41,7 @@ class _PriceRangeWidgetState extends State<PriceRangeWidget> {
                   color: UiConstants.darkBlueColor,
                   fontWeight: FontWeight.w800),
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: 8.dp),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -57,8 +58,8 @@ class _PriceRangeWidgetState extends State<PriceRangeWidget> {
                 ),
                 Container(
                   margin: getMarginOrPadding(right: 8, left: 8),
-                  height: 1.h,
-                  width: 12.w,
+                  height: 1.dp,
+                  width: 12.dp,
                   color: Color(0xFF222222).withOpacity(.6),
                 ),
                 Expanded(
@@ -74,10 +75,10 @@ class _PriceRangeWidgetState extends State<PriceRangeWidget> {
                 ),
               ],
             ),
-            SizedBox(height: 3.h),
+            SizedBox(height: 3.dp),
             SliderTheme(
               data: SliderTheme.of(context).copyWith(
-                trackHeight: 2.h,
+                trackHeight: 2.dp,
                 overlayShape: RoundSliderOverlayShape(overlayRadius: 0),
                 rangeThumbShape: RoundRangeSliderThumbShape(
                     enabledThumbRadius: 6.r, disabledThumbRadius: 6.r),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
@@ -141,16 +141,16 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                                           children: [
                                             GeneralInformationBlock(
                                                 screenContext: context),
-                                            SizedBox(height: 16.h),
+                                            SizedBox(height: 16.dp),
                                             ContactsBlock(
                                                 screenContext: context),
-                                            SizedBox(height: 16.h),
+                                            SizedBox(height: 16.dp),
                                             ChangePasswordBlock(
                                                 screenContext: context),
-                                            SizedBox(height: 16.h),
+                                            SizedBox(height: 16.dp),
                                             CheckboxesBlock(
                                                 screenContext: context),
-                                            SizedBox(height: 32.h),
+                                            SizedBox(height: 32.dp),
                                             AppButtonWidget(
                                               isActive: state.isButtonActive &&
                                                   isFormValid,
@@ -166,7 +166,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                                                 }
                                               },
                                             ),
-                                            SizedBox(height: 8.h),
+                                            SizedBox(height: 8.dp),
                                             AppButtonWidget(
                                               text: 'Удалить аккаунт',
                                               backgroundColor:

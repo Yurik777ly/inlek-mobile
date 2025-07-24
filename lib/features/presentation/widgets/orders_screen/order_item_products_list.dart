@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/custom_cache_manager.dart';
@@ -16,7 +17,7 @@ class OrderItemProductsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 56.w,
+      height: 56.dp,
       child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) => Container(
@@ -27,8 +28,8 @@ class OrderItemProductsList extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8.r),
                   child: CachedNetworkImage(
-                    height: 56.w,
-                    width: 56.w,
+                    height: 56.dp,
+                    width: 56.dp,
                     imageUrl:
                         '${dotenv.env['PUBLIC_URL']!}${orderProducts[index].image}',
                     fit: BoxFit.fitHeight,
@@ -44,7 +45,7 @@ class OrderItemProductsList extends StatelessWidget {
                   ),
                 ),
               ),
-          separatorBuilder: (context, index) => SizedBox(width: 4.w),
+          separatorBuilder: (context, index) => SizedBox(width: 4.dp),
           itemCount: orderProducts.length),
     );
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/routes.dart';
@@ -36,7 +36,7 @@ class ProfileCategoriesList extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 8.dp),
           SubcategoryItem(
             title: 'История заказов',
             titleStyle: UiConstants.textStyle3,
@@ -48,7 +48,7 @@ class ProfileCategoriesList extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 8.dp),
           SubcategoryItem(
             title: 'Информация о нас',
             titleStyle: UiConstants.textStyle3,
@@ -60,7 +60,7 @@ class ProfileCategoriesList extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 8.dp),
           SubcategoryItem(
             title: 'Как сделать заказ?',
             titleStyle: UiConstants.textStyle3,
@@ -72,7 +72,7 @@ class ProfileCategoriesList extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 8.dp),
           SubcategoryItem(
             title: 'Информация о получении заказа',
             titleStyle: UiConstants.textStyle3,
@@ -84,7 +84,7 @@ class ProfileCategoriesList extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 8.dp),
           SubcategoryItem(
             title: 'Полезные статьи',
             titleStyle: UiConstants.textStyle3,
@@ -96,7 +96,7 @@ class ProfileCategoriesList extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 8.dp),
           SubcategoryItem(
             title: 'Новости',
             titleStyle: UiConstants.textStyle3,
@@ -108,7 +108,7 @@ class ProfileCategoriesList extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 8.dp),
           SubcategoryItem(
             title: 'Акции',
             titleStyle: UiConstants.textStyle3,
@@ -120,7 +120,7 @@ class ProfileCategoriesList extends StatelessWidget {
               ),
             ),
           ),
-          /*SizedBox(height: 8.h),
+          /*SizedBox(height: 8.dp),
           SubcategoryItem(
             title: 'Напоминания',
             titleStyle: UiConstants.textStyle3,

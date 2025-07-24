@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -59,7 +60,7 @@ class _CitySearchFieldState extends State<CitySearchField> {
 
     _overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
-        width: widget.widthOverlay ?? MediaQuery.of(context).size.width - 40.w,
+        width: widget.widthOverlay ?? MediaQuery.of(context).size.width - 40.dp,
         child: CompositedTransformFollower(
           link: _layerLink,
           showWhenUnlinked: false,
@@ -69,7 +70,7 @@ class _CitySearchFieldState extends State<CitySearchField> {
             elevation: 1,
             borderRadius: BorderRadius.circular(16.r),
             child: SizedBox(
-              height: _filteredSuggestions.isNotEmpty ? 115.h : 0,
+              height: _filteredSuggestions.isNotEmpty ? 115.dp : 0,
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : ListView.builder(

@@ -2,8 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
@@ -42,13 +42,13 @@ class _SearchProductsItemState extends State<SearchProductsItem> {
         elevation: 0,
         color: Colors.transparent,
         child: SizedBox(
-          height: 60.w,
+          height: 60.dp,
           child: Row(
             children: [
               ClipRRect(
                 child: CachedNetworkImage(
-                  height: 60.w,
-                  width: 60.w,
+                  height: 60.dp,
+                  width: 60.dp,
                   imageUrl:
                       '${dotenv.env['PUBLIC_URL']!}${widget.product.image}',
                   fit: BoxFit.cover,
@@ -86,7 +86,7 @@ class _SearchProductsItemState extends State<SearchProductsItem> {
                   ],
                 ),
               ),
-              SizedBox(width: 16.w),
+              SizedBox(width: 16.dp),
               GestureDetector(
                 onTap: () {
                   setState(() {
@@ -108,8 +108,8 @@ class _SearchProductsItemState extends State<SearchProductsItem> {
                   });
                 },
                 child: SvgPicture.asset(Paths.cartIconPath,
-                    height: 24.w,
-                    width: 24.w,
+                    height: 24.dp,
+                    width: 24.dp,
                     color: isChecked ? UiConstants.purple2Color : null),
               ),
               /*CustomCheckbox(

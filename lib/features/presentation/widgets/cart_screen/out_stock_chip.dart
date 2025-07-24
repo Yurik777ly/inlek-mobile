@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -20,8 +21,8 @@ class OutStockChip extends StatelessWidget {
           ),
           child: Row(
             children: [
-              SvgPicture.asset(Paths.boxIconPath, width: 16.w, height: 16.w),
-              SizedBox(width: 4.w),
+              SvgPicture.asset(Paths.boxIconPath, width: 16.dp, height: 16.dp),
+              SizedBox(width: 4.dp),
               Text(
                 'Нет в наличии',
                 style: UiConstants.textStyle6.copyWith(

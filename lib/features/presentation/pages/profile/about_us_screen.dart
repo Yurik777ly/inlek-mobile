@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/bloc/about_us_screen/about_us_screen_bloc.dart';
@@ -84,13 +84,13 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                                       shrinkWrap: true,
                                       children: [
                                         OnlinePharmBlock(),
-                                        SizedBox(height: 16.h),
+                                        SizedBox(height: 16.dp),
                                         LegalAddressBlock(),
-                                        SizedBox(height: 16.h),
+                                        SizedBox(height: 16.dp),
                                         GosfarmnadzorBlock(),
-                                        SizedBox(height: 16.h),
+                                        SizedBox(height: 16.dp),
                                         SocialNetworkBlock(),
-                                        SizedBox(height: 16.h),
+                                        SizedBox(height: 16.dp),
                                         BookCommentsBlock(),
                                       ],
                                     ),

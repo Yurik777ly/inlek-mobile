@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
@@ -38,7 +38,7 @@ class _DeliveryPaymentBlockState extends State<DeliveryPaymentBlock> {
               style: UiConstants.textStyle5
                   .copyWith(color: UiConstants.darkBlueColor),
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 16.dp),
             Row(
               children: [
                 Expanded(
@@ -54,7 +54,7 @@ class _DeliveryPaymentBlockState extends State<DeliveryPaymentBlock> {
                     },
                   ),
                 ),
-                SizedBox(width: 8.w),
+                SizedBox(width: 8.dp),
                 Expanded(
                   child: DeliveryPaymentBlockItem(
                       imagePath: Paths.cardIconPath,

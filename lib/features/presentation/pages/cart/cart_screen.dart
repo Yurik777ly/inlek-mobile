@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
@@ -151,7 +151,7 @@ class _CartScreenState extends State<CartScreen> {
                                                   },
                                                 ),
                                               ),
-                                              SizedBox(height: 16.h),
+                                              SizedBox(height: 16.dp),
                                               // виджет выбрать всё
                                               //if (cartState
                                               //    .cartData!.products!
@@ -385,7 +385,7 @@ class _CartScreenState extends State<CartScreen> {
                                                 },
                                               ),
                                             ),
-                                            SizedBox(height: 16.h),
+                                            SizedBox(height: 16.dp),
                                             Expanded(
                                               child: EmptyCartWidget(),
                                             ),

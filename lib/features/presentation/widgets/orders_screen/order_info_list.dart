@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/utils.dart';
@@ -27,13 +27,13 @@ class OrderInfoList extends StatelessWidget {
             imagePath: Paths.documentIconPath,
             title: 'Номер заказа',
             subtitle: '${order?.orderId}'),
-        SizedBox(height: 8.h),
+        SizedBox(height: 8.dp),
         OrderInfoItem(
           imagePath: Paths.clockIconPath,
           title: 'Время заказа',
           subtitle: Utils.formatDateTime(order?.createdAt),
         ),
-        SizedBox(height: 8.h),
+        SizedBox(height: 8.dp),
         OrderInfoItem(
             imagePath: Paths.boxIconPath,
             title: 'Способ получения',

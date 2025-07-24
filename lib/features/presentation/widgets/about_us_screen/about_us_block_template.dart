@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -35,7 +36,7 @@ class AboutUsBlockTemplate extends StatelessWidget {
                 if (icon != null)
                   Padding(
                     padding: getMarginOrPadding(right: 8),
-                    child: SvgPicture.asset(icon!, height: 24.w, width: 24.w),
+                    child: SvgPicture.asset(icon!, height: 24.dp, width: 24.dp),
                   ),
                 Expanded(
                   child: Text(
@@ -48,7 +49,7 @@ class AboutUsBlockTemplate extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 18.h),
+          SizedBox(height: 18.dp),
           Column(children: children),
         ],
       ),

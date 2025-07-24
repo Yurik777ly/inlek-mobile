@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/formatters/custom_phone_input_formatter.dart';
@@ -66,7 +66,7 @@ class LoginScreen extends StatelessWidget {
                     CustomPhoneInputFormatter()
                   ],
                 ),
-                SizedBox(height: 24.h),
+                SizedBox(height: 24.dp),
                 AppTextFieldWidget(
                   title: 'Пароль',
                   hintText: 'Введите пароль',
@@ -76,13 +76,13 @@ class LoginScreen extends StatelessWidget {
                       ? state.passwordErrorText
                       : null, // Показывать ошибку при неверном пароле
                 ),
-                SizedBox(height: 32.h),
+                SizedBox(height: 32.dp),
                 AppButtonWidget(
                   isActive: state.isButtonActive,
                   text: 'Войти',
                   onTap: () => bloc.add(SubmitLoginEvent()),
                 ),
-                SizedBox(height: 32.h),
+                SizedBox(height: 32.dp),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

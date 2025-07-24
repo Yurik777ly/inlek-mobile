@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -39,7 +40,7 @@ class HowPlaceOrderTemplate extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: 8.dp),
               Expanded(
                 child: Text(
                   title,
@@ -49,7 +50,7 @@ class HowPlaceOrderTemplate extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: 16.dp),
           child
         ],
       ),

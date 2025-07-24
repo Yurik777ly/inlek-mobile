@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
@@ -40,7 +41,7 @@ class SalesListItem extends StatelessWidget {
       child: Container(
         padding:
             isOneElementInList ? getMarginOrPadding(left: 16, right: 16) : null,
-        width: isOneElementInList ? null : 296.w,
+        width: isOneElementInList ? null : 296.dp,
         decoration: BoxDecoration(
           color: UiConstants.whiteColor,
           borderRadius: BorderRadius.circular(16.r),
@@ -54,13 +55,13 @@ class SalesListItem extends StatelessWidget {
                   top: Radius.circular(16.r),
                 ),
                 child: CachedNetworkImage(
-                  height: 128.w,
+                  height: 128.dp,
                   width: double.infinity,
                   imageUrl: '${dotenv.env['PUBLIC_URL']!}${action.image}',
                   fit: BoxFit.cover,
                   cacheManager: CustomCacheManager(),
                   errorWidget: (context, url, error) => Icon(Icons.image,
-                      size: 72.w, color: UiConstants.white3Color),
+                      size: 72.dp, color: UiConstants.white3Color),
                   progressIndicatorBuilder: (context, url, progress) => Center(
                     child: CircularProgressIndicator(
                         color: UiConstants.pink2Color),
@@ -68,7 +69,7 @@ class SalesListItem extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: 8.dp),
             Padding(
               padding: getMarginOrPadding(left: 16, right: 16, bottom: 16),
               child: Column(
@@ -79,7 +80,7 @@ class SalesListItem extends StatelessWidget {
                           fontWeight: FontWeight.w800),
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 8.dp),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

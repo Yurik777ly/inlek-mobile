@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/news_entity.dart';
@@ -42,7 +42,7 @@ class NewsListWidget extends StatelessWidget {
                 ),
               ),
             ),
-        separatorBuilder: (context, index) => SizedBox(height: 16.h),
+        separatorBuilder: (context, index) => SizedBox(height: 16.dp),
         itemCount: noContainParentNews.length);
   }
 }

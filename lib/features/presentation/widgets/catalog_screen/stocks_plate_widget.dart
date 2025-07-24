@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -22,7 +23,7 @@ class StocksPlateWidget extends StatelessWidget {
       },
       child: Container(
         padding: getMarginOrPadding(left: 21),
-        height: 76.h,
+        height: 76.dp,
         width: double.infinity,
         decoration: BoxDecoration(
             image: DecorationImage(

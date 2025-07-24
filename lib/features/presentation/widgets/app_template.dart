@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -42,7 +43,7 @@ class AppTemplate extends StatelessWidget {
               Container(
                 padding: getMarginOrPadding(
                     left: 20, right: 20, top: kTextTabBarHeight, bottom: 16),
-                height: 230.w,
+                height: 230.dp,
                 width: double.infinity,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,7 +53,7 @@ class AppTemplate extends StatelessWidget {
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
                         child: SvgPicture.asset(Paths.arrowBackIconPath,
-                            width: 24.w, height: 24.w),
+                            width: 24.dp, height: 24.dp),
                       ),
                     Spacer(),
                     Text(

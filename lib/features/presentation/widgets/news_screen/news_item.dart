@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/custom_cache_manager.dart';
@@ -44,24 +45,24 @@ class NewsItem extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 15.h),
+              SizedBox(height: 15.dp),
               ClipRRect(
                 borderRadius: BorderRadius.circular(16.r),
                 child: CachedNetworkImage(
                   imageUrl: '${dotenv.env['PUBLIC_URL']!}${news.image}',
                   fit: BoxFit.cover,
-                  height: 176.h,
+                  height: 176.dp,
                   width: double.infinity,
                   cacheManager: CustomCacheManager(),
                   errorWidget: (context, url, error) => Icon(Icons.image,
-                      size: 56.w, color: UiConstants.whiteColor),
+                      size: 56.dp, color: UiConstants.whiteColor),
                   progressIndicatorBuilder: (context, url, progress) => Center(
                     child:
                         CircularProgressIndicator(color: UiConstants.pinkColor),
                   ),
                 ),
               ),
-              SizedBox(height: 15.h),
+              SizedBox(height: 15.dp),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -72,7 +73,7 @@ class NewsItem extends StatelessWidget {
                           .copyWith(color: UiConstants.darkBlueColor),
                     ),
                   ),
-                  SizedBox(width: 8.w),
+                  SizedBox(width: 8.dp),
                   RightArrowButton(color: UiConstants.whiteColor)
                 ],
               ),

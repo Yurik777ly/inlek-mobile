@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -12,7 +13,7 @@ class DropdownWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ExpansionTileController expansionTileController = ExpansionTileController();
+    ExpansibleController expansionTileController = ExpansibleController();
     return Theme(
       data: ThemeData(splashColor: Colors.transparent),
       child: Skeleton.ignorePointer(
@@ -24,7 +25,7 @@ class DropdownWidget extends StatelessWidget {
           ),
           child: ExpansionTile(
             expandedAlignment: Alignment.topLeft,
-            minTileHeight: 0.h,
+            minTileHeight: 0.dp,
             tilePadding: EdgeInsets.zero,
             controller: expansionTileController,
             shape: const Border(

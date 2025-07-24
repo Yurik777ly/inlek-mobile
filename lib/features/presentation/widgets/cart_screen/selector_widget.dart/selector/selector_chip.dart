@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 
@@ -34,7 +35,7 @@ class SelectorChip extends StatelessWidget {
           child: Text(
             text,
             style: UiConstants.textStyle2.copyWith(
-                fontSize: 15.sp,
+                fontSize: 15.dp,
                 color: selected
                     ? UiConstants.whiteColor
                     : UiConstants.darkBlueColor),

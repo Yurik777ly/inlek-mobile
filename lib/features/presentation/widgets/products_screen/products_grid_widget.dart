@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
@@ -29,11 +29,11 @@ class ProductsGridWidget extends StatelessWidget {
         : isLoadingProducts
             ? products.length + 4
             : products.length;
-    double itemHeight = 285.w;
-    double itemWidth = 156.w;
+    double itemHeight = 285.dp;
+    double itemWidth = 156.dp;
     double blocksSize = itemHeight * (itemCount / 2).round();
     double mainAxisSpacingSize =
-        8.w * ((itemCount / 2 - 1) > 0 ? (itemCount / 2 - 1) : 0).round();
+        8.dp * ((itemCount / 2 - 1) > 0 ? (itemCount / 2 - 1) : 0).round();
     return SizedBox(
       height: (blocksSize + mainAxisSpacingSize),
       child: Skeleton.ignorePointer(
@@ -44,8 +44,8 @@ class ProductsGridWidget extends StatelessWidget {
             padding: getMarginOrPadding(bottom: 94),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              crossAxisSpacing: 8.w,
-              mainAxisSpacing: 8.w,
+              crossAxisSpacing: 8.dp,
+              mainAxisSpacing: 8.dp,
               childAspectRatio: itemWidth / itemHeight,
             ),
             itemCount: itemCount,

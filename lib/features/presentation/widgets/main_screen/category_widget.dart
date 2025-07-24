@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 
@@ -23,8 +24,8 @@ class CategoryWidget extends StatelessWidget {
       child: Column(
         children: [
           SvgPicture.network('${dotenv.env['PUBLIC_URL']!}$imagePath',
-              width: 40.w, height: 40.w),
-          SizedBox(height: 12.h),
+              width: 40.dp, height: 40.dp),
+          SizedBox(height: 12.dp),
           Text(title,
               style: UiConstants.textStyle3
                   .copyWith(color: UiConstants.darkBlueColor),

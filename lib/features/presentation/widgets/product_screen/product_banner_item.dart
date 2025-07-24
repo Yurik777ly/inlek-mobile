@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/custom_cache_manager.dart';
@@ -24,18 +23,18 @@ class ProductBannerItem extends StatelessWidget {
           fit: BoxFit.fitHeight,
           cacheManager: CustomCacheManager(),
           errorWidget: (context, url, error) =>
-              Icon(Icons.image, size: 56.w, color: UiConstants.whiteColor),
+              Icon(Icons.image, size: 56.dp, color: UiConstants.whiteColor),
           progressIndicatorBuilder: (context, url, progress) => Center(
             child: CircularProgressIndicator(color: UiConstants.pink2Color),
           ),
         ),
         Positioned(
-          top: 8.h,
-          left: 20.w,
-          right: 20.w,
+          top: 8.dp,
+          left: 20.dp,
+          right: 20.dp,
           child: Wrap(
-            spacing: 8.w,
-            runSpacing: 8.w,
+            spacing: 8.dp,
+            runSpacing: 8.dp,
             children: [
               if (product?.productSticker != null)
                 ProductChipWidget(

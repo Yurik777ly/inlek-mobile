@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -96,7 +96,7 @@ class _BannerScreenState extends State<BannerScreen> {
                                               left: 20, right: 20),
                                           child: BannerItem(),
                                         ),
-                                        SizedBox(height: 16.h),
+                                        SizedBox(height: 16.dp),
                                         Padding(
                                           padding: getMarginOrPadding(
                                               left: 20, right: 20),
@@ -109,7 +109,7 @@ class _BannerScreenState extends State<BannerScreen> {
                                           ),
                                         ),
                                         if (Skeletonizer.of(context).enabled)
-                                          SizedBox(height: 16.h),
+                                          SizedBox(height: 16.dp),
                                         Skeleton.replace(
                                           child: Padding(
                                             padding: getMarginOrPadding(

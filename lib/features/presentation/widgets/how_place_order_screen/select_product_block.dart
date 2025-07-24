@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/widgets/how_place_order_screen/how_place_order_image.dart';
@@ -21,36 +21,36 @@ class SelectProductBlock extends StatelessWidget {
             style: UiConstants.textStyle2
                 .copyWith(color: UiConstants.darkBlueColor),
           ),
-          SizedBox(height: 32.h),
+          SizedBox(height: 32.dp),
           Text(
             'Поиск по торговому названию',
             style: UiConstants.textStyle3.copyWith(
                 color: UiConstants.darkBlueColor, fontWeight: FontWeight.w800),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 8.dp),
           Text(
             'Просто введите название или его часть в поисковую строку. Поиск производится динамически по мере ввода запроса, и результаты отображаются сразу в выпадающем списке.',
             style: UiConstants.textStyle2
                 .copyWith(color: UiConstants.darkBlueColor),
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: 16.dp),
           HowPlaceOrderImage(
-              imagePath: Paths.howPlaceOrder1IconPath, height: 320.h),
-          SizedBox(height: 32.h),
+              imagePath: Paths.howPlaceOrder1IconPath, height: 320.dp),
+          SizedBox(height: 32.dp),
           Text(
             'Поиск по действующему веществу',
             style: UiConstants.textStyle3.copyWith(
                 color: UiConstants.darkBlueColor, fontWeight: FontWeight.w800),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 8.dp),
           Text(
             'Действующее вещество или действующие вещества обеспечивают препарату его основные свойства. Действующее вещество может указывать врач, выписывая рецепт или назначение. Наш поиск поможет Вам найти товары, содержащие указанное вещество или вещества, в разной ценовой категории.',
             style: UiConstants.textStyle2
                 .copyWith(color: UiConstants.darkBlueColor),
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: 16.dp),
           HowPlaceOrderImage(
-              imagePath: Paths.howPlaceOrder2IconPath, height: 320.h),
+              imagePath: Paths.howPlaceOrder2IconPath, height: 320.dp),
         ],
       ),
     );

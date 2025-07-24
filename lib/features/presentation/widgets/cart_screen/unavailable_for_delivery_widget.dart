@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/ui_constants.dart';
 
 class UnavailableForDeliveryWidget extends StatelessWidget {
@@ -15,7 +15,7 @@ class UnavailableForDeliveryWidget extends StatelessWidget {
           style:
               UiConstants.textStyle9.copyWith(color: UiConstants.darkBlueColor),
         ),
-        SizedBox(height: 16.h),
+        SizedBox(height: 16.dp),
         Text(
           'Мы не можем доставлять рецептурные и спиртосодержащие препараты. Оформите для них самовывоз. Для получения рецептурного препарата понадобится рецепт от врача.',
           style: UiConstants.textStyle2.copyWith(

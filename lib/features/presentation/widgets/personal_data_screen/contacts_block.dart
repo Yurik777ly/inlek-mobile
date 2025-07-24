@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
@@ -34,7 +35,7 @@ class _ContactsBlockState extends State<ContactsBlock> {
           style:
               UiConstants.textStyle5.copyWith(color: UiConstants.darkBlueColor),
         ),
-        SizedBox(height: 8.h),
+        SizedBox(height: 8.dp),
         Container(
           padding: getMarginOrPadding(all: 16),
           decoration: BoxDecoration(
@@ -89,14 +90,14 @@ class _ContactsBlockState extends State<ContactsBlock> {
                   },
                 ),
               ),
-              SizedBox(height: 24.h),
+              SizedBox(height: 24.dp),
               Text(
                 'При изменении номера телефона на новый номер будет отправлен код подтверждения',
                 style: UiConstants.textStyle8.copyWith(
                   color: UiConstants.darkBlue2Color.withOpacity(.6),
                 ),
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: 16.dp),
               AppTextFieldWidget(
                 title: 'Email',
                 hintText: 'Введите Email',

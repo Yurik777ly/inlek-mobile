@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -29,7 +30,7 @@ class GeneralInformationBlock extends StatelessWidget {
           style:
               UiConstants.textStyle5.copyWith(color: UiConstants.darkBlueColor),
         ),
-        SizedBox(height: 8.h),
+        SizedBox(height: 8.dp),
         Container(
           padding: getMarginOrPadding(all: 16),
           decoration: BoxDecoration(
@@ -45,7 +46,7 @@ class GeneralInformationBlock extends StatelessWidget {
                 validator: (p0) =>
                     Utils.nameValidate(p0, isSensitiveEmptyValue: false),
               ),
-              SizedBox(height: 24.h),
+              SizedBox(height: 24.dp),
               AppTextFieldWidget(
                 title: 'Фамилия',
                 hintText: 'Введите фамилию',
@@ -53,7 +54,7 @@ class GeneralInformationBlock extends StatelessWidget {
                 validator: (p0) =>
                     Utils.nameValidate(p0, isSensitiveEmptyValue: false),
               ),
-              SizedBox(height: 24.h),
+              SizedBox(height: 24.dp),
               AppTextFieldWidget(
                 title: 'Дата рождения',
                 hintText: 'ДД / ММ / ГГГГ',
@@ -70,7 +71,7 @@ class GeneralInformationBlock extends StatelessWidget {
                 onChangedField: (p0) =>
                     personalDataBloc.birthdayController.text = p0,
               ),
-              SizedBox(height: 24.h),
+              SizedBox(height: 24.dp),
               Row(
                 children: [
                   CustomRadioButton(
@@ -81,7 +82,7 @@ class GeneralInformationBlock extends StatelessWidget {
                       ChangeGenderEvent(GenderType.male),
                     ),
                   ),
-                  SizedBox(width: 24.w),
+                  SizedBox(width: 24.dp),
                   CustomRadioButton(
                     title: 'Женский',
                     value: GenderType.female,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -38,8 +39,8 @@ class RightArrowButton extends StatelessWidget {
               flipX: true,
               child: SvgPicture.asset(Paths.arrowBackIconPath,
                   color: UiConstants.darkBlue2Color.withOpacity(.6),
-                  width: 24.w,
-                  height: 24.w),
+                  width: 24.dp,
+                  height: 24.dp),
             ),
           ),
         ),

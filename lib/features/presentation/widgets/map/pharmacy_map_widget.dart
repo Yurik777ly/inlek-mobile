@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -90,12 +91,12 @@ class PharmacyMapWidget extends StatelessWidget {
                       assetName: Paths.locationIconPath,
                       color: UiConstants.pink2Color,
                       onPressed: () => bloc.add(MoveToCurrentLocationEvent())),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 16.dp),
                   MapButton(
                       assetName: Paths.plusIconPath,
                       color: Color(0xFF222222).withOpacity(.6),
                       onPressed: () => bloc.add(ZoomInEvent())),
-                  SizedBox(height: 4.h),
+                  SizedBox(height: 4.dp),
                   MapButton(
                       assetName: Paths.minusIconPath,
                       color: Color(0xFF222222).withOpacity(.6),

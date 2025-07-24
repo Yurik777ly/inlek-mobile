@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -35,18 +36,18 @@ class AccountNotFoundScreen extends StatelessWidget {
                   onTap: () => Navigator.pop(context),
                   child: SvgPicture.asset(
                     Paths.arrowBackIconPath,
-                    width: 24.w,
-                    height: 24.w,
+                    width: 24.dp,
+                    height: 24.dp,
                     color: UiConstants.darkBlueColor.withOpacity(.4),
                   ),
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 16.dp),
                 Text(
                   'По данному номеру телефона не найдено аккаунта',
                   style: UiConstants.textStyle1
                       .copyWith(color: UiConstants.darkBlueColor),
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 8.dp),
                 Text(
                   'Зарегистрируйтесь, чтобы совершать покупки и пользоваться нашей бонусной системой',
                   style: UiConstants.textStyle2

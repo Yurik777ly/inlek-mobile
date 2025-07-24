@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/ui_constants.dart';
 
 class BottomNavigationBarTile extends StatelessWidget {
@@ -34,7 +34,7 @@ class BottomNavigationBarTile extends StatelessWidget {
           children: [
             countChatMessage != null && countChatMessage != 0
                 ? GFIconBadge(
-                    position: GFBadgePosition(top: -2.w, end: -2.w),
+                    position: GFBadgePosition(top: -2.dp, end: -2.dp),
                     counterChild: GFBadge(
                       color: UiConstants.pink2Color,
                       shape: GFBadgeShape.circle,
@@ -45,10 +45,10 @@ class BottomNavigationBarTile extends StatelessWidget {
                       ),
                     ),
                     child: SvgPicture.asset(icon,
-                        height: 24.w, width: 24.w, color: color),
+                        height: 24.dp, width: 24.dp, color: color),
                   )
                 : SvgPicture.asset(icon,
-                    height: 24.w, width: 24.w, color: color),
+                    height: 24.dp, width: 24.dp, color: color),
             SizedBox(height: 4),
             Text(title,
                 style: UiConstants.textStyle6.copyWith(color: color, height: 1),

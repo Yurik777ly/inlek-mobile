@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -56,8 +56,8 @@ class CustomRadioButton extends StatelessWidget {
     return Transform.scale(
       scale: 1.5,
       child: SizedBox(
-        height: 24.w,
-        width: 24.w,
+        height: 24.dp,
+        width: 24.dp,
         child: RadioTheme(
           data: RadioThemeData(
             fillColor: WidgetStatePropertyAll(

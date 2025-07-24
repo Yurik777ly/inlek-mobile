@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
@@ -48,13 +48,13 @@ class SummaryPricesBlock extends StatelessWidget {
                 child:
                     SummaryPriceItem(title: 'Доставка', price: deliveryPrice),
               ),
-            SizedBox(height: 8.h),
+            SizedBox(height: 8.dp),
             SummaryPriceItem(
               title: 'Скидка',
               price: -discount,
               isDiscount: true,
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: 8.dp),
             SummaryPriceItem(
               title: 'Скидка по промокоду',
               price: -promoDiscount,

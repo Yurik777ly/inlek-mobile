@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -105,14 +105,14 @@ class _DropdownBlockTemplateState extends State<DropdownBlockTemplate>
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              SizedBox(width: 4.w),
+              SizedBox(width: 4.dp),
               AnimatedRotation(
                 turns: isVisible ? 0.0 : 0.5,
                 duration: const Duration(milliseconds: 300),
                 child: SvgPicture.asset(
                   Paths.dropdownArrowIconPath,
-                  width: 24.w,
-                  height: 24.w,
+                  width: 24.dp,
+                  height: 24.dp,
                 ),
               ),
             ],

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
@@ -26,7 +27,7 @@ class DeliveryCustomerBlock extends StatelessWidget {
           style:
               UiConstants.textStyle5.copyWith(color: UiConstants.darkBlueColor),
         ),
-        SizedBox(height: 8.h),
+        SizedBox(height: 8.dp),
         Container(
           padding: getMarginOrPadding(all: 16),
           decoration: BoxDecoration(
@@ -40,13 +41,13 @@ class DeliveryCustomerBlock extends StatelessWidget {
                   hintText: 'Введите имя',
                   controller: cartBloc.fNameController,
                   validator: Utils.nameValidate),
-              SizedBox(height: 24.h),
+              SizedBox(height: 24.dp),
               AppTextFieldWidget(
                   title: 'Фамилия',
                   hintText: 'Введите фамилию',
                   controller: cartBloc.sNameController,
                   validator: Utils.nameValidate),
-              SizedBox(height: 24.h),
+              SizedBox(height: 24.dp),
               AppTextFieldWidget(
                   title: 'Телефон',
                   hintText: '+375 (00) 000-00-00',
@@ -57,7 +58,7 @@ class DeliveryCustomerBlock extends StatelessWidget {
                     CustomPhoneInputFormatter()
                   ],
                   validator: Utils.validatePhone),
-              SizedBox(height: 24.h),
+              SizedBox(height: 24.dp),
               AppTextFieldWidget(
                   title: 'Email',
                   description: 'Обязательно при оплате онлайн в приложении',

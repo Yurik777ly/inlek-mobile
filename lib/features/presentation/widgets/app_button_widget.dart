@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -59,7 +60,7 @@ class AppButtonWidget extends StatelessWidget {
                       : BorderSide.none),
               alignment: alignment),
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 13.5.h),
+            padding: EdgeInsets.symmetric(vertical: 13.5.dp),
             child: textWidget ??
                 Text(
                   text ?? '',

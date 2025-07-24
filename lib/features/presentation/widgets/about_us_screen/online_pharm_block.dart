@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/launch_url_utils.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/features/presentation/widgets/about_us_screen/about_us_block_template.dart';
@@ -18,7 +18,7 @@ class OnlinePharmBlock extends StatelessWidget {
             imagePath: Paths.clockIconPath,
             title: 'Режим работы',
             subtitle: 'Пн–Вс: 09:00–21:00'),
-        SizedBox(height: 8.h),
+        SizedBox(height: 8.dp),
         OrderInfoItem(
           imagePath: Paths.mailIconPath,
           title: 'Email',
@@ -27,7 +27,7 @@ class OnlinePharmBlock extends StatelessWidget {
           onTap: () =>
               LaunchUrlUtils.sendEmail(toEmail: 'apteka-online@inlek.by'),
         ),
-        SizedBox(height: 8.h),
+        SizedBox(height: 8.dp),
         OrderInfoItem(
           imagePath: Paths.phoneIconPath,
           title: 'Колл-центр мобильные операторы',
@@ -35,7 +35,7 @@ class OnlinePharmBlock extends StatelessWidget {
           showArrow: false,
           onTap: () => LaunchUrlUtils.makePhoneCall('481'),
         ),
-        SizedBox(height: 8.h),
+        SizedBox(height: 8.dp),
         OrderInfoItem(
           imagePath: Paths.phoneIconPath,
           title: 'Колл-центр',
@@ -43,13 +43,13 @@ class OnlinePharmBlock extends StatelessWidget {
           showArrow: false,
           onTap: () => LaunchUrlUtils.makePhoneCall('+375 (17) 388-76-78'),
         ),
-        SizedBox(height: 8.h),
+        SizedBox(height: 8.dp),
         OrderInfoItem(
             imagePath: Paths.pointIconPath,
             title: 'Адрес',
             subtitle:
                 'г. Минск, тр-т. Долгиновский, д. 178, пом.178-102 - 178-107, 178-109, 178-112 - 178-114'),
-        SizedBox(height: 8.h),
+        SizedBox(height: 8.dp),
         OrderInfoItem(
             imagePath: Paths.document2IconPath,
             title: 'Дополнительная информация',

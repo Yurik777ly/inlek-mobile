@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -121,7 +122,7 @@ class MainScreen extends StatelessWidget {
                                           ),
                                         if (!Skeletonizer.of(context).enabled &&
                                             (state.categories ?? []).isNotEmpty)
-                                          SizedBox(height: 32.h),
+                                          SizedBox(height: 32.dp),
                                         BlockWidget(
                                           contentPadding: getMarginOrPadding(
                                               left: 20, right: 20),

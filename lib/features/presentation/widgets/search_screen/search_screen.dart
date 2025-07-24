@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/params/product_param.dart';
@@ -185,8 +185,8 @@ class SearchScreen extends StatelessWidget {
         padding: getMarginOrPadding(top: 16, bottom: 16),
         child: Divider(
           color: UiConstants.white5Color,
-          thickness: 2.h,
-          height: 34.h,
+          thickness: 2.dp,
+          height: 34.dp,
         ),
       );
 }

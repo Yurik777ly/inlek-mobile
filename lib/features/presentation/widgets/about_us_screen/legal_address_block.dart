@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/launch_url_utils.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
@@ -24,7 +24,7 @@ class LegalAddressBlock extends StatelessWidget {
           showArrow: false,
           onTap: () => LaunchUrlUtils.sendEmail(toEmail: 'inlek@inlek.by'),
         ),
-        SizedBox(height: 8.h),
+        SizedBox(height: 8.dp),
         OrderInfoItem(
           imagePath: Paths.phoneIconPath,
           title: 'Телефон приемной',
@@ -32,12 +32,12 @@ class LegalAddressBlock extends StatelessWidget {
           showArrow: false,
           onTap: () => LaunchUrlUtils.makePhoneCall('+375 (44) 755-17-27'),
         ),
-        SizedBox(height: 8.h),
+        SizedBox(height: 8.dp),
         OrderInfoItem(
             imagePath: Paths.pointIconPath,
             title: 'Адрес',
             subtitle: '220113 г. Минск,ул. Якуба Коласа, 73/3-6, 6 этаж'),
-        SizedBox(height: 8.h),
+        SizedBox(height: 8.dp),
         OrderInfoItem(
           imagePath: Paths.document2IconPath,
           title: 'Дополнительная информация',
@@ -70,7 +70,7 @@ class LegalAddressBlock extends StatelessWidget {
             onTap: () => Utils.openDocFile(Paths.licenses, name: 'Лицензии'),
             imagePath: Paths.licenseIconPath,
             title: 'Лицензии'),
-        SizedBox(height: 8.h),
+        SizedBox(height: 8.dp),
         MoreDetailPlate(
             onTap: () => Utils.openDocFile(Paths.publicOfferAgreement,
                 name: 'Публичная_оферта'),

@@ -9,6 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
@@ -318,7 +319,7 @@ class Utils {
                 GestureDetector(
                   onTap: () => action(context),
                   child: Icon(Icons.close,
-                      color: UiConstants.blackColor, size: 25.w),
+                      color: UiConstants.blackColor, size: 25.dp),
                 ),
               ],
             ),

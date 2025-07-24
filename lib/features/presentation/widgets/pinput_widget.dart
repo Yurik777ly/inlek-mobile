@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:pinput/pinput.dart';
 
@@ -33,8 +34,8 @@ class _PinputWidgetState extends State<PinputWidget> {
   @override
   Widget build(BuildContext context) {
     final defaultPinTheme = PinTheme(
-      width: 56.w,
-      height: 64.w,
+      width: 56.dp,
+      height: 64.dp,
       textStyle: UiConstants.textStyle4.copyWith(
         color:
             widget.showError ? UiConstants.redColor : UiConstants.darkBlueColor,
@@ -50,7 +51,7 @@ class _PinputWidgetState extends State<PinputWidget> {
       child: Pinput(
         keyboardType: TextInputType.number,
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        separatorBuilder: (index) => SizedBox(width: 8.w),
+        separatorBuilder: (index) => SizedBox(width: 8.dp),
         forceErrorState: widget.showError,
         length: 4,
         controller: widget.controller,
@@ -72,8 +73,8 @@ class _PinputWidgetState extends State<PinputWidget> {
           //}
         },
         focusedPinTheme: defaultPinTheme.copyWith(
-          height: 68.h,
-          width: 60.h,
+          height: 68.dp,
+          width: 60.dp,
           decoration: defaultPinTheme.decoration!.copyWith(
             border: Border.all(color: UiConstants.purple2Color.withOpacity(.2)),
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/widgets/right_arrow_button.dart';
@@ -32,7 +33,7 @@ class DeliveryPaymentBlockItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 92.h,
+        height: 92.dp,
         padding: getMarginOrPadding(
             top: 8 - borderWidth,
             bottom: 8 - borderWidth,
@@ -56,8 +57,8 @@ class DeliveryPaymentBlockItem extends StatelessWidget {
                       Row(
                         children: [
                           SvgPicture.asset(imagePath,
-                              width: 24.w, height: 24.w),
-                          SizedBox(width: 8.w),
+                              width: 24.dp, height: 24.dp),
+                          SizedBox(width: 8.dp),
                           Text(
                             title ?? '',
                             style: UiConstants.textStyle3.copyWith(

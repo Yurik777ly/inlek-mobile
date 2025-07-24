@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
@@ -82,9 +82,9 @@ class _HowPlaceOrderScreenState extends State<HowPlaceOrderScreen> {
                                       shrinkWrap: true,
                                       children: [
                                         SelectProductBlock(),
-                                        SizedBox(height: 16.h),
+                                        SizedBox(height: 16.dp),
                                         AddProductToCartBlock(),
-                                        SizedBox(height: 16.h),
+                                        SizedBox(height: 16.dp),
                                         PickUpOrderBlock(),
                                       ],
                                     ),

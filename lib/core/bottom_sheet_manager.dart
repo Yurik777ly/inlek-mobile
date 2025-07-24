@@ -71,7 +71,7 @@ class BottomSheetManager {
       context: context,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          height: 158.h,
+          height: 158.dp,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -80,7 +80,7 @@ class BottomSheetManager {
                 style: UiConstants.textStyle5
                     .copyWith(color: UiConstants.darkBlueColor),
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: 16.dp),
               Row(
                 children: [
                   Expanded(
@@ -115,7 +115,7 @@ class BottomSheetManager {
       context: context,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          height: 158.h,
+          height: 158.dp,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -124,7 +124,7 @@ class BottomSheetManager {
                 style: UiConstants.textStyle5
                     .copyWith(color: UiConstants.darkBlueColor),
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: 16.dp),
               Row(
                 children: [
                   Expanded(
@@ -160,7 +160,7 @@ class BottomSheetManager {
       context: UiConstants.homeContext!,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          height: 231.h,
+          height: 231.dp,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -169,14 +169,14 @@ class BottomSheetManager {
                 style: UiConstants.textStyle5
                     .copyWith(color: UiConstants.darkBlueColor),
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: 8.dp),
               Text(
                 'Отменить данное действие будет невозможно',
                 style: UiConstants.textStyle3.copyWith(
                   color: UiConstants.darkBlue2Color.withOpacity(.6),
                 ),
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: 16.dp),
               AppButtonWidget(
                 text: 'Удалить',
                 onTap: () {
@@ -186,7 +186,7 @@ class BottomSheetManager {
                   Navigator.pop(sheetContext);
                 },
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: 8.dp),
               AppButtonWidget(
                 text: 'Отменить',
                 isFilled: false,
@@ -205,7 +205,7 @@ class BottomSheetManager {
       context: homeContext,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          height: 288.h,
+          height: 288.dp,
           child: Column(
             children: [
               Text(
@@ -213,19 +213,19 @@ class BottomSheetManager {
                 style: UiConstants.textStyle5
                     .copyWith(color: UiConstants.darkBlueColor),
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: 8.dp),
               Text(
                 'Чтобы продолжить, снимите выбор с недоступных для доставки товаров или измените способ получения на самовывоз.',
                 style: UiConstants.textStyle3.copyWith(
                   color: UiConstants.darkBlue2Color.withOpacity(.6),
                 ),
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: 16.dp),
               AppButtonWidget(
                 text: 'Оформить самовывоз',
                 onTap: () => Navigator.pop(sheetContext, true),
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: 8.dp),
               AppButtonWidget(
                 text: 'Вернуться к оформлению',
                 isFilled: false,
@@ -244,7 +244,7 @@ class BottomSheetManager {
       context: UiConstants.homeContext!,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          height: 186.h,
+          height: 186.dp,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -253,12 +253,12 @@ class BottomSheetManager {
                 style: UiConstants.textStyle5
                     .copyWith(color: UiConstants.darkBlueColor),
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: 16.dp),
               AppButtonWidget(
                 text: 'Оставить',
                 onTap: () => Navigator.pop(sheetContext),
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: 8.dp),
               AppButtonWidget(
                 text: 'Удалить',
                 isFilled: false,
@@ -291,12 +291,12 @@ class BottomSheetManager {
                 style: UiConstants.textStyle5
                     .copyWith(color: UiConstants.darkBlueColor),
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: 16.dp),
               AppButtonWidget(
                 text: 'Остаться',
                 onTap: () => Navigator.pop(sheetContext, false),
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: 8.dp),
               AppButtonWidget(
                 text: 'Выйти',
                 isFilled: false,
@@ -380,11 +380,11 @@ class BottomSheetManager {
                         style: UiConstants.textStyle1
                             .copyWith(color: UiConstants.darkBlueColor),
                       ),
-                      SizedBox(height: 16.h),
+                      SizedBox(height: 16.dp),
                       InfoPlateWidget(
                           text:
                               'Доставка производится только по Минску и Минскому району'),
-                      SizedBox(height: 16.h),
+                      SizedBox(height: 16.dp),
                       DeliveryCustomerBlock(screenContext: screenContext),
                       if (cartBloc.state.cartType == TypeReceiving.delivery)
                         Padding(
@@ -413,7 +413,7 @@ class BottomSheetManager {
                             },
                           ),
                         ),
-                      SizedBox(height: 16.h),
+                      SizedBox(height: 16.dp),
                       SizedBox(
                         height:
                             cartBloc.state.cartType == TypeReceiving.pickup ||
@@ -423,7 +423,7 @@ class BottomSheetManager {
                                         cartBloc.state.deliveryZone ==
                                             DeliveryZoneType.none)
                                 ? null
-                                : 60.h,
+                                : 60.dp,
                         child: AppButtonWidget(
                           textWidget: cartBloc.state.isOrderCompleting
                               ? Center(
@@ -487,7 +487,7 @@ class BottomSheetManager {
       context: UiConstants.homeContext!,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          height: 220.h,
+          height: 220.dp,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -496,15 +496,15 @@ class BottomSheetManager {
                 style: UiConstants.textStyle5
                     .copyWith(color: UiConstants.darkBlueColor),
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: 16.dp),
               /*OnlinePaymentMethodButton(
                 child: Padding(
                   padding: getMarginOrPadding(top: 10, bottom: 10),
                   child: Row(
                     children: [
                       SvgPicture.asset(Paths.cardIconPath,
-                          width: 24.w, height: 24.w),
-                      SizedBox(width: 8.w),
+                          width: 24.dp, height: 24.dp),
+                      SizedBox(width: 8.dp),
                       Text(
                         'Картой',
                         style: UiConstants.textStyle3.copyWith(
@@ -525,8 +525,8 @@ class BottomSheetManager {
                 },
               ),
               OnlinePaymentMethodButton(
-                child:
-                    Image.asset(Paths.eripIconPath, width: 88.w, height: 44.h),
+                child: Image.asset(Paths.eripIconPath,
+                    width: 88.dp, height: 44.dp),
                 onTap: () {
                   Navigator.pop(sheetContext, PaymentType.bepaid);
                 },
@@ -632,11 +632,11 @@ class BottomSheetManager {
                                 style: UiConstants.textStyle1
                                     .copyWith(color: UiConstants.darkBlueColor),
                               ),
-                              SizedBox(height: 16.h),
+                              SizedBox(height: 16.dp),
                               InfoPlateWidget(
                                   text:
                                       'Доставка производится только по Минску и Минскому району'),
-                              SizedBox(height: 16.h),
+                              SizedBox(height: 16.dp),
                               Skeleton.ignorePointer(
                                 child: Skeleton.shade(
                                   child: CitySearchField(
@@ -792,7 +792,7 @@ class BottomSheetManager {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 16.h),
+                              SizedBox(height: 16.dp),
                               Expanded(
                                 child: PharmacyMapWidget(
                                   onTapMap: (point) async {
@@ -892,18 +892,18 @@ class BottomSheetManager {
                                   },
                                 ),
                               ),
-                              SizedBox(height: 16.h),
+                              SizedBox(height: 16.dp),
                               CourierDeliveryZoneItem(
                                   title: 'Зелёная зона',
                                   subtitle:
                                       'Бесплатно — для заказов от 40 руб.\nПлатно — для заказов до 40 руб.',
                                   deliveryZoneType: DeliveryZoneType.green),
-                              SizedBox(height: 16.h),
+                              SizedBox(height: 16.dp),
                               CourierDeliveryZoneItem(
                                   title: 'Желтая зона',
                                   subtitle: 'Платная доставка',
                                   deliveryZoneType: DeliveryZoneType.yellow),
-                              SizedBox(height: 16.h),
+                              SizedBox(height: 16.dp),
                               if (selectedAddress != null &&
                                   cartScreenBloc.state.deliveryZone !=
                                       DeliveryZoneType.none)
@@ -963,26 +963,26 @@ class BottomSheetManager {
                   style: UiConstants.textStyle1
                       .copyWith(color: UiConstants.darkBlueColor),
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 8.dp),
                 Text(
                   'Статус заказов можно отслеживать в профиле в разделе «Заказы».',
                   style: UiConstants.textStyle2.copyWith(
                     color: UiConstants.darkBlue2Color.withOpacity(.6),
                   ),
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 16.dp),
                 ProductsListWidget(
                     title: 'Товары',
                     products: orderedProducts,
                     productsListScreenType: ProductsListScreenType.order,
                     screenContext: screenContext),
-                SizedBox(height: 16.h),
+                SizedBox(height: 16.dp),
                 Text(
                   'Информация о заказе',
                   style: UiConstants.textStyle5
                       .copyWith(color: UiConstants.darkBlueColor),
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 8.dp),
                 Container(
                   padding: getMarginOrPadding(all: 16),
                   decoration: BoxDecoration(
@@ -996,7 +996,7 @@ class BottomSheetManager {
                         "${cartBloc.cityController.text}, ${cartBloc.streetHomeController.text}",
                   ),
                 ),
-                SizedBox(height: 32.h),
+                SizedBox(height: 32.dp),
                 AppButtonWidget(
                   text: 'К списку заказов',
                   isActive: true,
@@ -1098,7 +1098,7 @@ class BottomSheetManager {
                                       style: UiConstants.textStyle1.copyWith(
                                           color: UiConstants.darkBlueColor),
                                     ),
-                                    SizedBox(height: 16.h),
+                                    SizedBox(height: 16.dp),
                                     BlockWidget(
                                       title: 'Выбор аптеки',
                                       titleStyle: UiConstants.textStyle9,
@@ -1118,7 +1118,7 @@ class BottomSheetManager {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(height: 32.h),
+                                    SizedBox(height: 32.dp),
                                     Align(
                                       alignment: AlignmentDirectional.center,
                                       child: Selector(
@@ -1129,7 +1129,7 @@ class BottomSheetManager {
                                         }),
                                       ),
                                     ),
-                                    SizedBox(height: 16.h),
+                                    SizedBox(height: 16.dp),
                                     Expanded(
                                       child: state.isLoading
                                           ? Center(
@@ -1154,9 +1154,9 @@ class BottomSheetManager {
                                                               ),
                                                           screenContext:
                                                               screenContext),
-                                                  separatorBuilder:
-                                                      (context, index) =>
-                                                          SizedBox(height: 8.h),
+                                                  separatorBuilder: (context,
+                                                          index) =>
+                                                      SizedBox(height: 8.dp),
                                                   itemCount:
                                                       filteredPharmacies.length)
                                               : Padding(
@@ -1245,17 +1245,17 @@ class BottomSheetManager {
                       style: UiConstants.textStyle3
                           .copyWith(color: UiConstants.darkBlueColor),
                     ),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: 16.dp),
                     Text(
                       pharmacy.address ?? '',
                       style: UiConstants.textStyle2.copyWith(
                         color: UiConstants.darkBlueColor,
                       ),
                     ),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: 16.dp),
                     PharmacyAvailableProductsChip(
                         allProductsAvailable: allAvailable),
-                    SizedBox(height: 32.h),
+                    SizedBox(height: 32.dp),
                     // список с законченными товарами
                     if (outOfStockProducts.isNotEmpty)
                       Padding(
@@ -1309,7 +1309,7 @@ class BottomSheetManager {
       context: homeContext,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          height: 180.h,
+          height: 180.dp,
           child: Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1352,7 +1352,7 @@ class BottomSheetManager {
                     style: UiConstants.textStyle5
                         .copyWith(color: UiConstants.darkBlueColor),
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 8.dp),
                   RichText(
                     text: TextSpan(
                       children: [
@@ -1371,20 +1371,20 @@ class BottomSheetManager {
                       ],
                     ),
                   ),
-                  SizedBox(height: 32.h),
+                  SizedBox(height: 32.dp),
                   Center(
                     child: PinputWidget(
                         controller: bloc.codeController,
                         focusNode: bloc.codeFocusNode,
                         showError: bloc.state.showError),
                   ),
-                  SizedBox(height: 32.h),
+                  SizedBox(height: 32.dp),
                   AppButtonWidget(
                     isActive: bloc.state.isButtonActive,
                     text: 'Подтвердить',
                     onTap: () => bloc.add(SubmitCodeEvent()),
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 16.dp),
                   Center(
                     child: Builder(
                       builder: (context) {
@@ -1455,9 +1455,9 @@ class BottomSheetManager {
                         ),
                       ],
                     ),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: 16.dp),
                     PriceRangeWidget(screenContext: screenContext),
-                    SizedBox(height: 11.h),
+                    SizedBox(height: 11.dp),
                     DropdownBlockTemplate(
                       title: 'Форма выпуска',
                       child: ListView.separated(
@@ -1480,7 +1480,7 @@ class BottomSheetManager {
                               SizedBox(height: 8),
                           itemCount: state.releaseForms.length),
                     ),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: 16.dp),
                     DropdownBlockTemplate(
                       title: 'Производитель',
                       groupByFirstLetter: true,
@@ -1490,7 +1490,7 @@ class BottomSheetManager {
                         SelectManufacturerEvent(item, isChecked),
                       ),
                     ),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: 16.dp),
                     DropdownBlockTemplate(
                       title: 'Страна производства',
                       child: ListView.separated(
@@ -1523,7 +1523,7 @@ class BottomSheetManager {
                         ToggleWithoutPrescriptionEvent(isChecked),
                       ),
                     ),
-                    SizedBox(height: 8.h),
+                    SizedBox(height: 8.dp),
                     DropdownBlockItem(
                       text: 'Участвует в акции',
                       isChecked: state.isParticipatesInCampaign,
@@ -1531,7 +1531,7 @@ class BottomSheetManager {
                         ToggleParticipatesInCampaignEvent(isChecked),
                       ),
                     ),
-                    SizedBox(height: 8.h),
+                    SizedBox(height: 8.dp),
                     DropdownBlockItem(
                       text: 'Возможна доставка',
                       isChecked: state.isDeliveryPossible,
@@ -1539,7 +1539,7 @@ class BottomSheetManager {
                         ToggleDeliveryPossibleEvent(isChecked),
                       ),
                     ),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: 16.dp),
                     AppButtonWidget(
                       text: 'Показать результаты',
                       onTap: () {
@@ -1568,7 +1568,7 @@ class BottomSheetManager {
           bloc: productsBloc,
           builder: (context, state) {
             return CustomBottomSheet(
-              height: 210.h,
+              height: 210.dp,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1577,7 +1577,7 @@ class BottomSheetManager {
                     style: UiConstants.textStyle5
                         .copyWith(color: UiConstants.darkBlueColor),
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 16.dp),
                   ListView.separated(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
@@ -1597,7 +1597,7 @@ class BottomSheetManager {
                         );
                       },
                       separatorBuilder: (context, index) =>
-                          SizedBox(height: 8.h),
+                          SizedBox(height: 8.dp),
                       itemCount: ProductSortType.values.length)
                 ],
               ),
@@ -1630,7 +1630,7 @@ class BottomSheetManager {
           bloc: pharmaciesBloc,
           builder: (context, state) {
             return CustomBottomSheet(
-              height: 200.h,
+              height: 200.dp,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1639,7 +1639,7 @@ class BottomSheetManager {
                     style: UiConstants.textStyle5
                         .copyWith(color: UiConstants.darkBlueColor),
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 16.dp),
                   Opacity(
                     opacity: isRestrictedProduct ? 0.5 : 1.0,
                     child: CustomRadioButton(
@@ -1654,7 +1654,7 @@ class BottomSheetManager {
                       ),
                     ),
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 8.dp),
                   CustomRadioButton(
                     isLabelOnLeft: true,
                     title: 'Самовывоз',
@@ -1665,7 +1665,7 @@ class BottomSheetManager {
                       ChangePharmacySortTypeEvent(TypeReceiving.pickup),
                     ),
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 8.dp),
                   Opacity(
                     opacity: isRestrictedProduct ? 0.5 : 1.0,
                     child: CustomRadioButton(
@@ -1699,7 +1699,7 @@ class BottomSheetManager {
           bloc: pharmaciesBloc,
           builder: (context, state) {
             return CustomBottomSheet(
-              height: 200.h,
+              height: 200.dp,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1708,7 +1708,7 @@ class BottomSheetManager {
                     style: UiConstants.textStyle5
                         .copyWith(color: UiConstants.darkBlueColor),
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 16.dp),
                   CustomCheckbox(
                     title: Text(
                       'Работает сейчас',
@@ -1721,7 +1721,7 @@ class BottomSheetManager {
                       ToggleShowWorkingNowOnlyEvent(isChecked ?? false),
                     ),
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 8.dp),
                   CustomCheckbox(
                     title: Text(
                       'Все товары в наличии',
@@ -1840,7 +1840,7 @@ class BottomSheetManager {
                         ),
                       ],
                     ),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: 16.dp),
                     DropdownBlockTemplate(
                       title: 'Способ получения',
                       child: ListView.separated(
@@ -1865,7 +1865,7 @@ class BottomSheetManager {
                           separatorBuilder: (_, __) => SizedBox(height: 8),
                           itemCount: state.typesReceiving.length),
                     ),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: 16.dp),
                     DropdownBlockTemplate(
                       title: 'Статус',
                       child: ListView.separated(
@@ -1899,7 +1899,7 @@ class BottomSheetManager {
                         itemCount: OrderStatusExtension.titles.length,
                       ),
                     ),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: 16.dp),
                     DropdownBlockTemplate(
                       title: 'Дата заказа',
                       child: Row(
@@ -1922,7 +1922,7 @@ class BottomSheetManager {
                               onChangedField: (value) => validateDates(),
                             ),
                           ),
-                          SizedBox(width: 8.w),
+                          SizedBox(width: 8.dp),
                           Expanded(
                             child: AppTextFieldWidget(
                               hintMaxLines: 1,

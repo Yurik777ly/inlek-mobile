@@ -1,4 +1,30 @@
+import 'package:flutter/material.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/main.dart';
+
+extension DpExtensionDouble on double {
+  double get dp {
+    final context = navigatorKey.currentContext;
+    if (context == null) return this;
+    final scale = View.of(context).display.devicePixelRatio;
+    return this / scale * 3.5;
+  }
+}
+
+extension DpExtensionInt on int {
+  double get dp {
+    final context = navigatorKey.currentContext;
+    if (context == null) return toDouble();
+    final scale = View.of(context).display.devicePixelRatio;
+    return this / scale * 3.5;
+  }
+}
+
+extension EmptyPadding on num {
+  SizedBox get ph => SizedBox(height: toDouble().dp);
+
+  SizedBox get pw => SizedBox(width: toDouble().dp);
+}
 
 extension StringExtensions on String? {
   String orDash() {

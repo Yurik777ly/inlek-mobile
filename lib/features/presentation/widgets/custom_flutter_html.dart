@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/custom_cache_manager.dart';
@@ -37,7 +37,7 @@ class CustomFlutterHtml extends StatelessWidget {
                     width: double.infinity,
                     cacheManager: CustomCacheManager(),
                     errorWidget: (context, url, error) => Icon(Icons.image,
-                        size: 56.w, color: UiConstants.whiteColor),
+                        size: 56.dp, color: UiConstants.whiteColor),
                     progressIndicatorBuilder: (context, url, progress) =>
                         Center(
                       child: CircularProgressIndicator(

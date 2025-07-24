@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/core/params/product_param.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/category_entity.dart';
@@ -38,7 +38,7 @@ class SubcategoriesList extends StatelessWidget {
               ),
             );
           },
-          separatorBuilder: (context, index) => SizedBox(height: 8.h),
+          separatorBuilder: (context, index) => SizedBox(height: 8.dp),
           itemCount: subcategories.length),
     );
   }

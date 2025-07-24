@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
@@ -19,7 +19,7 @@ class ProductBannerWidget extends StatelessWidget {
     return Column(
       children: [
         SizedBox(
-          height: 260.h,
+          height: 260.dp,
           child: PageView.builder(
             controller: pageController,
             itemCount: 1,
@@ -37,9 +37,9 @@ class ProductBannerWidget extends StatelessWidget {
                 count: 1,
                 axisDirection: Axis.horizontal,
                 effect: WormEffect(
-                    spacing: 4.w,
-                    dotWidth: 6.w,
-                    dotHeight: 6.w,
+                    spacing: 4.dp,
+                    dotWidth: 6.dp,
+                    dotHeight: 6.dp,
                     dotColor: UiConstants.white4Color,
                     activeDotColor: UiConstants.darkBlueColor.withOpacity(.6)),
                 onDotClicked: (index) => pageController.animateToPage(index,

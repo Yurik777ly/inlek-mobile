@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 
@@ -20,8 +21,8 @@ class CourierDeliveryZoneItem extends StatelessWidget {
     return Row(
       children: [
         Container(
-          height: 48.w,
-          width: 48.w,
+          height: 48.dp,
+          width: 48.dp,
           padding: getMarginOrPadding(bottom: 2.5, top: 2.5),
           decoration: BoxDecoration(
               color: deliveryZoneType == DeliveryZoneType.green
@@ -34,7 +35,7 @@ class CourierDeliveryZoneItem extends StatelessWidget {
                       : UiConstants.yellow2Color,
                   width: 2)),
         ),
-        SizedBox(width: 12.w),
+        SizedBox(width: 12.dp),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,7 +46,7 @@ class CourierDeliveryZoneItem extends StatelessWidget {
                     color: UiConstants.darkBlueColor,
                     fontWeight: FontWeight.w800),
               ),
-              SizedBox(height: 4.h),
+              SizedBox(height: 4.dp),
               Text(
                 subtitle,
                 style: UiConstants.textStyle10.copyWith(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/share_utils.dart';
 import 'package:inlek/constants/size_utils.dart';
@@ -77,16 +77,16 @@ class NewsInternalScreen extends StatelessWidget {
                                           right: 20),
                                       children: [
                                         BannerItem(
-                                            height: 200.h,
+                                            height: 200.dp,
                                             url:
                                                 '${dotenv.env['PUBLIC_URL']!}${state.news?.image}'),
-                                        SizedBox(height: 16.h),
+                                        SizedBox(height: 16.dp),
                                         DateIconWidget(
                                           date: DateFormat('yyyy-MM-dd')
                                               .tryParse(
                                                   state.news?.createDttm ?? ''),
                                         ),
-                                        SizedBox(height: 8.h),
+                                        SizedBox(height: 8.dp),
                                         Text(
                                           state.news?.pageTitle ?? '',
                                           style: UiConstants.textStyle5
@@ -95,14 +95,14 @@ class NewsInternalScreen extends StatelessWidget {
                                                       .darkBlueColor),
                                         ),
                                         if (Skeletonizer.of(context).enabled)
-                                          SizedBox(height: 16.h),
+                                          SizedBox(height: 16.dp),
                                         Skeleton.replace(
                                           child: CustomFlutterHtml(
                                               isLoading: state.isLoading,
                                               content:
                                                   state.news?.content ?? ''),
                                         ),
-                                        SizedBox(height: 32.h),
+                                        SizedBox(height: 32.dp),
                                         BlockWidget(
                                           title: 'Читайте также',
                                           clickableText: 'Все новости',

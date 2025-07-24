@@ -58,7 +58,7 @@ class OrderItem extends StatelessWidget {
                                 color: UiConstants.darkBlueColor,
                                 fontWeight: FontWeight.w800),
                           ),
-                          SizedBox(width: 8.w),
+                          SizedBox(width: 8.dp),
                           Text(
                             '#${order.orderId}',
                             style: UiConstants.textStyle3.copyWith(
@@ -67,21 +67,21 @@ class OrderItem extends StatelessWidget {
                           ),
                         ],
                       ),
-                      SizedBox(height: 8.h),
+                      SizedBox(height: 8.dp),
                       Text(
                         Utils.formatDate(order.createdAt!),
                         style: UiConstants.textStyle3.copyWith(
                           color: UiConstants.darkBlue2Color.withOpacity(.6),
                         ),
                       ),
-                      SizedBox(height: 8.h),
+                      SizedBox(height: 8.dp),
                       OrderItemStatusChip(orderStatus: order.status!)
                     ],
                   ),
                   RightArrowButton(),
                 ],
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: 8.dp),
               OrderItemProductsList(orderProducts: order.products ?? [])
             ],
           ),

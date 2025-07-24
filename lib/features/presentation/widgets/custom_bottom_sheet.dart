@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 
@@ -28,14 +29,14 @@ class CustomBottomSheet extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            height: 4.h,
-            width: 56.w,
+            height: 4.dp,
+            width: 56.dp,
             decoration: BoxDecoration(
               color: UiConstants.white4Color,
               borderRadius: BorderRadius.circular(200.r),
             ),
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: 16.dp),
           child
         ],
       ),

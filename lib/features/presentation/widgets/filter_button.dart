@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -26,7 +26,7 @@ class FilterButton extends StatelessWidget {
       child: RawMaterialButton(
         elevation: 0,
         fillColor: UiConstants.white2Color,
-        constraints: BoxConstraints(maxHeight: 44.w, minWidth: 44.w),
+        constraints: BoxConstraints(maxHeight: 44.dp, minWidth: 44.dp),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         onPressed: onTap,
         padding: EdgeInsets.zero, // убираем отступы

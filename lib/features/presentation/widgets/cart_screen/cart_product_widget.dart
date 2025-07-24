@@ -90,17 +90,17 @@ class CartProductWidget extends StatelessWidget {
             rtlOverlayIndent: 0,
             rtlDismissedColor: UiConstants.redColor,
             rtlOverlay: SvgPicture.asset(Paths.deleteIconPath,
-                height: 24.w, width: 24.w, color: UiConstants.whiteColor),
+                height: 24.dp, width: 24.dp, color: UiConstants.whiteColor),
             rtlOverlayDismissed: SvgPicture.asset(Paths.deleteIconPath,
-                height: 24.w, width: 24.w, color: UiConstants.whiteColor),
+                height: 24.dp, width: 24.dp, color: UiConstants.whiteColor),
             ltrBackground: const ColoredBox(color: UiConstants.redColor),
             ltrOverlayIndent: 0,
             resizeDuration: Duration(milliseconds: 1),
             ltrDismissedColor: UiConstants.redColor,
             ltrOverlay: SvgPicture.asset(Paths.deleteIconPath,
-                height: 24.w, width: 24.w, color: UiConstants.whiteColor),
+                height: 24.dp, width: 24.dp, color: UiConstants.whiteColor),
             ltrOverlayDismissed: SvgPicture.asset(Paths.deleteIconPath,
-                height: 24.w, width: 24.w, color: UiConstants.whiteColor),
+                height: 24.dp, width: 24.dp, color: UiConstants.whiteColor),
             child: Container(
               padding: getMarginOrPadding(all: 8),
               decoration: BoxDecoration(
@@ -137,14 +137,14 @@ class CartProductWidget extends StatelessWidget {
                               children: [
                                 if (product.stockCount == 0)
                                   Container(
-                                    height: 104.w,
-                                    width: 104.w,
+                                    height: 104.dp,
+                                    width: 104.dp,
                                     color:
                                         UiConstants.whiteColor.withOpacity(.6),
                                   ),
                                 CachedNetworkImage(
-                                  height: 104.w,
-                                  width: 104.w,
+                                  height: 104.dp,
+                                  width: 104.dp,
                                   imageUrl:
                                       '${dotenv.env['PUBLIC_URL']!}${product.image}',
                                   fit: BoxFit.fitHeight,
@@ -161,12 +161,12 @@ class CartProductWidget extends StatelessWidget {
                                 ),
 
                                 /*Positioned(
-                                  top: 4.h,
-                                  left: 8.w,
-                                  right: 8.w,
+                                  top: 4.dp,
+                                  left: 8.dp,
+                                  right: 8.dp,
                                   child: Wrap(
-                                    spacing: 4.w,
-                                    runSpacing: 4.w,
+                                    spacing: 4.dp,
+                                    runSpacing: 4.dp,
                                     children: [
                                       if (product.productSticker != null)
                                         ProductChipWidget(
@@ -179,7 +179,7 @@ class CartProductWidget extends StatelessWidget {
                                 )*/
                               ],
                             ),
-                            SizedBox(width: 8.w),
+                            SizedBox(width: 8.dp),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,7 +191,7 @@ class CartProductWidget extends StatelessWidget {
                                           color: UiConstants.darkBlueColor),
                                       maxLines: 4,
                                       overflow: TextOverflow.ellipsis),
-                                  SizedBox(height: 8.h),
+                                  SizedBox(height: 8.dp),
                                   if (product.stockCount == 0)
                                     Padding(
                                       padding: getMarginOrPadding(bottom: 4),
@@ -212,7 +212,7 @@ class CartProductWidget extends StatelessWidget {
                                               child: CircleAvatar(
                                                 backgroundColor:
                                                     UiConstants.pink2Color,
-                                                radius: 12.w,
+                                                radius: 12.dp,
                                                 child: Padding(
                                                   padding:
                                                       getMarginOrPadding(all: 4),
@@ -275,7 +275,7 @@ class CartProductWidget extends StatelessWidget {
                                         children: [
                                           Icon(Icons.check_rounded,
                                               color: UiConstants.greenColor),
-                                          SizedBox(width: 4.w),
+                                          SizedBox(width: 4.dp),
                                           Text(
                                             'В наличии ${product.stockCount} шт.',
                                             style:
@@ -293,7 +293,7 @@ class CartProductWidget extends StatelessWidget {
                         ),
                         if (product.stockCount == 0)
                           Container(
-                            height: 104.w,
+                            height: 104.dp,
                             color: UiConstants.whiteColor.withOpacity(.5),
                           ),
                       ],

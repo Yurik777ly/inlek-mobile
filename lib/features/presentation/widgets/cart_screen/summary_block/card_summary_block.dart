@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
@@ -66,7 +67,7 @@ class CardSummaryBlock extends StatelessWidget {
                       cartBloc.add(ChangePromocodeFieldEvent()),
                 ),
               if (state.selectedPromoCodes.isNotEmpty && canUsePromoCodes)
-                SizedBox(height: 24.h),
+                SizedBox(height: 24.dp),
               // список промокодов
               if (canUsePromoCodes)
                 ListView.separated(
@@ -81,9 +82,10 @@ class CardSummaryBlock extends StatelessWidget {
                                   context, promo),
                           promocodeEntity: promo);
                     },
-                    separatorBuilder: (context, index) => SizedBox(height: 4.h),
+                    separatorBuilder: (context, index) =>
+                        SizedBox(height: 4.dp),
                     itemCount: state.selectedPromoCodes.length),
-              if (canUsePromoCodes) SizedBox(height: 24.h),
+              if (canUsePromoCodes) SizedBox(height: 24.dp),
               SummaryPricesBlock(
                   screenContext: screenContext, products: products),
             ],

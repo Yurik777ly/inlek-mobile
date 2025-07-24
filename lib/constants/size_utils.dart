@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 
 EdgeInsets getMarginOrPadding({
   double? all,
@@ -9,10 +9,10 @@ EdgeInsets getMarginOrPadding({
   double? bottom,
 }) {
   if (all != null) {
-    left = all.w;
-    top = all.w;
-    right = all.w;
-    bottom = all.w;
+    left = all.dp;
+    top = all.dp;
+    right = all.dp;
+    bottom = all.dp;
     return EdgeInsets.only(
       left: left,
       top: top,
@@ -21,9 +21,9 @@ EdgeInsets getMarginOrPadding({
     );
   }
   return EdgeInsets.only(
-    left: left?.w ?? 0,
-    top: top?.h ?? 0,
-    right: right?.w ?? 0,
-    bottom: bottom?.h ?? 0,
+    left: left?.dp ?? 0,
+    top: top?.dp ?? 0,
+    right: right?.dp ?? 0,
+    bottom: bottom?.dp ?? 0,
   );
 }
