@@ -13,14 +13,12 @@ import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/route_observer/route_observer_bloc.dart';
-import 'package:inlek/features/presentation/bloc/search_screen/search_screen_bloc.dart';
 import 'package:inlek/features/presentation/pages/catalog/products/product_screen.dart';
 import 'package:inlek/features/presentation/pages/main/banner_screen.dart';
 import 'package:inlek/features/presentation/pages/profile/articles/article_screen.dart';
 import 'package:inlek/features/presentation/pages/profile/news/news_internal_screen.dart';
 import 'package:inlek/features/presentation/pages/profile/sales/sale_screen.dart';
 import 'package:inlek/features/presentation/widgets/bottom_navigation_bar_tile.dart';
-import 'package:inlek/features/presentation/widgets/search_screen/search_screen.dart';
 import 'package:inlek/locator_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -224,11 +222,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   courierZoneManager: sl(),
                 )..add(InitEvent())),
         BlocProvider(
-          create: (context) => SearchScreenBloc(
-              searchProductsV2UC: sl(), sharedPreferences: sl())
-            ..add(LoadDataEvent()),
-        ),
-        BlocProvider(
           create: (context) => RouteObserverBloc(),
         ),
       ],
@@ -241,122 +234,98 @@ class _HomeScreenState extends State<HomeScreen> {
               final HomeScreenBloc bloc = context.read<HomeScreenBloc>();
               final int selectedIndex = bloc.selectedPageIndex;
 
-              return BlocBuilder<SearchScreenBloc, SearchScreenState>(
-                builder: (searchContext, searchState) {
-                  //final SearchScreenBloc searchBloc =
-                  //    context.read<SearchScreenBloc>();
-
-                  return WillPopScope(
-                    onWillPop: () async {
-                      if (selectedIndex == 0) {
-                        SystemChannels.platform
-                            .invokeMethod('SystemNavigator.pop');
-                      } else {
-                        final isFirstRouteInCurrentTab = !await bloc
-                            .navigatorKeys[selectedIndex].currentState!
-                            .maybePop();
-                        if (isFirstRouteInCurrentTab) {
-                          bloc.add(ChangePageEvent(0));
-                          return false;
-                        }
-                      }
+              return WillPopScope(
+                onWillPop: () async {
+                  if (selectedIndex == 0) {
+                    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                  } else {
+                    final isFirstRouteInCurrentTab = !await bloc
+                        .navigatorKeys[selectedIndex].currentState!
+                        .maybePop();
+                    if (isFirstRouteInCurrentTab) {
+                      bloc.add(ChangePageEvent(0));
                       return false;
-                    },
-                    child: Scaffold(
-                      appBar: AppBar(
-                          toolbarHeight: 0,
-                          backgroundColor: UiConstants.whiteColor,
-                          surfaceTintColor: Colors.transparent),
-                      body: SafeArea(
-                        child: Stack(
-                          alignment: Alignment.bottomCenter,
+                    }
+                  }
+                  return false;
+                },
+                child: Scaffold(
+                  appBar: AppBar(
+                      toolbarHeight: 0,
+                      backgroundColor: UiConstants.whiteColor,
+                      surfaceTintColor: Colors.transparent),
+                  body: SafeArea(
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        Column(
                           children: [
-                            Column(
-                              children: [
-                                Expanded(
-                                  child: PageStorage(
-                                    bucket: bucket,
-                                    child: IndexedStack(
-                                      index: selectedIndex,
-                                      children: bloc.screens.map((screen) {
-                                        final int screenIndex =
-                                            bloc.screens.indexOf(screen);
-                                        return Navigator(
-                                          key: bloc.navigatorKeys[screenIndex],
-                                          observers: [
-                                            AppRouteObserver(observerBloc)
-                                          ],
-                                          onGenerateRoute: (settings) {
-                                            return MaterialPageRoute(
-                                                builder: (context) => screen);
-                                          },
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ),
+                            Expanded(
+                              child: PageStorage(
+                                bucket: bucket,
+                                child: IndexedStack(
+                                  index: selectedIndex,
+                                  children: bloc.screens.map((screen) {
+                                    final int screenIndex =
+                                        bloc.screens.indexOf(screen);
+                                    return Navigator(
+                                      key: bloc.navigatorKeys[screenIndex],
+                                      observers: [
+                                        AppRouteObserver(observerBloc)
+                                      ],
+                                      onGenerateRoute: (settings) {
+                                        return MaterialPageRoute(
+                                            builder: (context) => screen);
+                                      },
+                                    );
+                                  }).toList(),
                                 ),
-                              ],
+                              ),
                             ),
-                            if (searchState.isExpanded)
-                              Positioned(
-                                top: 60.dp,
-                                child: SearchScreen(
-                                  homeContext: context,
-                                  onRedirect: () async => FocusScope.of(bloc
-                                          .navigatorKeys[bloc.selectedPageIndex]
-                                          .currentContext!)
-                                      .requestFocus(
-                                    FocusNode(),
-                                  ),
-                                ),
-                              ),
-                            if (!searchState.isExpanded)
-                              Positioned(
-                                child: Container(
-                                  height: 65.dp,
-                                  margin: getMarginOrPadding(
-                                      left: 20, right: 20, bottom: 8),
-                                  padding: getMarginOrPadding(all: 8),
-                                  decoration: BoxDecoration(
-                                    color: UiConstants.whiteColor,
-                                    borderRadius: BorderRadius.circular(16.r),
-                                  ),
-                                  child: BlocBuilder<CartScreenBloc,
-                                      CartScreenState>(
-                                    builder: (context, state) {
-                                      return Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: List.generate(
-                                          bloc.screens.length,
-                                          (index) => BottomNavigationBarTile(
-                                              icon: bloc.iconsPaths[index],
-                                              title: bloc.iconsNames[index],
-                                              countChatMessage: index == 2
-                                                  ? (context
-                                                              .read<
-                                                                  CartScreenBloc>()
-                                                              .state
-                                                              .cartData
-                                                              ?.products ??
-                                                          [])
-                                                      .length
-                                                  : null,
-                                              onTap: () => bloc
-                                                  .add(ChangePageEvent(index)),
-                                              isActive: selectedIndex == index),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
                           ],
                         ),
-                      ),
+                        Positioned(
+                          child: Container(
+                            height: 65.dp,
+                            margin: getMarginOrPadding(
+                                left: 20, right: 20, bottom: 8),
+                            padding: getMarginOrPadding(all: 8),
+                            decoration: BoxDecoration(
+                              color: UiConstants.whiteColor,
+                              borderRadius: BorderRadius.circular(16.r),
+                            ),
+                            child: BlocBuilder<CartScreenBloc, CartScreenState>(
+                              builder: (context, state) {
+                                return Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: List.generate(
+                                    bloc.screens.length,
+                                    (index) => BottomNavigationBarTile(
+                                        icon: bloc.iconsPaths[index],
+                                        title: bloc.iconsNames[index],
+                                        countChatMessage: index == 2
+                                            ? (context
+                                                        .read<CartScreenBloc>()
+                                                        .state
+                                                        .cartData
+                                                        ?.products ??
+                                                    [])
+                                                .length
+                                            : null,
+                                        onTap: () =>
+                                            bloc.add(ChangePageEvent(index)),
+                                        isActive: selectedIndex == index),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                },
+                  ),
+                ),
               );
             },
           );

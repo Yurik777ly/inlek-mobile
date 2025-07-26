@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/extensions.dart';
@@ -8,11 +8,8 @@ import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/core/routes.dart';
-import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
-import 'package:inlek/features/presentation/bloc/search_screen/search_screen_bloc.dart';
-import 'package:inlek/features/presentation/pages/catalog/products/products_screen.dart';
+import 'package:inlek/features/presentation/pages/search/search_screen_page.dart';
 import 'package:inlek/features/presentation/pages/starts/select_region_screen.dart';
-import 'package:inlek/features/presentation/widgets/app_text_field_widget.dart';
 import 'package:inlek/features/presentation/widgets/filter_button.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -34,116 +31,103 @@ class SearchProductAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SearchScreenBloc searchBloc = context.read<SearchScreenBloc>();
-    final homeBloc = context.read<HomeScreenBloc>();
-    return BlocBuilder<SearchScreenBloc, SearchScreenState>(
-      bloc: searchBloc,
-      builder: (context, state) {
-        return Container(
-          color: UiConstants.whiteColor,
-          padding: getMarginOrPadding(top: 8, bottom: 8, right: 20, left: 20),
-          child: Column(
+    return Container(
+      color: UiConstants.whiteColor,
+      padding: getMarginOrPadding(top: 8, bottom: 8, right: 20, left: 20),
+      child: Column(
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  if (showLocationChip && !state.isExpanded)
-                    Skeleton.replace(
-                      child: GestureDetector(
-                        onTap: () {
-                          FocusScope.of(context).unfocus();
-                          Navigator.of(context, rootNavigator: true).push(
+              if (showLocationChip)
+                Skeleton.replace(
+                  child: GestureDetector(
+                    onTap: () {
+                      FocusScope.of(context).unfocus();
+                      Navigator.of(context, rootNavigator: true).push(
+                        Routes.createRoute(
+                          const SelectRegionScreen(
+                              selectRegionScreenType:
+                                  SelectRegionScreenType.main),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: getMarginOrPadding(right: 8),
+                      child: SvgPicture.asset(Paths.locationIconPath,
+                          width: 24.dp, height: 24.dp),
+                    ),
+                  ),
+                ),
+              if (showBack)
+                Padding(
+                  padding: getMarginOrPadding(right: 10),
+                  child: GestureDetector(
+                    onTap: onTapBack ?? () => Navigator.pop(context),
+                    child: SvgPicture.asset(Paths.arrowBackIconPath,
+                        color: UiConstants.darkBlue2Color.withOpacity(.6),
+                        width: 24.dp,
+                        height: 24.dp),
+                  ),
+                ),
+              Expanded(
+                child: Skeleton.ignorePointer(
+                  child: Skeleton.shade(
+                    child: GestureDetector(
+                      onTap: () {
+                        // Если это не экран поиска, то переходим на него
+                        if (ModalRoute.of(context)?.settings.name !=
+                            Routes.searchScreen) {
+                          Navigator.push(
+                            context,
                             Routes.createRoute(
-                              const SelectRegionScreen(
-                                  selectRegionScreenType:
-                                      SelectRegionScreenType.main),
+                              const SearchScreenPage(),
+                              settings:
+                                  RouteSettings(name: Routes.searchScreen),
                             ),
                           );
-                        },
-                        child: Padding(
-                          padding: getMarginOrPadding(right: 8),
-                          child: SvgPicture.asset(Paths.locationIconPath,
-                              width: 24.dp, height: 24.dp),
+                        }
+                      },
+                      child: Container(
+                        padding: getMarginOrPadding(
+                            left: 16, right: 16, top: 12, bottom: 12),
+                        decoration: BoxDecoration(
+                          color: UiConstants.white2Color,
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
-                      ),
-                    ),
-                  if (showBack)
-                    Padding(
-                      padding: getMarginOrPadding(right: 10),
-                      child: GestureDetector(
-                        onTap: onTapBack ?? () => Navigator.pop(context),
-                        child: SvgPicture.asset(Paths.arrowBackIconPath,
-                            color: UiConstants.darkBlue2Color.withOpacity(.6),
-                            width: 24.dp,
-                            height: 24.dp),
-                      ),
-                    ),
-                  Expanded(
-                    child: Skeleton.ignorePointer(
-                      child: Skeleton.shade(
-                        child: AppTextFieldWidget(
-                          //focusNode: searchBloc.focusNode,
-                          hintText: 'Искать препараты',
-                          controller: searchBloc.searchController,
-                          fillColor: UiConstants.white2Color,
-                          hintMaxLines: 1,
-                          textInputAction: TextInputAction.search,
-                          prefixWidget: Skeleton.ignore(
-                            child: SvgPicture.asset(Paths.searchIconPath),
-                          ),
-                          suffixWidget: state.isExpanded
-                              ? Skeleton.ignore(
-                                  child: GestureDetector(
-                                    onTap: () =>
-                                        searchBloc.add(ClearQueryEvent()),
-                                    child:
-                                        SvgPicture.asset(Paths.closeIconPath),
-                                  ),
-                                )
-                              : null,
-                          onChangedField: (p0) =>
-                              searchBloc.add(ChangeQueryEvent(p0)),
-                          onFieldSubmitted: (p0) {
-                            searchBloc.add(ToggleExpandCollapseEvent(false));
-                            homeBloc.navigatorKeys[homeBloc.selectedPageIndex]
-                                .currentState
-                                ?.push(
-                              Routes.createRoute(
-                                const ProductsScreen(),
-                                settings: RouteSettings(
-                                  name: Routes.productsScreen,
-                                  arguments: {
-                                    'title': p0,
-                                    'products':
-                                        state.searchResult?.products ?? []
-                                  },
-                                ),
+                        child: Row(
+                          children: [
+                            Skeleton.ignore(
+                              child: SvgPicture.asset(Paths.searchIconPath),
+                            ),
+                            SizedBox(width: 12.dp),
+                            Text(
+                              'Искать препараты',
+                              style: UiConstants.textStyle3.copyWith(
+                                color:
+                                    UiConstants.darkBlue2Color.withOpacity(.6),
                               ),
-                            );
-                          },
-                          onTapOutside: () {},
-                          onTap: () =>
-                              searchBloc.add(ToggleExpandCollapseEvent(true)),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                  if (showFilters)
-                    Padding(
-                      padding: getMarginOrPadding(left: 8),
-                      child: Skeleton.ignorePointer(
-                        child: FilterButton(
-                          onTap: () =>
-                              BottomSheetManager.showProductsFilterSheet(
-                                  screenContext!),
-                        ),
-                      ),
-                    )
-                ],
+                ),
               ),
+              if (showFilters)
+                Padding(
+                  padding: getMarginOrPadding(left: 8),
+                  child: Skeleton.ignorePointer(
+                    child: FilterButton(
+                      onTap: () => BottomSheetManager.showProductsFilterSheet(
+                          screenContext!),
+                    ),
+                  ),
+                )
             ],
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }

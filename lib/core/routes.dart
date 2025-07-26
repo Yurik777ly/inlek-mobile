@@ -30,6 +30,7 @@ class Routes {
   static const String howPlaceOrderScreen = '/how_place_order_screen';
   static const String infoAboutOrderScreen = '/info_about_order_screen';
   static const String selectRegionScreen = '/select_region_screen';
+  static const String searchScreen = '/search_screen';
 
   static List<String> get allRoutes => [
         splashScreen,
@@ -60,7 +61,8 @@ class Routes {
         aboutUsScreen,
         howPlaceOrderScreen,
         infoAboutOrderScreen,
-        selectRegionScreen
+        selectRegionScreen,
+        searchScreen
       ];
 
   // Метод для создания анимированного перехода

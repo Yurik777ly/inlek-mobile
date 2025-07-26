@@ -28,6 +28,7 @@ import 'package:inlek/features/presentation/pages/profile/personal_data_screen.d
 import 'package:inlek/features/presentation/pages/profile/profile_screen.dart';
 import 'package:inlek/features/presentation/pages/profile/sales/sale_screen.dart';
 import 'package:inlek/features/presentation/pages/profile/sales/sales_screen.dart';
+import 'package:inlek/features/presentation/pages/search/search_screen_page.dart';
 import 'package:inlek/features/presentation/pages/starts/account_not_found_screen.dart';
 import 'package:inlek/features/presentation/pages/starts/code_screen.dart';
 import 'package:inlek/features/presentation/pages/starts/login_screen.dart';
@@ -116,6 +117,7 @@ class MyApp extends StatelessWidget {
                   const InfoAboutOrderScreen(),
               Routes.selectRegionScreen: (context) =>
                   const SelectRegionScreen(),
+              Routes.searchScreen: (context) => const SearchScreenPage(),
             },
             initialRoute: Routes.splashScreen,
             navigatorObservers: [routeObserver],
