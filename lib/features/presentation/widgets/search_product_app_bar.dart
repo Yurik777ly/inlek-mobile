@@ -8,7 +8,9 @@ import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/core/routes.dart';
+import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/search_screen/search_screen_bloc.dart';
+import 'package:inlek/features/presentation/pages/catalog/products/products_screen.dart';
 import 'package:inlek/features/presentation/pages/starts/select_region_screen.dart';
 import 'package:inlek/features/presentation/widgets/app_text_field_widget.dart';
 import 'package:inlek/features/presentation/widgets/filter_button.dart';
@@ -33,6 +35,7 @@ class SearchProductAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SearchScreenBloc searchBloc = context.read<SearchScreenBloc>();
+    final homeBloc = context.read<HomeScreenBloc>();
     return BlocBuilder<SearchScreenBloc, SearchScreenState>(
       bloc: searchBloc,
       builder: (context, state) {
@@ -83,6 +86,7 @@ class SearchProductAppBar extends StatelessWidget {
                           controller: searchBloc.searchController,
                           fillColor: UiConstants.white2Color,
                           hintMaxLines: 1,
+                          textInputAction: TextInputAction.search,
                           prefixWidget: Skeleton.ignore(
                             child: SvgPicture.asset(Paths.searchIconPath),
                           ),
@@ -98,6 +102,24 @@ class SearchProductAppBar extends StatelessWidget {
                               : null,
                           onChangedField: (p0) =>
                               searchBloc.add(ChangeQueryEvent(p0)),
+                          onFieldSubmitted: (p0) {
+                            searchBloc.add(ToggleExpandCollapseEvent(false));
+                            homeBloc.navigatorKeys[homeBloc.selectedPageIndex]
+                                .currentState
+                                ?.push(
+                              Routes.createRoute(
+                                const ProductsScreen(),
+                                settings: RouteSettings(
+                                  name: Routes.productsScreen,
+                                  arguments: {
+                                    'title': p0,
+                                    'products':
+                                        state.searchResult?.products ?? []
+                                  },
+                                ),
+                              ),
+                            );
+                          },
                           onTapOutside: () {},
                           onTap: () =>
                               searchBloc.add(ToggleExpandCollapseEvent(true)),

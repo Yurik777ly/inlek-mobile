@@ -9,7 +9,7 @@ class CartScreenState extends Equatable {
   final Set<int> selectedProductIds;
   final bool isAllProductsChecked;
   final List<PharmacyEntity> pharmacies;
-  final PharmacyEntity? selectedPharmacy;
+  final CartPharmacyEntity? selectedPharmacy;
   final bool isShowPharmaciesWorkingNow;
   final bool isShowPharmaciesProductsInStock;
   final List<PromocodeEntity> selectedPromoCodes;
@@ -46,7 +46,7 @@ class CartScreenState extends Equatable {
     Set<int>? selectedProductIds,
     bool? isAllProductsChecked,
     List<PharmacyEntity>? pharmacies,
-    PharmacyEntity? selectedPharmacy,
+    CartPharmacyEntity? selectedPharmacy,
     bool? isShowPharmaciesWorkingNow,
     bool? isShowPharmaciesProductsInStock,
     List<PromocodeEntity>? selectedPromoCodes,

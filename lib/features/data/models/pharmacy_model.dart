@@ -5,13 +5,9 @@ import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 
 class PharmacyModel extends PharmacyEntity {
   const PharmacyModel({
-    super.pharmacyId,
     super.pageTitle,
     super.alias,
-    super.address,
-    super.coordinates,
     super.image,
-    super.schedule,
     super.price,
     super.priceOld,
     super.productId,
@@ -19,10 +15,14 @@ class PharmacyModel extends PharmacyEntity {
     super.requiredQuantity,
     super.availability,
     super.productName,
-    super.pharmacyName,
     super.expirationDate,
     super.pharmacyDelivery,
     super.products,
+    required super.pharmacyId,
+    required super.pharmacyName,
+    required super.address,
+    required super.coordinates,
+    required super.schedule,
   });
 
   factory PharmacyModel.fromRawJson(String str) =>
@@ -45,7 +45,7 @@ class PharmacyModel extends PharmacyEntity {
         requiredQuantity: json["required_quantity"],
         availability: json["availability"],
         productName: json["product_name"],
-        pharmacyName: json["pharmacy_name"],
+        pharmacyName: json["pharmacy_name"] ?? json["pagetitle"],
         expirationDate: json["expiration_date"],
         pharmacyDelivery: json["pharmacy_delivery"],
         products: json["products"] != null
@@ -55,6 +55,7 @@ class PharmacyModel extends PharmacyEntity {
             : [],
       );
 
+  @override
   Map<String, dynamic> toJson() => {
         "pharmacy_id": pharmacyId,
         "pagetitle": pageTitle,

@@ -86,7 +86,10 @@ class SearchScreen extends StatelessWidget {
         PopularityRequestsWidget(
           title: 'История поиска',
           popularityRequests: state.historyRequests,
-          onTap: (value) => searchBloc.add(ChangeQueryEvent(value)),
+          onTap: (value) {
+            searchBloc.add(ChangeQueryEvent(value));
+            searchBloc.searchController.text = value;
+          },
           onTapDelete: (request) =>
               searchBloc.add(DeleteHistoryRequestsEvent([request])),
           clearHistory: () =>

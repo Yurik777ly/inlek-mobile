@@ -1,16 +1,18 @@
-part of 'pharmacies_screen_bloc.dart';
+part of 'pharmacies_cart_screen_bloc.dart';
 
-class PharmaciesScreenState extends Equatable {
+class PharmaciesCartScreenState extends Equatable {
   final bool isLoading;
   final bool hasError;
-  final List<PharmacyEntity> pharmacies;
-  final List<PharmacyEntity> filteredPharmacies;
+  final List<CartPharmacyEntity> pharmacies;
+  final List<CartPharmacyEntity> filteredPharmacies;
   final int selectorIndex;
   final TypeReceiving pharmacySortType;
   final String query;
   final List<CustomMapObject> mapObjects;
+  final bool showWorkingNowOnly;
+  final bool showWithAllProductsOnly;
 
-  const PharmaciesScreenState({
+  const PharmaciesCartScreenState({
     this.isLoading = true,
     this.hasError = false,
     this.pharmacies = const [],
@@ -19,19 +21,23 @@ class PharmaciesScreenState extends Equatable {
     this.pharmacySortType = TypeReceiving.all,
     this.query = '',
     this.mapObjects = const [],
+    this.showWorkingNowOnly = false,
+    this.showWithAllProductsOnly = false,
   });
 
-  PharmaciesScreenState copyWith({
+  PharmaciesCartScreenState copyWith({
     bool? isLoading,
     bool? hasError,
-    List<PharmacyEntity>? pharmacies,
-    List<PharmacyEntity>? filteredPharmacies,
+    List<CartPharmacyEntity>? pharmacies,
+    List<CartPharmacyEntity>? filteredPharmacies,
     int? selectorIndex,
     TypeReceiving? pharmacySortType,
     String? query,
     List<CustomMapObject>? mapObjects,
+    bool? showWorkingNowOnly,
+    bool? showWithAllProductsOnly,
   }) {
-    return PharmaciesScreenState(
+    return PharmaciesCartScreenState(
       isLoading: isLoading ?? this.isLoading,
       hasError: hasError ?? this.hasError,
       pharmacies: pharmacies ?? this.pharmacies,
@@ -40,6 +46,9 @@ class PharmaciesScreenState extends Equatable {
       pharmacySortType: pharmacySortType ?? this.pharmacySortType,
       query: query ?? this.query,
       mapObjects: mapObjects ?? this.mapObjects,
+      showWorkingNowOnly: showWorkingNowOnly ?? this.showWorkingNowOnly,
+      showWithAllProductsOnly:
+          showWithAllProductsOnly ?? this.showWithAllProductsOnly,
     );
   }
 
@@ -53,5 +62,7 @@ class PharmaciesScreenState extends Equatable {
         pharmacySortType,
         query,
         mapObjects,
+        showWorkingNowOnly,
+        showWithAllProductsOnly,
       ];
 }

@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
-import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
+import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/app_button_widget.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/pharmacy_available_products_chip.dart';
@@ -17,38 +17,20 @@ class CartPharmacyWidget extends StatelessWidget {
     this.screenContext,
   });
 
-  final PharmacyEntity pharmacy;
+  final CartPharmacyEntity pharmacy;
 
   final Function()? onButtonTap;
   final BuildContext? screenContext;
 
   @override
   Widget build(BuildContext context) {
-    CartScreenBloc? cartBloc = screenContext?.read<CartScreenBloc>();
+    //CartScreenBloc? cartBloc = screenContext?.read<CartScreenBloc>();
     return BlocBuilder<CartScreenBloc, CartScreenState>(
       bloc: screenContext?.read<CartScreenBloc>(),
       buildWhen: (previous, current) => screenContext == null,
       builder: (context, state) {
-        /*final Set<int> selectedProductIds =
-            cartBloc?.state.selectedProductIds ?? {};
-
-        // Проверяем, что в аптеке есть все выбранные товары
-        final bool allSelectedProductsExist = selectedProductIds.every(
-          (id) => pharmacy.products.any((product) => product.productId == id),
-        );
-
-        // Фильтруем продукты, которые совпадают с выбранными
-        final List<ProductEntity> filteredProducts = pharmacy.products
-            .where((product) => selectedProductIds.contains(product.productId))
-            .toList();*/
-
-        // Проверяем, что у всех этих продуктов availability = 'full'
-        final bool allAvailable = pharmacy.products.every(
-          (product) => product.availability == 'full',
-        );
-
         // Финальный флаг: и все есть, и все full
-        final bool allProductsAvailable = allAvailable;
+        final bool allProductsAvailable = pharmacy.availability == 'full';
 
         //bool allProductsAvailable = state.selectedProductIds.every(
         //    (e) => pharmacy.availableProducts.map((e) => e.id).contains(e));
@@ -62,14 +44,14 @@ class CartPharmacyWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                pharmacy.pageTitle ?? pharmacy.pharmacyName ?? '-',
+                pharmacy.pharmacyName,
                 style: UiConstants.textStyle3.copyWith(
                     color: UiConstants.darkBlueColor,
                     fontWeight: FontWeight.w800),
               ),
               SizedBox(height: 16.dp),
               Text(
-                pharmacy.address ?? '-',
+                pharmacy.address,
                 style: UiConstants.textStyle2
                     .copyWith(color: UiConstants.darkBlueColor),
               ),

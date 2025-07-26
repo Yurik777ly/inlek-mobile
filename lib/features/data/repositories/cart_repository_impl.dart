@@ -2,11 +2,12 @@ import 'package:dartz/dartz.dart';
 import 'package:inlek/core/error/failure.dart';
 import 'package:inlek/core/params/cart_detailed_params.dart';
 import 'package:inlek/core/params/cart_params.dart';
+import 'package:inlek/core/params/cart_pharmacies_param.dart';
 import 'package:inlek/core/platform/error_handler.dart';
 import 'package:inlek/core/platform/network_info.dart';
 import 'package:inlek/features/data/datasources/cart_remote_data_source_impl.dart';
+import 'package:inlek/features/data/models/cart_pharmacies_model.dart';
 import 'package:inlek/features/domain/entities/cart_entity.dart';
-import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/repositories/cart_repository.dart';
 
 class CartRepositoryImpl implements CartRepository {
@@ -50,8 +51,9 @@ class CartRepositoryImpl implements CartRepository {
 
   // 📌 Получение доступных аптек
   @override
-  Future<Either<Failure, List<PharmacyEntity>>> getCartPharmacies() async =>
+  Future<Either<Failure, List<CartPharmacyModel>>> getCartPharmacies(
+          CartPharmaciesParam param) async =>
       await errorHandler.handle(
-        () async => await cartRemoteDataSource.getCartPharmacies(),
+        () async => await cartRemoteDataSource.getCartPharmacies(param),
       );
 }

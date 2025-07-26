@@ -8,10 +8,9 @@ abstract class PharmaciesScreenEvent extends Equatable {
 }
 
 class LoadPharmaciesDataEvent extends PharmaciesScreenEvent {
-  final Set<int>? selectedProductIds;
   final List<PharmacyEntity>? pharmacies;
 
-  const LoadPharmaciesDataEvent({this.selectedProductIds, this.pharmacies});
+  const LoadPharmaciesDataEvent({this.pharmacies});
 }
 
 class ChangeSelectorIndexEvent extends PharmaciesScreenEvent {
@@ -31,24 +30,6 @@ class ChangePharmacySortTypeEvent extends PharmaciesScreenEvent {
 
   @override
   List<Object> get props => [pharmacySortType];
-}
-
-class ToggleShowWorkingNowOnlyEvent extends PharmaciesScreenEvent {
-  final bool value;
-
-  const ToggleShowWorkingNowOnlyEvent(this.value);
-
-  @override
-  List<Object?> get props => [value];
-}
-
-class ToggleShowWithAllProductsOnlyEvent extends PharmaciesScreenEvent {
-  final bool value;
-
-  const ToggleShowWithAllProductsOnlyEvent(this.value);
-
-  @override
-  List<Object?> get props => [value];
 }
 
 class CheckProductAvailableDeliveryEvent extends PharmaciesScreenEvent {}

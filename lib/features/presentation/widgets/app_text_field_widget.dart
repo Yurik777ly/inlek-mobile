@@ -37,6 +37,7 @@ class AppTextFieldWidget extends StatefulWidget {
     this.maxLength,
     this.isShowError = true,
     this.onChangedField,
+    this.onFieldSubmitted,
     this.title,
     this.description,
     this.fillColor,
@@ -77,6 +78,7 @@ class AppTextFieldWidget extends StatefulWidget {
   final int? maxLength;
   final bool isShowError;
   final Function(String)? onChangedField;
+  final Function(String)? onFieldSubmitted;
   final Function()? onTapOutside;
   final String? title;
   final String? description;
@@ -242,6 +244,7 @@ class _GidTextFieldState extends State<AppTextFieldWidget> {
             validator: widget.validator,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             onChanged: widget.onChangedField,
+            onFieldSubmitted: widget.onFieldSubmitted,
             onTapOutside: (event) {
               widget.onTapOutside?.call();
               FocusScope.of(context).requestFocus(FocusNode());

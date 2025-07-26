@@ -48,7 +48,10 @@ class ActionModel extends ActionEntity {
       image960400: action?["image_960_400"],
       goodsIds: action?["goods_ids"],
       actionProducts: products != null
-          ? products.map((e) => ProductModel.fromJson(e)).toList()
+          ? products
+              .where((e) => e['product_charachters'] != null)
+              .map((e) => ProductModel.fromJson(e))
+              .toList()
           : [],
     );
   }

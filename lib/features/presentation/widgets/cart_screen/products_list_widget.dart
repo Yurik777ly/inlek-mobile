@@ -3,7 +3,7 @@ import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
-import 'package:inlek/features/domain/entities/product_entity.dart';
+import 'package:inlek/features/domain/entities/base_product_entity.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/cart_product_widget.dart';
 
 class ProductsListWidget extends StatelessWidget {
@@ -18,7 +18,7 @@ class ProductsListWidget extends StatelessWidget {
 
   final String? title;
   final String? subtitle;
-  final List<ProductEntity> products;
+  final List<BaseProductEntity> products;
   final BuildContext? screenContext;
   final ProductsListScreenType productsListScreenType;
 

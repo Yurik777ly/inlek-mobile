@@ -79,7 +79,7 @@ class ChangePaymentTypeEvent extends CartScreenEvent {
 }
 
 class SelectPharmacy extends CartScreenEvent {
-  final PharmacyEntity pharmacy;
+  final CartPharmacyEntity pharmacy;
   const SelectPharmacy(this.pharmacy);
 }
 

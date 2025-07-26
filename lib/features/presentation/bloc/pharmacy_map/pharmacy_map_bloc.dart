@@ -6,7 +6,9 @@ import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/core/models/custom_marker_model.dart';
+import 'package:inlek/features/data/models/cart_pharmacies_model.dart';
 import 'package:inlek/features/data/models/pharmacy_model.dart';
+import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
@@ -101,7 +103,7 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
                 .firstWhereOrNull((e) =>
                     e.mapObject.mapId.value.toString() == point.mapId.value)
                 ?.data;
-            PharmacyEntity pharmacy = PharmacyModel.fromJson(dataMap!);
+            CartPharmacyEntity pharmacy = CartPharmacyModel.fromJson(dataMap!);
             BottomSheetManager.showPharmacySheet(screenContext!, pharmacy);
           } else {
             add(SelectMarkerEvent(markerId: point.mapId.value));

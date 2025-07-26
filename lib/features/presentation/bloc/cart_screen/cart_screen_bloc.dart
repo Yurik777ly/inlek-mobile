@@ -15,8 +15,9 @@ import 'package:inlek/core/params/cart_detailed_params.dart';
 import 'package:inlek/core/params/cart_params.dart';
 import 'package:inlek/core/params/order_param.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
-import 'package:inlek/features/data/models/pharmacy_model.dart';
+import 'package:inlek/features/data/models/cart_pharmacies_model.dart';
 import 'package:inlek/features/domain/entities/cart_entity.dart';
+import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/domain/usecases/cart/add_cart.dart';
@@ -99,11 +100,12 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
   }
 
   Future<void> _inInit(InitEvent event, Emitter<CartScreenState> emit) async {
-    PharmacyEntity? savedPharmacy;
+    CartPharmacyEntity? savedPharmacy;
     final savedPharmacyJson =
         sharedPreferences.getString(SharedPreferencesKeys.pharmacy);
     if (savedPharmacyJson != null) {
-      savedPharmacy = PharmacyModel.fromJson(json.decode(savedPharmacyJson));
+      savedPharmacy =
+          CartPharmacyModel.fromJson(json.decode(savedPharmacyJson));
 
       emit(state.copyWith(selectedPharmacy: savedPharmacy));
     }
@@ -385,7 +387,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         ? {}
         : state.cartData!.products
             .where((e) => e.availability != 'absent')
-            .map((e) => e.productId!)
+            .map((e) => e.productId)
             .toSet();
     emit(state.copyWith(
         selectedProductIds: selectedProductIds,
@@ -420,7 +422,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     if (product != null) {
       add(DeleteCartEvent(
           context: event.context,
-          productId: product.productId!,
+          productId: product.productId,
           count: product.quantity));
     } else {
       //add(LoadCartDataEvent());
@@ -490,7 +492,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       SelectPharmacy event, Emitter<CartScreenState> emit) async {
     // сохраняем объект аптеки в prefs
     await sharedPreferences.setString(SharedPreferencesKeys.pharmacy,
-        json.encode((event.pharmacy as PharmacyModel).toJson()));
+        json.encode((event.pharmacy as CartPharmacyModel).toJson()));
 
     // Create a new list of products with isLoading set to true
     final updatedProducts = state.cartData?.products

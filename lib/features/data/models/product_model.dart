@@ -5,16 +5,16 @@ import 'package:inlek/features/domain/entities/product_entity.dart';
 
 class ProductModel extends ProductEntity {
   const ProductModel({
-    super.productId,
+    required super.productId,
     super.mnn,
     super.mnnLat,
-    super.name,
+    required super.name,
     super.description,
     super.code,
     super.dose,
     super.form,
     super.brand,
-    super.image,
+    required super.image,
     super.recipe,
     super.isRecipe,
     super.isAlcohol,
@@ -92,7 +92,7 @@ class ProductModel extends ProductEntity {
       productId: json["product_id"] ?? json["id"] ?? data['product_id'],
       mnn: json["mnn"],
       mnnLat: json["mnn_lat"],
-      name: json["product_title"],
+      name: json["product_title"] ?? json['pagetitle'],
       description: json["product_description"],
       code: json["code"],
       dose: json["dose"],
@@ -149,6 +149,7 @@ class ProductModel extends ProductEntity {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => {
         "product_id": productId,
         "product_info": {

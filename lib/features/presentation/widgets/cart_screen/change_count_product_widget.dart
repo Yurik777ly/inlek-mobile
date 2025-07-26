@@ -76,7 +76,7 @@ class _AddToCartButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => cartBloc.add(AddCartEvent(productId: product.productId!)),
+      onTap: () => cartBloc.add(AddCartEvent(productId: product.productId)),
       child: Container(
         height: 44.dp,
         padding: getMarginOrPadding(left: 20, right: 20, top: 5.5, bottom: 5.5),
@@ -183,7 +183,7 @@ class CartQuantityChanger extends StatelessWidget {
                   onTap: () => cartBloc.add(
                     DeleteCartEvent(
                       context: screenContext ?? context,
-                      productId: product.productId!,
+                      productId: product.productId,
                     ),
                   ),
                   child: Container(
@@ -207,7 +207,7 @@ class CartQuantityChanger extends StatelessWidget {
                       : () => cartBloc.add(
                             AddCartEvent(
                               context: screenContext ?? context,
-                              productId: product.productId!,
+                              productId: product.productId,
                             ),
                           ),
                   child: Container(
@@ -279,7 +279,7 @@ class ProductQuantityChanger extends StatelessWidget {
                         onTap: () => cartBloc.add(
                           DeleteCartEvent(
                             context: screenContext ?? context,
-                            productId: product.productId!,
+                            productId: product.productId,
                           ),
                         ),
                       ),
@@ -344,7 +344,7 @@ class ProductQuantityChanger extends StatelessWidget {
                               ))
                             : () => cartBloc.add(AddCartEvent(
                                   context: screenContext ?? context,
-                                  productId: product.productId!,
+                                  productId: product.productId,
                                 )),
                       ),
                     ),

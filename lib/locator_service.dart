@@ -78,6 +78,7 @@ import 'package:inlek/features/presentation/bloc/order_screen/order_screen_bloc.
 import 'package:inlek/features/presentation/bloc/orders_screen/orders_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/passwrod_screen/password_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/personal_data_screen/personal_data_screen_bloc.dart';
+import 'package:inlek/features/presentation/bloc/pharmacies_cart_screen/pharmacies_cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/pharmacies_screen/pharmacies_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/product_screen/product_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/products_screen/products_screen_bloc.dart';
@@ -244,7 +245,10 @@ Future<void> init() async {
     ),
   );
   sl.registerFactory(
-    () => PharmaciesScreenBloc(
+    () => PharmaciesScreenBloc(),
+  );
+  sl.registerFactory(
+    () => PharmaciesCartScreenBloc(
       getCartPharmaciesUC: sl<GetCartPharmaciesUC>(),
     ),
   );

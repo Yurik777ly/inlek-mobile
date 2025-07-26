@@ -7,10 +7,10 @@ import 'package:inlek/constants/enums.dart';
 import 'package:inlek/core/error/exception.dart';
 import 'package:inlek/core/params/cart_detailed_params.dart';
 import 'package:inlek/core/params/cart_params.dart';
+import 'package:inlek/core/params/cart_pharmacies_param.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/data/models/cart_model.dart';
-import 'package:inlek/features/data/models/pharmacy_model.dart';
-import 'package:inlek/features/data/models/product_model.dart';
+import 'package:inlek/features/data/models/cart_pharmacies_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class CartRemoteDataSource {
@@ -18,7 +18,7 @@ abstract class CartRemoteDataSource {
   Future<void> addCart(CartParams params);
   Future<void> deleteCart(CartParams params);
   Future<void> clearCart();
-  Future<List<PharmacyModel>> getCartPharmacies();
+  Future<List<CartPharmacyModel>> getCartPharmacies(CartPharmaciesParam param);
 }
 
 class CartRemoteDataSourceImpl implements CartRemoteDataSource {
@@ -178,95 +178,47 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
   }
 
   @override
-  Future<List<PharmacyModel>> getCartPharmacies() async {
+  Future<List<CartPharmacyModel>> getCartPharmacies(
+      CartPharmaciesParam param) async {
     String baseUrl = dotenv.env['BASE_URL']!;
     final String? serverToken =
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
 
-    final uri = Uri.parse('${baseUrl}cart/pharmacies');
+    final uri = Uri.parse('${baseUrl}v2/cart/pharmacies');
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': 'Bearer $serverToken'
     };
 
-    log('GET Request: $uri',
+    log('POST Request: $uri',
         name: 'CartRemoteDataSourceImpl.getCartPharmacies');
     log('Headers: $headers',
         name: 'CartRemoteDataSourceImpl.getCartPharmacies');
+    log('Body: ${param.toJson()}',
+        name: 'CartRemoteDataSourceImpl.getCartPharmacies');
 
     try {
-      final response = await client.get(uri, headers: headers);
+      final response = await client.post(uri,
+          headers: headers, body: json.encode(param.toJson()));
 
       log('Response Status Code: ${response.statusCode}',
           name: 'CartRemoteDataSourceImpl.getCartPharmacies');
+      log('Response Body: ${response.body}',
+          name: 'CartRemoteDataSourceImpl.getCartPharmacies');
 
-      final data = json.decode(response.body);
-      final cartItems = data['data']['cart'] as List<dynamic>;
-
-      // Для хранения уникальных аптек
-      final Map<int, PharmacyModel> pharmaciesMap = {};
-
-      for (var item in cartItems) {
-        final productId = item['product_id'];
-        final quantity = item['required_quantity'];
-
-        final product = ProductModel(
-          productId: productId,
-          requiredQuantity: quantity,
-        );
-
-        final pharmacyList = item['pharmacies'] as List<dynamic>;
-
-        for (var pharmacyJson in pharmacyList) {
-          final pharmacy = PharmacyModel.fromJson(pharmacyJson);
-          final pharmacyId = pharmacy.pharmacyId!;
-
-          if (!pharmaciesMap.containsKey(pharmacyId)) {
-            // Создаем новую аптеку и добавляем продукт
-            pharmaciesMap[pharmacyId] = PharmacyModel(
-              pharmacyId: pharmacy.pharmacyId,
-              pharmacyName: pharmacy.pharmacyName,
-              availability: pharmacy.availability,
-              address: pharmacy.address,
-              price: pharmacy.price,
-              priceOld: pharmacy.priceOld,
-              coordinates: pharmacy.coordinates,
-              pharmacyDelivery: pharmacy.pharmacyDelivery,
-              schedule: pharmacy.schedule,
-              products: [
-                ProductModel(
-                    productId: productId,
-                    requiredQuantity: quantity,
-                    stockCount: pharmacy.stockCount,
-                    availability:
-                        product.requiredQuantity! <= pharmacy.stockCount!
-                            ? 'full'
-                            : 'part',
-                    oldPrice: pharmacy.priceOld,
-                    price: pharmacy.price),
-              ],
-            );
-          } else {
-            // Аптека уже есть, добавим продукт
-            pharmaciesMap[pharmacyId]!.products.add(
-                  ProductModel(
-                      productId: productId,
-                      requiredQuantity: quantity,
-                      stockCount: pharmacy.stockCount,
-                      availability:
-                          product.requiredQuantity! <= pharmacy.stockCount!
-                              ? 'full'
-                              : 'part',
-                      oldPrice: pharmacy.priceOld,
-                      price: pharmacy.price),
-                );
-          }
-        }
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic> pharmaciesJson = data['data'];
+        return pharmaciesJson
+            .map((e) => CartPharmacyModel.fromJson(e))
+            .toList();
+      } else {
+        log('Error: ServerException occurred',
+            name: 'CartRemoteDataSourceImpl.getCartPharmacies',
+            error: response.body);
+        throw ServerException();
       }
-
-      // Вернем список аптек
-      return pharmaciesMap.values.toList();
     } catch (e) {
       log('Error during getCartPharmacies: $e', level: 1000);
       rethrow;

@@ -1,19 +1,17 @@
 import 'package:equatable/equatable.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/features/domain/entities/base_product_entity.dart';
 import 'package:inlek/features/domain/entities/product_prices_entity.dart';
 import 'package:inlek/features/domain/entities/product_totals_entity.dart';
 
-class ProductEntity extends Equatable {
-  final int? productId;
+class ProductEntity extends BaseProductEntity {
   final String? mnn;
   final String? mnnLat;
-  final String? name;
   final String? description;
   final String? code;
   final String? dose;
   final String? form;
   final String? brand;
-  final String? image;
   final String? recipe;
   final bool isRecipe;
   final bool isAlcohol;
@@ -48,16 +46,16 @@ class ProductEntity extends Equatable {
   final ProductTotalsEntity? totals;
 
   const ProductEntity({
-    this.productId,
+    super.productId = 0,
+    super.name = '',
+    super.image = '',
     this.mnn,
     this.mnnLat,
-    this.name,
     this.description,
     this.code,
     this.dose,
     this.form,
     this.brand,
-    this.image,
     this.recipe,
     this.isRecipe = false,
     this.isAlcohol = false,
@@ -77,8 +75,8 @@ class ProductEntity extends Equatable {
     this.productDateRegister,
     this.productTimeRegister,
     this.count,
-    this.availability,
     this.requiredQuantity,
+    this.availability,
     this.pagetitle,
     this.brandProducts,
     this.relatedProducts,
@@ -92,18 +90,17 @@ class ProductEntity extends Equatable {
     this.totals,
   });
 
-  // Метод для копирования объекта с возможностью изменения полей
   ProductEntity copyWith({
     int? productId,
+    String? name,
+    String? image,
     String? mnn,
     String? mnnLat,
-    String? name,
     String? description,
     String? code,
     String? dose,
     String? form,
     String? brand,
-    String? image,
     String? recipe,
     bool? isRecipe,
     bool? isAlcohol,
@@ -139,15 +136,15 @@ class ProductEntity extends Equatable {
   }) {
     return ProductEntity(
       productId: productId ?? this.productId,
+      name: name ?? this.name,
+      image: image ?? this.image,
       mnn: mnn ?? this.mnn,
       mnnLat: mnnLat ?? this.mnnLat,
-      name: name ?? this.name,
       description: description ?? this.description,
       code: code ?? this.code,
       dose: dose ?? this.dose,
       form: form ?? this.form,
       brand: brand ?? this.brand,
-      image: image ?? this.image,
       recipe: recipe ?? this.recipe,
       isRecipe: isRecipe ?? this.isRecipe,
       isAlcohol: isAlcohol ?? this.isAlcohol,
@@ -184,17 +181,16 @@ class ProductEntity extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
-        productId,
+  List<Object?> get props =>
+      super.props +
+      [
         mnn,
         mnnLat,
-        name,
         description,
         code,
         dose,
         form,
         brand,
-        image,
         recipe,
         isRecipe,
         isAlcohol,
@@ -226,7 +222,7 @@ class ProductEntity extends Equatable {
         properties,
         isLoading,
         prices,
-        totals
+        totals,
       ];
 }
 

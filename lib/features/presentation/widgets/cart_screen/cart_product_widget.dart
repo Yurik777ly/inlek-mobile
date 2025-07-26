@@ -34,13 +34,17 @@ class CartProductWidget extends StatelessWidget {
   });
 
   final int index;
-  final ProductEntity product;
+  final dynamic product;
   final ProductsListScreenType productsListScreenType;
   final BuildContext? screenContext;
 
   @override
   Widget build(BuildContext context) {
-    bool isLoadingProduct = product.isLoading;
+    bool isLoadingProduct =
+        product is! ProductEntity ? false : product.isLoading;
+    String name = product is ProductEntity
+        ? product.pagetitle ?? product.name
+        : product.name;
 
     return BlocBuilder<CartScreenBloc, CartScreenState>(
       bloc: screenContext?.read<CartScreenBloc>(),
@@ -74,7 +78,7 @@ class CartProductWidget extends StatelessWidget {
           child: DismissibleTile(
             onDismissed: (_) => bloc.add(
               DeleteCartEvent(
-                  context: context, productId: product.productId!, count: 0),
+                  context: context, productId: product.productId, count: 0),
             ),
             direction: productsListScreenType == ProductsListScreenType.cart
                 ? DismissibleTileDirection.horizontal
@@ -128,7 +132,7 @@ class CartProductWidget extends StatelessWidget {
                                         .contains(product.productId),
                                     onChanged: (isChecked) => bloc.add(
                                       ToggleSelectionEvent(
-                                          isChecked, product.productId!),
+                                          isChecked, product.productId),
                                     ),
                                   ),
                                 ),
@@ -184,9 +188,7 @@ class CartProductWidget extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                      (product.pagetitle ?? product.name)
-                                          .orDash(),
+                                  Text((name as String?).orDash(),
                                       style: UiConstants.textStyle8.copyWith(
                                           color: UiConstants.darkBlueColor),
                                       maxLines: 4,
@@ -197,8 +199,8 @@ class CartProductWidget extends StatelessWidget {
                                       padding: getMarginOrPadding(bottom: 4),
                                       child: OutStockChip(),
                                     )
-                                  else if (product.delivery ==
-                                      TypeReceiving.pickup)
+                                  else if (product.isAlcohol ||
+                                      product.isRecipe)
                                     Padding(
                                       padding: getMarginOrPadding(bottom: 4),
                                       child: Row(
@@ -298,7 +300,8 @@ class CartProductWidget extends StatelessWidget {
                           ),
                       ],
                     ),
-                    if (product.prices?.discountWithoutPromos != 0 &&
+                    if (product is ProductEntity &&
+                        product.prices?.discountWithoutPromos != 0 &&
                         (product.prices?.appliedPromocodes ?? [])
                             .any((e) => state.selectedPromoCodes.contains(e)))
                       Padding(

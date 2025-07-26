@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,8 +15,10 @@ import 'package:inlek/core/courier_zone_manager.dart';
 import 'package:inlek/core/formatters/date_input_formatter.dart';
 import 'package:inlek/core/geocoder_manager.dart';
 import 'package:inlek/core/models/custom_marker_model.dart';
+import 'package:inlek/core/params/cart_pharmacies_param.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
+import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
 import 'package:inlek/features/domain/entities/order_entity.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
@@ -26,6 +27,7 @@ import 'package:inlek/features/presentation/bloc/code_screen/code_screen_bloc.da
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/orders_screen/orders_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/personal_data_screen/personal_data_screen_bloc.dart';
+import 'package:inlek/features/presentation/bloc/pharmacies_cart_screen/pharmacies_cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/pharmacies_screen/pharmacies_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/pharmacy_map/pharmacy_map_bloc.dart';
 import 'package:inlek/features/presentation/bloc/products_screen/products_screen_bloc.dart';
@@ -42,7 +44,7 @@ import 'package:inlek/features/presentation/widgets/cart_screen/pharmacy_availab
 import 'package:inlek/features/presentation/widgets/cart_screen/products_list_widget.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/selector_widget.dart/cubit/selector_cubit.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/selector_widget.dart/selector/selector.dart';
-import 'package:inlek/features/presentation/widgets/cart_screen/summary_block/card_summary_block.dart';
+import 'package:inlek/features/presentation/widgets/cart_screen/summary_block/summary_pharmacy_prices_block.dart';
 import 'package:inlek/features/presentation/widgets/custom_app_bar.dart';
 import 'package:inlek/features/presentation/widgets/custom_bottom_sheet.dart';
 import 'package:inlek/features/presentation/widgets/custom_checkbox.dart';
@@ -1032,6 +1034,7 @@ class BottomSheetManager {
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
+      useRootNavigator: true,
       context: UiConstants.homeContext!,
       builder: (sheetContext) {
         int selectorIndex = 0;
@@ -1052,14 +1055,20 @@ class BottomSheetManager {
                           return MultiBlocProvider(
                             providers: [
                               BlocProvider(
-                                create: (context) => PharmaciesScreenBloc(
+                                create: (context) => PharmaciesCartScreenBloc(
                                     getCartPharmaciesUC: sl(),
                                     context: screenContext)
-                                  ..add(
-                                    LoadPharmaciesDataEvent(
-                                        selectedProductIds:
-                                            cartState.selectedProductIds),
-                                  ),
+                                  ..add(LoadPharmaciesCartDataEvent(
+                                      products: cartState.cartData!.products
+                                          .map(
+                                            (toElement) =>
+                                                CartPharmaciesProductParam(
+                                                    productId:
+                                                        toElement.productId,
+                                                    quantity:
+                                                        toElement.quantity!),
+                                          )
+                                          .toList())),
                               ),
                               BlocProvider(
                                 create: (context) => PharmacyMapBloc(
@@ -1067,8 +1076,8 @@ class BottomSheetManager {
                                     mapScreenType: MapScreenType.cart),
                               ),
                             ],
-                            child: BlocConsumer<PharmaciesScreenBloc,
-                                PharmaciesScreenState>(
+                            child: BlocConsumer<PharmaciesCartScreenBloc,
+                                PharmaciesCartScreenState>(
                               listener: (context, state) async {
                                 await Future.delayed(
                                     Duration(milliseconds: 300));
@@ -1079,16 +1088,7 @@ class BottomSheetManager {
                               },
                               builder: (context, state) {
                                 final pharmaciesBloc =
-                                    context.read<PharmaciesScreenBloc>();
-                                final filteredPharmacies =
-                                    state.filteredPharmacies.where((pharmacy) {
-                                  final selectedIds =
-                                      cartState.selectedProductIds;
-                                  return pharmacy.products.any(
-                                    (product) =>
-                                        selectedIds.contains(product.productId),
-                                  );
-                                }).toList();
+                                    context.read<PharmaciesCartScreenBloc>();
 
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1103,7 +1103,7 @@ class BottomSheetManager {
                                       title: 'Выбор аптеки',
                                       titleStyle: UiConstants.textStyle9,
                                       clickableText:
-                                          '${filteredPharmacies.length} аптек',
+                                          '${state.filteredPharmacies.length} аптек',
                                       child: CustomAppBar(
                                         controller: queryController,
                                         hintText: 'Искать аптеки',
@@ -1114,7 +1114,7 @@ class BottomSheetManager {
                                             showPharmacySort2Sheet(context),
                                         onChangedField: (value) =>
                                             pharmaciesBloc.add(
-                                          ChangePharmacyQueryEvent(value),
+                                          ChangePharmacyCartQueryEvent(value),
                                         ),
                                       ),
                                     ),
@@ -1143,13 +1143,13 @@ class BottomSheetManager {
                                                   itemBuilder: (context,
                                                           index) =>
                                                       CartPharmacyWidget(
-                                                          pharmacy:
-                                                              filteredPharmacies[
-                                                                  index],
+                                                          pharmacy: state
+                                                                  .filteredPharmacies[
+                                                              index],
                                                           onButtonTap: () =>
                                                               showPharmacySheet(
                                                                 screenContext,
-                                                                filteredPharmacies[
+                                                                state.filteredPharmacies[
                                                                     index],
                                                               ),
                                                           screenContext:
@@ -1157,8 +1157,9 @@ class BottomSheetManager {
                                                   separatorBuilder: (context,
                                                           index) =>
                                                       SizedBox(height: 8.dp),
-                                                  itemCount:
-                                                      filteredPharmacies.length)
+                                                  itemCount: state
+                                                      .filteredPharmacies
+                                                      .length)
                                               : Padding(
                                                   padding: getMarginOrPadding(
                                                       bottom: 16),
@@ -1184,10 +1185,11 @@ class BottomSheetManager {
   }
 
   static showPharmacySheet(
-      BuildContext screenContext, PharmacyEntity pharmacy) {
+      BuildContext screenContext, CartPharmacyEntity pharmacy) {
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
+      useRootNavigator: true,
       context: UiConstants.homeContext!,
       builder: (sheetContext) {
         final cartBloc = screenContext.read<CartScreenBloc>();
@@ -1195,42 +1197,13 @@ class BottomSheetManager {
         return BlocBuilder<CartScreenBloc, CartScreenState>(
           bloc: cartBloc,
           builder: (context, state) {
-            final cartProducts = cartBloc.state.cartData!.products;
-
-            // Создаём новый список, не затрагивая оригинальный
-            final updatedCartProducts = cartProducts.map((product) {
-              final match = pharmacy.products.firstWhereOrNull(
-                (p) => p.productId == product.productId,
-              );
-
-              if (match == null) return product;
-
-              final updatedPrices = product.prices?.copyWith(
-                price: match.price,
-                priceOld: match.oldPrice,
-              );
-
-              return product.copyWith(
-                  availability: match.availability,
-                  stockCount: match.stockCount,
-                  price: match.price,
-                  oldPrice: match.oldPrice,
-                  requiredQuantity: match.requiredQuantity,
-                  prices: updatedPrices);
-            }).toList();
-
             // Разделяем по наличию
-            final inStockProducts = <ProductEntity>[];
-            final outOfStockProducts = <ProductEntity>[];
-
-            for (final product in updatedCartProducts) {
-              (product.stockCount != 0 ? inStockProducts : outOfStockProducts)
-                  .add(product);
-            }
-
-            final bool allAvailable = updatedCartProducts.every(
-              (product) => product.availability == 'full',
-            );
+            final inStockProducts = pharmacy.products
+                .where((e) => e.availability == 'full')
+                .toList();
+            final outOfStockProducts = pharmacy.products
+                .where((e) => e.availability == 'part')
+                .toList();
 
             return CustomBottomSheet(
               padding: getMarginOrPadding(left: 20, right: 20, top: 8),
@@ -1241,20 +1214,20 @@ class BottomSheetManager {
                   shrinkWrap: true,
                   children: [
                     Text(
-                      pharmacy.pageTitle ?? pharmacy.pharmacyName ?? '-',
+                      pharmacy.pharmacyName,
                       style: UiConstants.textStyle3
                           .copyWith(color: UiConstants.darkBlueColor),
                     ),
                     SizedBox(height: 16.dp),
                     Text(
-                      pharmacy.address ?? '',
+                      pharmacy.address,
                       style: UiConstants.textStyle2.copyWith(
                         color: UiConstants.darkBlueColor,
                       ),
                     ),
                     SizedBox(height: 16.dp),
                     PharmacyAvailableProductsChip(
-                        allProductsAvailable: allAvailable),
+                        allProductsAvailable: pharmacy.availability == 'full'),
                     SizedBox(height: 32.dp),
                     // список с законченными товарами
                     if (outOfStockProducts.isNotEmpty)
@@ -1279,10 +1252,8 @@ class BottomSheetManager {
                     if ((cartBloc.state.cartData?.products ?? []).isNotEmpty)
                       Padding(
                         padding: getMarginOrPadding(bottom: 16, top: 16),
-                        child: CardSummaryBlock(
-                            screenContext: screenContext,
-                            canUsePromoCodes: false,
-                            products: updatedCartProducts),
+                        child: SummaryPharmacyPricesBlock(
+                            pharmacy: pharmacy, screenContext: screenContext),
                       ),
 
                     AppButtonWidget(
@@ -1693,9 +1664,9 @@ class BottomSheetManager {
     showModalBottomSheet(
       context: UiConstants.homeContext!,
       builder: (sheetContext) {
-        PharmaciesScreenBloc pharmaciesBloc =
-            screenContext.read<PharmaciesScreenBloc>();
-        return BlocBuilder<PharmaciesScreenBloc, PharmaciesScreenState>(
+        PharmaciesCartScreenBloc pharmaciesBloc =
+            screenContext.read<PharmaciesCartScreenBloc>();
+        return BlocBuilder<PharmaciesCartScreenBloc, PharmaciesCartScreenState>(
           bloc: pharmaciesBloc,
           builder: (context, state) {
             return CustomBottomSheet(
