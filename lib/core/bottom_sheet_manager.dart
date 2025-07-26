@@ -943,6 +943,7 @@ class BottomSheetManager {
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
+      useRootNavigator: true,
       context: screenContext,
       builder: (sheetContext) {
         final List<ProductEntity> cartProducts =
@@ -1004,10 +1005,10 @@ class BottomSheetManager {
                   isActive: true,
                   onTap: () {
                     Navigator.pop(sheetContext);
-                    UiConstants.homeContext!
+                    screenContext
                         .read<HomeScreenBloc>()
                         .add(ChangePageEvent(3));
-                    UiConstants.homeContext!
+                    screenContext
                         .read<HomeScreenBloc>()
                         .navigatorKeys[3]
                         .currentState!
