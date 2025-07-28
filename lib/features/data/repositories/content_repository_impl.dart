@@ -6,6 +6,7 @@ import 'package:inlek/features/data/datasources/content_remote_data_source_impl.
 import 'package:inlek/features/domain/entities/action_entity.dart';
 import 'package:inlek/features/domain/entities/article_entity.dart';
 import 'package:inlek/features/domain/entities/banner_entity.dart';
+import 'package:inlek/features/domain/entities/city_entity.dart';
 import 'package:inlek/features/domain/entities/news_entity.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/repositories/content_repository.dart';
@@ -80,8 +81,10 @@ class ContentRepositoryImpl implements ContentRepository {
 
 // 📌 Получение списка городов
   @override
-  Future<Either<Failure, List<String>>> getCities() async =>
+  Future<Either<Failure, List<CityEntity>>> getCities() async =>
       await errorHandler.handle(
-        () async => await contentRemoteDataSource.getCities(),
+        () async => (await contentRemoteDataSource.getCities())
+            .map((e) => e as CityEntity)
+            .toList(),
       );
 }

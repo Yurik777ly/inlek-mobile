@@ -3,6 +3,7 @@ import 'package:inlek/core/error/failure.dart';
 import 'package:inlek/features/domain/entities/action_entity.dart';
 import 'package:inlek/features/domain/entities/article_entity.dart';
 import 'package:inlek/features/domain/entities/banner_entity.dart';
+import 'package:inlek/features/domain/entities/city_entity.dart';
 import 'package:inlek/features/domain/entities/news_entity.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 
@@ -15,5 +16,5 @@ abstract class ContentRepository {
   Future<Either<Failure, ArticleEntity>> getOneArticle(int id);
   Future<Either<Failure, List<BannerEntity>>> getBanners();
   Future<Either<Failure, List<PharmacyEntity>>> getPharmacies(String address);
-  Future<Either<Failure, List<String>>> getCities();
+  Future<Either<Failure, List<CityEntity>>> getCities();
 }

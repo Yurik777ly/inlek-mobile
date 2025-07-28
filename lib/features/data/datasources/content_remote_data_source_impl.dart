@@ -8,6 +8,7 @@ import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/data/models/action_model.dart';
 import 'package:inlek/features/data/models/article_model.dart';
 import 'package:inlek/features/data/models/banner_model.dart';
+import 'package:inlek/features/data/models/city_model.dart';
 import 'package:inlek/features/data/models/news_model.dart';
 import 'package:inlek/features/data/models/pharmacy_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,7 +22,7 @@ abstract class ContentRemoteDataSource {
   Future<ArticleModel> getOneArticle(int id);
   Future<List<BannerModel>> getBanners();
   Future<List<PharmacyModel>> getPharmacies(String address);
-  Future<List<String>> getCities();
+  Future<List<CityModel>> getCities();
 }
 
 class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
@@ -339,7 +340,7 @@ class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
   }
 
   @override
-  Future<List<String>> getCities() async {
+  Future<List<CityModel>> getCities() async {
     String baseUrl = dotenv.env['BASE_URL']!;
     String url = '${baseUrl}cities/';
     final String? serverToken =
@@ -357,23 +358,17 @@ class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
         },
       );
 
-      log('Response ($url): ${response.statusCode} ${response.body}');
+      log('Response ( [36m$url [0m): ${response.statusCode} ${response.body}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
-
         List<dynamic> dataList = data['data'];
-
-        return dataList
-            .where(
-                (e) => e is Map<String, dynamic> && e.containsKey('pagetitle'))
-            .map((e) => e['pagetitle'].toString())
-            .toList();
+        return dataList.map((e) => CityModel.fromJson(e)).toList();
       } else {
         throw ServerException();
       }
     } catch (e) {
-      log('Error during getActions: $e', level: 1000);
+      log('Error during getCities: $e', level: 1000);
       rethrow;
     }
   }
