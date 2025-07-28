@@ -98,6 +98,19 @@ class _SearchScreenPageContentState extends State<_SearchScreenPageContent> {
                                   child: SvgPicture.asset(Paths.closeIconPath),
                                 )
                               : null,
+                          onFieldSubmitted: (p0) => Navigator.push(
+                            context,
+                            Routes.createRoute(
+                              const ProductsScreen(),
+                              settings: RouteSettings(
+                                name: Routes.productsScreen,
+                                arguments: {
+                                  'title': p0,
+                                  'products': state.searchResult?.products ?? []
+                                },
+                              ),
+                            ),
+                          ),
                           onChangedField: (p0) =>
                               searchBloc.add(ChangeQueryEvent(p0)),
                         );
@@ -120,7 +133,7 @@ class _SearchScreenPageContentState extends State<_SearchScreenPageContent> {
                     );
                   }
 
-                  final hasQuery = state.query.isNotEmpty;
+                  final hasQuery = state.query.length >= 3;
                   final products = state.searchResult?.products ?? [];
 
                   if (hasQuery && products.isEmpty) {

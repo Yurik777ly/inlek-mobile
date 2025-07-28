@@ -45,7 +45,7 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
     emit(state.copyWith(query: event.text));
 
     _debounceTimer?.cancel(); // Отмена предыдущего таймера
-    if (event.text.isEmpty) {
+    if (event.text.length < 3) {
       emit(state.copyWith(isLoading: false, searchResult: null));
       return;
     }

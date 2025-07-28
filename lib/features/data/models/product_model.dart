@@ -89,16 +89,18 @@ class ProductModel extends ProductEntity {
     }
 
     return ProductModel(
-      productId: json["product_id"] ?? json["id"] ?? data['product_id'],
+      productId: json["product_id"] ??
+          (json["id"] is String ? int.tryParse(json["id"]) : json["id"]) ??
+          data['product_id'],
       mnn: json["mnn"],
       mnnLat: json["mnn_lat"],
-      name: json["product_title"] ?? json['pagetitle'],
+      name: json["product_title"] ?? json['pagetitle'] ?? json['name'],
       description: json["product_description"],
       code: json["code"],
       dose: json["dose"],
       form: json["form"],
       brand: json["brand"],
-      image: json["image"],
+      image: json["image"] ?? json["image_url_handle"],
       recipe: json["recipe"],
       isRecipe: json["is_recipe"] == "true" ? true : false,
       isAlcohol: json["is_alcohol"] == "yes" ? true : false,
@@ -121,7 +123,7 @@ class ProductModel extends ProductEntity {
           (json["count"] ?? json["stock_count"])?.toString() ?? "0"),
       requiredQuantity: json['required_quantity'],
       availability: data['availability'] ?? json["availability"],
-      pagetitle: json["pagetitle"],
+      pagetitle: json["pagetitle"] ?? json['name'],
       brandProducts: data['brand_products'] != null
           ? (data['brand_products'] as List)
               .map((e) => ProductModel.fromJson(e))

@@ -69,7 +69,7 @@ class _SearchProductsItemState extends State<SearchProductsItem> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: Text(widget.product.pagetitle ?? '-',
+                      child: Text(widget.product.name,
                           style: UiConstants.textStyle8.copyWith(
                             color: UiConstants.darkBlueColor,
                           ),
@@ -95,13 +95,13 @@ class _SearchProductsItemState extends State<SearchProductsItem> {
                       context.read<CartScreenBloc>().add(
                             AddCartEvent(
                                 context: context,
-                                productId: widget.product.productId!),
+                                productId: widget.product.productId),
                           );
                     } else {
                       context.read<CartScreenBloc>().add(
                             DeleteCartEvent(
                                 context: context,
-                                productId: widget.product.productId!,
+                                productId: widget.product.productId,
                                 count: 0),
                           );
                     }

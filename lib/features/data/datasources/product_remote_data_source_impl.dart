@@ -192,11 +192,14 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
   @override
   Future<SearchProductsV2Model?> searchProductsV2(String query) async {
-    String baseUrl = "${dotenv.env['PUBLIC_URL']}api/v1/";
+    //String baseUrl = "${dotenv.env['PUBLIC_URL']}api/v1/";
+
     final String? serverToken =
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
 
-    final uri = Uri.parse('${baseUrl}search?search=$query');
+    //final uri = Uri.parse('${baseUrl}search?search=$query');
+    final uri = Uri.parse(
+        'https://api.rees46.ru/search?shop_id=a46b953ef509cadb85a3692a13dfac&did=KwkHbFxeho&sid=ptXCvgYD4F&type=instant_search&search_query=$query&collapse=true');
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -214,14 +217,15 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(utf8.decode(response.bodyBytes));
-        if (data['data'] is List) {
+        /*if (data['data'] is List) {
           return null;
         } else if (data['data'] is Map<String, dynamic>) {
           Map<String, dynamic> dataMap = data['data'];
 
           return SearchProductsV2Model.fromJson(dataMap);
-        }
-        return null;
+        }*/
+        return SearchProductsV2Model.fromJson(data);
+        //return null;
       } else {
         throw ServerException();
       }
