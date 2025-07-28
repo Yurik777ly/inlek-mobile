@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
@@ -15,7 +14,6 @@ import 'package:inlek/core/params/cart_detailed_params.dart';
 import 'package:inlek/core/params/cart_params.dart';
 import 'package:inlek/core/params/order_param.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
-import 'package:inlek/features/data/models/cart_pharmacies_model.dart';
 import 'package:inlek/features/domain/entities/cart_entity.dart';
 import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
@@ -100,14 +98,10 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
   }
 
   Future<void> _inInit(InitEvent event, Emitter<CartScreenState> emit) async {
-    CartPharmacyEntity? savedPharmacy;
-    final savedPharmacyJson =
-        sharedPreferences.getString(SharedPreferencesKeys.pharmacy);
-    if (savedPharmacyJson != null) {
-      savedPharmacy =
-          CartPharmacyModel.fromJson(json.decode(savedPharmacyJson));
-
-      emit(state.copyWith(selectedPharmacy: savedPharmacy));
+    int? savedPharmacyId =
+        sharedPreferences.getInt(SharedPreferencesKeys.pharmacyId);
+    if (savedPharmacyId != null) {
+      emit(state.copyWith(selectedPharmacyId: savedPharmacyId));
     }
     add(LoadCartDataEvent(isFirstLoading: true));
   }
@@ -121,7 +115,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     final failureOrCart = await getCartUC(
       CartDetailedParams(
           pharmacyId: state.cartType == TypeReceiving.pickup
-              ? state.selectedPharmacy?.pharmacyId
+              ? state.selectedPharmacyId
               : null,
           promocodes:
               state.selectedPromoCodes.map((e) => e.promocode).join('|'),
@@ -282,9 +276,11 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
           productId: event.productId.toString(),
           quantity: newQuantity.toString()));
       result.fold(
-        (_) => _handleCartUpdateError(
-            emit, updatedProducts, product, event.context),
         (_) {
+          _handleCartUpdateError(emit, updatedProducts, product, event.context);
+        },
+        (_) {
+          add(LoadCartDataEvent());
           //if (wasLastProductRemoved) {
           //  add(LoadCartDataEvent()); // Загружаем корзину только если товар был полностью удален
           //}
@@ -343,18 +339,18 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
           (_) => _handleCartUpdateFailure(emit, updatedProducts, event.context,
               'Ошибка добавления товара в корзину'),
           (_) async {
-            if (wasFirstTimeAdded) {
-              // Перезапускаем отложенное обновление корзины
-              _refreshCartTimer?.cancel();
-              _refreshCartTimer = Timer(
-                Duration(seconds: 2),
-                () {
-                  if (!isClosed) {
-                    add(LoadCartDataEvent());
-                  }
-                },
-              );
-            }
+            // if (wasFirstTimeAdded) {
+            // Перезапускаем отложенное обновление корзины
+            _refreshCartTimer?.cancel();
+            _refreshCartTimer = Timer(
+              Duration(seconds: 2),
+              () {
+                if (!isClosed) {
+                  add(LoadCartDataEvent());
+                }
+              },
+            );
+            //}
           },
         );
       },
@@ -491,8 +487,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
   Future _onSelectPharmacy(
       SelectPharmacy event, Emitter<CartScreenState> emit) async {
     // сохраняем объект аптеки в prefs
-    await sharedPreferences.setString(SharedPreferencesKeys.pharmacy,
-        json.encode((event.pharmacy as CartPharmacyModel).toJson()));
+    await sharedPreferences.setInt(
+        SharedPreferencesKeys.pharmacyId, event.pharmacy.pharmacyId);
 
     // Create a new list of products with isLoading set to true
     final updatedProducts = state.cartData?.products
@@ -501,7 +497,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
     // Update the state with the new products list
     emit(state.copyWith(
-      selectedPharmacy: event.pharmacy,
+      selectedPharmacyId: event.pharmacy.pharmacyId,
       cartData: state.cartData?.copyWith(products: updatedProducts),
     ));
 
@@ -568,7 +564,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       params = OrderParam(
           ids: state.selectedProductIds,
           promocodes: state.selectedPromoCodes.map((e) => e.promocode).toList(),
-          pharmacyId: state.selectedPharmacy?.pharmacyId ?? 0,
+          pharmacyId: state.selectedPharmacyId ?? 0,
           delivery: 'self',
           payment: 'cash',
           lastName: fNameController.text,

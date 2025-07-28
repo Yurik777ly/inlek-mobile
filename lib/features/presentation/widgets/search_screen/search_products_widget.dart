@@ -29,7 +29,7 @@ class SearchProductsWidget extends StatelessWidget {
             padding: EdgeInsets.zero,
             itemBuilder: (context, index) => SearchProductsItem(
                   product: products[index],
-                  onProductTap: () => onProductTap(products[index].productId!),
+                  onProductTap: () => onProductTap(products[index].productId),
                 ),
             separatorBuilder: (context, index) => Container(
                   padding: getMarginOrPadding(top: 8, bottom: 8),

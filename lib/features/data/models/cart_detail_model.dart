@@ -1,3 +1,5 @@
+import 'package:inlek/features/data/models/cart_pharmacies_model.dart';
+import 'package:inlek/features/data/models/pharmacy_model.dart';
 import 'package:inlek/features/domain/entities/cart_detail_entity.dart';
 
 class CartDetailModel extends CartDetailEntity {
@@ -23,7 +25,9 @@ class CartDetailModel extends CartDetailEntity {
           ? DateTime.parse(json["cart_updated_at"])
           : null,
       totals: json["totals"],
-      pharmacy: json["pharmacy"],
+      pharmacy: json["pharmacy"] != null
+          ? CartPharmacyModel.fromJson(json["pharmacy"])
+          : null,
     );
   }
 
@@ -34,6 +38,6 @@ class CartDetailModel extends CartDetailEntity {
         "cart_created_at": cartCreatedAt?.toIso8601String(),
         "cart_updated_at": cartUpdatedAt?.toIso8601String(),
         "totals": totals,
-        "pharmacy": pharmacy,
+        "pharmacy": (pharmacy as PharmacyModel?)?.toJson(),
       };
 }

@@ -9,7 +9,7 @@ class CartScreenState extends Equatable {
   final Set<int> selectedProductIds;
   final bool isAllProductsChecked;
   final List<PharmacyEntity> pharmacies;
-  final CartPharmacyEntity? selectedPharmacy;
+  final int? selectedPharmacyId;
   final bool isShowPharmaciesWorkingNow;
   final bool isShowPharmaciesProductsInStock;
   final List<PromocodeEntity> selectedPromoCodes;
@@ -27,7 +27,7 @@ class CartScreenState extends Equatable {
     this.selectedProductIds = const {},
     this.isAllProductsChecked = false,
     this.pharmacies = const [],
-    this.selectedPharmacy,
+    this.selectedPharmacyId,
     this.isShowPharmaciesWorkingNow = false,
     this.isShowPharmaciesProductsInStock = false,
     this.selectedPromoCodes = const [],
@@ -46,7 +46,7 @@ class CartScreenState extends Equatable {
     Set<int>? selectedProductIds,
     bool? isAllProductsChecked,
     List<PharmacyEntity>? pharmacies,
-    CartPharmacyEntity? selectedPharmacy,
+    int? selectedPharmacyId,
     bool? isShowPharmaciesWorkingNow,
     bool? isShowPharmaciesProductsInStock,
     List<PromocodeEntity>? selectedPromoCodes,
@@ -65,7 +65,7 @@ class CartScreenState extends Equatable {
       selectedProductIds: selectedProductIds ?? this.selectedProductIds,
       isAllProductsChecked: isAllProductsChecked ?? this.isAllProductsChecked,
       pharmacies: pharmacies ?? this.pharmacies,
-      selectedPharmacy: selectedPharmacy ?? this.selectedPharmacy,
+      selectedPharmacyId: selectedPharmacyId ?? this.selectedPharmacyId,
       isShowPharmaciesWorkingNow:
           isShowPharmaciesWorkingNow ?? this.isShowPharmaciesWorkingNow,
       isShowPharmaciesProductsInStock: isShowPharmaciesProductsInStock ??
@@ -88,7 +88,7 @@ class CartScreenState extends Equatable {
         selectedProductIds,
         isAllProductsChecked,
         pharmacies,
-        selectedPharmacy,
+        selectedPharmacyId,
         isShowPharmaciesWorkingNow,
         isShowPharmaciesProductsInStock,
         selectedPromoCodes,

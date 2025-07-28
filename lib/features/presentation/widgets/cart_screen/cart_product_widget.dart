@@ -270,7 +270,8 @@ class CartProductWidget extends StatelessWidget {
                                     ],
                                   ),
                                   if (productsListScreenType ==
-                                      ProductsListScreenType.pharmacy)
+                                          ProductsListScreenType.pharmacy &&
+                                      product.stockCount != 0)
                                     Padding(
                                       padding: getMarginOrPadding(top: 4),
                                       child: Row(

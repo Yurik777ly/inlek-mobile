@@ -1064,10 +1064,12 @@ class BottomSheetManager {
                                           .map(
                                             (toElement) =>
                                                 CartPharmaciesProductParam(
-                                                    productId:
-                                                        toElement.productId,
-                                                    quantity:
-                                                        toElement.quantity!),
+                                              productId: toElement.productId,
+                                              quantity:
+                                                  (toElement.quantity ?? 1)
+                                                      .clamp(1, double.infinity)
+                                                      .toInt(),
+                                            ),
                                           )
                                           .toList())),
                               ),
@@ -1199,12 +1201,16 @@ class BottomSheetManager {
           bloc: cartBloc,
           builder: (context, state) {
             // Разделяем по наличию
-            final inStockProducts = pharmacy.products
-                .where((e) => e.availability == 'full')
-                .toList();
-            final outOfStockProducts = pharmacy.products
-                .where((e) => e.availability == 'part')
-                .toList();
+            final inStockProducts = <CartPharmaciesProductEntity>[];
+            final outOfStockProducts = <CartPharmaciesProductEntity>[];
+
+            for (final product in pharmacy.products) {
+              if (product.stockCount != 0) {
+                inStockProducts.add(product);
+              } else {
+                outOfStockProducts.add(product);
+              }
+            }
 
             return CustomBottomSheet(
               padding: getMarginOrPadding(left: 20, right: 20, top: 8),

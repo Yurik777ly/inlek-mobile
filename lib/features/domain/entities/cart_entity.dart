@@ -1,10 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:inlek/features/domain/entities/cart_detail_entity.dart';
+import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 
 class CartEntity extends Equatable {
   final int? userId;
-  final int? pharmacyId;
+  final CartPharmacyEntity? pharmacy;
   final CartDetailEntity? cart;
   final List<ProductEntity> products;
   final List<PromocodeEntity> allPromocodes;
@@ -12,7 +13,7 @@ class CartEntity extends Equatable {
 
   const CartEntity({
     this.userId,
-    this.pharmacyId,
+    this.pharmacy,
     this.cart,
     this.products = const [],
     this.allPromocodes = const [],
@@ -21,7 +22,7 @@ class CartEntity extends Equatable {
 
   CartEntity copyWith({
     int? userId,
-    int? pharmacyId,
+    CartPharmacyEntity? pharmacy,
     CartDetailEntity? cart,
     List<ProductEntity>? products,
     List<PromocodeEntity>? allPromocodes,
@@ -29,7 +30,7 @@ class CartEntity extends Equatable {
   }) {
     return CartEntity(
       userId: userId ?? this.userId,
-      pharmacyId: pharmacyId ?? this.pharmacyId,
+      pharmacy: pharmacy ?? this.pharmacy,
       cart: cart ?? this.cart,
       products: products ?? this.products,
       allPromocodes: allPromocodes ?? this.allPromocodes,
@@ -39,5 +40,5 @@ class CartEntity extends Equatable {
 
   @override
   List<Object?> get props =>
-      [userId, pharmacyId, cart, products, allPromocodes, enteredPromocodes];
+      [userId, pharmacy, cart, products, allPromocodes, enteredPromocodes];
 }

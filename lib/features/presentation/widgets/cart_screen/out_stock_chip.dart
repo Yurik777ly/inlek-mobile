@@ -21,7 +21,12 @@ class OutStockChip extends StatelessWidget {
           ),
           child: Row(
             children: [
-              SvgPicture.asset(Paths.boxIconPath, width: 16.dp, height: 16.dp),
+              SvgPicture.asset(
+                Paths.boxIconPath,
+                width: 16.dp,
+                height: 16.dp,
+                color: UiConstants.darkBlue2Color.withOpacity(.6),
+              ),
               SizedBox(width: 4.dp),
               Text(
                 'Нет в наличии',

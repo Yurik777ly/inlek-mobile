@@ -70,7 +70,7 @@ class _CartScreenState extends State<CartScreen> {
 
             bool isPickupWithoutSelectedPharmacy =
                 cartState.cartType == TypeReceiving.pickup &&
-                    cartState.selectedPharmacy == null;
+                    cartState.selectedPharmacyId == null;
 
             return Scaffold(
               backgroundColor: UiConstants.backgroundColor,
@@ -184,7 +184,7 @@ class _CartScreenState extends State<CartScreen> {
                                                   child: BlockWidget(
                                                       title: 'Аптека',
                                                       clickableText:
-                                                          cartState.selectedPharmacy !=
+                                                          cartState.selectedPharmacyId !=
                                                                   null
                                                               ? 'Изменить'
                                                               : 'Выбрать аптеку',
@@ -196,11 +196,12 @@ class _CartScreenState extends State<CartScreen> {
                                                               .showSelectPharmacySheet(
                                                                   context),
                                                       child: cartState
-                                                                  .selectedPharmacy !=
+                                                                  .selectedPharmacyId !=
                                                               null
                                                           ? CartPharmacyWidget(
                                                               pharmacy: cartState
-                                                                  .selectedPharmacy!)
+                                                                  .cartData!
+                                                                  .pharmacy!)
                                                           : null),
                                                 ),
                                               // список с товарами, доступными для доставки

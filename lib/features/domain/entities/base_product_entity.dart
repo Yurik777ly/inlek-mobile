@@ -13,10 +13,4 @@ abstract class BaseProductEntity extends Equatable {
 
   @override
   List<Object?> get props => [productId, name, image];
-
-  Map<String, dynamic> toJson() => {
-        'product_id': productId,
-        'name': name,
-        'image': image,
-      };
 }

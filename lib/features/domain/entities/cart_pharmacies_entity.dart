@@ -44,7 +44,6 @@ class CartPharmacyEntity extends BasePharmacyEntity {
   final double totalPrice;
   final double totalPriceOld;
   final double totalDiscount;
-  final bool isOutOfStock;
   final String? availability;
 
   const CartPharmacyEntity({
@@ -59,7 +58,6 @@ class CartPharmacyEntity extends BasePharmacyEntity {
     required this.totalPrice,
     required this.totalPriceOld,
     required this.totalDiscount,
-    required this.isOutOfStock,
     this.availability,
   });
 
@@ -73,7 +71,6 @@ class CartPharmacyEntity extends BasePharmacyEntity {
         totalPrice,
         totalPriceOld,
         totalDiscount,
-        isOutOfStock,
         availability
       ];
 }

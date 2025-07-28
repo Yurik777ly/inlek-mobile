@@ -46,7 +46,6 @@ class CartPharmacyModel extends CartPharmacyEntity {
     super.totalPrice = 0,
     super.totalPriceOld = 0,
     super.totalDiscount = 0,
-    super.isOutOfStock = false,
     super.availability,
   });
 
@@ -57,16 +56,18 @@ class CartPharmacyModel extends CartPharmacyEntity {
         address: json['address'],
         coordinates: json['coordinates'],
         schedule: json['schedule'],
-        distanceMeters: (json['distance_meters'] as double).toInt(),
-        products: (json['products'] as List)
-            .map((e) => CartPharmaciesProductModel.fromJson(e))
-            .toList(),
-        totalProducts: json['total_products'],
-        totalPrice: (json['total_price'] as num).toDouble(),
-        totalPriceOld: (json['total_price_old'] as num).toDouble(),
-        totalDiscount: (json['total_discount'] as num).toDouble(),
-        isOutOfStock: json['is_out_of_stock'],
-        availability: json['availability'],
+        distanceMeters: (json['distance_meters'] is double)
+            ? json['distance_meters'].toInt()
+            : json['distance_meters'],
+        products: (json['products'] as List?)
+                ?.map((e) => CartPharmaciesProductModel.fromJson(e))
+                .toList() ??
+            [],
+        totalProducts: json['total_products'] as int? ?? 0,
+        totalPrice: (json['total_price'] as num?)?.toDouble() ?? 0.0,
+        totalPriceOld: (json['total_price_old'] as num?)?.toDouble() ?? 0.0,
+        totalDiscount: (json['total_discount'] as num?)?.toDouble() ?? 0.0,
+        availability: json['availability'] ?? 'full',
       );
 
   @override
@@ -78,13 +79,12 @@ class CartPharmacyModel extends CartPharmacyEntity {
         'schedule': schedule,
         'distance_meters': distanceMeters,
         'products': products
-            .map((e) => (e as CartPharmaciesProductModel?)?.toJson())
+            .map((e) => (e as CartPharmaciesProductModel).toJson())
             .toList(),
         'total_products': totalProducts,
         'total_price': totalPrice,
         'total_price_old': totalPriceOld,
         'total_discount': totalDiscount,
-        'is_out_of_stock': isOutOfStock,
         'availability': availability,
       };
 }

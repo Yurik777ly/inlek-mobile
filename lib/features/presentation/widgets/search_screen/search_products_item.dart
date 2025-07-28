@@ -11,7 +11,7 @@ import 'package:inlek/core/custom_cache_manager.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 
-class SearchProductsItem extends StatefulWidget {
+class SearchProductsItem extends StatelessWidget {
   const SearchProductsItem(
       {super.key, required this.product, required this.onProductTap});
 
@@ -19,24 +19,9 @@ class SearchProductsItem extends StatefulWidget {
   final Function() onProductTap;
 
   @override
-  State<SearchProductsItem> createState() => _SearchProductsItemState();
-}
-
-class _SearchProductsItemState extends State<SearchProductsItem> {
-  bool isChecked = false;
-
-  @override
-  void initState() {
-    isChecked = (context.read<CartScreenBloc>().state.cartData?.products ?? [])
-        .map((e) => e.productId)
-        .contains(widget.product.productId);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.onProductTap,
+      onTap: onProductTap,
       child: Card(
         margin: EdgeInsets.zero,
         elevation: 0,
@@ -49,8 +34,7 @@ class _SearchProductsItemState extends State<SearchProductsItem> {
                 child: CachedNetworkImage(
                   height: 60.dp,
                   width: 60.dp,
-                  imageUrl:
-                      '${dotenv.env['PUBLIC_URL']!}${widget.product.image}',
+                  imageUrl: '${dotenv.env['PUBLIC_URL']!}${product.image}',
                   fit: BoxFit.cover,
                   cacheManager: CustomCacheManager(),
                   errorWidget: (context, url, error) => SvgPicture.asset(
@@ -69,7 +53,7 @@ class _SearchProductsItemState extends State<SearchProductsItem> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: Text(widget.product.name,
+                      child: Text(product.name,
                           style: UiConstants.textStyle8.copyWith(
                             color: UiConstants.darkBlueColor,
                           ),
@@ -77,7 +61,7 @@ class _SearchProductsItemState extends State<SearchProductsItem> {
                           overflow: TextOverflow.ellipsis),
                     ),
                     Text(
-                      'от ${Utils.formatPrice(widget.product.price)}',
+                      'от ${Utils.formatPrice(product.price)}',
                       style: UiConstants.textStyle3.copyWith(
                           color: UiConstants.darkBlueColor,
                           fontWeight: FontWeight.w800,
@@ -87,30 +71,38 @@ class _SearchProductsItemState extends State<SearchProductsItem> {
                 ),
               ),
               SizedBox(width: 16.dp),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isChecked = !isChecked;
-                    if (isChecked) {
-                      context.read<CartScreenBloc>().add(
-                            AddCartEvent(
+              BlocBuilder<CartScreenBloc, CartScreenState>(
+                builder: (context, state) {
+                  final isChecked = (state.cartData?.products ?? [])
+                      .any((e) => e.productId == product.productId);
+
+                  return GestureDetector(
+                    onTap: () {
+                      if (isChecked) {
+                        context.read<CartScreenBloc>().add(
+                              DeleteCartEvent(
                                 context: context,
-                                productId: widget.product.productId),
-                          );
-                    } else {
-                      context.read<CartScreenBloc>().add(
-                            DeleteCartEvent(
+                                productId: product.productId,
+                                count: 0,
+                              ),
+                            );
+                      } else {
+                        context.read<CartScreenBloc>().add(
+                              AddCartEvent(
                                 context: context,
-                                productId: widget.product.productId,
-                                count: 0),
-                          );
-                    }
-                  });
+                                productId: product.productId,
+                              ),
+                            );
+                      }
+                    },
+                    child: SvgPicture.asset(
+                      Paths.cartIconPath,
+                      height: 24.dp,
+                      width: 24.dp,
+                      color: isChecked ? UiConstants.purple2Color : null,
+                    ),
+                  );
                 },
-                child: SvgPicture.asset(Paths.cartIconPath,
-                    height: 24.dp,
-                    width: 24.dp,
-                    color: isChecked ? UiConstants.purple2Color : null),
               ),
               /*CustomCheckbox(
                 isChecked:
