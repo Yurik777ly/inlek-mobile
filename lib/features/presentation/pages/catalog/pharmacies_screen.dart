@@ -36,7 +36,7 @@ class PharmaciesScreen extends StatelessWidget {
         return MultiBlocProvider(
           providers: [
             BlocProvider(
-              create: (context) => PharmaciesScreenBloc()
+              create: (context) => PharmaciesScreenBloc(product: product)
                 ..add(CheckProductAvailableDeliveryEvent())
                 ..add(
                   LoadPharmaciesDataEvent(pharmacies: pharmacies),

@@ -74,10 +74,10 @@ class PharmaciesScreenBloc
     return pharmacies.where((e) {
       final hasEnoughQuery = lowerQuery.length <
               3 || // фильтрация по названию включается с 3 символов
-          (e.address ?? '').toLowerCase().contains(lowerQuery);
+          (e.address).toLowerCase().contains(lowerQuery);
 
       final isMatchingSortType = sortType == TypeReceiving.all ||
-          e.availability ==
+          e.pharmacyDelivery ==
               (sortType == TypeReceiving.delivery ? 'Доставка' : 'Самовывоз');
 
       return hasEnoughQuery && isMatchingSortType;

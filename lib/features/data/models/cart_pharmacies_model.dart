@@ -57,7 +57,7 @@ class CartPharmacyModel extends CartPharmacyEntity {
         address: json['address'],
         coordinates: json['coordinates'],
         schedule: json['schedule'],
-        distanceMeters: json['distance_meters'],
+        distanceMeters: (json['distance_meters'] as double).toInt(),
         products: (json['products'] as List)
             .map((e) => CartPharmaciesProductModel.fromJson(e))
             .toList(),
