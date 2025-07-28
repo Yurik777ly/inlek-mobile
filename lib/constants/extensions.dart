@@ -46,6 +46,29 @@ extension OrderStatusExtension on OrderStatus {
 
   String get title => titles[this] ?? 'Неизвестный статус';
 
+  static OrderStatus fromId(int id) {
+    switch (id) {
+      case 1:
+        return OrderStatus.processing;
+      case 2:
+        return OrderStatus.processing;
+      case 3:
+        return OrderStatus.readyToIssue;
+      case 4:
+        return OrderStatus.reserved;
+      case 5:
+        return OrderStatus.received;
+      case 6:
+        return OrderStatus.collected;
+      case 7:
+        return OrderStatus.courier;
+      case 8:
+        return OrderStatus.canceled;
+      default:
+        return OrderStatus.processing;
+    }
+  }
+
   static OrderStatus fromString(String value) {
     switch (value) {
       case 'В обработке':

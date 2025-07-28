@@ -55,7 +55,7 @@ class OrderInfoList extends StatelessWidget {
                 imagePath: Paths.pointIconPath,
                 title: 'Аптека',
                 subtitle: pharmacy?.address ??
-                    'Аптека №36 InLek ОДО ДКМ-ФАРМ, Минский р-н, аг. Сеница, ул. Зеленая, 1, к. 5 (с/м Гиппо)'),
+                    [order?.pharmacyName, order?.address].join(', ')),
           ),
         if (order?.typeReceipt == TypeReceiving.delivery)
           Padding(

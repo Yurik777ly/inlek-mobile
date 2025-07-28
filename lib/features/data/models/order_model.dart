@@ -6,6 +6,8 @@ import 'package:inlek/features/domain/entities/order_entity.dart';
 class OrderModel extends OrderEntity {
   const OrderModel({
     super.orderId,
+    super.address,
+    super.pharmacyName,
     super.customerId,
     super.createdAt,
     super.updatedAt,
@@ -47,6 +49,8 @@ class OrderModel extends OrderEntity {
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
       orderId: json['order_id'],
+      address: json['address'],
+      pharmacyName: json['pharmacy_name'],
       customerId: json['customer_id'],
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] + 'Z').toLocal()
@@ -62,7 +66,7 @@ class OrderModel extends OrderEntity {
           : null,
       currency: json['currency'],
       statusId: json['status_id'],
-      status: OrderStatusExtension.fromTitle(json['status_title']),
+      status: OrderStatusExtension.fromId(json['status_id']),
       comment: json['comment'],
       agree: json['agree'] == "true",
       deliveryId: json['delivery_id'],

@@ -5,6 +5,8 @@ import 'package:inlek/features/domain/entities/product_entity.dart';
 
 class OrderEntity extends Equatable {
   final int? orderId;
+  final String? address;
+  final String? pharmacyName;
   final int? customerId;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -44,6 +46,8 @@ class OrderEntity extends Equatable {
 
   const OrderEntity({
     this.orderId,
+    this.address,
+    this.pharmacyName,
     this.customerId,
     this.createdAt,
     this.updatedAt,
@@ -85,6 +89,8 @@ class OrderEntity extends Equatable {
   @override
   List<Object?> get props => [
         orderId,
+        address,
+        pharmacyName,
         customerId,
         createdAt,
         updatedAt,
