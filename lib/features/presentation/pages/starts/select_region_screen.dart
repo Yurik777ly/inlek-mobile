@@ -7,6 +7,7 @@ import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/routes.dart';
+import 'package:inlek/features/domain/entities/city_entity.dart';
 import 'package:inlek/features/presentation/bloc/select_region_screen/select_region_screen_bloc.dart';
 import 'package:inlek/features/presentation/pages/home_screen.dart';
 import 'package:inlek/features/presentation/widgets/app_button_widget.dart';
@@ -65,9 +66,13 @@ class SelectRegionScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 16.dp),
                       CitySearchField(
-                          hintText: 'Найти другой город',
-                          controller: bloc.regionController,
-                          suggestions: state.popularCities),
+                        hintText: 'Найти другой город',
+                        controller: bloc.regionController,
+                        suggestions: state.popularCities
+                            .map((e) => e.pagetitle)
+                            .toList(),
+                        suggestionObjects: state.popularCities,
+                      ),
                       if (state.showError)
                         Padding(
                           padding: getMarginOrPadding(top: 16),
@@ -77,11 +82,9 @@ class SelectRegionScreen extends StatelessWidget {
                         ),
                       SizedBox(height: 16.dp),
                       PopularityCitiesWidget(
-                        regions: state.popularCities,
-                        onTapRegion: (String region) {
-                          bloc.regionController.text = region;
-                        },
-                      ),
+                          regions: state.popularCities,
+                          onTapRegion: (CityEntity region) =>
+                              bloc.regionController.text = region.pagetitle),
                       // Spacer(),
                     ],
                   ),
@@ -110,7 +113,7 @@ class SelectRegionScreen extends StatelessWidget {
                                 ),
                                 (route) => false);
                           } else {
-                            Navigator.pop(context);
+                            Navigator.pop(context, state.selectedRegion);
                           }
                         },
                       ),

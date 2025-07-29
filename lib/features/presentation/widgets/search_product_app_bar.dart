@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlek/constants/enums.dart';
@@ -8,6 +9,8 @@ import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/core/routes.dart';
+import 'package:inlek/features/domain/entities/city_entity.dart';
+import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/pages/search/search_screen_page.dart';
 import 'package:inlek/features/presentation/pages/starts/select_region_screen.dart';
 import 'package:inlek/features/presentation/widgets/filter_button.dart';
@@ -41,15 +44,22 @@ class SearchProductAppBar extends StatelessWidget {
               if (showLocationChip)
                 Skeleton.replace(
                   child: GestureDetector(
-                    onTap: () {
+                    onTap: () async {
                       FocusScope.of(context).unfocus();
-                      Navigator.of(context, rootNavigator: true).push(
+                      dynamic city =
+                          await Navigator.of(context, rootNavigator: true).push(
                         Routes.createRoute(
                           const SelectRegionScreen(
                               selectRegionScreenType:
                                   SelectRegionScreenType.main),
                         ),
                       );
+
+                      if (city != null && city is CityEntity) {
+                        context
+                            .read<CartScreenBloc>()
+                            .add(ChangeAvailableDeliveryEvent(city: city));
+                      }
                     },
                     child: Padding(
                       padding: getMarginOrPadding(right: 8),

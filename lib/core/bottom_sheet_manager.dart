@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,7 @@ import 'package:inlek/core/models/custom_marker_model.dart';
 import 'package:inlek/core/params/cart_pharmacies_param.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
+import 'package:inlek/features/data/models/city_model.dart';
 import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
 import 'package:inlek/features/domain/entities/order_entity.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
@@ -325,8 +327,17 @@ class BottomSheetManager {
         sharedPreferences.getString(SharedPreferencesKeys.fullName);
     final String? email =
         sharedPreferences.getString(SharedPreferencesKeys.email);
-    final String? city =
-        sharedPreferences.getString(SharedPreferencesKeys.city);
+    final city = (() {
+      try {
+        final json = sharedPreferences.getString(SharedPreferencesKeys.city);
+        return json == null
+            ? 'null'
+            : CityModel.fromJson(jsonDecode(json)).pagetitle;
+      } catch (_) {
+        return 'null';
+      }
+    })();
+
     final String? phone =
         sharedPreferences.getString(SharedPreferencesKeys.phone);
 
@@ -341,14 +352,21 @@ class BottomSheetManager {
             ? fullName.split(' ')[1]
             : '';
 
+    // сбрасываем при новом открытии
+    cartBloc.cityController.text = city;
+    cartBloc.streetHomeController.text = '';
+    cartBloc.flatController.text = '';
+    cartBloc.floorController.text = '';
+    cartBloc.entranceController.text = '';
+    cartBloc.doorPhoneController.text = '';
+    cartBloc.commentController.text = '';
+    cartBloc.add(ChangePaymentTypeEvent(PaymentType.courier));
+
     if (cartBloc.fNameController.text == 'null') {
       cartBloc.fNameController.text = '';
     }
     if (cartBloc.sNameController.text == 'null') {
       cartBloc.sNameController.text = '';
-    }
-    if (cartBloc.cityController.text.isEmpty) {
-      cartBloc.cityController.text = city != null && city != 'null' ? city : '';
     }
 
     cartBloc.emailController.text =
@@ -566,9 +584,10 @@ class BottomSheetManager {
           builder: (context, setState) {
             return BlocProvider(
               create: (mapContext) => PharmacyMapBloc(
-                  screenContext: screenContext,
-                  mapScreenType: MapScreenType.order)
-                ..add(
+                screenContext: screenContext,
+                mapScreenType: MapScreenType.order,
+                sharedPreferences: sl(),
+              )..add(
                   InitPharmacyMapEvent(
                     points: [
                       if (selectedAddress != null)
@@ -1076,6 +1095,7 @@ class BottomSheetManager {
                               BlocProvider(
                                 create: (context) => PharmacyMapBloc(
                                     screenContext: screenContext,
+                                    sharedPreferences: sl(),
                                     mapScreenType: MapScreenType.cart),
                               ),
                             ],

@@ -17,6 +17,7 @@ class CartScreenState extends Equatable {
   final PaymentType paymentType;
   final DeliveryZoneType deliveryZone;
   final int deliveryPayment;
+  final bool isAvailableDelivery;
 
   const CartScreenState({
     this.isLoading = true,
@@ -35,6 +36,7 @@ class CartScreenState extends Equatable {
     this.paymentType = PaymentType.courier,
     this.deliveryZone = DeliveryZoneType.none,
     this.deliveryPayment = 0,
+    this.isAvailableDelivery = true,
   });
 
   CartScreenState copyWith({
@@ -55,6 +57,7 @@ class CartScreenState extends Equatable {
     DeliveryZoneType? deliveryZone,
     int? deliveryPayment,
     GeoObject? address,
+    bool? isAvailableDelivery,
   }) {
     return CartScreenState(
       isLoading: isLoading ?? this.isLoading,
@@ -75,6 +78,7 @@ class CartScreenState extends Equatable {
       paymentType: paymentType ?? this.paymentType,
       deliveryZone: deliveryZone ?? this.deliveryZone,
       deliveryPayment: deliveryPayment ?? this.deliveryPayment,
+      isAvailableDelivery: isAvailableDelivery ?? this.isAvailableDelivery,
     );
   }
 
@@ -96,5 +100,6 @@ class CartScreenState extends Equatable {
         paymentType,
         deliveryZone,
         deliveryPayment,
+        isAvailableDelivery,
       ];
 }

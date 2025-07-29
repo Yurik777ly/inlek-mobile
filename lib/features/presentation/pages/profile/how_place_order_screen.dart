@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/constants/extensions.dart';
@@ -12,38 +10,9 @@ import 'package:inlek/features/presentation/widgets/how_place_order_screen/add_p
 import 'package:inlek/features/presentation/widgets/how_place_order_screen/pick_up_order_block.dart';
 import 'package:inlek/features/presentation/widgets/how_place_order_screen/select_product_block.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/internet_no_internet_connection_widget.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
-class HowPlaceOrderScreen extends StatefulWidget {
+class HowPlaceOrderScreen extends StatelessWidget {
   const HowPlaceOrderScreen({super.key});
-
-  @override
-  State<HowPlaceOrderScreen> createState() => _HowPlaceOrderScreenState();
-}
-
-class _HowPlaceOrderScreenState extends State<HowPlaceOrderScreen> {
-  bool isLoading = true;
-  late Timer _timer;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _timer = Timer(Duration(seconds: 5), () {
-      _timer.cancel();
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,43 +25,36 @@ class _HowPlaceOrderScreenState extends State<HowPlaceOrderScreen> {
               return Scaffold(
                 backgroundColor: UiConstants.backgroundColor,
                 body: SafeArea(
-                  child: Skeletonizer(
-                    ignorePointers: false,
-                    justifyMultiLineText: false,
-                    textBoneBorderRadius:
-                        TextBoneBorderRadius.fromHeightFactor(.5),
-                    enabled: isLoading,
-                    child: Builder(
-                      builder: (context) {
-                        return Column(
-                          children: [
-                            CustomAppBar(
-                                showBack: true,
-                                title: 'Как сделать заказ?',
-                                backgroundColor: UiConstants.backgroundColor),
-                            Expanded(
-                              child: homeState is InternetUnavailable
-                                  ? InternetNoInternetConnectionWidget()
-                                  : ListView(
-                                      padding: getMarginOrPadding(
-                                          top: 16,
-                                          bottom: 94,
-                                          left: 20,
-                                          right: 20),
-                                      shrinkWrap: true,
-                                      children: [
-                                        SelectProductBlock(),
-                                        SizedBox(height: 16.dp),
-                                        AddProductToCartBlock(),
-                                        SizedBox(height: 16.dp),
-                                        PickUpOrderBlock(),
-                                      ],
-                                    ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
+                  child: Builder(
+                    builder: (context) {
+                      return Column(
+                        children: [
+                          CustomAppBar(
+                              showBack: true,
+                              title: 'Как сделать заказ?',
+                              backgroundColor: UiConstants.backgroundColor),
+                          Expanded(
+                            child: homeState is InternetUnavailable
+                                ? InternetNoInternetConnectionWidget()
+                                : ListView(
+                                    padding: getMarginOrPadding(
+                                        top: 16,
+                                        bottom: 94,
+                                        left: 20,
+                                        right: 20),
+                                    shrinkWrap: true,
+                                    children: [
+                                      SelectProductBlock(),
+                                      SizedBox(height: 16.dp),
+                                      AddProductToCartBlock(),
+                                      SizedBox(height: 16.dp),
+                                      PickUpOrderBlock(),
+                                    ],
+                                  ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               );

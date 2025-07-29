@@ -16,6 +16,7 @@ import 'package:inlek/features/presentation/widgets/custom_app_bar.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/internet_no_internet_connection_widget.dart';
 import 'package:inlek/features/presentation/widgets/map/pharmacy_map_widget.dart';
 import 'package:inlek/features/presentation/widgets/product_screen/product_pharmacy_widget.dart';
+import 'package:inlek/locator_service.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class PharmaciesScreen extends StatelessWidget {
@@ -43,8 +44,8 @@ class PharmaciesScreen extends StatelessWidget {
                 ),
             ),
             BlocProvider(
-              create: (context) =>
-                  PharmacyMapBloc(mapScreenType: mapScreenType),
+              create: (context) => PharmacyMapBloc(
+                  sharedPreferences: sl(), mapScreenType: mapScreenType),
             ),
           ],
           child: BlocConsumer<PharmaciesScreenBloc, PharmaciesScreenState>(

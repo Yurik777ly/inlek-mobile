@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:inlek/core/geocoder_manager.dart';
 import 'package:inlek/core/location_manager.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
+import 'package:inlek/features/data/models/city_model.dart';
+import 'package:inlek/features/domain/entities/city_entity.dart';
 import 'package:inlek/features/domain/usecases/content/get_cities.dart';
 import 'package:inlek/locator_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -102,19 +106,37 @@ class SelectRegionScreenBloc
   }
 
   void _onRegionChanged(
-      RegionChangedEvent event, Emitter<SelectRegionScreenState> emit) async {
+    RegionChangedEvent event,
+    Emitter<SelectRegionScreenState> emit,
+  ) async {
+    final selectedRegion = state.popularCities.firstWhereOrNull(
+      (city) => city.pagetitle == event.region,
+    );
+
+    final isKnownRegion = state.popularCities
+        .any((city) => city.pagetitle == regionController.text);
+
+    final shouldShowError =
+        selectedRegion == null && regionController.text.isNotEmpty;
+
     emit(
       state.copyWith(
-          isButtonActive: state.popularCities.contains(regionController.text),
-          showError: !state.popularCities.contains(event.region) &&
-              regionController.text.isNotEmpty),
+        isButtonActive: isKnownRegion,
+        selectedRegion: selectedRegion,
+        showError: shouldShowError,
+      ),
     );
   }
 
   void _onConfirmRegion(
       ConfirmRegionEvent event, Emitter<SelectRegionScreenState> emit) async {
+    final selectedRegion = state.popularCities
+        .firstWhereOrNull((city) => city.pagetitle == regionController.text);
+
     sharedPreferences.setString(
-        SharedPreferencesKeys.city, regionController.text);
+      SharedPreferencesKeys.city,
+      jsonEncode((selectedRegion as CityModel).toJson()),
+    );
   }
 
   @override

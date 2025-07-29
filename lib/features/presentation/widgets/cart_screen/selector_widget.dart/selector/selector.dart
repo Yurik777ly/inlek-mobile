@@ -9,11 +9,13 @@ class Selector extends StatefulWidget {
   const Selector({
     super.key,
     required this.titlesList,
+    this.unavailableList = const [],
     required this.onTap,
     required this.selectedIndex,
   });
 
   final List<String> titlesList;
+  final List<String> unavailableList;
   final Function(int index) onTap;
   final int selectedIndex;
 
@@ -37,6 +39,8 @@ class _SelectorState extends State<Selector> {
             (index) => SelectorChip(
                 text: widget.titlesList[index],
                 selected: widget.selectedIndex == index,
+                isUnavailable:
+                    widget.unavailableList.contains(widget.titlesList[index]),
                 index: index,
                 onTap: widget.onTap),
           ),

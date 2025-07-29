@@ -7,12 +7,14 @@ import 'package:inlek/constants/ui_constants.dart';
 class SelectorChip extends StatelessWidget {
   final String text;
   final bool selected;
+  final bool isUnavailable;
   final int index;
   final Function(int index) onTap;
 
   const SelectorChip(
       {required this.text,
       required this.selected,
+      required this.isUnavailable,
       required this.index,
       super.key,
       required this.onTap});
@@ -21,9 +23,7 @@ class SelectorChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: GestureDetector(
-        onTap: () {
-          onTap(index);
-        },
+        onTap: !isUnavailable ? () => onTap(index) : null,
         child: Container(
           padding: getMarginOrPadding(top: 10, bottom: 10),
           alignment: Alignment.center,
@@ -32,15 +32,15 @@ class SelectorChip extends StatelessWidget {
             color: selected ? UiConstants.purpleColor : Colors.transparent,
             borderRadius: BorderRadius.circular(12.r),
           ),
-          child: Text(
-            text,
-            style: UiConstants.textStyle2.copyWith(
-                fontSize: 15.dp,
-                color: selected
-                    ? UiConstants.whiteColor
-                    : UiConstants.darkBlueColor),
-            textAlign: TextAlign.center,
-          ),
+          child: Text(text,
+              style: UiConstants.textStyle2.copyWith(
+                  fontSize: 15.dp,
+                  color: selected
+                      ? UiConstants.whiteColor
+                      : isUnavailable
+                          ? UiConstants.mutedVioletColor
+                          : UiConstants.darkBlueColor),
+              textAlign: TextAlign.center),
         ),
       ),
     );

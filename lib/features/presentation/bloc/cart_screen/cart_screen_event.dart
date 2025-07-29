@@ -112,3 +112,8 @@ class UpdateDeliveryPriceEvent extends CartScreenEvent {
   final GeoObject? address;
   const UpdateDeliveryPriceEvent({this.address});
 }
+
+class ChangeAvailableDeliveryEvent extends CartScreenEvent {
+  final CityEntity? city;
+  const ChangeAvailableDeliveryEvent({this.city});
+}

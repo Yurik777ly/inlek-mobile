@@ -4,9 +4,9 @@ class PharmacyMapState extends Equatable {
   final String? selectedMarkerId;
   final bool showStackWindow;
   final List<MapObject<dynamic>> markers;
-
   final List<CustomMapObject> points;
   final YandexMapController? mapController;
+  final Point defaultPosition;
 
   const PharmacyMapState({
     this.selectedMarkerId,
@@ -14,6 +14,7 @@ class PharmacyMapState extends Equatable {
     this.markers = const [],
     this.points = const [],
     this.mapController,
+    this.defaultPosition = const Point(latitude: 53.9006, longitude: 27.5590),
   });
 
   PharmacyMapState copyWith({
@@ -23,6 +24,7 @@ class PharmacyMapState extends Equatable {
     List<CustomMapObject>? points,
     CameraPosition? position,
     YandexMapController? mapController,
+    Point? defaultPosition,
   }) {
     return PharmacyMapState(
       showStackWindow: showStackWindow ?? this.showStackWindow,
@@ -30,6 +32,7 @@ class PharmacyMapState extends Equatable {
       markers: markers ?? this.markers,
       points: points ?? this.points,
       mapController: mapController ?? this.mapController,
+      defaultPosition: defaultPosition ?? this.defaultPosition,
     );
   }
 
@@ -40,5 +43,6 @@ class PharmacyMapState extends Equatable {
         markers,
         points,
         mapController,
+        defaultPosition
       ];
 }

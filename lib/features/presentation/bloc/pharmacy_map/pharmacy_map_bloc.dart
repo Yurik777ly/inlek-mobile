@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
@@ -6,10 +8,13 @@ import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/core/models/custom_marker_model.dart';
+import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/data/models/cart_pharmacies_model.dart';
+import 'package:inlek/features/data/models/city_model.dart';
 import 'package:inlek/features/data/models/pharmacy_model.dart';
 import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 part 'pharmacy_map_event.dart';
@@ -17,21 +22,49 @@ part 'pharmacy_map_state.dart';
 
 class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
   final MapScreenType mapScreenType;
+  final SharedPreferences sharedPreferences;
 
   final BuildContext? screenContext;
 
-  PharmacyMapBloc({required this.mapScreenType, this.screenContext})
+  PharmacyMapBloc(
+      {required this.mapScreenType,
+      required this.sharedPreferences,
+      this.screenContext})
       : super(PharmacyMapState()) {
     on<InitPharmacyMapEvent>((event, emit) {
+      if (mapScreenType == MapScreenType.order) {
+        if (event.points.isNotEmpty) {
+          CustomMapObject? mark = event.points
+              .firstWhereOrNull((e) => e.mapObject is PlacemarkMapObject);
+          if (mark != null) {
+            emit(state.copyWith(
+                defaultPosition: (mark.mapObject as PlacemarkMapObject).point));
+          }
+        }
+      } else if (mapScreenType != MapScreenType.courierDeliveryZones) {
+        final city = (() {
+          try {
+            final json =
+                sharedPreferences.getString(SharedPreferencesKeys.city);
+            return json == null ? null : CityModel.fromJson(jsonDecode(json));
+          } catch (_) {
+            return null;
+          }
+        })();
+        emit(state.copyWith(
+            defaultPosition: city != null
+                ? Point(latitude: city.latitude, longitude: city.longitude)
+                : null));
+      }
       emit(state.copyWith(points: event.points));
+
       add(UpdatePharmacyMapEvent());
     });
     on<AttachControllerEvent>((event, emit) {
       emit(state.copyWith(mapController: event.mapController));
       event.mapController.moveCamera(
         CameraUpdate.newCameraPosition(
-          const CameraPosition(
-              target: Point(latitude: 53.9006, longitude: 27.5590), zoom: 12),
+          CameraPosition(target: state.defaultPosition, zoom: 12),
         ),
       );
     });
@@ -191,10 +224,19 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
       MoveToCurrentLocationEvent event, Emitter<PharmacyMapState> emit) async {
     CameraPosition? position = await state.mapController?.getCameraPosition();
     if (position != null) {
+      Point newPoint = state.defaultPosition;
+      if (mapScreenType == MapScreenType.order) {
+        if (state.points.isNotEmpty) {
+          CustomMapObject? mark = state.points
+              .firstWhereOrNull((e) => e.mapObject is PlacemarkMapObject);
+          if (mark != null) {
+            newPoint = (mark.mapObject as PlacemarkMapObject).point;
+          }
+        }
+      }
       state.mapController?.moveCamera(
           CameraUpdate.newCameraPosition(
-            position.copyWith(
-                target: Point(latitude: 53.9006, longitude: 27.5590), zoom: 12),
+            position.copyWith(target: newPoint, zoom: 12),
           ),
           animation: MapAnimation(duration: 0.6));
     }

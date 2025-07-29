@@ -3,8 +3,8 @@ part of 'select_region_screen_bloc.dart';
 class SelectRegionScreenState extends Equatable {
   final bool isButtonActive;
   final bool showError;
-  final List<String> popularCities;
-  final String? selectedRegion;
+  final List<CityEntity> popularCities;
+  final CityEntity? selectedRegion;
   final String? detectedCity;
 
   const SelectRegionScreenState({
@@ -18,8 +18,8 @@ class SelectRegionScreenState extends Equatable {
   SelectRegionScreenState copyWith({
     bool? isButtonActive,
     bool? showError,
-    List<String>? popularCities,
-    String? selectedRegion,
+    List<CityEntity>? popularCities,
+    CityEntity? selectedRegion,
     String? detectedCity,
   }) {
     return SelectRegionScreenState(

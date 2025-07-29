@@ -40,6 +40,7 @@ class _InfoAboutOrderScreenState extends State<InfoAboutOrderScreen> {
                     )..add(LoadDataEvent())),
             BlocProvider(
               create: (context) => PharmacyMapBloc(
+                  sharedPreferences: sl(),
                   mapScreenType: MapScreenType.courierDeliveryZones),
             ),
           ],

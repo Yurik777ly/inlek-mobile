@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
@@ -14,8 +15,10 @@ import 'package:inlek/core/params/cart_detailed_params.dart';
 import 'package:inlek/core/params/cart_params.dart';
 import 'package:inlek/core/params/order_param.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
+import 'package:inlek/features/data/models/city_model.dart';
 import 'package:inlek/features/domain/entities/cart_entity.dart';
 import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
+import 'package:inlek/features/domain/entities/city_entity.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/domain/usecases/cart/add_cart.dart';
@@ -92,6 +95,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     on<SelectPharmacy>(_onSelectPharmacy);
     on<CreateOrderEvent>(_onCreateOrder);
     on<UpdateDeliveryPriceEvent>(_onUpdateDeliveryPrice);
+    on<ChangeAvailableDeliveryEvent>(_onChangeAvailableDelivery);
 
     on<ScrollUpListEvent>((_, __) => controller.animateTo(0,
         duration: const Duration(milliseconds: 700), curve: Curves.easeOut));
@@ -100,10 +104,9 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
   Future<void> _inInit(InitEvent event, Emitter<CartScreenState> emit) async {
     int? savedPharmacyId =
         sharedPreferences.getInt(SharedPreferencesKeys.pharmacyId);
-    if (savedPharmacyId != null) {
-      emit(state.copyWith(selectedPharmacyId: savedPharmacyId));
-    }
-    add(LoadCartDataEvent(isFirstLoading: true));
+
+    emit(state.copyWith(selectedPharmacyId: savedPharmacyId));
+    add(ChangeAvailableDeliveryEvent());
   }
 
   Future<void> _onLoadData(
@@ -160,7 +163,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
             state.cartType != TypeReceiving.delivery) {
           emit(state.copyWith(
             isLoading: false,
-            cartType: TypeReceiving.delivery,
+            cartType: state.isAvailableDelivery ? TypeReceiving.delivery : null,
             cartData: cartData.copyWith(products: []),
             errorText: null,
           ));
@@ -267,8 +270,9 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     emit(state.copyWith(
         cartData: state.cartData?.copyWith(products: updatedProducts),
         selectedProductIds: updatedSelectedProductIds,
-        cartType:
-            isCartEmptyAfterRemoval ? TypeReceiving.delivery : state.cartType));
+        cartType: isCartEmptyAfterRemoval && state.isAvailableDelivery
+            ? TypeReceiving.delivery
+            : state.cartType));
 
     _debounceTimer = Timer(
         Duration(milliseconds: wasLastProductRemoved ? 0 : 300), () async {
@@ -326,7 +330,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
     // If cart was empty and this is the first product, set cartType to delivery
     if (wasCartEmpty && wasFirstTimeAdded) {
-      emit(state.copyWith(cartType: TypeReceiving.delivery));
+      emit(state.copyWith(
+          cartType: state.isAvailableDelivery ? TypeReceiving.delivery : null));
     }
 
     _debounceTimer = Timer(
@@ -370,7 +375,9 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
           action: (context) => Navigator.of(context).pop()),
       (_) {
         // Set cartType to delivery when clearing cart
-        emit(state.copyWith(cartType: TypeReceiving.delivery));
+        emit(state.copyWith(
+            cartType:
+                state.isAvailableDelivery ? TypeReceiving.delivery : null));
         add(LoadCartDataEvent(isFirstLoading: true));
       },
     );
@@ -597,5 +604,26 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     );
     // скрываем лоадер на кнопке
     emit(state.copyWith(isOrderCompleting: false));
+  }
+
+  Future _onChangeAvailableDelivery(
+      ChangeAvailableDeliveryEvent event, Emitter<CartScreenState> emit) async {
+    CityEntity? city = event.city;
+    city ??= (() {
+      try {
+        final json = sharedPreferences.getString(SharedPreferencesKeys.city);
+        return json == null ? null : CityModel.fromJson(jsonDecode(json));
+      } catch (_) {
+        return null;
+      }
+    })();
+
+    emit(state.copyWith(
+        isAvailableDelivery: city?.isDeliveryAvailable,
+        cartType: city?.isDeliveryAvailable == true
+            ? state.cartType
+            : TypeReceiving.pickup));
+
+    add(LoadCartDataEvent(isFirstLoading: true));
   }
 }

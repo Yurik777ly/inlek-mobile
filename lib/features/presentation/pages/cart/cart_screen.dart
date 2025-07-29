@@ -134,6 +134,11 @@ class _CartScreenState extends State<CartScreen> {
                                                     'Доставка',
                                                     'Самовывоз'
                                                   ],
+                                                  unavailableList: [
+                                                    if (!cartState
+                                                        .isAvailableDelivery)
+                                                      'Доставка'
+                                                  ],
                                                   selectedIndex: [
                                                     TypeReceiving.delivery,
                                                     TypeReceiving.pickup
@@ -195,8 +200,8 @@ class _CartScreenState extends State<CartScreen> {
                                                           BottomSheetManager
                                                               .showSelectPharmacySheet(
                                                                   context),
-                                                      child: cartState
-                                                                  .selectedPharmacyId !=
+                                                      child: cartState.cartData
+                                                                  ?.pharmacy !=
                                                               null
                                                           ? CartPharmacyWidget(
                                                               pharmacy: cartState
@@ -360,6 +365,11 @@ class _CartScreenState extends State<CartScreen> {
                                                 titlesList: const [
                                                   'Доставка',
                                                   'Самовывоз'
+                                                ],
+                                                unavailableList: [
+                                                  if (!cartState
+                                                      .isAvailableDelivery)
+                                                    'Доставка'
                                                 ],
                                                 selectedIndex: [
                                                   TypeReceiving.delivery,

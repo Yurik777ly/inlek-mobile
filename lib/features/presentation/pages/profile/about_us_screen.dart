@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/constants/extensions.dart';
@@ -14,38 +12,9 @@ import 'package:inlek/features/presentation/widgets/about_us_screen/online_pharm
 import 'package:inlek/features/presentation/widgets/about_us_screen/social_network_block.dart';
 import 'package:inlek/features/presentation/widgets/custom_app_bar.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/internet_no_internet_connection_widget.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
-class AboutUsScreen extends StatefulWidget {
+class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});
-
-  @override
-  State<AboutUsScreen> createState() => _AboutUsScreenState();
-}
-
-class _AboutUsScreenState extends State<AboutUsScreen> {
-  bool isLoading = true;
-  late Timer _timer;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _timer = Timer(Duration(seconds: 5), () {
-      _timer.cancel();
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,47 +27,40 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
               return Scaffold(
                 backgroundColor: UiConstants.backgroundColor,
                 body: SafeArea(
-                  child: Skeletonizer(
-                    ignorePointers: false,
-                    justifyMultiLineText: false,
-                    textBoneBorderRadius:
-                        TextBoneBorderRadius.fromHeightFactor(.5),
-                    enabled: isLoading,
-                    child: Builder(
-                      builder: (context) {
-                        return Column(
-                          children: [
-                            CustomAppBar(
-                                showBack: true,
-                                title: 'Информация о нас',
-                                backgroundColor: UiConstants.backgroundColor),
-                            Expanded(
-                              child: homeState is InternetUnavailable
-                                  ? InternetNoInternetConnectionWidget()
-                                  : ListView(
-                                      padding: getMarginOrPadding(
-                                          top: 16,
-                                          bottom: 94,
-                                          left: 20,
-                                          right: 20),
-                                      shrinkWrap: true,
-                                      children: [
-                                        OnlinePharmBlock(),
-                                        SizedBox(height: 16.dp),
-                                        LegalAddressBlock(),
-                                        SizedBox(height: 16.dp),
-                                        GosfarmnadzorBlock(),
-                                        SizedBox(height: 16.dp),
-                                        SocialNetworkBlock(),
-                                        SizedBox(height: 16.dp),
-                                        BookCommentsBlock(),
-                                      ],
-                                    ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
+                  child: Builder(
+                    builder: (context) {
+                      return Column(
+                        children: [
+                          CustomAppBar(
+                              showBack: true,
+                              title: 'Информация о нас',
+                              backgroundColor: UiConstants.backgroundColor),
+                          Expanded(
+                            child: homeState is InternetUnavailable
+                                ? InternetNoInternetConnectionWidget()
+                                : ListView(
+                                    padding: getMarginOrPadding(
+                                        top: 16,
+                                        bottom: 94,
+                                        left: 20,
+                                        right: 20),
+                                    shrinkWrap: true,
+                                    children: [
+                                      OnlinePharmBlock(),
+                                      SizedBox(height: 16.dp),
+                                      LegalAddressBlock(),
+                                      SizedBox(height: 16.dp),
+                                      GosfarmnadzorBlock(),
+                                      SizedBox(height: 16.dp),
+                                      SocialNetworkBlock(),
+                                      SizedBox(height: 16.dp),
+                                      BookCommentsBlock(),
+                                    ],
+                                  ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               );
