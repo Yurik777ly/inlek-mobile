@@ -5,6 +5,7 @@ import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/bloc/passwrod_screen/password_screen_bloc.dart';
+import 'package:inlek/features/presentation/pages/home_screen.dart';
 import 'package:inlek/features/presentation/pages/starts/login_screen.dart';
 import 'package:inlek/features/presentation/pages/starts/select_region_screen.dart';
 import 'package:inlek/features/presentation/widgets/app_button_widget.dart';
@@ -33,22 +34,25 @@ class PasswordScreen extends StatelessWidget {
       child: BlocConsumer<PasswordScreenBloc, PasswordScreenState>(
         listener: (context, state) {
           if (state is NavigateHomeState) {
-            Navigator.of(context).pushAndRemoveUntil(
-                Routes.createRoute(
-                  SelectRegionScreen(
-                    selectRegionScreenType:
-                        passwordScreenType == PasswordScreenType.signUp
-                            ? SelectRegionScreenType.signUp
-                            : SelectRegionScreenType.reset,
+            if (PasswordScreenType.signUp == passwordScreenType) {
+              Navigator.of(context).pushAndRemoveUntil(
+                  Routes.createRoute(
+                    SelectRegionScreen(
+                        selectRegionScreenType: SelectRegionScreenType.signUp),
                   ),
-                ),
-                (route) => route.isFirst);
+                  (route) => false);
+            } else if (PasswordScreenType.reset == passwordScreenType) {
+              Navigator.of(context).pushAndRemoveUntil(
+                  Routes.createRoute(const HomeScreen(),
+                      settings: RouteSettings(name: Routes.homeScreen)),
+                  (route) => false);
+            }
           } else if (state is NavigateLoginState) {
             Navigator.of(context).pushAndRemoveUntil(
                 Routes.createRoute(
                   const LoginScreen(),
                 ),
-                (route) => route.isFirst);
+                (route) => false);
           }
         },
         builder: (context, state) {
