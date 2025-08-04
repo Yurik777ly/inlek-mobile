@@ -11,6 +11,7 @@ class LoginUC extends UseCaseParam<void, AuthenticationParams> {
 
   @override
   Future<Either<Failure, void>> call(AuthenticationParams params) async {
-    return await authRepository.login(params.phone, params.password!);
+    return await authRepository.login(
+        params.phone, params.password!, params.fbid!);
   }
 }

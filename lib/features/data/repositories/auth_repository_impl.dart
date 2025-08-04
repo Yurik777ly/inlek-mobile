@@ -18,9 +18,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
   // 📌 Логин
   @override
-  Future<Either<Failure, void>> login(String phone, String password) async =>
+  Future<Either<Failure, void>> login(
+          String phone, String password, String fcmToken) async =>
       await errorHandler.handle(
-        () async => await authRemoteDataSource.login(phone, password),
+        () async => await authRemoteDataSource.login(phone, password, fcmToken),
       );
 
   // 📌 Логаут

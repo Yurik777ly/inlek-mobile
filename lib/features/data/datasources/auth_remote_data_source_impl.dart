@@ -12,7 +12,7 @@ abstract class AuthRemoteDataSource {
   Future<int> requestCode(String phone);
   Future<void> registration(String phone, String code);
   Future<void> updatePassword(String phone, String password, String code);
-  Future<void> login(String phone, String password);
+  Future<void> login(String phone, String password, String fcmToken);
   Future<void> logout();
 }
 
@@ -26,12 +26,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   });
 
   @override
-  Future<void> login(String phone, String password) async {
+  Future<void> login(String phone, String password, String fcmToken) async {
     String baseUrl = dotenv.env['BASE_URL']!;
     String url = '${baseUrl}auth/login';
 
     log('POST $url');
-    log('Request body: ${jsonEncode({'phone': phone, 'password': password})}');
+    log('Request body: ${jsonEncode({
+          'phone': phone,
+          'password': password,
+          'fcm_token': fcmToken
+        })}');
 
     try {
       final response = await client.post(
@@ -40,7 +44,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: jsonEncode({'phone': phone, 'password': password}),
+        body: jsonEncode(
+            {'phone': phone, 'password': password, 'fcm_token': fcmToken}),
       );
 
       log('Response ($url): ${response.statusCode} ${response.body}');

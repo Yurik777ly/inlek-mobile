@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app_links/app_links.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:inlek/app_route_observer.dart';
 import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/core/notification_manager.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
@@ -38,15 +40,31 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+
     UiConstants.homeContext = context;
 
-    _handleInitialUri();
-    _sub = _appLinks.uriLinkStream.listen((Uri? uri) {
-      if (uri != null) {
-        print('Received URI from stream: $uri');
-        _handleDeeplink(uri);
-      }
-    });
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) async {
+        try {
+          final fcmToken = await FirebaseMessaging.instance.getToken();
+          print('FCM Token: $fcmToken');
+        } catch (e) {
+          print(e);
+        }
+
+        // регистрация пушей
+        await NotificationManager.setupAllPushHandlers();
+
+        // регистрация диплинков
+        _handleInitialUri();
+        _sub = _appLinks.uriLinkStream.listen((Uri? uri) {
+          if (uri != null) {
+            print('Received URI from stream: $uri');
+            _handleDeeplink(uri);
+          }
+        });
+      },
+    );
   }
 
   Future<void> _handleInitialUri() async {

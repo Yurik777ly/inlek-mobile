@@ -7,6 +7,7 @@ abstract class AuthRepository {
   Future<Either<Failure, void>> registration(String phone, String code);
   Future<Either<Failure, void>> updatePassword(
       String phone, String password, String code);
-  Future<Either<Failure, void>> login(String phone, String password);
+  Future<Either<Failure, void>> login(
+      String phone, String password, String fcmToke);
   Future<Either<Failure, void>> logout();
 }
