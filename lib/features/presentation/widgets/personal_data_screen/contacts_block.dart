@@ -66,11 +66,15 @@ class _ContactsBlockState extends State<ContactsBlock> {
                         FilteringTextInputFormatter.digitsOnly,
                         CustomPhoneInputFormatter()
                       ],
+                      validator: Utils.validatePhone,
                       actionTitle: 'Изменить номер',
                       isActionTitleActive: personalDataBloc
                                   .state.installedPhone !=
                               personalDataBloc.phoneController.text &&
-                          personalDataBloc.phoneController.text.length == 19,
+                          personalDataBloc.phoneController.text.length == 19 &&
+                          Utils.validatePhone(
+                                  personalDataBloc.phoneController.text) ==
+                              null,
                       onTapActionTitle: () async {
                         await context.read<CodeScreenBloc>().reset(
                             phone: personalDataBloc.phoneController.text);

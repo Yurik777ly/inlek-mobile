@@ -5,6 +5,7 @@ import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/formatters/custom_phone_input_formatter.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/bloc/login_screen/login_screen_bloc.dart';
@@ -65,6 +66,7 @@ class LoginScreen extends StatelessWidget {
                     FilteringTextInputFormatter.digitsOnly,
                     CustomPhoneInputFormatter()
                   ],
+                  validator: Utils.validatePhone,
                 ),
                 SizedBox(height: 24.dp),
                 AppTextFieldWidget(
