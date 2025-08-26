@@ -25,7 +25,7 @@ class LoginScreen extends StatelessWidget {
     Map<String, dynamic>? args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
 
-    LoginScreenType loginScreenType = args!['redirect_type'];
+    LoginScreenType loginScreenType = args?['redirect_type'];
 
     return BlocProvider(
       create: (context) => LoginScreenBloc(

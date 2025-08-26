@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/constants/enums.dart';
@@ -5,6 +7,7 @@ import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
+import 'package:inlek/core/geocoder_manager.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
@@ -18,6 +21,8 @@ import 'package:inlek/features/presentation/widgets/map/pharmacy_map_widget.dart
 import 'package:inlek/features/presentation/widgets/product_screen/product_pharmacy_widget.dart';
 import 'package:inlek/locator_service.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:yandex_geocoder/yandex_geocoder.dart';
+import 'package:yandex_mapkit/yandex_mapkit.dart' as ym;
 
 class PharmaciesScreen extends StatelessWidget {
   const PharmaciesScreen({super.key});
@@ -30,6 +35,9 @@ class PharmaciesScreen extends StatelessWidget {
         arguments['pharmacies'] as List<PharmacyEntity>;
     MapScreenType mapScreenType = arguments['mapScreenType'] as MapScreenType;
     ProductEntity product = arguments['product'] as ProductEntity;
+
+    // таймер для задержки по обратному геокодированию
+    Timer? debounce;
 
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
       builder: (context, homeState) {
@@ -89,9 +97,29 @@ class PharmaciesScreen extends StatelessWidget {
                                     BottomSheetManager.showPharmacySortSheet(
                                         UiConstants.homeContext!, context,
                                         product: product),
-                                onChangedField: (value) => pharmaciesBloc.add(
-                                  ChangePharmacyQueryEvent(value),
-                                ),
+                                onChangedField: (value) {
+                                  pharmaciesBloc.add(
+                                    ChangePharmacyQueryEvent(value),
+                                  );
+
+                                  debounce?.cancel();
+                                  if (value.length <= 2) {
+                                    zoomToFirstAddress(context, null);
+                                  } else {
+                                    debounce = Timer(
+                                      Duration(milliseconds: 1500),
+                                      () async {
+                                        final geocoderManager =
+                                            sl<GeocoderManager>();
+                                        GeocodeResponse? response =
+                                            await geocoderManager
+                                                .getGeocodeFromAddress(value);
+
+                                        zoomToFirstAddress(context, response);
+                                      },
+                                    );
+                                  }
+                                },
                               ),
                               Expanded(
                                 child: homeState is InternetUnavailable
@@ -196,5 +224,42 @@ class PharmaciesScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  zoomToFirstAddress(BuildContext context, GeocodeResponse? response) {
+    if (response == null) {
+      context.read<PharmacyMapBloc>().add(MoveToCurrentLocationEvent());
+      return;
+    }
+
+    final firstFullAddress = response.firstFullAddress;
+
+    if (firstFullAddress.point != null) {
+      final firstAddress = response.firstAddress;
+
+      double zoom = 12;
+
+      if (firstAddress?.components?.any((e) => e.kind == KindResponse.house) ??
+          false) {
+        zoom = 20;
+      } else if (firstAddress?.components
+              ?.any((e) => e.kind == KindResponse.street) ??
+          false) {
+        zoom = 16;
+      } else if (firstAddress?.components
+              ?.any((e) => e.kind == KindResponse.locality) ??
+          false) {
+        zoom = 12;
+      }
+
+      context.read<PharmacyMapBloc>().add(
+            MoveToPoint(
+              zoom: zoom,
+              point: ym.Point(
+                  latitude: firstFullAddress.point!.lat,
+                  longitude: firstFullAddress.point!.lon),
+            ),
+          );
+    }
   }
 }

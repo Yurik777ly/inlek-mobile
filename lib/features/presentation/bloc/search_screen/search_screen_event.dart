@@ -7,7 +7,7 @@ abstract class SearchScreenEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class LoadDataEvent extends SearchScreenEvent {}
+class LoadSearchDataEvent extends SearchScreenEvent {}
 
 class ToggleExpandCollapseEvent extends SearchScreenEvent {
   final bool isExpanded;

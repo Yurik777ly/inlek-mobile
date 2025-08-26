@@ -16,7 +16,33 @@
          running.
 
          This Theme is only used starting with V2 of Flutter's Android embedding. -->
-    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
-        <item name="android:windowBackground">?android:colorBackground</item>
+
+    <!-- 🔹 Кастомная тема для JivoSDK -->
+    <style name="JivoSDKCustomTheme" parent="Base.Theme.JivoSDK">
+        <!-- Цвета -->
+        <item name="colorPrimary">#3d4360</item>
+        <item name="colorPrimaryVariant">#3d4360</item>
+        <item name="colorAccent">#3d4360</item>
+
+        <!-- Статус-бар -->
+        <item name="colorPrimaryDark">#3d4360</item>               <!-- для старых API -->
+        <item name="android:statusBarColor">#3d4360</item>         <!-- для современных -->
+        <item name="android:windowLightStatusBar">false</item>     <!-- или true, если нужны тёмные иконки -->
+
+        <!-- Навигационная панель -->
+        <item name="android:navigationBarColor">#000000</item>
+
+        <!-- Не рисуем под системными панелями -->
+        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:fitsSystemWindows">true</item>
     </style>
+
+    <style name="JivoSDKThemeSwitcher">
+        <item name="theme">@style/JivoSDKCustomTheme</item>
+    </style>
+
 </resources>

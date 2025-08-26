@@ -3,9 +3,61 @@ import 'package:inlek/constants/enums.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 
+class OrderSummaryEntity extends Equatable {
+  final double? productsPrice;
+  final double? productsPriceOld;
+  final double? discountPercent;
+  final double? discountAmount;
+  final double? promocodesDiscount;
+  final double? deliveryPrice;
+  final double? totalPrice;
+
+  const OrderSummaryEntity({
+    this.productsPrice,
+    this.productsPriceOld,
+    this.discountPercent,
+    this.discountAmount,
+    this.promocodesDiscount,
+    this.deliveryPrice,
+    this.totalPrice,
+  });
+
+  @override
+  List<Object?> get props => [
+        productsPrice,
+        productsPriceOld,
+        discountPercent,
+        discountAmount,
+        promocodesDiscount,
+        deliveryPrice,
+        totalPrice,
+      ];
+}
+
+class OrderAdditionalEntity extends Equatable {
+  final String? comment;
+  final bool? hasDiscount;
+  final bool? hasPromocodes;
+
+  const OrderAdditionalEntity({
+    this.comment,
+    this.hasDiscount,
+    this.hasPromocodes,
+  });
+
+  @override
+  List<Object?> get props => [
+        comment,
+        hasDiscount,
+        hasPromocodes,
+      ];
+}
+
 class OrderEntity extends Equatable {
   final int? orderId;
   final String? address;
+  final String? fullDeliveryAddress; // 👈 новое поле
+  final int? pharmacyId;
   final String? pharmacyName;
   final int? customerId;
   final DateTime? createdAt;
@@ -44,9 +96,14 @@ class OrderEntity extends Equatable {
   final PharmacyEntity? pharmacy;
   final String? link;
 
+  final OrderSummaryEntity? summary; // 👈 новое поле
+  final OrderAdditionalEntity? additional; // 👈 новое поле
+
   const OrderEntity({
     this.orderId,
     this.address,
+    this.fullDeliveryAddress,
+    this.pharmacyId,
     this.pharmacyName,
     this.customerId,
     this.createdAt,
@@ -84,12 +141,16 @@ class OrderEntity extends Equatable {
     this.typeReceipt,
     this.pharmacy,
     this.link,
+    this.summary,
+    this.additional,
   });
 
   @override
   List<Object?> get props => [
         orderId,
         address,
+        fullDeliveryAddress,
+        pharmacyId,
         pharmacyName,
         customerId,
         createdAt,
@@ -127,5 +188,7 @@ class OrderEntity extends Equatable {
         typeReceipt,
         pharmacy,
         link,
+        summary,
+        additional,
       ];
 }

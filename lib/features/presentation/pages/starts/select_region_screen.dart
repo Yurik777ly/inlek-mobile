@@ -90,7 +90,7 @@ class SelectRegionScreen extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  bottom: 0,
+                  bottom: 16,
                   left: 0,
                   right: 0,
                   child: Column(

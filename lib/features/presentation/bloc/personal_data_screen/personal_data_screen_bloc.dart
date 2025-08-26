@@ -12,14 +12,13 @@ import 'package:inlek/features/data/models/profile_model.dart';
 import 'package:inlek/features/domain/usecases/profile/delete_me.dart';
 import 'package:inlek/features/domain/usecases/profile/get_me.dart';
 import 'package:inlek/features/domain/usecases/profile/update_me.dart';
+import 'package:inlek/main.dart';
 
 part 'personal_data_screen_event.dart';
 part 'personal_data_screen_state.dart';
 
 class PersonalDataScreenBloc
     extends Bloc<PersonalDataScreenEvent, PersonalDataScreenState> {
-  BuildContext? screenContext;
-
   final GetMeUC getMeUC;
   final UpdateMeUC updateMeUC;
   final DeleteMeUC deleteMeUC;
@@ -58,14 +57,14 @@ class PersonalDataScreenBloc
         newPasswordConfirmController.text.isNotEmpty;
   }
 
+  String get fName => fNameController.text;
+
   PersonalDataScreenBloc(
       {required this.getMeUC,
       required this.updateMeUC,
       required this.deleteMeUC,
       BuildContext? context})
       : super(PersonalDataScreenLoadingState()) {
-    screenContext = context;
-
     oldPasswordController.addListener(() {
       add(PasswordChangedEvent());
     });
@@ -168,7 +167,7 @@ class PersonalDataScreenBloc
       (event, emit) async {
         // Проверяем политику при попытке сохранить данные
         if (!state.isCheckedPolicyCheckbox) {
-          ScaffoldMessenger.of(screenContext!)
+          ScaffoldMessenger.of(navigatorKey.currentContext!)
             ..hideCurrentSnackBar()
             ..showSnackBar(
               const SnackBar(
@@ -183,7 +182,7 @@ class PersonalDataScreenBloc
         final isValidPhone = Utils.phoneRegexp.hasMatch(phoneController.text);
         if (state.installedPhone != phoneController.text && isValidPhone) {
           Utils.showCustomDialog(
-            screenContext: screenContext!,
+            screenContext: navigatorKey.currentContext!,
             text: 'Номер телефона не подтверждён',
             action: (context) {
               Navigator.of(context).pop();
@@ -201,7 +200,7 @@ class PersonalDataScreenBloc
 
         return failureOrLoads.fold(
           (_) => Utils.showCustomDialog(
-            screenContext: screenContext!,
+            screenContext: navigatorKey.currentContext!,
             text: 'Неизвестная ошибка',
             action: (context) {
               Navigator.of(context).pop();
@@ -216,7 +215,7 @@ class PersonalDataScreenBloc
       (event, emit) async {
         // Проверяем политику при попытке уйти со страницы
         if (!state.isCheckedPolicyCheckbox) {
-          ScaffoldMessenger.of(screenContext!)
+          ScaffoldMessenger.of(event.context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
               const SnackBar(
@@ -231,20 +230,22 @@ class PersonalDataScreenBloc
 
         if (hasUnsavedChanges()) {
           bool? shouldSave =
-              await BottomSheetManager.showUnsavedChangesSheet(screenContext!);
+              await BottomSheetManager.showUnsavedChangesSheet(event.context);
 
           if (shouldSave == true) {
             // User chose to save, update profile and then leave
-            await updateProfile();
-            Navigator.of(screenContext!).pop();
+            String? answer = await updateProfile();
+            if (answer == null) {
+              Navigator.of(event.context).pop();
+            }
           } else if (shouldSave == false) {
             // User chose not to save, just leave
-            Navigator.of(screenContext!).pop();
+            Navigator.of(event.context).pop();
           }
           // If shouldSave is null (bottom sheet was dismissed), stay on screen
         } else {
           // No unsaved changes, just leave
-          Navigator.of(screenContext!).pop();
+          Navigator.of(event.context).pop();
         }
       },
     );
@@ -255,14 +256,18 @@ class PersonalDataScreenBloc
 
     return failureOrLoads.fold(
       (_) => Utils.showCustomDialog(
-        screenContext: screenContext!,
+        screenContext: navigatorKey.currentContext!,
         text: 'Неизвестная ошибка',
         action: (context) {
           Navigator.of(context).pop();
-          Navigator.of(screenContext!).pop();
+          Navigator.of(navigatorKey.currentContext!).pop();
         },
       ),
       (profile) {
+        oldPasswordController.clear();
+        newPasswordConfirmController.clear();
+        newPasswordController.clear();
+
         fNameController.text = profile.firstName ?? '';
         sNameController.text = profile.lastName ?? '';
         birthdayController.text = profile.birthday != null
@@ -280,7 +285,7 @@ class PersonalDataScreenBloc
             : '';
         initialPhone =
             Utils.formatPhoneNumber(profile.phoneNumber, toServerFormat: false);
-        initialEmail = profile.emailAddress;
+        initialEmail = profile.emailAddress ?? '';
         initialGender = GenderType.values
                 .firstWhereOrNull((e) => e.name == profile.gender) ??
             GenderType.values.first;
@@ -333,7 +338,7 @@ class PersonalDataScreenBloc
         };
         if (!requestedCode) {
           Utils.showCustomDialog(
-            screenContext: screenContext!,
+            screenContext: navigatorKey.currentContext!,
             text: error,
             action: (context) {
               Navigator.of(context).pop();
@@ -369,7 +374,7 @@ class PersonalDataScreenBloc
           emit(state.copyWith(showPolicyError: false));
 
           Utils.showCustomDialog(
-            screenContext: screenContext!,
+            screenContext: navigatorKey.currentContext!,
             title: 'Уведомление',
             text: 'Данные обновлены',
             action: (context) {

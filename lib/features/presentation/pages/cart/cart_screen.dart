@@ -70,7 +70,7 @@ class _CartScreenState extends State<CartScreen> {
 
             bool isPickupWithoutSelectedPharmacy =
                 cartState.cartType == TypeReceiving.pickup &&
-                    cartState.selectedPharmacyId == null;
+                    cartState.cartData?.pharmacy == null;
 
             return Scaffold(
               backgroundColor: UiConstants.backgroundColor,
@@ -188,11 +188,12 @@ class _CartScreenState extends State<CartScreen> {
                                                       bottom: 16),
                                                   child: BlockWidget(
                                                       title: 'Аптека',
-                                                      clickableText:
-                                                          cartState.selectedPharmacyId !=
-                                                                  null
-                                                              ? 'Изменить'
-                                                              : 'Выбрать аптеку',
+                                                      clickableText: cartState
+                                                                  .cartData
+                                                                  ?.pharmacy !=
+                                                              null
+                                                          ? 'Изменить'
+                                                          : 'Выбрать аптеку',
                                                       clickableTextColor:
                                                           UiConstants
                                                               .pink2Color,

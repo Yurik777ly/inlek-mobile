@@ -14,6 +14,7 @@ import 'package:inlek/core/notification_manager.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
+import 'package:inlek/features/presentation/bloc/personal_data_screen/personal_data_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/route_observer/route_observer_bloc.dart';
 import 'package:inlek/features/presentation/pages/catalog/products/product_screen.dart';
 import 'package:inlek/features/presentation/pages/main/banner_screen.dart';
@@ -240,6 +241,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   courierZoneManager: sl(),
                 )..add(InitEvent())),
         BlocProvider(
+          lazy: false,
+          create: (context) => PersonalDataScreenBloc(
+            getMeUC: sl(),
+            updateMeUC: sl(),
+            deleteMeUC: sl(),
+          )..getProfile(),
+        ),
+        BlocProvider(
           create: (context) => RouteObserverBloc(),
         ),
       ],
@@ -254,17 +263,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
               return WillPopScope(
                 onWillPop: () async {
-                  if (selectedIndex == 0) {
-                    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-                  } else {
-                    final isFirstRouteInCurrentTab = !await bloc
-                        .navigatorKeys[selectedIndex].currentState!
-                        .maybePop();
-                    if (isFirstRouteInCurrentTab) {
-                      bloc.add(ChangePageEvent(0));
-                      return false;
-                    }
+                  final canPop = await bloc
+                      .navigatorKeys[selectedIndex].currentState!
+                      .maybePop();
+
+                  if (canPop) {
+                    // Если есть вложенный экран — просто закрываем его
+                    return false;
                   }
+
+                  // Если вложенных экранов нет
+                  if (selectedIndex != 0) {
+                    // Переключаемся на первый таб
+                    bloc.add(ChangePageEvent(0));
+                    return false;
+                  }
+
+                  // Если уже на первом табе и это его корень → выходим из приложения
+                  await SystemChannels.platform
+                      .invokeMethod('SystemNavigator.pop');
                   return false;
                 },
                 child: Scaffold(

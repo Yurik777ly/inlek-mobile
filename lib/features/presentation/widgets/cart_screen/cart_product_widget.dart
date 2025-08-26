@@ -141,14 +141,14 @@ class CartProductWidget extends StatelessWidget {
                               children: [
                                 if (product.stockCount == 0)
                                   Container(
-                                    height: 104.dp,
-                                    width: 104.dp,
+                                    height: 104,
+                                    width: 104,
                                     color:
                                         UiConstants.whiteColor.withOpacity(.6),
                                   ),
                                 CachedNetworkImage(
-                                  height: 104.dp,
-                                  width: 104.dp,
+                                  height: 104,
+                                  width: 104,
                                   imageUrl:
                                       '${dotenv.env['PUBLIC_URL']!}${product.image}',
                                   fit: BoxFit.fitHeight,

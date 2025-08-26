@@ -58,14 +58,19 @@ class _DeliveryPaymentBlockState extends State<DeliveryPaymentBlock> {
                 Expanded(
                   child: DeliveryPaymentBlockItem(
                       imagePath: Paths.cardIconPath,
-                      title: 'Онлайн',
-                      titleWidget: paymentType == PaymentType.bepaid
+                      title: paymentType == PaymentType.bepaid
+                          ? 'Картой'
+                          : 'Онлайн',
+                      titleWidget: paymentType == PaymentType.erip
                           ? Image.asset(Paths.eripIconPath, height: 50)
                           : paymentType == PaymentType.oplati
                               ? SvgPicture.asset(Paths.oplatiIconPath)
                               : null,
-                      isChecked: [PaymentType.bepaid, PaymentType.oplati]
-                          .contains(paymentType),
+                      isChecked: [
+                        PaymentType.bepaid,
+                        PaymentType.oplati,
+                        PaymentType.bepaid
+                      ].contains(paymentType),
                       onTap: () {
                         setState(() {});
                         widget.changedOnlineMethodTap();

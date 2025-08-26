@@ -20,6 +20,7 @@ import 'package:inlek/features/presentation/widgets/dropdown_widget.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/block_widget.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/daily_products_list_widget.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/internet_no_internet_connection_widget.dart';
+import 'package:inlek/features/presentation/widgets/product_screen/instruction_widget.dart';
 import 'package:inlek/features/presentation/widgets/product_screen/product_banner_widget.dart';
 import 'package:inlek/features/presentation/widgets/product_screen/product_characteristic_widget.dart';
 import 'package:inlek/features/presentation/widgets/product_screen/product_receiving_methods_widget.dart';
@@ -42,10 +43,11 @@ class ProductScreen extends StatelessWidget {
         final homeBloc = context.read<HomeScreenBloc>();
         return BlocProvider(
           create: (context) => ProductScreenBloc(
-              productId: productId,
-              getOneProductUC: sl(),
-              getProductPharmaciesUC: sl())
-            ..add(LoadDataEvent()),
+            productId: productId,
+            getOneProductUC: sl(),
+            getProductPharmaciesUC: sl(),
+            sharedPreferences: sl(),
+          )..add(LoadDataEvent()),
           child: BlocBuilder<ProductScreenBloc, ProductScreenState>(
             builder: (context, productState) {
               final productBloc = context.read<ProductScreenBloc>();
@@ -95,6 +97,20 @@ class ProductScreen extends StatelessWidget {
                                                   product:
                                                       productState.product),
                                             ),
+                                            if (productState
+                                                    .product?.instruction !=
+                                                null)
+                                              Padding(
+                                                padding: getMarginOrPadding(
+                                                    top: 16,
+                                                    left: 20,
+                                                    right: 20),
+                                                child: InstructionWidget(
+                                                    instruction: productState
+                                                            .product
+                                                            ?.instruction ??
+                                                        ''),
+                                              ),
                                             SizedBox(height: 16.dp),
                                             Padding(
                                               padding: getMarginOrPadding(

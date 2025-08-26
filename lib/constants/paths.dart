@@ -93,6 +93,7 @@ class Paths {
       '${_imagesPath}checkbox_active.svg';
   static const String checkboxInactiveIconPath =
       '${_imagesPath}checkbox_inactive.svg';
+  static const String emptySearchPath = '${_imagesPath}empty_search.png';
 
   // json
   static const String courierZonesJsonPath = '${_jsonPath}apteka.json';

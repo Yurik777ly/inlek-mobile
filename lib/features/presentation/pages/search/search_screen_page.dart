@@ -12,6 +12,8 @@ import 'package:inlek/features/presentation/bloc/search_screen/search_screen_blo
 import 'package:inlek/features/presentation/pages/catalog/products/product_screen.dart';
 import 'package:inlek/features/presentation/pages/catalog/products/products_screen.dart';
 import 'package:inlek/features/presentation/widgets/app_text_field_widget.dart';
+import 'package:inlek/features/presentation/widgets/main_screen/block_widget.dart';
+import 'package:inlek/features/presentation/widgets/main_screen/daily_products_list_widget.dart';
 import 'package:inlek/features/presentation/widgets/search_screen/popularity_requests_widget.dart';
 import 'package:inlek/features/presentation/widgets/search_screen/search_products_widget.dart';
 import 'package:inlek/locator_service.dart';
@@ -24,8 +26,9 @@ class SearchScreenPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => SearchScreenBloc(
         searchProductsV2UC: sl(),
+        getDailyProductsUC: sl(),
         sharedPreferences: sl(),
-      )..add(LoadDataEvent()),
+      )..add(LoadSearchDataEvent()),
       child: const _SearchScreenPageContent(),
     );
   }
@@ -98,19 +101,22 @@ class _SearchScreenPageContentState extends State<_SearchScreenPageContent> {
                                   child: SvgPicture.asset(Paths.closeIconPath),
                                 )
                               : null,
-                          onFieldSubmitted: (p0) => Navigator.push(
-                            context,
-                            Routes.createRoute(
-                              const ProductsScreen(),
-                              settings: RouteSettings(
-                                name: Routes.productsScreen,
-                                arguments: {
-                                  'title': p0,
-                                  'products': state.searchResult?.products ?? []
-                                },
-                              ),
-                            ),
-                          ),
+                          onFieldSubmitted: !state.isLoading
+                              ? (p0) => Navigator.push(
+                                    context,
+                                    Routes.createRoute(
+                                      const ProductsScreen(),
+                                      settings: RouteSettings(
+                                        name: Routes.productsScreen,
+                                        arguments: {
+                                          'title': p0,
+                                          'products':
+                                              state.searchResult?.products ?? []
+                                        },
+                                      ),
+                                    ),
+                                  )
+                              : null,
                           onChangedField: (p0) =>
                               searchBloc.add(ChangeQueryEvent(p0)),
                         );
@@ -137,21 +143,48 @@ class _SearchScreenPageContentState extends State<_SearchScreenPageContent> {
                   final products = state.searchResult?.products ?? [];
 
                   if (hasQuery && products.isEmpty) {
-                    return Center(
-                      child: Text(
-                        'Ничего не найдено',
-                        style: UiConstants.textStyle3.copyWith(
-                          color: UiConstants.darkBlueColor,
-                          fontWeight: FontWeight.w800,
+                    return Column(
+                      children: [
+                        Padding(
+                          padding:
+                              getMarginOrPadding(left: 20, right: 20, top: 16),
+                          child: Text(
+                            'Ничего не найдено по запросу «${state.query}»',
+                            style: UiConstants.textStyle5.copyWith(
+                                color:
+                                    UiConstants.darkBlue2Color.withOpacity(.6)),
+                          ),
                         ),
-                      ),
+                        32.ph,
+                        if ((state.recommendedProducts).isNotEmpty)
+                          BlockWidget(
+                            contentPadding:
+                                getMarginOrPadding(left: 20, right: 20),
+                            title: 'Рекомендуемые продукты',
+                            //clickableText: 'Все товары',
+                            onTap: () => Navigator.of(context).push(
+                              Routes.createRoute(
+                                ProductsScreen(),
+                                settings: RouteSettings(
+                                  name: Routes.productsScreen,
+                                  arguments: {
+                                    'title': 'Рекомендуемые продукты',
+                                    'products': state.recommendedProducts,
+                                  },
+                                ),
+                              ),
+                            ),
+                            child: ProductsListWidget(
+                                products: state.recommendedProducts),
+                          ),
+                      ],
                     );
                   }
 
                   return ListView(
                     padding: getMarginOrPadding(
                       top: 16,
-                      bottom: 16,
+                      bottom: 94,
                       left: 20,
                       right: 20,
                     ),

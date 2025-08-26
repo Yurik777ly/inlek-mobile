@@ -38,4 +38,11 @@ class OrderRepositoryImpl implements OrderRepository {
       await errorHandler.handle(
         () async => await orderRemoteDataSource.createOrder(params),
       );
+
+  // 📌 Повторить заказ
+  @override
+  Future<Either<Failure, bool>> repeatOrder(int id) async =>
+      await errorHandler.handle(
+        () async => await orderRemoteDataSource.repeatOrder(id),
+      );
 }

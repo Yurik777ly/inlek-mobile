@@ -78,7 +78,7 @@ class _AddToCartButton extends StatelessWidget {
     return GestureDetector(
       onTap: () => cartBloc.add(AddCartEvent(productId: product.productId)),
       child: Container(
-        height: 44.dp,
+        height: 44,
         padding: getMarginOrPadding(left: 20, right: 20, top: 5.5, bottom: 5.5),
         decoration: BoxDecoration(
           color: UiConstants.purpleColor,
@@ -123,8 +123,8 @@ class CartQuantityChanger extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          width: 88.dp,
-          height: 44.dp,
+          width: 88,
+          height: 44,
           padding: getMarginOrPadding(all: 8),
           decoration: BoxDecoration(
             color: UiConstants.white2Color,

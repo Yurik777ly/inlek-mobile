@@ -104,6 +104,15 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
   Future<void> _inInit(InitEvent event, Emitter<CartScreenState> emit) async {
     int? savedPharmacyId =
         sharedPreferences.getInt(SharedPreferencesKeys.pharmacyId);
+    final savedAddressString =
+        sharedPreferences.getString(SharedPreferencesKeys.savedAddress);
+
+    if (savedAddressString != null) {
+      try {
+        selectedAddress =
+            GeoObjectSerialization.fromJsonString(savedAddressString);
+      } catch (_) {}
+    }
 
     emit(state.copyWith(selectedPharmacyId: savedPharmacyId));
     add(ChangeAvailableDeliveryEvent());
@@ -216,20 +225,6 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         false;
   }
 
-  void _handleCartUpdateFailure(
-      Emitter<CartScreenState> emit,
-      List<ProductEntity> updatedProducts,
-      BuildContext? context,
-      String errorMessage) {
-    emit(state.copyWith(
-        cartData: state.cartData?.copyWith(products: updatedProducts),
-        isLoading: false));
-    Utils.showCustomDialog(
-        screenContext: context ?? UiConstants.homeContext!,
-        text: errorMessage,
-        action: (context) => Navigator.of(context).pop());
-  }
-
   // Функция для удаления товара с задержкой
   Future<void> _onDeleteCart(
       DeleteCartEvent event, Emitter<CartScreenState> emit) async {
@@ -279,11 +274,11 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       final result = await deleteCartUC(CartParams(
           productId: event.productId.toString(),
           quantity: newQuantity.toString()));
-      result.fold(
-        (_) {
+      await result.fold<Future<void>>(
+        (_) async {
           _handleCartUpdateError(emit, updatedProducts, product, event.context);
         },
-        (_) {
+        (_) async {
           add(LoadCartDataEvent());
           //if (wasLastProductRemoved) {
           //  add(LoadCartDataEvent()); // Загружаем корзину только если товар был полностью удален
@@ -334,32 +329,49 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
           cartType: state.isAvailableDelivery ? TypeReceiving.delivery : null));
     }
 
-    _debounceTimer = Timer(
+    /*_debounceTimer = Timer(
       Duration(milliseconds: wasFirstTimeAdded ? 0 : 300),
-      () async {
-        final failureOrCart = await addCartUC(CartParams(
-            productId: event.productId.toString(),
-            quantity: newQuantity.toString()));
-        failureOrCart.fold(
-          (_) => _handleCartUpdateFailure(emit, updatedProducts, event.context,
-              'Ошибка добавления товара в корзину'),
-          (_) async {
-            // if (wasFirstTimeAdded) {
-            // Перезапускаем отложенное обновление корзины
-            _refreshCartTimer?.cancel();
-            _refreshCartTimer = Timer(
-              Duration(seconds: 2),
-              () {
-                if (!isClosed) {
-                  add(LoadCartDataEvent());
-                }
-              },
-            );
-            //}
+      () async {*/
+    final failureOrCart = await addCartUC(CartParams(
+        productId: event.productId.toString(),
+        quantity: newQuantity.toString()));
+    await failureOrCart.fold<Future<void>>(
+      (_) async {
+        emit(state.copyWith(
+            cartData: state.cartData?.copyWith(products: updatedProducts),
+            isLoading: false));
+
+        final navigatorContext = event.context ?? UiConstants.homeContext;
+
+        if (navigatorContext != null) {
+          Utils.showCustomDialog(
+            screenContext: navigatorContext,
+            text: 'Ошибка добавления товара в корзину',
+            action: (ctx) {
+              if (Navigator.canPop(ctx)) Navigator.of(ctx).pop();
+            },
+          );
+        } else {
+          debugPrint("Не удалось показать диалог: context null");
+        }
+      },
+      (_) async {
+        // if (wasFirstTimeAdded) {
+        // Перезапускаем отложенное обновление корзины
+        _refreshCartTimer?.cancel();
+        _refreshCartTimer = Timer(
+          Duration(seconds: 2),
+          () {
+            if (!isClosed) {
+              add(LoadCartDataEvent());
+            }
           },
         );
+        //}
       },
     );
+    /*},
+    );*/
 
     add(PickAllProductsEvent(force: true));
   }
@@ -388,7 +400,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     add(UpdateDeliveryPriceEvent());
     Set<int> selectedProductIds = state.isAllProductsChecked && !event.force
         ? {}
-        : state.cartData!.products
+        : (state.cartData?.products ?? [])
             .where((e) => e.availability != 'absent')
             .map((e) => e.productId)
             .toSet();
@@ -554,7 +566,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
               ? 'bepaid'
               : state.paymentType == PaymentType.oplati
                   ? 'oplati'
-                  : 'cash',
+                  : 'erip',
           lastName: fNameController.text,
           firstName: sNameController.text,
           email: emailController.text,
@@ -590,6 +602,21 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       (_) => emit(state.copyWith(
           isLoading: false, errorText: 'Ошибка создания заказа')),
       (order) async {
+        event.callback?.call();
+        // сохраняем адрес при успешном оформлении доставки
+        if (state.cartType == TypeReceiving.delivery) {
+          sharedPreferences.setString(SharedPreferencesKeys.savedAddress,
+              json.encode(selectedAddress?.toJsonString()));
+
+          sharedPreferences.setString(
+              SharedPreferencesKeys.savedApartment, flatController.text);
+          sharedPreferences.setString(
+              SharedPreferencesKeys.savedEntrance, entranceController.text);
+          sharedPreferences.setString(
+              SharedPreferencesKeys.savedFloor, floorController.text);
+          sharedPreferences.setString(
+              SharedPreferencesKeys.savedIntercom, doorPhoneController.text);
+        }
         if (order?.link != null) {
           await BottomSheetManager.showThanksForOrderSheet(
               event.screenContext, order!);

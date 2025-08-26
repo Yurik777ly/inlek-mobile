@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:inlek/core/error/failure.dart';
 import 'package:inlek/core/params/product_param.dart';
+import 'package:inlek/core/params/product_pharmacies_param.dart';
 import 'package:inlek/core/platform/error_handler.dart';
 import 'package:inlek/core/platform/network_info.dart';
 import 'package:inlek/features/data/datasources/product_remote_data_source_impl.dart';
@@ -46,9 +47,9 @@ class ProductRepositoryImpl implements ProductRepository {
   // 📌 Получение списка аптек, где продукт в наличии
   @override
   Future<Either<Failure, List<PharmacyEntity>>> getProductPharmacies(
-          int id) async =>
+          ProductPharmaciesParam params) async =>
       await errorHandler.handle(
-        () async => await productRemoteDataSource.getProductPharmacies(id),
+        () async => await productRemoteDataSource.getProductPharmacies(params),
       );
 
   // 📌 Получение списка продуктов по поиску

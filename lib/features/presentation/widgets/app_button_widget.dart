@@ -6,6 +6,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class AppButtonWidget extends StatelessWidget {
   final bool isActive;
+  final bool isLoading;
   final String? text;
   final Widget? textWidget;
   final VoidCallback? onTap;
@@ -20,6 +21,7 @@ class AppButtonWidget extends StatelessWidget {
   const AppButtonWidget({
     super.key,
     this.isActive = true,
+    this.isLoading = false,
     this.text,
     this.textWidget,
     this.onTap,
@@ -61,11 +63,20 @@ class AppButtonWidget extends StatelessWidget {
               alignment: alignment),
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 13.5.dp),
-            child: textWidget ??
-                Text(
-                  text ?? '',
-                  style: UiConstants.textStyle3.copyWith(height: 1),
-                ),
+            child: isLoading
+                ? Center(
+                    child: SizedBox(
+                      height: 15,
+                      width: 15,
+                      child: CircularProgressIndicator(
+                          color: UiConstants.pink2Color),
+                    ),
+                  )
+                : textWidget ??
+                    Text(
+                      text ?? '',
+                      style: UiConstants.textStyle3.copyWith(height: 1),
+                    ),
           ),
         ),
       ),

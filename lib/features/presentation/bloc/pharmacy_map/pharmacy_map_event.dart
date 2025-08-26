@@ -34,6 +34,12 @@ class ZoomOutEvent extends PharmacyMapEvent {}
 
 class MoveToCurrentLocationEvent extends PharmacyMapEvent {}
 
+class MoveToPoint extends PharmacyMapEvent {
+  final Point point;
+  final double zoom;
+  MoveToPoint({required this.point, this.zoom = 12});
+}
+
 class ClusterTappedEvent extends PharmacyMapEvent {
   final Cluster cluster;
   ClusterTappedEvent({required this.cluster});

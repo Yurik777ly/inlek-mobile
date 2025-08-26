@@ -89,7 +89,7 @@ class AppTemplate extends StatelessWidget {
                         top: Radius.circular(16.r),
                       ),
                     ),
-                    child: body),
+                    child: SafeArea(child: body)),
               ),
             ],
           ),

@@ -51,6 +51,7 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
             return null;
           }
         })();
+
         emit(state.copyWith(
             defaultPosition: city != null
                 ? Point(latitude: city.latitude, longitude: city.longitude)
@@ -73,6 +74,7 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
     on<ZoomInEvent>(_onZoomIn);
     on<ZoomOutEvent>(_onZoomOut);
     on<MoveToCurrentLocationEvent>(_onMoveToCurrentLocation);
+    on<MoveToPoint>(_onMoveToPoint);
   }
 
   void _onSelectMarker(
@@ -240,5 +242,14 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
           ),
           animation: MapAnimation(duration: 0.6));
     }
+  }
+
+  Future _onMoveToPoint(
+      MoveToPoint event, Emitter<PharmacyMapState> emit) async {
+    state.mapController?.moveCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(target: event.point, zoom: event.zoom),
+        ),
+        animation: MapAnimation(duration: 0.6));
   }
 }

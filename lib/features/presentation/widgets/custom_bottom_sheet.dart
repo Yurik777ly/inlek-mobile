@@ -15,30 +15,37 @@ class CustomBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      width: double.infinity,
-      padding: padding ??
-          getMarginOrPadding(left: 20, right: 20, top: 8, bottom: 16),
-      decoration: BoxDecoration(
-        color: color ?? UiConstants.whiteColor,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(16.r),
-        ),
-      ),
-      child: Column(
-        children: [
-          Container(
-            height: 4.dp,
-            width: 56.dp,
-            decoration: BoxDecoration(
-              color: UiConstants.white4Color,
-              borderRadius: BorderRadius.circular(200.r),
-            ),
+    return SafeArea(
+      child: Container(
+        height: height,
+        width: double.infinity,
+        padding: padding ??
+            getMarginOrPadding(
+                left: 20,
+                right: 20,
+                top: 8,
+                bottom: 16 + MediaQuery.of(context).viewInsets.bottom),
+        decoration: BoxDecoration(
+          color: color ?? UiConstants.whiteColor,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(16.r),
           ),
-          SizedBox(height: 16.dp),
-          child
-        ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: 4.dp,
+              width: 56.dp,
+              decoration: BoxDecoration(
+                color: UiConstants.white4Color,
+                borderRadius: BorderRadius.circular(200.r),
+              ),
+            ),
+            SizedBox(height: 16.dp),
+            child
+          ],
+        ),
       ),
     );
   }

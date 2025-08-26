@@ -9,7 +9,8 @@
         android:label="InLek"
         android:name=".MainApplication"
         android:icon="@mipmap/ic_launcher"
-        android:enableOnBackInvokedCallback="true">
+        android:launchMode="singleTask"
+        android:enableOnBackInvokedCallback="false">
         <activity
             android:name=".MainActivity"
             android:exported="true"

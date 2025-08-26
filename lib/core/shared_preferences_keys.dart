@@ -8,4 +8,9 @@ class SharedPreferencesKeys {
   static const String popularRequests = 'popularRequests';
   static const String pharmacyId = 'pharmacyId';
   static const String savedRegion = 'savedRegion';
+  static const String savedAddress = 'savedAddress';
+  static const String savedEntrance = 'savedEntrance';
+  static const String savedApartment = 'savedApartment';
+  static const String savedFloor = 'savedFloor';
+  static const String savedIntercom = 'savedIntercom';
 }

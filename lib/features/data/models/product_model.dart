@@ -45,6 +45,7 @@ class ProductModel extends ProductEntity {
     super.availability,
     super.prices,
     super.totals,
+    super.instruction,
   });
 
   @override
@@ -148,6 +149,7 @@ class ProductModel extends ProductEntity {
       totals: data["product_totals"] != null
           ? ProductTotalsModel.fromJson(data["product_totals"])
           : null,
+      instruction: json['instruction'],
     );
   }
 

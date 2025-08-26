@@ -54,6 +54,7 @@ import 'package:inlek/features/domain/usecases/content/get_pharmacies.dart';
 import 'package:inlek/features/domain/usecases/orders/create_order.dart';
 import 'package:inlek/features/domain/usecases/orders/get_one_order.dart';
 import 'package:inlek/features/domain/usecases/orders/get_order_history.dart';
+import 'package:inlek/features/domain/usecases/orders/repeat_order.dart';
 import 'package:inlek/features/domain/usecases/products/get_daily_products.dart';
 import 'package:inlek/features/domain/usecases/products/get_one_product.dart';
 import 'package:inlek/features/domain/usecases/products/get_product_pharmacies.dart';
@@ -135,12 +136,14 @@ Future<void> init() async {
       sharedPreferences: sl<SharedPreferences>(),
     ),
   );
-  sl.registerFactory(
+  sl.registerFactory<PersonalDataScreenBloc>(
     () => PersonalDataScreenBloc(
-        getMeUC: sl<GetMeUC>(),
-        updateMeUC: sl<UpdateMeUC>(),
-        deleteMeUC: sl<DeleteMeUC>()),
+      getMeUC: sl<GetMeUC>(),
+      updateMeUC: sl<UpdateMeUC>(),
+      deleteMeUC: sl<DeleteMeUC>(),
+    ),
   );
+
   sl.registerFactory(
     () => NewsScreenBloc(
       getNewsUC: sl<GetNewsUC>(),
@@ -174,7 +177,7 @@ Future<void> init() async {
       getFormsUC: sl<GetFormsUC>(),
     ),
   );
-  sl.registerFactory(
+  sl.registerLazySingleton(
     () => MainScreenBloc(
       getBannersUC: sl<GetBannersUC>(),
       getCategoriesUC: sl<GetCategoriesUC>(),
@@ -194,6 +197,7 @@ Future<void> init() async {
     () => ProductScreenBloc(
       getOneProductUC: sl<GetOneProductUC>(),
       getProductPharmaciesUC: sl<GetProductPharmaciesUC>(),
+      sharedPreferences: sl<SharedPreferences>(),
     ),
   );
   sl.registerFactory(
@@ -204,6 +208,7 @@ Future<void> init() async {
   sl.registerFactory(
     () => OrderScreenBloc(
       getOneOrderUC: sl<GetOneOrderUC>(),
+      repeatOrderUC: sl<RepeatOrderUC>(),
     ),
   );
   sl.registerFactory(
@@ -241,6 +246,7 @@ Future<void> init() async {
   sl.registerFactory(
     () => SearchScreenBloc(
       searchProductsV2UC: sl<SearchProductsV2UC>(),
+      getDailyProductsUC: sl<GetDailyProductsUC>(),
       sharedPreferences: sl<SharedPreferences>(),
     ),
   );
@@ -295,6 +301,7 @@ Future<void> init() async {
   // Order
   sl.registerLazySingleton(() => GetOrderHistoryUC(sl()));
   sl.registerLazySingleton(() => GetOneOrderUC(sl()));
+  sl.registerLazySingleton(() => RepeatOrderUC(sl()));
   sl.registerLazySingleton(() => CreateOrderUC(sl()));
 
   // Cart

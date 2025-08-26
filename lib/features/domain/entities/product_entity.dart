@@ -44,6 +44,7 @@ class ProductEntity extends BaseProductEntity {
   final bool isLoading;
   final ProductPricesEntity? prices;
   final ProductTotalsEntity? totals;
+  final String? instruction;
 
   const ProductEntity({
     super.productId = 0,
@@ -88,6 +89,7 @@ class ProductEntity extends BaseProductEntity {
     this.isLoading = false,
     this.prices,
     this.totals,
+    this.instruction,
   });
 
   ProductEntity copyWith({
@@ -133,6 +135,7 @@ class ProductEntity extends BaseProductEntity {
     bool? isLoading,
     ProductPricesEntity? prices,
     ProductTotalsEntity? totals,
+    String? instruction,
   }) {
     return ProductEntity(
       productId: productId ?? this.productId,
@@ -177,6 +180,7 @@ class ProductEntity extends BaseProductEntity {
       isLoading: isLoading ?? this.isLoading,
       prices: prices ?? this.prices,
       totals: totals ?? this.totals,
+      instruction: instruction ?? this.instruction,
     );
   }
 
@@ -223,6 +227,7 @@ class ProductEntity extends BaseProductEntity {
         isLoading,
         prices,
         totals,
+        instruction,
       ];
 }
 

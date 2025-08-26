@@ -24,12 +24,12 @@ class CategoryWidget extends StatelessWidget {
       child: Column(
         children: [
           SvgPicture.network('${dotenv.env['PUBLIC_URL']!}$imagePath',
-              width: 40.dp, height: 40.dp),
+              width: 40, height: 40),
           SizedBox(height: 12.dp),
           Text(title,
               style: UiConstants.textStyle3
                   .copyWith(color: UiConstants.darkBlueColor),
-              maxLines: 3,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center)
         ],

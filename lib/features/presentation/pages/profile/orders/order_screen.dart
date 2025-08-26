@@ -6,6 +6,10 @@ import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
+import 'package:inlek/core/geocoder_manager.dart';
+import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
+import 'package:inlek/features/domain/entities/order_entity.dart';
+import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/order_screen/order_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/app_button_widget.dart';
@@ -32,7 +36,8 @@ class OrderScreen extends StatelessWidget {
         final homeBloc = context.read<HomeScreenBloc>();
         return BlocProvider(
           create: (context) =>
-              OrderScreenBloc(getOneOrderUC: sl())..add(LoadDataEvent(orderId)),
+              OrderScreenBloc(getOneOrderUC: sl(), repeatOrderUC: sl())
+                ..add(LoadDataEvent(orderId)),
           child: BlocBuilder<OrderScreenBloc, OrderScreenState>(
             builder: (context, orderState) {
               //OrderScreenBloc orderBloc = context.read<OrderScreenBloc>();
@@ -122,35 +127,34 @@ class OrderScreen extends StatelessWidget {
                                               spacing: 8,
                                               child: OrderInfoList(
                                                 order: orderState.order,
-                                                address: [
-                                                  orderState
-                                                      .order?.deliveryCity,
-                                                  orderState
-                                                      .order?.deliveryStreet
-                                                ].join(', '),
+                                                address: orderState.order
+                                                        ?.fullDeliveryAddress ??
+                                                    [
+                                                      orderState
+                                                          .order?.deliveryCity,
+                                                      orderState
+                                                          .order?.deliveryStreet
+                                                    ].join(', '),
                                               ),
                                             ),
                                             SizedBox(height: 32.dp),
-                                            if (orderState.order?.status ==
-                                                OrderStatus.canceled)
-                                              Padding(
-                                                padding: getMarginOrPadding(
-                                                    bottom: 8),
-                                                child: AppButtonWidget(
-                                                  text: 'Повторить заказ',
-                                                  onTap: () {
-                                                    homeBloc
-                                                        .navigatorKeys[homeBloc
-                                                            .selectedPageIndex]
-                                                        .currentState!
-                                                        .popUntil((route) =>
-                                                            route.isFirst);
-
-                                                    homeBloc.add(
-                                                        ChangePageEvent(2));
-                                                  },
+                                            /*if (orderState.order?.status ==
+                                                OrderStatus.canceled)*/
+                                            Padding(
+                                              padding:
+                                                  getMarginOrPadding(bottom: 8),
+                                              child: AppButtonWidget(
+                                                isLoading:
+                                                    orderState.isRepeatingOrder,
+                                                text: 'Повторить заказ',
+                                                onTap: () => _onRepeatOrder(
+                                                  context,
+                                                  homeBloc,
+                                                  orderState,
+                                                  orderId!,
                                                 ),
                                               ),
+                                            ),
                                             Skeleton.replace(
                                               child: AppButtonWidget(
                                                   text: 'Связаться с нами',
@@ -176,5 +180,81 @@ class OrderScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _onRepeatOrder(
+    BuildContext context,
+    HomeScreenBloc homeBloc,
+    OrderScreenState orderState,
+    int orderId,
+  ) async {
+    final orderBloc = context.read<OrderScreenBloc>();
+    final cartBloc = context.read<CartScreenBloc>();
+
+    orderBloc.add(
+      RepeatOrderEvent(
+        orderId,
+        (isSuccess) async {
+          if (!isSuccess) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(content: Text('Не удалось повторить заказ')),
+              );
+            cartBloc.add(LoadCartDataEvent());
+            return;
+          }
+
+          // очищаем стек корзины
+          homeBloc.navigatorKeys[2].currentState?.popUntil((r) => r.isFirst);
+          // переводим на экран корзины
+          homeBloc.add(ChangePageEvent(2));
+
+          final orderType = orderState.order?.typeReceipt;
+          if (orderType != null && orderType != cartBloc.state.cartType) {
+            cartBloc.add(ChangeCartTypeEvent(orderType));
+          }
+
+          if (orderType == TypeReceiving.pickup) {
+            cartBloc.add(
+              SelectPharmacy(
+                CartPharmacyEntity(
+                  pharmacyId: orderState.order?.pharmacyId ?? 0,
+                  pharmacyName: orderState.order?.pharmacy?.address ?? '',
+                  address: orderState.order?.pharmacy?.address ?? '',
+                  coordinates: orderState.order?.pharmacy?.coordinates ?? '',
+                  schedule: orderState.order?.pharmacy?.schedule ?? '',
+                  distanceMeters: 0,
+                  products: [],
+                  totalProducts: 0,
+                  totalPrice: 0,
+                  totalPriceOld: 0,
+                  totalDiscount: 0,
+                ),
+              ),
+            );
+          } else {
+            await _setSelectedAddress(cartBloc, orderState.order);
+          }
+
+          cartBloc.add(LoadCartDataEvent(isFirstLoading: true));
+        },
+      ),
+    );
+  }
+
+  Future<void> _setSelectedAddress(
+    CartScreenBloc cartBloc,
+    OrderEntity? order,
+  ) async {
+    if (order?.deliveryCity == null || order?.deliveryStreet == null) {
+      return;
+    }
+
+    final geocodeResponse = await sl<GeocoderManager>().getGeocodeFromAddress(
+        [order?.deliveryCity, order?.deliveryStreet].join(', '));
+
+    cartBloc.selectedAddress = geocodeResponse
+        ?.response?.geoObjectCollection?.featureMember?.firstOrNull?.geoObject;
   }
 }

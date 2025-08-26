@@ -62,6 +62,7 @@ import 'package:inlek/features/presentation/widgets/product_screen/product_pharm
 import 'package:inlek/features/presentation/widgets/search_screen/price_range_widget.dart';
 import 'package:inlek/features/presentation/widgets/select_region_screen/city_search_field.dart';
 import 'package:inlek/locator_service.dart';
+import 'package:inlek/main.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -75,7 +76,7 @@ class BottomSheetManager {
       context: context,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          height: 158.dp,
+          //height: 158.dp,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -119,7 +120,7 @@ class BottomSheetManager {
       context: context,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          height: 158.dp,
+          //height: 158.dp,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -164,7 +165,6 @@ class BottomSheetManager {
       context: UiConstants.homeContext!,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          height: 231.dp,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -209,7 +209,6 @@ class BottomSheetManager {
       context: homeContext,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          height: 288.dp,
           child: Column(
             children: [
               Text(
@@ -248,7 +247,6 @@ class BottomSheetManager {
       context: UiConstants.homeContext!,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          height: 186.dp,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -283,10 +281,10 @@ class BottomSheetManager {
   static Future<bool?> showExitAccountSheet(BuildContext context) {
     return showModalBottomSheet<bool?>(
       useRootNavigator: true,
+      isScrollControlled: true,
       context: UiConstants.homeContext!,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          height: 200,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -319,14 +317,26 @@ class BottomSheetManager {
     GlobalKey<FormState> formKey = GlobalKey();
 
     CartScreenBloc cartBloc = screenContext.read<CartScreenBloc>();
+    PersonalDataScreenBloc personalDataScreenBloc =
+        screenContext.read<PersonalDataScreenBloc>();
+
+    // сбрасываем при новом открытии
+    cartBloc.cityController.text = '';
+    cartBloc.streetHomeController.text = '';
+    cartBloc.flatController.text = '';
+    cartBloc.floorController.text = '';
+    cartBloc.entranceController.text = '';
+    cartBloc.doorPhoneController.text = '';
+    cartBloc.commentController.text = '';
+    cartBloc.add(ChangePaymentTypeEvent(PaymentType.courier));
 
     final sharedPreferences = sl<SharedPreferences>();
 
-    // Load shared preferences data
-    final String? fullName =
-        sharedPreferences.getString(SharedPreferencesKeys.fullName);
-    final String? email =
-        sharedPreferences.getString(SharedPreferencesKeys.email);
+    final String? fName = personalDataScreenBloc.initialFirstName;
+    final String? lName = personalDataScreenBloc.initialLastName;
+    final String? email = personalDataScreenBloc.initialEmail;
+    final String? phone = personalDataScreenBloc.initialPhone;
+
     final city = (() {
       try {
         final json = sharedPreferences.getString(SharedPreferencesKeys.city);
@@ -338,39 +348,51 @@ class BottomSheetManager {
       }
     })();
 
-    final String? phone =
-        sharedPreferences.getString(SharedPreferencesKeys.phone);
+    final savedApartment =
+        sharedPreferences.getString(SharedPreferencesKeys.savedApartment);
+    final savedEntrance =
+        sharedPreferences.getString(SharedPreferencesKeys.savedEntrance);
+    final savedFloor =
+        sharedPreferences.getString(SharedPreferencesKeys.savedFloor);
+    final savedIntercom =
+        sharedPreferences.getString(SharedPreferencesKeys.savedIntercom);
 
-    // Initialize controllers with SharedPreferences data
-    cartBloc.fNameController.text =
-        fullName != null && fullName.split(' ').isNotEmpty
-            ? fullName.split(' ').first
-            : '';
+    if (cartBloc.selectedAddress != null) {
+      try {
+        final streetComponent = cartBloc.selectedAddress!.metaDataProperty
+            ?.geocoderMetaData?.address?.components
+            ?.firstWhere((component) => component.kind == KindResponse.street);
 
-    cartBloc.sNameController.text =
-        fullName != null && fullName.split(' ').length > 1
-            ? fullName.split(' ')[1]
-            : '';
+        final houseComponent = cartBloc.selectedAddress!.metaDataProperty
+            ?.geocoderMetaData?.address?.components
+            ?.firstWhere((component) => component.kind == KindResponse.house);
 
-    // сбрасываем при новом открытии
-    cartBloc.cityController.text = city;
-    cartBloc.streetHomeController.text = '';
-    cartBloc.flatController.text = '';
-    cartBloc.floorController.text = '';
-    cartBloc.entranceController.text = '';
-    cartBloc.doorPhoneController.text = '';
-    cartBloc.commentController.text = '';
-    cartBloc.add(ChangePaymentTypeEvent(PaymentType.courier));
+        final cityComponent = cartBloc.selectedAddress!.metaDataProperty
+            ?.geocoderMetaData?.address?.components
+            ?.firstWhere(
+                (component) => component.kind == KindResponse.locality);
 
-    if (cartBloc.fNameController.text == 'null') {
-      cartBloc.fNameController.text = '';
+        cartBloc.streetHomeController.text =
+            '${streetComponent?.name}, ${houseComponent?.name}';
+        cartBloc.cityController.text = cityComponent?.name ?? '';
+      } catch (_) {
+        if (city != 'null') {
+          cartBloc.cityController.text = city;
+        }
+      }
+    } else if (city != 'null') {
+      cartBloc.cityController.text = city;
     }
-    if (cartBloc.sNameController.text == 'null') {
-      cartBloc.sNameController.text = '';
-    }
 
-    cartBloc.emailController.text =
-        email != null && email != 'null' ? email : '';
+    cartBloc.fNameController.text = fName ?? '';
+    cartBloc.sNameController.text = lName ?? '';
+    cartBloc.emailController.text = email ?? '';
+    cartBloc.phoneController.text = phone ?? '';
+
+    cartBloc.flatController.text = savedApartment ?? '';
+    cartBloc.floorController.text = savedFloor ?? '';
+    cartBloc.doorPhoneController.text = savedIntercom ?? '';
+    cartBloc.entranceController.text = savedEntrance ?? '';
 
     cartBloc.phoneController.text = phone != null && phone != 'null'
         ? Utils.formatPhoneNumber(phone, toServerFormat: false)
@@ -379,123 +401,137 @@ class BottomSheetManager {
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
-      context: UiConstants.homeContext!,
+      context: navigatorKey.currentContext!,
       builder: (sheetContext) {
-        return BlocBuilder<CartScreenBloc, CartScreenState>(
-          bloc: cartBloc,
-          builder: (context, state) {
-            return CustomBottomSheet(
-              padding:
-                  getMarginOrPadding(left: 20, right: 20, top: 8, bottom: 16),
-              color: UiConstants.backgroundColor,
-              child: Expanded(
-                child: Form(
-                  key: formKey,
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    children: [
-                      Text(
-                        'Доставка',
-                        style: UiConstants.textStyle1
-                            .copyWith(color: UiConstants.darkBlueColor),
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider<CartScreenBloc>.value(value: cartBloc),
+            BlocProvider<PersonalDataScreenBloc>.value(
+                value: personalDataScreenBloc),
+          ],
+          child: BlocBuilder<CartScreenBloc, CartScreenState>(
+            bloc: cartBloc,
+            builder: (context, state) {
+              return CustomBottomSheet(
+                padding:
+                    getMarginOrPadding(left: 20, right: 20, top: 8, bottom: 16),
+                color: UiConstants.backgroundColor,
+                child: Expanded(
+                  child: Form(
+                    key: formKey,
+                    child: ListView(
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
                       ),
-                      SizedBox(height: 16.dp),
-                      InfoPlateWidget(
-                          text:
-                              'Доставка производится только по Минску и Минскому району'),
-                      SizedBox(height: 16.dp),
-                      DeliveryCustomerBlock(screenContext: screenContext),
-                      if (cartBloc.state.cartType == TypeReceiving.delivery)
-                        Padding(
-                          padding: getMarginOrPadding(top: 16),
-                          child: DeliveryAddressBlock(
-                            screenContext: screenContext,
-                            onPickAddressOnMap: () =>
-                                showSelectAddressOnMapSheet(screenContext,
-                                    sheetContext: sheetContext),
-                          ),
+                      shrinkWrap: true,
+                      children: [
+                        Text(
+                          'Доставка',
+                          style: UiConstants.textStyle1
+                              .copyWith(color: UiConstants.darkBlueColor),
                         ),
-                      if (cartBloc.state.cartType == TypeReceiving.delivery)
-                        Padding(
-                          padding: getMarginOrPadding(top: 16),
-                          child: DeliveryPaymentBlock(
-                            screenContext: screenContext,
-                            changedOnlineMethodTap: () async {
-                              PaymentType? paymentType =
-                                  await showPickOnlinePaymentSheet(
-                                      screenContext);
+                        SizedBox(height: 16.dp),
+                        InfoPlateWidget(
+                            text:
+                                'Доставка производится только по Минску и Минскому району'),
+                        SizedBox(height: 16.dp),
+                        DeliveryCustomerBlock(screenContext: screenContext),
+                        if (cartBloc.state.cartType == TypeReceiving.delivery)
+                          Padding(
+                            padding: getMarginOrPadding(top: 16),
+                            child: DeliveryAddressBlock(
+                              screenContext: screenContext,
+                              onPickAddressOnMap: () =>
+                                  showSelectAddressOnMapSheet(screenContext,
+                                      sheetContext: sheetContext),
+                            ),
+                          ),
+                        if (cartBloc.state.cartType == TypeReceiving.delivery)
+                          Padding(
+                            padding: getMarginOrPadding(top: 16),
+                            child: DeliveryPaymentBlock(
+                              screenContext: screenContext,
+                              changedOnlineMethodTap: () async {
+                                PaymentType? paymentType =
+                                    await showPickOnlinePaymentSheet(
+                                        screenContext);
 
-                              if (paymentType != null) {
-                                cartBloc
-                                    .add(ChangePaymentTypeEvent(paymentType));
+                                if (paymentType != null) {
+                                  cartBloc
+                                      .add(ChangePaymentTypeEvent(paymentType));
+                                }
+                              },
+                            ),
+                          ),
+                        SizedBox(height: 16.dp),
+                        SizedBox(
+                          height: cartBloc.state.cartType ==
+                                      TypeReceiving.pickup ||
+                                  (cartBloc.state.cartType ==
+                                              TypeReceiving.delivery &&
+                                          cartBloc.selectedAddress == null ||
+                                      cartBloc.state.deliveryZone ==
+                                          DeliveryZoneType.none)
+                              ? null
+                              : 60.dp,
+                          child: AppButtonWidget(
+                            textWidget: cartBloc.state.isOrderCompleting
+                                ? Center(
+                                    child: CircularProgressIndicator(
+                                        color: UiConstants.pink2Color),
+                                  )
+                                : Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Оформить заказ',
+                                        style: UiConstants.textStyle3
+                                            .copyWith(height: 1),
+                                      ),
+                                      if (cartBloc.state.cartType ==
+                                              TypeReceiving.delivery &&
+                                          cartBloc.selectedAddress != null &&
+                                          cartBloc.state.deliveryZone !=
+                                              DeliveryZoneType.none)
+                                        Expanded(
+                                          child: FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            child: Text(
+                                              'Стоимость доставки - ${cartBloc.state.deliveryPayment}р.',
+                                              style: UiConstants.textStyle8
+                                                  .copyWith(
+                                                      color: UiConstants
+                                                          .whiteColor,
+                                                      height: 1),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                            isActive: true,
+                            onTap: () {
+                              if ((formKey.currentState?.validate() ?? false) &&
+                                  !cartBloc.state.isOrderCompleting) {
+                                screenContext
+                                    .read<CartScreenBloc>()
+                                    .add(CreateOrderEvent(
+                                      screenContext: screenContext,
+                                      callback: () {
+                                        personalDataScreenBloc.getProfile();
+                                      },
+                                    ));
+                                Navigator.pop(sheetContext);
                               }
                             },
                           ),
                         ),
-                      SizedBox(height: 16.dp),
-                      SizedBox(
-                        height:
-                            cartBloc.state.cartType == TypeReceiving.pickup ||
-                                    (cartBloc.state.cartType ==
-                                                TypeReceiving.delivery &&
-                                            cartBloc.selectedAddress == null ||
-                                        cartBloc.state.deliveryZone ==
-                                            DeliveryZoneType.none)
-                                ? null
-                                : 60.dp,
-                        child: AppButtonWidget(
-                          textWidget: cartBloc.state.isOrderCompleting
-                              ? Center(
-                                  child: CircularProgressIndicator(
-                                      color: UiConstants.pink2Color),
-                                )
-                              : Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Оформить заказ',
-                                      style: UiConstants.textStyle3
-                                          .copyWith(height: 1),
-                                    ),
-                                    if (cartBloc.state.cartType ==
-                                            TypeReceiving.delivery &&
-                                        cartBloc.selectedAddress != null &&
-                                        cartBloc.state.deliveryZone !=
-                                            DeliveryZoneType.none)
-                                      Expanded(
-                                        child: FittedBox(
-                                          fit: BoxFit.scaleDown,
-                                          child: Text(
-                                            'Стоимость доставки - ${cartBloc.state.deliveryPayment}р.',
-                                            style: UiConstants.textStyle8
-                                                .copyWith(
-                                                    color:
-                                                        UiConstants.whiteColor,
-                                                    height: 1),
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                          isActive: true,
-                          onTap: () {
-                            if ((formKey.currentState?.validate() ?? false) &&
-                                !cartBloc.state.isOrderCompleting) {
-                              screenContext.read<CartScreenBloc>().add(
-                                  CreateOrderEvent(
-                                      screenContext: screenContext));
-                              Navigator.pop(sheetContext);
-                            }
-                          },
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         );
       },
     );
@@ -507,7 +543,7 @@ class BottomSheetManager {
       context: UiConstants.homeContext!,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          height: 220.dp,
+          //height: 220.dp,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -517,7 +553,7 @@ class BottomSheetManager {
                     .copyWith(color: UiConstants.darkBlueColor),
               ),
               SizedBox(height: 16.dp),
-              /*OnlinePaymentMethodButton(
+              OnlinePaymentMethodButton(
                 child: Padding(
                   padding: getMarginOrPadding(top: 10, bottom: 10),
                   child: Row(
@@ -537,7 +573,7 @@ class BottomSheetManager {
                 onTap: () {
                   Navigator.pop(sheetContext, PaymentType.bepaid);
                 },
-              ),*/
+              ),
               OnlinePaymentMethodButton(
                 child: SvgPicture.asset(Paths.oplatiIconPath),
                 onTap: () {
@@ -548,7 +584,7 @@ class BottomSheetManager {
                 child: Image.asset(Paths.eripIconPath,
                     width: 88.dp, height: 44.dp),
                 onTap: () {
-                  Navigator.pop(sheetContext, PaymentType.bepaid);
+                  Navigator.pop(sheetContext, PaymentType.erip);
                 },
               ),
             ],
@@ -574,6 +610,44 @@ class BottomSheetManager {
     searchAddressController.text = selectedAddress
             ?.metaDataProperty?.geocoderMetaData?.address?.formatted ??
         '';
+
+    zoomToFirstAddress(BuildContext context, GeocodeResponse? response) {
+      if (response == null) {
+        context.read<PharmacyMapBloc>().add(MoveToCurrentLocationEvent());
+        return;
+      }
+
+      final firstFullAddress = response.firstFullAddress;
+
+      if (firstFullAddress.point != null) {
+        final firstAddress = response.firstAddress;
+
+        double zoom = 12;
+
+        if (firstAddress?.components
+                ?.any((e) => e.kind == KindResponse.house) ??
+            false) {
+          zoom = 20;
+        } else if (firstAddress?.components
+                ?.any((e) => e.kind == KindResponse.street) ??
+            false) {
+          zoom = 16;
+        } else if (firstAddress?.components
+                ?.any((e) => e.kind == KindResponse.locality) ??
+            false) {
+          zoom = 12;
+        }
+
+        context.read<PharmacyMapBloc>().add(
+              MoveToPoint(
+                zoom: zoom,
+                point: ym.Point(
+                    latitude: firstFullAddress.point!.lat,
+                    longitude: firstFullAddress.point!.lon),
+              ),
+            );
+      }
+    }
 
     showModalBottomSheet(
       useSafeArea: true,
@@ -665,9 +739,11 @@ class BottomSheetManager {
                                     controller: searchAddressController,
                                     suggestionObjects: suggestionObjects,
                                     suggestionFetcher: (query) async {
-                                      if (query.length <= 2) return [];
-
                                       debounce?.cancel();
+                                      if (query.length <= 2) {
+                                        zoomToFirstAddress(context, null);
+                                        return [];
+                                      }
 
                                       final completer =
                                           Completer<List<String>>();
@@ -679,6 +755,8 @@ class BottomSheetManager {
                                         GeocodeResponse? response =
                                             await geocoderManager
                                                 .getGeocodeFromAddress(query);
+
+                                        zoomToFirstAddress(context, response);
 
                                         suggestionObjects = response
                                                 ?.response
@@ -959,6 +1037,7 @@ class BottomSheetManager {
   static showThanksForOrderSheet(
       BuildContext screenContext, OrderEntity order) {
     CartScreenBloc cartBloc = screenContext.read<CartScreenBloc>();
+    HomeScreenBloc homeBloc = screenContext.read<HomeScreenBloc>();
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
@@ -1022,21 +1101,16 @@ class BottomSheetManager {
                 AppButtonWidget(
                   text: 'К списку заказов',
                   isActive: true,
-                  onTap: () {
+                  onTap: () async {
                     Navigator.pop(sheetContext);
-                    screenContext
-                        .read<HomeScreenBloc>()
-                        .add(ChangePageEvent(3));
-                    screenContext
-                        .read<HomeScreenBloc>()
-                        .navigatorKeys[3]
-                        .currentState!
-                        .push(
-                          Routes.createRoute(
-                            OrdersScreen(),
-                            settings: RouteSettings(name: Routes.ordersScreen),
-                          ),
-                        );
+                    homeBloc.add(ChangePageEvent(3, forcePopToRoot: true));
+                    await Future.delayed(Duration(milliseconds: 300));
+                    homeBloc.navigatorKeys[3].currentState!.push(
+                      Routes.createRoute(
+                        OrdersScreen(),
+                        settings: RouteSettings(name: Routes.ordersScreen),
+                      ),
+                    );
                   },
                 )
               ],
@@ -1050,6 +1124,47 @@ class BottomSheetManager {
   static showSelectPharmacySheet(BuildContext screenContext) {
     CartScreenBloc cartBloc = screenContext.read<CartScreenBloc>();
     TextEditingController queryController = TextEditingController();
+
+    // таймер для задержки по обратному геокодированию
+    Timer? debounce;
+
+    zoomToFirstAddress(BuildContext context, GeocodeResponse? response) {
+      if (response == null) {
+        context.read<PharmacyMapBloc>().add(MoveToCurrentLocationEvent());
+        return;
+      }
+
+      final firstFullAddress = response.firstFullAddress;
+
+      if (firstFullAddress.point != null) {
+        final firstAddress = response.firstAddress;
+
+        double zoom = 12;
+
+        if (firstAddress?.components
+                ?.any((e) => e.kind == KindResponse.house) ??
+            false) {
+          zoom = 20;
+        } else if (firstAddress?.components
+                ?.any((e) => e.kind == KindResponse.street) ??
+            false) {
+          zoom = 16;
+        } else if (firstAddress?.components
+                ?.any((e) => e.kind == KindResponse.locality) ??
+            false) {
+          zoom = 12;
+        }
+
+        context.read<PharmacyMapBloc>().add(
+              MoveToPoint(
+                zoom: zoom,
+                point: ym.Point(
+                    latitude: firstFullAddress.point!.lat,
+                    longitude: firstFullAddress.point!.lon),
+              ),
+            );
+      }
+    }
 
     showModalBottomSheet(
       useSafeArea: true,
@@ -1135,10 +1250,32 @@ class BottomSheetManager {
                                         isShowFilterButton: true,
                                         onTapFilterButton: () =>
                                             showPharmacySort2Sheet(context),
-                                        onChangedField: (value) =>
-                                            pharmaciesBloc.add(
-                                          ChangePharmacyCartQueryEvent(value),
-                                        ),
+                                        onChangedField: (value) {
+                                          pharmaciesBloc.add(
+                                            ChangePharmacyCartQueryEvent(value),
+                                          );
+
+                                          debounce?.cancel();
+                                          if (value.length <= 2) {
+                                            zoomToFirstAddress(context, null);
+                                            return;
+                                          }
+
+                                          debounce = Timer(
+                                            Duration(milliseconds: 1500),
+                                            () async {
+                                              final geocoderManager =
+                                                  sl<GeocoderManager>();
+                                              GeocodeResponse? response =
+                                                  await geocoderManager
+                                                      .getGeocodeFromAddress(
+                                                          value);
+
+                                              zoomToFirstAddress(
+                                                  context, response);
+                                            },
+                                          );
+                                        },
                                       ),
                                     ),
                                     SizedBox(height: 32.dp),
@@ -1307,7 +1444,7 @@ class BottomSheetManager {
       context: homeContext,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          height: 180.dp,
+          //height: 180.dp,
           child: Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1341,7 +1478,7 @@ class BottomSheetManager {
           bloc: bloc,
           builder: (context, state) {
             return CustomBottomSheet(
-              height: 365,
+              // height: 365,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1566,7 +1703,7 @@ class BottomSheetManager {
           bloc: productsBloc,
           builder: (context, state) {
             return CustomBottomSheet(
-              height: 210.dp,
+              //height: 210.dp,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1628,7 +1765,7 @@ class BottomSheetManager {
           bloc: pharmaciesBloc,
           builder: (context, state) {
             return CustomBottomSheet(
-              height: 200.dp,
+              //height: 200.dp,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1697,7 +1834,7 @@ class BottomSheetManager {
           bloc: pharmaciesBloc,
           builder: (context, state) {
             return CustomBottomSheet(
-              height: 200.dp,
+              //height: 200.dp,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1976,7 +2113,7 @@ class BottomSheetManager {
       builder: (sheetContext) {
         return CustomBottomSheet(
           padding: EdgeInsets.zero,
-          height: 230,
+          //height: 230,
           child: ProductPharmacyWidget(pharmacy: pharmacy),
         );
       },

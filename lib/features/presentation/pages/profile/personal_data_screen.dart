@@ -16,7 +16,6 @@ import 'package:inlek/features/presentation/widgets/personal_data_screen/change_
 import 'package:inlek/features/presentation/widgets/personal_data_screen/checkboxed_block.dart';
 import 'package:inlek/features/presentation/widgets/personal_data_screen/contacts_block.dart';
 import 'package:inlek/features/presentation/widgets/personal_data_screen/general_information_block.dart';
-import 'package:inlek/locator_service.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class PersonalDataScreen extends StatefulWidget {
@@ -36,6 +35,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     // Validate form after widget is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _validateForm();
+      context.read<PersonalDataScreenBloc>().getProfile();
     });
   }
 
@@ -51,154 +51,143 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
       builder: (context, homeState) {
-        return BlocProvider(
-          create: (context) => PersonalDataScreenBloc(
-              context: context,
-              getMeUC: sl(),
-              updateMeUC: sl(),
-              deleteMeUC: sl())
-            ..getProfile(),
-          child: BlocConsumer<PersonalDataScreenBloc, PersonalDataScreenState>(
-            listener: (context, state) => switch (state) {
-              DeleteAccountState _ =>
-                Navigator.of(UiConstants.homeContext!).pushAndRemoveUntil(
-                    Routes.createRoute(
-                      const LoginScreen(),
-                      settings: RouteSettings(
-                        name: Routes.loginScreen,
-                        arguments: {'redirect_type': LoginScreenType.login},
-                      ),
+        return BlocConsumer<PersonalDataScreenBloc, PersonalDataScreenState>(
+          listener: (context, state) => switch (state) {
+            DeleteAccountState _ =>
+              Navigator.of(UiConstants.homeContext!).pushAndRemoveUntil(
+                  Routes.createRoute(
+                    const LoginScreen(),
+                    settings: RouteSettings(
+                      name: Routes.loginScreen,
+                      arguments: {'redirect_type': LoginScreenType.login},
                     ),
-                    (_) => false),
-              _ => {},
-            },
-            builder: (context, state) {
-              final personalDataBloc = context.read<PersonalDataScreenBloc>();
+                  ),
+                  (_) => false),
+            _ => {},
+          },
+          builder: (context, state) {
+            final personalDataBloc = context.read<PersonalDataScreenBloc>();
 
-              // Validate form whenever state changes
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (formKey.currentState != null) {
-                  bool newFormValid = formKey.currentState!.validate();
-                  if (newFormValid != isFormValid) {
-                    setState(() {
-                      isFormValid = newFormValid;
-                    });
-                  }
+            // Validate form whenever state changes
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (formKey.currentState != null) {
+                bool newFormValid = formKey.currentState!.validate();
+                if (newFormValid != isFormValid) {
+                  setState(() {
+                    isFormValid = newFormValid;
+                  });
                 }
-              });
+              }
+            });
 
-              return WillPopScope(
-                onWillPop: () async {
-                  final isValid = formKey.currentState?.validate() ?? false;
+            return WillPopScope(
+              onWillPop: () async {
+                final isValid = formKey.currentState?.validate() ?? false;
 
-                  if (isValid) {
-                    personalDataBloc.add(
-                      BackButtonPressedEvent(context: context),
-                    );
-                  }
+                if (isValid) {
+                  personalDataBloc.add(
+                    BackButtonPressedEvent(context: context),
+                  );
+                }
 
-                  // Возвращаем false, чтобы предотвратить автоматический pop
-                  return false;
-                },
-                child: Scaffold(
-                  backgroundColor: UiConstants.backgroundColor,
-                  body: SafeArea(
-                    child: Skeletonizer(
-                      ignorePointers: false,
-                      enabled: state.isLoading,
-                      child: Builder(
-                        builder: (context) {
-                          return Form(
-                            key: formKey,
-                            autovalidateMode: AutovalidateMode.always,
-                            onChanged: _validateForm,
-                            child: Column(
-                              children: [
-                                CustomAppBar(
-                                  backgroundColor: UiConstants.backgroundColor,
-                                  title: 'Личные данные',
-                                  showBack: true,
-                                  onTapBack: () {
-                                    if (formKey.currentState?.validate() ??
-                                        false) {
-                                      personalDataBloc.add(
-                                        BackButtonPressedEvent(
-                                            context: context),
-                                      );
-                                    }
-                                  },
-                                ),
-                                Expanded(
-                                  child: homeState is InternetUnavailable
-                                      ? InternetNoInternetConnectionWidget()
-                                      : ListView(
-                                          shrinkWrap: true,
-                                          padding: getMarginOrPadding(
-                                              bottom: 94,
-                                              right: 20,
-                                              left: 20,
-                                              top: 16),
-                                          children: [
-                                            GeneralInformationBlock(
-                                                screenContext: context),
-                                            SizedBox(height: 16.dp),
-                                            ContactsBlock(
-                                                screenContext: context),
-                                            SizedBox(height: 16.dp),
-                                            ChangePasswordBlock(
-                                                screenContext: context),
-                                            SizedBox(height: 16.dp),
-                                            CheckboxesBlock(
-                                                screenContext: context),
-                                            SizedBox(height: 32.dp),
-                                            AppButtonWidget(
-                                              isActive: state.isButtonActive &&
-                                                  isFormValid,
-                                              text: 'Сохранить',
-                                              onTap: () {
-                                                if (formKey.currentState
-                                                        ?.validate() ??
-                                                    false) {
-                                                  personalDataBloc.add(
-                                                    SubmitEvent(
-                                                        context: context),
-                                                  );
-                                                }
-                                              },
-                                            ),
-                                            SizedBox(height: 8.dp),
-                                            AppButtonWidget(
-                                              text: 'Удалить аккаунт',
-                                              backgroundColor:
-                                                  UiConstants.backgroundColor,
-                                              textColor:
-                                                  UiConstants.darkBlueColor,
-                                              onTap: () async {
-                                                bool? isSuccess =
-                                                    await BottomSheetManager
-                                                        .showDeleteAccountSheet(
-                                                            context);
+                // Возвращаем false, чтобы предотвратить автоматический pop
+                return false;
+              },
+              child: Scaffold(
+                backgroundColor: UiConstants.backgroundColor,
+                body: SafeArea(
+                  child: Skeletonizer(
+                    ignorePointers: false,
+                    enabled: state.isLoading,
+                    child: Builder(
+                      builder: (context) {
+                        return Form(
+                          key: formKey,
+                          autovalidateMode: AutovalidateMode.always,
+                          onChanged: _validateForm,
+                          child: Column(
+                            children: [
+                              CustomAppBar(
+                                backgroundColor: UiConstants.backgroundColor,
+                                title: 'Личные данные',
+                                showBack: true,
+                                onTapBack: () {
+                                  if (formKey.currentState?.validate() ??
+                                      false) {
+                                    personalDataBloc.add(
+                                      BackButtonPressedEvent(context: context),
+                                    );
+                                  }
+                                },
+                              ),
+                              Expanded(
+                                child: homeState is InternetUnavailable
+                                    ? InternetNoInternetConnectionWidget()
+                                    : ListView(
+                                        shrinkWrap: true,
+                                        padding: getMarginOrPadding(
+                                            bottom: 94,
+                                            right: 20,
+                                            left: 20,
+                                            top: 16),
+                                        children: [
+                                          GeneralInformationBlock(
+                                              screenContext: context),
+                                          SizedBox(height: 16.dp),
+                                          ContactsBlock(screenContext: context),
+                                          SizedBox(height: 16.dp),
+                                          ChangePasswordBlock(
+                                              screenContext: context),
+                                          SizedBox(height: 16.dp),
+                                          CheckboxesBlock(
+                                              screenContext: context),
+                                          SizedBox(height: 32.dp),
+                                          AppButtonWidget(
+                                            isActive: state.isButtonActive &&
+                                                isFormValid,
+                                            text: 'Сохранить',
+                                            onTap: () {
+                                              if (formKey.currentState
+                                                      ?.validate() ??
+                                                  false) {
+                                                personalDataBloc.add(
+                                                  SubmitEvent(context: context),
+                                                );
+                                              }
+                                            },
+                                          ),
+                                          SizedBox(height: 8.dp),
+                                          AppButtonWidget(
+                                            text: 'Удалить аккаунт',
+                                            backgroundColor:
+                                                UiConstants.backgroundColor,
+                                            textColor:
+                                                UiConstants.darkBlueColor,
+                                            onTap: () async {
+                                              bool? isSuccess =
+                                                  await BottomSheetManager
+                                                      .showDeleteAccountSheet(
+                                                          context);
 
-                                                if (isSuccess == true) {
-                                                  personalDataBloc.add(
-                                                      DeleteAccountEvent());
-                                                }
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
+                                              if (isSuccess == true) {
+                                                personalDataBloc
+                                                    .add(DeleteAccountEvent());
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         );
       },
     );

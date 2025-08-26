@@ -7,6 +7,7 @@ class SearchScreenState extends Equatable {
   final SearchProductsV2Entity? searchResult;
   final List<String> historyRequests;
   final List<String> popularityRequests;
+  final List<ProductEntity> recommendedProducts;
 
   const SearchScreenState({
     this.isLoading = false,
@@ -21,6 +22,7 @@ class SearchScreenState extends Equatable {
       'Термометр',
       'Хлоргексидина биклюконат',
     ],
+    this.recommendedProducts = const [],
   });
 
   SearchScreenState copyWith({
@@ -30,6 +32,7 @@ class SearchScreenState extends Equatable {
     SearchProductsV2Entity? searchResult,
     List<String>? historyRequests,
     List<String>? popularityRequests,
+    List<ProductEntity>? recommendedProducts,
   }) {
     return SearchScreenState(
       isLoading: isLoading ?? this.isLoading,
@@ -38,6 +41,7 @@ class SearchScreenState extends Equatable {
       searchResult: searchResult ?? this.searchResult,
       historyRequests: historyRequests ?? this.historyRequests,
       popularityRequests: popularityRequests ?? this.popularityRequests,
+      recommendedProducts: recommendedProducts ?? this.recommendedProducts,
     );
   }
 
@@ -49,5 +53,6 @@ class SearchScreenState extends Equatable {
         searchResult,
         historyRequests,
         popularityRequests,
+        recommendedProducts,
       ];
 }

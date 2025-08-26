@@ -1,6 +1,10 @@
+import 'dart:convert';
+
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/main.dart';
+import 'package:yandex_geocoder/yandex_geocoder.dart';
 
 extension DpExtensionDouble on double {
   double get dp {
@@ -213,5 +217,96 @@ extension DeliveryZonePriceExtension on DeliveryZoneType {
         return 0;
       }
     }
+  }
+}
+
+extension GeoObjectSerialization on GeoObject {
+  /// Преобразует GeoObject в JSON-строку
+  String toJsonString() {
+    final map = {
+      'metaDataProperty': {
+        'geocoderMetaData': {
+          'address': {
+            'formatted': metaDataProperty?.geocoderMetaData?.address?.formatted,
+            'components':
+                metaDataProperty?.geocoderMetaData?.address?.components
+                    ?.map((component) => {
+                          'kind': {'name': component.kind?.name},
+                          'name': component.name,
+                          'comparedObjects': component.comparedObjects
+                              .map((object) => object is KindResponse
+                                  ? {'name': object.name}
+                                  : object is String
+                                      ? object
+                                      : '')
+                              .toList(),
+                        })
+                    .toList(),
+          },
+        },
+      },
+      'point': point != null
+          ? {
+              'latitude': point?.latitude,
+              'longitude': point?.longitude,
+            }
+          : null,
+    };
+    return json.encode(map);
+  }
+
+  /// Создает GeoObject из JSON-строки
+  static GeoObject fromJsonString(String jsonString) {
+    print(jsonString);
+    final innerJson =
+        json.decode(jsonString) as String; // распаковать двойную строку
+    print(innerJson);
+    final map = json.decode(innerJson) as Map<String, dynamic>;
+
+    final addressMap = map['metaDataProperty']?['geocoderMetaData']?['address'];
+
+    final components =
+        (addressMap?['components'] as List<dynamic>?)?.map((component) {
+      final kindName = component['kind']?['name'] as String?;
+      final comparedObjects = (component['comparedObjects'] as List<dynamic>?)
+          ?.map((object) {
+            if (object is Map<String, dynamic> && object.containsKey('name')) {
+              return Component(name: object['name']);
+            } else if (object is String) {
+              return object;
+            }
+            return null;
+          })
+          .whereType<dynamic>()
+          .toList();
+
+      return Component(
+        kind: kindName != null
+            ? KindResponse.values.firstWhereOrNull((e) => e.name == kindName)
+            : null,
+        name: component['name'],
+      );
+    }).toList();
+
+    final address = Address(
+      formatted: addressMap?['formatted'],
+      components: components,
+    );
+
+    final pointMap = map['point'];
+
+    return GeoObject(
+      metaDataProperty: GeoObjectMetaDataProperty(
+        geocoderMetaData: GeocoderMetaData(address: address),
+      ),
+      point: pointMap != null
+          ? Point(
+              point: (
+                lat: pointMap['latitude'] as double,
+                lon: pointMap['longitude'] as double,
+              ),
+            )
+          : null,
+    );
   }
 }

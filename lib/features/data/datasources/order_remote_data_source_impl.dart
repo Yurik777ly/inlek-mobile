@@ -13,6 +13,7 @@ abstract class OrderRemoteDataSource {
   Future<List<OrderModel>> getOrderHistory();
   Future<OrderModel?> getOrderById(int id);
   Future<OrderModel?> createOrder(OrderParam params);
+  Future<bool> repeatOrder(int id);
 }
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
@@ -87,8 +88,8 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        if (data['data'] != null) {
-          return OrderModel.fromJson(data['data'].first);
+        if (data['data']?['order'] != null) {
+          return OrderModel.fromJson(data['data']?['order']);
         }
         return null;
       } else {
@@ -130,6 +131,34 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
       } else {
         return null;
       }
+    } catch (e) {
+      log('Error during createOrder: $e', level: 1000);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> repeatOrder(int id) async {
+    String baseUrl = dotenv.env['BASE_URL']!;
+    String url = '${baseUrl}order/$id/repeat';
+    final String? serverToken =
+        sharedPreferences.getString(SharedPreferencesKeys.accessToken);
+
+    log('POST $url');
+
+    try {
+      final response = await client.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $serverToken'
+        },
+      );
+
+      log('Response ($url): ${response.statusCode} ${response.body}');
+
+      return response.statusCode == 200;
     } catch (e) {
       log('Error during createOrder: $e', level: 1000);
       rethrow;

@@ -4,7 +4,9 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
+import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/domain/entities/search_products_v2_entity.dart';
+import 'package:inlek/features/domain/usecases/products/get_daily_products.dart';
 import 'package:inlek/features/domain/usecases/products/search_products_v2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,6 +16,7 @@ part 'search_screen_state.dart';
 class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
   final SearchProductsV2UC searchProductsV2UC;
   final SharedPreferences sharedPreferences;
+  final GetDailyProductsUC getDailyProductsUC;
 
   final TextEditingController searchController = TextEditingController();
   final FocusNode focusNode = FocusNode();
@@ -21,9 +24,11 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
   Timer? _debounceTimer;
 
   SearchScreenBloc(
-      {required this.searchProductsV2UC, required this.sharedPreferences})
+      {required this.searchProductsV2UC,
+      required this.getDailyProductsUC,
+      required this.sharedPreferences})
       : super(SearchScreenState()) {
-    on<LoadDataEvent>(_onLoadData);
+    on<LoadSearchDataEvent>(_onLoadData);
     on<ToggleExpandCollapseEvent>(_onToggleExpandCollapse);
     on<ClearQueryEvent>(_onClearQuery);
     on<ChangeQueryEvent>(_onChangeQuery);
@@ -33,12 +38,21 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
   }
 
   Future<void> _onLoadData(
-      LoadDataEvent event, Emitter<SearchScreenState> emit) async {
+      LoadSearchDataEvent event, Emitter<SearchScreenState> emit) async {
+    List<ProductEntity> recommendedProducts = [];
+    final failureOrLoads = await getDailyProductsUC();
+
+    failureOrLoads.fold((_) {}, (products) {
+      recommendedProducts = products;
+    });
+
     List<String> savedRequests = sharedPreferences
             .getStringList(SharedPreferencesKeys.popularRequests) ??
         [];
 
-    emit(state.copyWith(historyRequests: savedRequests));
+    emit(state.copyWith(
+        historyRequests: savedRequests,
+        recommendedProducts: recommendedProducts));
   }
 
   void _onChangeQuery(ChangeQueryEvent event, Emitter<SearchScreenState> emit) {

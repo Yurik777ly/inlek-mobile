@@ -7,6 +7,8 @@ class OrderModel extends OrderEntity {
   const OrderModel({
     super.orderId,
     super.address,
+    super.fullDeliveryAddress,
+    super.pharmacyId,
     super.pharmacyName,
     super.customerId,
     super.createdAt,
@@ -44,12 +46,16 @@ class OrderModel extends OrderEntity {
     super.typeReceipt,
     super.pharmacy,
     super.link,
+    super.summary,
+    super.additional,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
       orderId: json['order_id'],
       address: json['address'],
+      fullDeliveryAddress: json['full_delivery_address'], // 👈
+      pharmacyId: json['pharmacy_id'],
       pharmacyName: json['pharmacy_name'],
       customerId: json['customer_id'],
       createdAt: json['created_at'] != null
@@ -66,7 +72,9 @@ class OrderModel extends OrderEntity {
           : null,
       currency: json['currency'],
       statusId: json['status_id'],
-      status: OrderStatusExtension.fromId(json['status_id']),
+      status: json['status_id'] != null
+          ? OrderStatusExtension.fromId(json['status_id'])
+          : null,
       comment: json['comment'],
       agree: json['agree'] == "true",
       deliveryId: json['delivery_id'],
@@ -113,6 +121,30 @@ class OrderModel extends OrderEntity {
           ? PharmacyModel.fromJson(json['pharmacy'][0])
           : null,
       link: json['link'],
+      summary: json['summary'] != null
+          ? OrderSummaryEntity(
+              productsPrice:
+                  (json['summary']['products_price'] as num?)?.toDouble(),
+              productsPriceOld:
+                  (json['summary']['products_price_old'] as num?)?.toDouble(),
+              discountPercent:
+                  (json['summary']['discount_percent'] as num?)?.toDouble(),
+              discountAmount:
+                  (json['summary']['discount_amount'] as num?)?.toDouble(),
+              promocodesDiscount:
+                  (json['summary']['promocodes_discount'] as num?)?.toDouble(),
+              deliveryPrice:
+                  (json['summary']['delivery_price'] as num?)?.toDouble(),
+              totalPrice: (json['summary']['total_price'] as num?)?.toDouble(),
+            )
+          : null,
+      additional: json['additional'] != null
+          ? OrderAdditionalEntity(
+              comment: json['additional']['comment'],
+              hasDiscount: json['additional']['has_discount'],
+              hasPromocodes: json['additional']['has_promocodes'],
+            )
+          : null,
     );
   }
 }

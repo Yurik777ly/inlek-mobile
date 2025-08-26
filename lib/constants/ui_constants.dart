@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inlek/constants/extensions.dart';
 
 class UiConstants {
   static BuildContext? homeContext;
@@ -31,86 +30,86 @@ class UiConstants {
   static const Color lime2Color = Color(0xFFD3F3CF);
 
   static TextStyle textStyle1 = TextStyle(
-    fontSize: 28.dp,
-    height: 30.8.dp / 28.dp,
+    fontSize: 28,
+    height: 30.8 / 28,
     fontWeight: FontWeight.w800,
     fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle2 = TextStyle(
-    fontSize: 14.dp,
-    height: 18.2.dp / 14.dp,
+    fontSize: 14,
+    height: 18.2 / 14,
     fontWeight: FontWeight.w400,
     fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle3 = TextStyle(
-    fontSize: 14.dp,
-    height: 16.8.dp / 14.dp,
+    fontSize: 14,
+    height: 16.8 / 14,
     fontWeight: FontWeight.w600,
     fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle4 = TextStyle(
-    fontSize: 24.dp,
-    height: 29.05.dp / 24.dp,
+    fontSize: 24,
+    height: 29.05 / 24,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.1,
     fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle5 = TextStyle(
-    fontSize: 18.dp,
-    height: 19.8.dp / 18.dp,
+    fontSize: 18,
+    height: 19.8 / 18,
     fontWeight: FontWeight.w800,
     fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle6 = TextStyle(
-    fontSize: 10.dp,
-    height: 13.64.dp / 10.dp,
+    fontSize: 10,
+    height: 13.64 / 10,
     fontWeight: FontWeight.w600,
     fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle7 = TextStyle(
-    fontSize: 8.dp,
-    height: 10.91.dp / 8.dp,
+    fontSize: 8,
+    height: 10.91 / 8,
     fontWeight: FontWeight.w600,
     fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle8 = TextStyle(
-    fontSize: 12.dp,
-    height: 16.37.dp / 12.dp,
+    fontSize: 12,
+    height: 16.37 / 12,
     fontWeight: FontWeight.w600,
     fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle9 = TextStyle(
-    fontSize: 22.dp,
-    height: 24.2.dp / 22.dp,
+    fontSize: 22,
+    height: 24.2 / 22,
     fontWeight: FontWeight.w800,
     fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle10 = TextStyle(
-    fontSize: 12.dp,
-    height: 15.6.dp / 12.dp,
+    fontSize: 12,
+    height: 15.6 / 12,
     fontWeight: FontWeight.w400,
     fontFamily: 'Rubik',
   );
 
   static TextStyle textStyle14 = TextStyle(
-    fontSize: 14.dp,
-    height: 19.1.dp / 14.dp,
+    fontSize: 14,
+    height: 19.1 / 14,
     fontWeight: FontWeight.w800,
     fontFamily: 'Nunito',
   );
 
   static TextStyle textStyle11 = TextStyle(
-    fontSize: 14.dp,
-    height: 16.59.dp / 14.dp,
+    fontSize: 14,
+    height: 16.59 / 14,
     fontWeight: FontWeight.w400,
     fontFamily: 'Rubik',
   );

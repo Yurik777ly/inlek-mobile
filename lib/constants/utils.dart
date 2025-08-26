@@ -5,7 +5,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
@@ -472,11 +471,11 @@ class Utils {
         brief: "Pharmacy mobile app user");
 
     // ... or, configure for anonymous user
-    Jivo.session.setup(
+    /*Jivo.session.setup(
         channelId: dotenv.env['JIVO_CHANNEL_ID']!,
         userToken:
             sl<SharedPreferences>().getString(SharedPreferencesKeys.userId) ??
-                '');
+                '');*/
 
     Jivo.display.present();
   }

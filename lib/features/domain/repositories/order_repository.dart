@@ -7,4 +7,5 @@ abstract class OrderRepository {
   Future<Either<Failure, List<OrderEntity>>> getOrderHistory();
   Future<Either<Failure, OrderEntity?>> getOrderById(int id);
   Future<Either<Failure, OrderEntity?>> createOrder(OrderParam params);
+  Future<Either<Failure, bool>> repeatOrder(int id);
 }

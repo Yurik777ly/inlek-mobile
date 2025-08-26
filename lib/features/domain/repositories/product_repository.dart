@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:inlek/core/error/failure.dart';
 import 'package:inlek/core/params/product_param.dart';
+import 'package:inlek/core/params/product_pharmacies_param.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/domain/entities/search_products_entity.dart';
@@ -13,5 +14,6 @@ abstract class ProductRepository {
       ProductParam param);
   Future<Either<Failure, SearchProductsV2Entity?>> searchProductV2(
       String query);
-  Future<Either<Failure, List<PharmacyEntity>>> getProductPharmacies(int id);
+  Future<Either<Failure, List<PharmacyEntity>>> getProductPharmacies(
+      ProductPharmaciesParam params);
 }

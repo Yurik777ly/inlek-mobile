@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class Routes {
   static const String splashScreen = '/';
+  static const String testScreen = '/';
   static const String loginScreen = '/login_screen';
   static const String signUpScreen = '/sign_up_screen';
   static const String codeScreen = '/code_screen';

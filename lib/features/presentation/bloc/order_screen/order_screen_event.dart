@@ -11,3 +11,9 @@ class LoadDataEvent extends OrderScreenEvent {
   final int? orderId;
   const LoadDataEvent(this.orderId);
 }
+
+class RepeatOrderEvent extends OrderScreenEvent {
+  final int orderId;
+  final Function(bool isSuccess) callback;
+  const RepeatOrderEvent(this.orderId, this.callback);
+}
