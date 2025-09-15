@@ -27,13 +27,14 @@ class SignUpScreen extends StatelessWidget {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
 
     PasswordScreenType passwordScreenType = args!['redirect_type'];
+    String? phone = args['phone'];
 
     return BlocProvider(
       create: (context) => SignUpScreenBloc(
         isPhoneExistsUC: sl(),
-        passwordScreenType: passwordScreenType,
-        phone: args['phone'],
-      ),
+        passwordScreenType: args['redirect_type'],
+        phone: phone,
+      )..add(PhoneChangedEvent(phone ?? '')),
       child: BlocConsumer<SignUpScreenBloc, SignUpScreenState>(
         listener: (context, state) {
           final bloc = context.read<SignUpScreenBloc>();
@@ -89,62 +90,65 @@ class SignUpScreen extends StatelessWidget {
                 : 'Введите номер телефона, который был использован при регистрации:',
             bodyPadding:
                 getMarginOrPadding(left: 20, right: 20, top: 16, bottom: 24),
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppTextFieldWidget(
-                  title: 'Телефон',
-                  hintText: '+375 (00) 000-00-00',
-                  controller: bloc.phoneController,
-                  errorText: state.phoneErrorText,
-                  keyboardType: TextInputType.phone,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    CustomPhoneInputFormatter()
-                  ],
-                ),
-                SizedBox(height: 32.dp),
-                AppButtonWidget(
-                  isActive: state.isValidPhone,
-                  text: 'Получить код',
-                  onTap: () => bloc.add(GetCodeEvent()),
-                ),
-                if (passwordScreenType == PasswordScreenType.signUp)
-                  Expanded(
-                    child: Padding(
-                      padding: getMarginOrPadding(top: 32),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Уже есть аккаунт?',
-                                style: UiConstants.textStyle3.copyWith(
-                                  color: UiConstants.darkBlue2Color
-                                      .withOpacity(.6),
+            body: Form(
+              autovalidateMode: AutovalidateMode.always,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppTextFieldWidget(
+                    title: 'Телефон',
+                    hintText: '+375 (00) 000-00-00',
+                    controller: bloc.phoneController,
+                    errorText: state.phoneErrorText,
+                    keyboardType: TextInputType.phone,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      CustomPhoneInputFormatter()
+                    ],
+                  ),
+                  SizedBox(height: 32.dp),
+                  AppButtonWidget(
+                    isActive: state.isValidPhone,
+                    text: 'Получить код',
+                    onTap: () => bloc.add(GetCodeEvent()),
+                  ),
+                  if (passwordScreenType == PasswordScreenType.signUp)
+                    Expanded(
+                      child: Padding(
+                        padding: getMarginOrPadding(top: 32),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Уже есть аккаунт?',
+                                  style: UiConstants.textStyle3.copyWith(
+                                    color: UiConstants.darkBlue2Color
+                                        .withOpacity(.6),
+                                  ),
                                 ),
-                              ),
-                              GestureDetector(
-                                onTap: () => Navigator.pop(context),
-                                child: Text(
-                                  'Войти',
-                                  style: UiConstants.textStyle3
-                                      .copyWith(color: UiConstants.purpleColor),
+                                GestureDetector(
+                                  onTap: () => Navigator.pop(context),
+                                  child: Text(
+                                    'Войти',
+                                    style: UiConstants.textStyle3.copyWith(
+                                        color: UiConstants.purpleColor),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          Spacer(),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: PolicyTextWidget(),
-                          ),
-                        ],
+                              ],
+                            ),
+                            Spacer(),
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: PolicyTextWidget(),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           );
         },

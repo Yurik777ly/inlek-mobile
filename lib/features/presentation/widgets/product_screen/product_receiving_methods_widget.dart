@@ -11,9 +11,13 @@ import 'package:inlek/features/presentation/widgets/product_screen/product_recei
 class ProductReceivingMethodsWidget extends StatelessWidget {
   final List<PharmacyEntity> pharmacies;
   final ProductEntity product;
+  final bool isLoadingPharmacies;
 
   const ProductReceivingMethodsWidget(
-      {super.key, required this.pharmacies, required this.product});
+      {super.key,
+      required this.pharmacies,
+      required this.product,
+      this.isLoadingPharmacies = false});
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +25,7 @@ class ProductReceivingMethodsWidget extends StatelessWidget {
       children: [
         Expanded(
           child: ProductReceivingMethodItem(
+            isLoading: isLoadingPharmacies,
             title: 'В наличии',
             subtitle:
                 'в ${pharmacies.length} ${Utils.getPharmacyLabel(pharmacies.length)}',

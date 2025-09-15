@@ -16,6 +16,7 @@ import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/pages/catalog/products/product_screen.dart';
+import 'package:inlek/features/presentation/widgets/cart_screen/available_pickup_chip.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/change_count_product_widget.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/info_border_plate.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/only_pickup_chip.dart';
@@ -46,18 +47,22 @@ class CartProductWidget extends StatelessWidget {
         ? product.pagetitle ?? product.name
         : product.name;
 
-    return BlocBuilder<CartScreenBloc, CartScreenState>(
-      bloc: screenContext?.read<CartScreenBloc>(),
-      buildWhen: (previous, current) => screenContext == null,
-      builder: (context, state) {
-        final bloc = (screenContext ?? context).read<CartScreenBloc>();
+    CartScreenBloc? cartBloc;
 
+    try {
+      cartBloc = (screenContext ?? context).read<CartScreenBloc>();
+    } catch (e) {}
+
+    return BlocBuilder<CartScreenBloc, CartScreenState>(
+      buildWhen: (previous, current) => cartBloc != null,
+      bloc: cartBloc,
+      builder: (context, state) {
         double? oldPrice = product.oldPrice;
         double? price = product.price;
 
         if ([ProductsListScreenType.cart, ProductsListScreenType.order]
             .contains(productsListScreenType)) {
-          final cartProduct = (bloc.state.cartData?.products ?? [])
+          final cartProduct = (cartBloc?.state.cartData?.products ?? [])
               .firstWhereOrNull((e) => e.productId == product.productId);
           if (cartProduct != null) {
             oldPrice = cartProduct.prices?.priceOld;
@@ -76,7 +81,7 @@ class CartProductWidget extends StatelessWidget {
             ),
           ),
           child: DismissibleTile(
-            onDismissed: (_) => bloc.add(
+            onDismissed: (_) => cartBloc?.add(
               DeleteCartEvent(
                   context: context, productId: product.productId, count: 0),
             ),
@@ -130,7 +135,7 @@ class CartProductWidget extends StatelessWidget {
                                   child: CustomCheckbox(
                                     isChecked: state.selectedProductIds
                                         .contains(product.productId),
-                                    onChanged: (isChecked) => bloc.add(
+                                    onChanged: (isChecked) => cartBloc?.add(
                                       ToggleSelectionEvent(
                                           isChecked, product.productId),
                                     ),
@@ -165,22 +170,22 @@ class CartProductWidget extends StatelessWidget {
                                 ),
 
                                 /*Positioned(
-                                  top: 4.dp,
-                                  left: 8.dp,
-                                  right: 8.dp,
-                                  child: Wrap(
-                                    spacing: 4.dp,
-                                    runSpacing: 4.dp,
-                                    children: [
-                                      if (product.productSticker != null)
-                                        ProductChipWidget(
-                                          productChipType:
-                                              ProductChipTypeExtension.fromString(
-                                                  product.productSticker!),
-                                        ),
-                                    ],
-                                  ),
-                                )*/
+                                top: 4.dp,
+                                left: 8.dp,
+                                right: 8.dp,
+                                child: Wrap(
+                                  spacing: 4.dp,
+                                  runSpacing: 4.dp,
+                                  children: [
+                                    if (product.productSticker != null)
+                                      ProductChipWidget(
+                                        productChipType:
+                                            ProductChipTypeExtension.fromString(
+                                                product.productSticker!),
+                                      ),
+                                  ],
+                                ),
+                              )*/
                               ],
                             ),
                             SizedBox(width: 8.dp),
@@ -197,7 +202,10 @@ class CartProductWidget extends StatelessWidget {
                                   if (product.stockCount == 0)
                                     Padding(
                                       padding: getMarginOrPadding(bottom: 4),
-                                      child: OutStockChip(),
+                                      child: product.delivery ==
+                                              TypeReceiving.pickup
+                                          ? AvailablePickupChip()
+                                          : OutStockChip(),
                                     )
                                   else if (product.isAlcohol ||
                                       product.isRecipe)
@@ -209,22 +217,22 @@ class CartProductWidget extends StatelessWidget {
                                         children: [
                                           OnlyPickupChip(),
                                           /*if (widget.productsListScreenType ==
-                                              ProductsListScreenType.order)
-                                            Skeleton.ignore(
-                                              child: CircleAvatar(
-                                                backgroundColor:
-                                                    UiConstants.pink2Color,
-                                                radius: 12.dp,
-                                                child: Padding(
-                                                  padding:
-                                                      getMarginOrPadding(all: 4),
-                                                  child: SvgPicture.asset(
-                                                      Paths.replaceIconPath,
-                                                      color:
-                                                          UiConstants.whiteColor),
-                                                ),
+                                            ProductsListScreenType.order)
+                                          Skeleton.ignore(
+                                            child: CircleAvatar(
+                                              backgroundColor:
+                                                  UiConstants.pink2Color,
+                                              radius: 12.dp,
+                                              child: Padding(
+                                                padding:
+                                                    getMarginOrPadding(all: 4),
+                                                child: SvgPicture.asset(
+                                                    Paths.replaceIconPath,
+                                                    color:
+                                                        UiConstants.whiteColor),
                                               ),
-                                            )*/
+                                            ),
+                                          )*/
                                         ],
                                       ),
                                     ),

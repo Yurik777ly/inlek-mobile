@@ -23,7 +23,10 @@ class ChangePageEvent extends HomeScreenEvent {
   List<Object> get props => [pageIndex];
 }
 
-class CheckInternetConnection extends HomeScreenEvent {}
+class CheckInternetConnection extends HomeScreenEvent {
+  final bool hasInternet;
+  const CheckInternetConnection({required this.hasInternet});
+}
 
 class UploadContext extends HomeScreenEvent {
   final BuildContext context;

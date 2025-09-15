@@ -7,6 +7,7 @@ import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/geocoder_manager.dart';
+import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
 import 'package:inlek/features/domain/entities/order_entity.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
@@ -22,6 +23,7 @@ import 'package:inlek/features/presentation/widgets/order_screen/order_progress_
 import 'package:inlek/features/presentation/widgets/order_screen/order_status_widget.dart';
 import 'package:inlek/features/presentation/widgets/orders_screen/order_info_list.dart';
 import 'package:inlek/locator_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class OrderScreen extends StatelessWidget {
@@ -234,6 +236,21 @@ class OrderScreen extends StatelessWidget {
               ),
             );
           } else {
+            sl<SharedPreferences>().setString(
+                SharedPreferencesKeys.savedApartment,
+                orderState.order?.deliveryApartment ?? '');
+            sl<SharedPreferences>().setString(
+                SharedPreferencesKeys.savedEntrance,
+                orderState.order?.deliveryEntrance ?? '');
+            sl<SharedPreferences>().setString(SharedPreferencesKeys.savedFloor,
+                orderState.order?.deliveryFloor ?? '');
+            sl<SharedPreferences>().setString(
+                SharedPreferencesKeys.savedIntercom,
+                orderState.order?.deliveryIntercom ?? '');
+            sl<SharedPreferences>().setString(
+                SharedPreferencesKeys.savedComment,
+                orderState.order?.comment ?? '');
+
             await _setSelectedAddress(cartBloc, orderState.order);
           }
 

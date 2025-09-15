@@ -89,7 +89,7 @@ class _CitySearchFieldState extends State<CitySearchField> {
                             _removeOverlay();
                             if (widget.onSuggestionTap != null) {
                               dynamic onSuggestionSelected =
-                                  widget.suggestionObjects != null
+                                  (widget.suggestionObjects ?? []).isNotEmpty
                                       ? widget.suggestionObjects![index]
                                       : _filteredSuggestions[index];
 

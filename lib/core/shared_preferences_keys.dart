@@ -13,4 +13,6 @@ class SharedPreferencesKeys {
   static const String savedApartment = 'savedApartment';
   static const String savedFloor = 'savedFloor';
   static const String savedIntercom = 'savedIntercom';
+  static const String savedComment = 'savedComment';
+  static const String cartType = 'cartType';
 }

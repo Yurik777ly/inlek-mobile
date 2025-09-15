@@ -34,9 +34,9 @@ class InfoAboutOrderScreenBloc
       (pharmacies) async {
         for (PharmacyEntity pharmacy in pharmacies) {
           double latitude =
-              double.parse(pharmacy.coordinates!.split(', ').first);
+              double.parse(pharmacy.coordinates.split(', ').first);
           double longitude =
-              double.parse(pharmacy.coordinates!.split(', ').last);
+              double.parse(pharmacy.coordinates.split(', ').last);
 
           // Генерация иконки для маркера с количеством аптек
 

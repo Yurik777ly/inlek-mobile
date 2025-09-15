@@ -63,7 +63,7 @@ class ProductScreen extends StatelessWidget {
                     justifyMultiLineText: false,
                     textBoneBorderRadius:
                         TextBoneBorderRadius.fromHeightFactor(.5),
-                    enabled: productState.isLoading,
+                    enabled: productState.isLoadingProducts,
                     child: Builder(
                       builder: (context) {
                         return Column(
@@ -117,6 +117,9 @@ class ProductScreen extends StatelessWidget {
                                                   left: 20, right: 20),
                                               child:
                                                   ProductReceivingMethodsWidget(
+                                                isLoadingPharmacies:
+                                                    productState
+                                                        .isLoadingPharmacies,
                                                 pharmacies:
                                                     productState.pharmacies ??
                                                         [],
@@ -149,7 +152,7 @@ class ProductScreen extends StatelessWidget {
                                                   child: Skeleton.replace(
                                                     child: CustomFlutterHtml(
                                                         isLoading: productState
-                                                            .isLoading,
+                                                            .isLoadingProducts,
                                                         content: productState
                                                                 .product
                                                                 ?.description ??
@@ -158,7 +161,7 @@ class ProductScreen extends StatelessWidget {
                                                 ),
                                               ),
                                             if ((productState.product
-                                                        ?.similarProducts ??
+                                                        ?.relatedProducts ??
                                                     [])
                                                 .isNotEmpty)
                                               Padding(
@@ -172,7 +175,7 @@ class ProductScreen extends StatelessWidget {
                                                   child: ProductsListWidget(
                                                       products: productState
                                                               .product
-                                                              ?.similarProducts ??
+                                                              ?.relatedProducts ??
                                                           []),
                                                 ),
                                               ),
@@ -183,8 +186,10 @@ class ProductScreen extends StatelessWidget {
                                           left: 20.dp,
                                           right: 20.dp,
                                           bottom: 94,
-                                          child: (productState.pharmacies ?? [])
-                                                  .isEmpty
+                                          child: productState.product
+                                                          ?.availability ==
+                                                      'absent' ||
+                                                  productState.isLoadingProducts
                                               ? AppButtonWidget(
                                                   text:
                                                       'Сообщить о поступлении',

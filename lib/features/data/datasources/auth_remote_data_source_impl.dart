@@ -60,7 +60,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           break;
         case 422:
           final data = json.decode(response.body);
-          final errors = data['errors'];
+          final errors = data?['data']?['errors'];
           log('Validation errors: $errors');
           if (errors != null) {
             if (errors['phone'] != null) {

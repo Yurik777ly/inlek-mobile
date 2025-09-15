@@ -19,14 +19,9 @@ import 'package:inlek/features/presentation/widgets/main_screen/internet_no_inte
 import 'package:inlek/locator_service.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class InfoAboutOrderScreen extends StatefulWidget {
+class InfoAboutOrderScreen extends StatelessWidget {
   const InfoAboutOrderScreen({super.key});
 
-  @override
-  State<InfoAboutOrderScreen> createState() => _InfoAboutOrderScreenState();
-}
-
-class _InfoAboutOrderScreenState extends State<InfoAboutOrderScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
@@ -63,7 +58,7 @@ class _InfoAboutOrderScreenState extends State<InfoAboutOrderScreen> {
                     justifyMultiLineText: false,
                     textBoneBorderRadius:
                         TextBoneBorderRadius.fromHeightFactor(.5),
-                    enabled: false,
+                    enabled: state.isLoading,
                     child: Builder(
                       builder: (context) {
                         return Column(
@@ -75,30 +70,34 @@ class _InfoAboutOrderScreenState extends State<InfoAboutOrderScreen> {
                             Expanded(
                               child: homeState is InternetUnavailable
                                   ? InternetNoInternetConnectionWidget()
-                                  : ListView(
+                                  : SingleChildScrollView(
                                       padding: getMarginOrPadding(
                                           top: 16,
                                           bottom: 94,
                                           left: 20,
                                           right: 20),
-                                      shrinkWrap: true,
-                                      children: [
-                                        InfoPlateWidget(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          InfoPlateWidget(
                                             text:
-                                                'Доставка производится только по Минску и Минскому району'),
-                                        SizedBox(height: 16.dp),
-                                        TypesDeliveryBlock(),
-                                        SizedBox(height: 16.dp),
-                                        CostCourierDeliveryBlock(),
-                                        SizedBox(height: 16.dp),
-                                        CourierDeliveryTimeBlock(),
-                                        SizedBox(height: 16.dp),
-                                        OrdersWithDeliveryAcceptedBlock(),
-                                        SizedBox(height: 16.dp),
-                                        CourierDeliveryTermsBlock(),
-                                        SizedBox(height: 16.dp),
-                                        CourierDeliveryZonesBlock(),
-                                      ],
+                                                'Доставка производится только по Минску и Минскому району',
+                                          ),
+                                          SizedBox(height: 16.dp),
+                                          TypesDeliveryBlock(),
+                                          SizedBox(height: 16.dp),
+                                          CostCourierDeliveryBlock(),
+                                          SizedBox(height: 16.dp),
+                                          CourierDeliveryTimeBlock(),
+                                          SizedBox(height: 16.dp),
+                                          OrdersWithDeliveryAcceptedBlock(),
+                                          SizedBox(height: 16.dp),
+                                          CourierDeliveryTermsBlock(),
+                                          SizedBox(height: 16.dp),
+                                          CourierDeliveryZonesBlock(),
+                                        ],
+                                      ),
                                     ),
                             ),
                           ],

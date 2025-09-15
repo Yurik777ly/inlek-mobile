@@ -1,13 +1,8 @@
-import 'dart:convert';
-
 import 'package:bloc/bloc.dart';
-import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:inlek/core/location_manager.dart';
 import 'package:inlek/core/params/product_pharmacies_param.dart';
-import 'package:inlek/core/shared_preferences_keys.dart';
-import 'package:inlek/features/data/models/city_model.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/domain/usecases/products/get_one_product.dart';
@@ -37,19 +32,41 @@ class ProductScreenBloc extends Bloc<ProductScreenEvent, ProductScreenState> {
 
   void _onLoadData(
       LoadDataEvent event, Emitter<ProductScreenState> emit) async {
-    String? error = 'Ошибка получения данных';
-    ProductEntity? product;
-    List<PharmacyEntity> pharmacies = [];
+    // Начинаем загрузку товара и аптек одновременно
+    emit(state.copyWith(isLoadingProducts: true, isLoadingPharmacies: true));
 
-    final city = (() {
-      try {
-        final json = sharedPreferences.getString(SharedPreferencesKeys.city);
-        return json == null ? null : CityModel.fromJson(jsonDecode(json));
-      } catch (_) {
-        return null;
-      }
-    })();
+    // Запускаем загрузку товара и аптек параллельно
+    await Future.wait([
+      _loadProduct(emit),
+      _loadPharmacies(emit),
+    ]);
+  }
 
+  Future<void> _loadProduct(Emitter<ProductScreenState> emit) async {
+    if (productId != null) {
+      final result = await getOneProductUC(productId!);
+      result.fold(
+        (failure) {
+          emit(state.copyWith(
+            isLoadingProducts: false,
+            error: 'Ошибка загрузки товара',
+          ));
+        },
+        (product) {
+          emit(state.copyWith(
+            isLoadingProducts: false,
+            product: product,
+            error: null,
+          ));
+        },
+      );
+    } else {
+      emit(
+          state.copyWith(isLoadingProducts: false, isLoadingPharmacies: false));
+    }
+  }
+
+  Future<void> _loadPharmacies(Emitter<ProductScreenState> emit) async {
     if (productId != null) {
       final position = await LocationManager.determinePosition();
 
@@ -59,35 +76,24 @@ class ProductScreenBloc extends Bloc<ProductScreenEvent, ProductScreenState> {
           geoLong: position?.longitude ?? 0.0,
           productId: productId!);
 
-      var data = await Future.wait(
-        [
-          getOneProductUC(productId!),
-          getProductPharmaciesUC(param),
-        ],
-      );
-
-      data.forEachIndexed(
-        (index, element) {
-          element.fold(
-            (_) {},
-            (result) => switch (index) {
-              0 => product = result as ProductEntity,
-              1 => pharmacies = result as List<PharmacyEntity>,
-              _ => {},
-            },
-          );
+      final result = await getProductPharmaciesUC(param);
+      result.fold(
+        (failure) {
+          emit(state.copyWith(
+            isLoadingPharmacies: false,
+            error: 'Ошибка загрузки аптек',
+          ));
+        },
+        (pharmacies) {
+          emit(state.copyWith(
+            isLoadingPharmacies: false,
+            pharmacies: pharmacies,
+            error: null,
+          ));
         },
       );
-
-      if (product != null) error = null;
+    } else {
+      emit(state.copyWith(isLoadingPharmacies: false));
     }
-
-    emit(
-      ProductScreenState(
-          isLoading: false,
-          error: error,
-          product: product,
-          pharmacies: pharmacies),
-    );
   }
 }

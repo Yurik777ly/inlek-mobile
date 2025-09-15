@@ -356,6 +356,8 @@ class BottomSheetManager {
         sharedPreferences.getString(SharedPreferencesKeys.savedFloor);
     final savedIntercom =
         sharedPreferences.getString(SharedPreferencesKeys.savedIntercom);
+    final savedComment =
+        sharedPreferences.getString(SharedPreferencesKeys.savedComment);
 
     if (cartBloc.selectedAddress != null) {
       try {
@@ -393,6 +395,8 @@ class BottomSheetManager {
     cartBloc.floorController.text = savedFloor ?? '';
     cartBloc.doorPhoneController.text = savedIntercom ?? '';
     cartBloc.entranceController.text = savedEntrance ?? '';
+
+    cartBloc.commentController.text = savedComment ?? '';
 
     cartBloc.phoneController.text = phone != null && phone != 'null'
         ? Utils.formatPhoneNumber(phone, toServerFormat: false)
@@ -611,42 +615,43 @@ class BottomSheetManager {
             ?.metaDataProperty?.geocoderMetaData?.address?.formatted ??
         '';
 
-    zoomToFirstAddress(BuildContext context, GeocodeResponse? response) {
-      if (response == null) {
+    Future<GeocodeResponse?> zoomToQueryAddress(
+      BuildContext context,
+      String query,
+    ) async {
+      if (query.isEmpty) {
         context.read<PharmacyMapBloc>().add(MoveToCurrentLocationEvent());
-        return;
+        return null;
       }
 
-      final firstFullAddress = response.firstFullAddress;
+      final geocoderManager = sl<GeocoderManager>();
+      final response = await geocoderManager.getGeocodeFromAddress(query);
 
-      if (firstFullAddress.point != null) {
-        final firstAddress = response.firstAddress;
+      double zoom = 12;
 
-        double zoom = 12;
+      if (response!.firstAddress!.components!
+          .any((e) => e.kind == KindResponse.house)) {
+        zoom = 20;
+      } else if (response.firstAddress!.components!
+          .any((e) => e.kind == KindResponse.street)) {
+        zoom = 16;
+      } else if (response.firstAddress!.components!
+          .any((e) => e.kind == KindResponse.locality)) {
+        zoom = 12;
+      }
 
-        if (firstAddress?.components
-                ?.any((e) => e.kind == KindResponse.house) ??
-            false) {
-          zoom = 20;
-        } else if (firstAddress?.components
-                ?.any((e) => e.kind == KindResponse.street) ??
-            false) {
-          zoom = 16;
-        } else if (firstAddress?.components
-                ?.any((e) => e.kind == KindResponse.locality) ??
-            false) {
-          zoom = 12;
-        }
-
+      if (context.mounted) {
         context.read<PharmacyMapBloc>().add(
               MoveToPoint(
                 zoom: zoom,
                 point: ym.Point(
-                    latitude: firstFullAddress.point!.lat,
-                    longitude: firstFullAddress.point!.lon),
+                  latitude: response.firstPoint!.lat,
+                  longitude: response.firstPoint!.lon,
+                ),
               ),
             );
       }
+      return response;
     }
 
     showModalBottomSheet(
@@ -741,44 +746,27 @@ class BottomSheetManager {
                                     suggestionFetcher: (query) async {
                                       debounce?.cancel();
                                       if (query.length <= 2) {
-                                        zoomToFirstAddress(context, null);
+                                        zoomToQueryAddress(context, '');
                                         return [];
                                       }
 
                                       final completer =
                                           Completer<List<String>>();
                                       debounce =
-                                          Timer(Duration(milliseconds: 1500),
+                                          Timer(Duration(milliseconds: 750),
                                               () async {
                                         final geocoderManager =
                                             sl<GeocoderManager>();
-                                        GeocodeResponse? response =
-                                            await geocoderManager
-                                                .getGeocodeFromAddress(query);
 
-                                        zoomToFirstAddress(context, response);
-
-                                        suggestionObjects = response
-                                                ?.response
-                                                ?.geoObjectCollection
-                                                ?.featureMember
-                                                ?.map((e) => e.geoObject)
-                                                .toList() ??
-                                            [];
-
-                                        // Извлекаем все адреса из ответа
                                         List<String> addresses =
-                                            suggestionObjects
-                                                .map((e) =>
-                                                    e
-                                                        ?.metaDataProperty
-                                                        ?.geocoderMetaData
-                                                        ?.address
-                                                        ?.formatted ??
-                                                    '')
-                                                .where((address) =>
-                                                    address.isNotEmpty)
-                                                .toList();
+                                            await geocoderManager
+                                                .getAddressSuggestions(query);
+
+                                        if (addresses.isNotEmpty &&
+                                            context.mounted) {
+                                          zoomToQueryAddress(
+                                              context, addresses.first);
+                                        }
 
                                         setState(() {});
 
@@ -787,97 +775,111 @@ class BottomSheetManager {
 
                                       return completer.future;
                                     },
-                                    onSuggestionTap: (p0) {
-                                      final geoObject = p0 as GeoObject?;
+                                    onSuggestionTap: (p0) async {
+                                      GeocodeResponse? response =
+                                          await zoomToQueryAddress(context, p0);
 
-                                      // Check if the address contains a "house" component
-                                      if (geoObject
-                                              ?.metaDataProperty
-                                              ?.geocoderMetaData
-                                              ?.address
-                                              ?.components
-                                              ?.any((component) =>
-                                                  component.kind ==
-                                                  KindResponse.house) ??
-                                          false) {
-                                        setState(
-                                          () {
-                                            // Extract the city name from the address components
-                                            final cityComponent = geoObject
+                                      if (response != null &&
+                                          response.firstAddress != null) {
+                                        final geoObject = response
+                                            .response
+                                            ?.geoObjectCollection
+                                            ?.featureMember
+                                            ?.first
+                                            .geoObject;
+
+                                        // Check if the address contains a "house" component
+                                        if (geoObject
                                                 ?.metaDataProperty
                                                 ?.geocoderMetaData
                                                 ?.address
                                                 ?.components
-                                                ?.firstWhere((component) =>
+                                                ?.any((component) =>
                                                     component.kind ==
-                                                    KindResponse.locality);
+                                                    KindResponse.house) ??
+                                            false) {
+                                          setState(
+                                            () {
+                                              // Extract the city name from the address components
+                                              final cityComponent = geoObject
+                                                  ?.metaDataProperty
+                                                  ?.geocoderMetaData
+                                                  ?.address
+                                                  ?.components
+                                                  ?.firstWhere((component) =>
+                                                      component.kind ==
+                                                      KindResponse.locality);
 
-                                            // If the city component exists, assign it to the controller
-                                            if (cityComponent != null) {
-                                              cartScreenBloc.cityController
-                                                  .text = cityComponent
-                                                      .name ??
-                                                  ''; // Fallback to empty string if name is null
-                                            } else {
-                                              cartScreenBloc
-                                                      .cityController.text =
-                                                  ''; // If no city component found, set text to empty string
-                                            }
+                                              // If the city component exists, assign it to the controller
+                                              if (cityComponent != null) {
+                                                cartScreenBloc.cityController
+                                                    .text = cityComponent
+                                                        .name ??
+                                                    ''; // Fallback to empty string if name is null
+                                              } else {
+                                                cartScreenBloc
+                                                        .cityController.text =
+                                                    ''; // If no city component found, set text to empty string
+                                              }
 
-                                            // Extract the street and house number from the address components
-                                            final streetComponent = geoObject
-                                                ?.metaDataProperty
-                                                ?.geocoderMetaData
-                                                ?.address
-                                                ?.components
-                                                ?.firstWhere((component) =>
-                                                    component.kind ==
-                                                    KindResponse.street);
+                                              // Extract the street and house number from the address components
+                                              final streetComponent = geoObject
+                                                  ?.metaDataProperty
+                                                  ?.geocoderMetaData
+                                                  ?.address
+                                                  ?.components
+                                                  ?.firstWhere((component) =>
+                                                      component.kind ==
+                                                      KindResponse.street);
 
-                                            final houseComponent = geoObject
-                                                ?.metaDataProperty
-                                                ?.geocoderMetaData
-                                                ?.address
-                                                ?.components
-                                                ?.firstWhere((component) =>
-                                                    component.kind ==
-                                                    KindResponse.house);
+                                              final houseComponent = geoObject
+                                                  ?.metaDataProperty
+                                                  ?.geocoderMetaData
+                                                  ?.address
+                                                  ?.components
+                                                  ?.firstWhere((component) =>
+                                                      component.kind ==
+                                                      KindResponse.house);
 
-                                            // Format and assign to streetHomeController
-                                            if (streetComponent != null &&
-                                                houseComponent != null) {
-                                              cartScreenBloc
-                                                      .streetHomeController
-                                                      .text =
-                                                  '${streetComponent.name}, ${houseComponent.name}';
-                                            } else if (streetComponent !=
-                                                null) {
-                                              cartScreenBloc
-                                                  .streetHomeController
-                                                  .text = streetComponent
-                                                      .name ??
-                                                  ''; // If street found but not house
-                                            } else if (houseComponent != null) {
-                                              cartScreenBloc
-                                                  .streetHomeController
-                                                  .text = houseComponent
-                                                      .name ??
-                                                  ''; // If house found but not street
-                                            } else {
-                                              cartScreenBloc
-                                                      .streetHomeController
-                                                      .text =
-                                                  ''; // If neither street nor house found
-                                            }
+                                              // Format and assign to streetHomeController
+                                              if (streetComponent != null &&
+                                                  houseComponent != null) {
+                                                cartScreenBloc
+                                                        .streetHomeController
+                                                        .text =
+                                                    '${streetComponent.name}, ${houseComponent.name}';
+                                              } else if (streetComponent !=
+                                                  null) {
+                                                cartScreenBloc
+                                                    .streetHomeController
+                                                    .text = streetComponent
+                                                        .name ??
+                                                    ''; // If street found but not house
+                                              } else if (houseComponent !=
+                                                  null) {
+                                                cartScreenBloc
+                                                    .streetHomeController
+                                                    .text = houseComponent
+                                                        .name ??
+                                                    ''; // If house found but not street
+                                              } else {
+                                                cartScreenBloc
+                                                        .streetHomeController
+                                                        .text =
+                                                    ''; // If neither street nor house found
+                                              }
 
-                                            // Set the selected address as well
-                                            cartScreenBloc.add(
-                                                UpdateDeliveryPriceEvent(
-                                                    address: p0));
+                                              cartScreenBloc.selectedAddress =
+                                                  geoObject;
+                                              selectedAddress = geoObject;
 
-                                            selectedAddress = p0;
-                                          },
-                                        );
+                                              // Set the selected address as well
+                                              cartScreenBloc.add(
+                                                  UpdateDeliveryPriceEvent(
+                                                      address: geoObject));
+                                            },
+                                          );
+                                        }
                                       }
                                     },
                                     onChangeField: (p0) {
@@ -1038,19 +1040,13 @@ class BottomSheetManager {
       BuildContext screenContext, OrderEntity order) {
     CartScreenBloc cartBloc = screenContext.read<CartScreenBloc>();
     HomeScreenBloc homeBloc = screenContext.read<HomeScreenBloc>();
+
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
       useRootNavigator: true,
       context: screenContext,
       builder: (sheetContext) {
-        final List<ProductEntity> cartProducts =
-            cartBloc.state.cartData?.products ?? [];
-        final Set<int> selectedProductIds = cartBloc.state.selectedProductIds;
-
-        List<ProductEntity> orderedProducts = cartProducts
-            .where((e) => selectedProductIds.contains(e.productId))
-            .toList();
         return CustomBottomSheet(
           padding: getMarginOrPadding(left: 20, right: 20, top: 8),
           color: UiConstants.backgroundColor,
@@ -1066,7 +1062,7 @@ class BottomSheetManager {
                 ),
                 SizedBox(height: 8.dp),
                 Text(
-                  'Статус заказов можно отслеживать в профиле в разделе «Заказы».',
+                  '${order.typeReceipt == TypeReceiving.pickup ? 'Проверим наличие и свяжемся в случае отсутствия товаров.\n\n' : ''}Статус заказов можно отслеживать в профиле в разделе «Заказы».',
                   style: UiConstants.textStyle2.copyWith(
                     color: UiConstants.darkBlue2Color.withOpacity(.6),
                   ),
@@ -1074,7 +1070,7 @@ class BottomSheetManager {
                 SizedBox(height: 16.dp),
                 ProductsListWidget(
                     title: 'Товары',
-                    products: orderedProducts,
+                    products: order.products ?? [],
                     productsListScreenType: ProductsListScreenType.order,
                     screenContext: screenContext),
                 SizedBox(height: 16.dp),
@@ -1128,42 +1124,43 @@ class BottomSheetManager {
     // таймер для задержки по обратному геокодированию
     Timer? debounce;
 
-    zoomToFirstAddress(BuildContext context, GeocodeResponse? response) {
-      if (response == null) {
+    Future<GeocodeResponse?> zoomToQueryAddress(
+      BuildContext context,
+      String query,
+    ) async {
+      if (query.isEmpty) {
         context.read<PharmacyMapBloc>().add(MoveToCurrentLocationEvent());
-        return;
+        return null;
       }
 
-      final firstFullAddress = response.firstFullAddress;
+      final geocoderManager = sl<GeocoderManager>();
+      final response = await geocoderManager.getGeocodeFromAddress(query);
 
-      if (firstFullAddress.point != null) {
-        final firstAddress = response.firstAddress;
+      double zoom = 12;
 
-        double zoom = 12;
+      if (response!.firstAddress!.components!
+          .any((e) => e.kind == KindResponse.house)) {
+        zoom = 20;
+      } else if (response.firstAddress!.components!
+          .any((e) => e.kind == KindResponse.street)) {
+        zoom = 16;
+      } else if (response.firstAddress!.components!
+          .any((e) => e.kind == KindResponse.locality)) {
+        zoom = 12;
+      }
 
-        if (firstAddress?.components
-                ?.any((e) => e.kind == KindResponse.house) ??
-            false) {
-          zoom = 20;
-        } else if (firstAddress?.components
-                ?.any((e) => e.kind == KindResponse.street) ??
-            false) {
-          zoom = 16;
-        } else if (firstAddress?.components
-                ?.any((e) => e.kind == KindResponse.locality) ??
-            false) {
-          zoom = 12;
-        }
-
+      if (context.mounted) {
         context.read<PharmacyMapBloc>().add(
               MoveToPoint(
                 zoom: zoom,
                 point: ym.Point(
-                    latitude: firstFullAddress.point!.lat,
-                    longitude: firstFullAddress.point!.lon),
+                  latitude: response.firstPoint!.lat,
+                  longitude: response.firstPoint!.lon,
+                ),
               ),
             );
       }
+      return response;
     }
 
     showModalBottomSheet(
@@ -1256,25 +1253,29 @@ class BottomSheetManager {
                                           );
 
                                           debounce?.cancel();
+                                          debounce?.cancel();
                                           if (value.length <= 2) {
-                                            zoomToFirstAddress(context, null);
-                                            return;
+                                            zoomToQueryAddress(context, '');
+                                            return [];
                                           }
 
-                                          debounce = Timer(
-                                            Duration(milliseconds: 1500),
-                                            () async {
-                                              final geocoderManager =
-                                                  sl<GeocoderManager>();
-                                              GeocodeResponse? response =
-                                                  await geocoderManager
-                                                      .getGeocodeFromAddress(
-                                                          value);
+                                          debounce =
+                                              Timer(Duration(milliseconds: 750),
+                                                  () async {
+                                            final geocoderManager =
+                                                sl<GeocoderManager>();
 
-                                              zoomToFirstAddress(
-                                                  context, response);
-                                            },
-                                          );
+                                            List<String> addresses =
+                                                await geocoderManager
+                                                    .getAddressSuggestions(
+                                                        value);
+
+                                            if (addresses.isNotEmpty &&
+                                                context.mounted) {
+                                              zoomToQueryAddress(
+                                                  context, addresses.first);
+                                            }
+                                          });
                                         },
                                       ),
                                     ),
@@ -1350,9 +1351,9 @@ class BottomSheetManager {
       useSafeArea: true,
       isScrollControlled: true,
       useRootNavigator: true,
-      context: UiConstants.homeContext!,
+      context: screenContext,
       builder: (sheetContext) {
-        final cartBloc = screenContext.read<CartScreenBloc>();
+        CartScreenBloc cartBloc = screenContext.read<CartScreenBloc>();
 
         return BlocBuilder<CartScreenBloc, CartScreenState>(
           bloc: cartBloc,
@@ -1937,13 +1938,12 @@ class BottomSheetManager {
               });
             }
 
-            void clear() {
+            Future clear() async {
               selectedTypesReceivingIds.clear();
               selectedStatuses.clear();
 
-              startDate =
-                  state.startDate ?? DateTime(DateTime.now().year, 1, 1);
-              endDate = state.endDate ?? DateTime(DateTime.now().year, 12, 31);
+              startDate = DateTime(DateTime.now().year, 1, 1);
+              endDate = DateTime(DateTime.now().year, 12, 31);
 
               startDateController =
                   TextEditingController(text: format.format(startDate!));
@@ -1965,7 +1965,10 @@ class BottomSheetManager {
                               .copyWith(color: UiConstants.darkBlueColor),
                         ),
                         GestureDetector(
-                          onTap: () => setState(clear),
+                          onTap: () {
+                            ordersBloc.add(ClearFilterEvent());
+                            Navigator.pop(context);
+                          },
                           child: Text(
                             'Сбросить',
                             style: UiConstants.textStyle3.copyWith(

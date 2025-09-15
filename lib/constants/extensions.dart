@@ -132,8 +132,10 @@ extension TypeReceivingExtension on TypeReceiving {
 extension PaymentTypeExtension on PaymentType {
   static const Map<PaymentType, String> titles = {
     PaymentType.courier: 'Курьеру',
-    PaymentType.oplati: 'Онлайн',
-    PaymentType.bepaid: 'Онлайн',
+    PaymentType.cash: 'Наличными',
+    PaymentType.oplati: 'Онлайн (ОПЛАТИ)',
+    PaymentType.bepaid: 'Онлайн (Bepaid)',
+    PaymentType.erip: 'Онлайн (ЕРИП)',
   };
 
   String get title => titles[this] ?? 'Неизвестный способ оплаты';
@@ -141,13 +143,15 @@ extension PaymentTypeExtension on PaymentType {
   static PaymentType? fromTitle(String? title) {
     switch (title) {
       case 'cash':
-        return PaymentType.courier;
+        return PaymentType.cash;
       case 'Курьеру':
         return PaymentType.courier;
       case 'bepaid':
         return PaymentType.bepaid;
       case 'oplati':
         return PaymentType.oplati;
+      case 'erip':
+        return PaymentType.erip;
     }
     return null;
   }

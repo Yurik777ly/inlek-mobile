@@ -109,7 +109,7 @@ class _SearchScreenPageContentState extends State<_SearchScreenPageContent> {
                                       settings: RouteSettings(
                                         name: Routes.productsScreen,
                                         arguments: {
-                                          'title': p0,
+                                          'title': 'Результаты поиска',
                                           'products':
                                               state.searchResult?.products ?? []
                                         },

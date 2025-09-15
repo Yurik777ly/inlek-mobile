@@ -8,7 +8,7 @@ enum ProductChipType { hit, seasonalOffer, stock, nova }
 
 enum TypeReceiving { all, delivery, pickup }
 
-enum PaymentType { courier, oplati, bepaid, erip }
+enum PaymentType { courier, oplati, bepaid, erip, cash }
 
 enum PharmacyProductsAvailability { partially, fully }
 

@@ -80,6 +80,7 @@ class OrderEntity extends Equatable {
   final String? deliveryEntrance;
   final String? deliveryFloor;
   final String? deliveryApartment;
+  final String? deliveryIntercom;
   final String? deliveryComment;
   final String? paymentId;
   final String? paymentTitle;
@@ -126,6 +127,7 @@ class OrderEntity extends Equatable {
     this.deliveryEntrance,
     this.deliveryFloor,
     this.deliveryApartment,
+    this.deliveryIntercom,
     this.deliveryComment,
     this.paymentId,
     this.paymentTitle,
@@ -173,6 +175,7 @@ class OrderEntity extends Equatable {
         deliveryEntrance,
         deliveryFloor,
         deliveryApartment,
+        deliveryIntercom,
         deliveryComment,
         paymentId,
         paymentTitle,

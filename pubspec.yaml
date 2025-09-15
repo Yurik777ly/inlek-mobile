@@ -23,7 +23,7 @@ dependencies:
   flutter_cache_manager: ^3.4.1
   dartz: ^0.10.1
   get_it: ^8.0.0
-  internet_connection_checker: ^1.0.0+1
+  internet_connection_checker: ^3.0.1
   geolocator: ^13.0.1
   device_info_plus: ^11.0.0
   flutter_native_splash: ^2.4.2
@@ -31,7 +31,7 @@ dependencies:
   flutter_dismissible_tile: ^1.0.3
   flutter_svg: ^2.0.10+1
   flutter_screenutil: ^5.9.3
-  connectivity_plus: ^6.0.5
+  connectivity_plus: ^6.1.5
   change_app_package_name: ^1.4.0
   intl: ^0.19.0
   http: ^1.2.2
@@ -46,7 +46,6 @@ dependencies:
     git:
       url: https://github.com/muhammadyunusxon/yandex_mapkit.git
   url_launcher: ^6.3.1
-  visibility_detector: ^0.4.0+2
   yandex_geocoder: ^2.3.1
   jivosdk_plugin: ^0.9.9
   firebase_core: ^3.13.0

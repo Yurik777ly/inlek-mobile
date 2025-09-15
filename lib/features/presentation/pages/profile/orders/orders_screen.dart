@@ -5,9 +5,11 @@ import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
+import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/order_entity.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/orders_screen/orders_screen_bloc.dart';
+import 'package:inlek/features/presentation/pages/profile/orders/order_screen.dart';
 import 'package:inlek/features/presentation/widgets/custom_app_bar.dart';
 import 'package:inlek/features/presentation/widgets/custom_checkbox.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/internet_no_internet_connection_widget.dart';
@@ -36,7 +38,8 @@ class OrdersScreen extends StatelessWidget {
 
               if (ordersState.isOnlyActive) {
                 orders = orders
-                    .where((e) => e.status != OrderStatus.canceled)
+                    .where((e) => ![OrderStatus.canceled, OrderStatus.received]
+                        .contains(e.status))
                     .toList();
               }
 
@@ -114,11 +117,29 @@ class OrdersScreen extends StatelessWidget {
                                                     itemCount: orders.length,
                                                     separatorBuilder: (_, __) =>
                                                         SizedBox(height: 8.dp),
-                                                    itemBuilder: (context,
-                                                            index) =>
-                                                        OrderItem(
-                                                            order:
-                                                                orders[index]),
+                                                    itemBuilder:
+                                                        (context, index) =>
+                                                            OrderItem(
+                                                      order: orders[index],
+                                                      onTapOrder: () async {
+                                                        await Navigator.of(
+                                                                context)
+                                                            .push(
+                                                          Routes.createRoute(
+                                                            const OrderScreen(),
+                                                            settings: RouteSettings(
+                                                                name: Routes
+                                                                    .orderScreen,
+                                                                arguments: orders[
+                                                                        index]
+                                                                    .orderId),
+                                                          ),
+                                                        );
+
+                                                        ordersBloc.add(
+                                                            LoadDataEvent());
+                                                      },
+                                                    ),
                                                   ),
                                       ),
                                     ],

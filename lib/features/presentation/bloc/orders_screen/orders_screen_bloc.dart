@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/features/domain/entities/order_entity.dart';
 import 'package:inlek/features/domain/usecases/orders/get_order_history.dart';
 
@@ -122,8 +123,8 @@ class OrdersScreenBloc extends Bloc<OrdersScreenEvent, OrdersScreenState> {
       filteredOrders = filteredOrders
           .where(
             (e) => state.selectedTypesReceivingIds.contains(
-              state.typesReceiving.indexOf(e.deliveryTitle == 'Самовывоз'
-                  ? e.deliveryTitle!
+              state.typesReceiving.indexOf(e.typeReceipt == TypeReceiving.pickup
+                  ? e.typeReceipt!.title
                   : 'Доставка'),
             ),
           )
@@ -146,13 +147,14 @@ class OrdersScreenBloc extends Bloc<OrdersScreenEvent, OrdersScreenState> {
   }
 
   void _onClearEvent(ClearFilterEvent event, Emitter<OrdersScreenState> emit) {
-    DateTime startDate = state.startDate ?? DateTime(DateTime.now().year, 1, 1);
-    DateTime endDate = state.endDate ?? DateTime(DateTime.now().year, 12, 31);
+    DateTime startDate = DateTime(DateTime.now().year, 1, 1);
+    DateTime endDate = DateTime(DateTime.now().year, 12, 31);
     emit(state.copyWith(
         selectedTypesReceivingIds: {},
         selectedStatuses: {},
         startDate: startDate,
         endDate: endDate));
+    add(ApplyFiltersEvent());
   }
 
   void _onChangeQuery(ChangeQueryEvent event, Emitter<OrdersScreenState> emit) {

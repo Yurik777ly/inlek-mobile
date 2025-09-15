@@ -257,10 +257,10 @@ class PersonalDataScreenBloc
     return failureOrLoads.fold(
       (_) => Utils.showCustomDialog(
         screenContext: navigatorKey.currentContext!,
-        text: 'Неизвестная ошибка',
+        text: 'Ошибказагрузки данных',
         action: (context) {
           Navigator.of(context).pop();
-          Navigator.of(navigatorKey.currentContext!).pop();
+          //Navigator.of(navigatorKey.currentContext!).pop();
         },
       ),
       (profile) {

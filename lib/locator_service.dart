@@ -1,6 +1,7 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
+import 'package:inlek/core/connectivity_service.dart';
 import 'package:inlek/core/courier_zone_manager.dart';
 import 'package:inlek/core/geocoder_manager.dart';
 import 'package:inlek/core/platform/error_handler.dart';
@@ -226,7 +227,8 @@ Future<void> init() async {
       getOneActionUC: sl<GetOneActionUC>(),
     ),
   );
-  sl.registerFactory(
+
+  sl.registerLazySingleton<CartScreenBloc>(
     () => CartScreenBloc(
       getCartUC: sl<GetCartUC>(),
       addCartUC: sl<AddCartUC>(),
@@ -237,6 +239,7 @@ Future<void> init() async {
       courierZoneManager: sl<CourierZoneManager>(),
     ),
   );
+
   sl.registerFactory(
     () => SelectRegionScreenBloc(
       getCitiesUC: sl<GetCitiesUC>(),
@@ -407,8 +410,11 @@ Future<void> init() async {
   );
 
   //// Core
+  sl.registerLazySingleton<ConnectivityService>(
+    () => ConnectivityService(),
+  );
   sl.registerLazySingleton<NetworkInfo>(
-    () => NetworkInfoImpl(sl()),
+    () => NetworkInfoImpl(sl<ConnectivityService>()),
   );
   sl.registerLazySingleton<ErrorHandler>(
     () => ErrorHandlerImpl(sl()),
@@ -419,7 +425,7 @@ Future<void> init() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
   sl.registerLazySingleton(() => http.Client());
-  sl.registerLazySingleton(() => InternetConnectionChecker());
+  sl.registerLazySingleton(() => InternetConnectionChecker.instance);
   sl.registerLazySingleton(
       () => YandexGeocoder(apiKey: dotenv.env['YANDEX_GEOCODER_API_KEY']!));
   sl.registerLazySingleton(() => GeocoderManager(sl<YandexGeocoder>()));

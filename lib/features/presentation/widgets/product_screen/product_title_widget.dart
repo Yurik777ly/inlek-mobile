@@ -32,24 +32,26 @@ class ProductTitleWidget extends StatelessWidget {
                       ? UiConstants.pink2Color
                       : UiConstants.blackColor),
             ),
-            if (product?.oldPrice != null &&
+            if ((product?.oldPrice ?? 0) > 0 &&
                 product?.oldPrice != product?.price)
               Padding(
                 padding: getMarginOrPadding(left: 4),
                 child: Text(
                   Utils.formatPrice(product?.oldPrice),
                   style: UiConstants.textStyle8.copyWith(
-                      color: UiConstants.darkBlue2Color.withOpacity(.6),
-                      fontWeight: FontWeight.w500,
-                      decoration: TextDecoration.lineThrough),
+                    color: UiConstants.darkBlue2Color.withOpacity(.6),
+                    fontWeight: FontWeight.w500,
+                    decoration: TextDecoration.lineThrough,
+                  ),
                 ),
               ),
-            if (product?.discount != null &&
+            if ((product?.discount ?? 0) > 0 &&
+                (product?.oldPrice ?? 0) > 0 &&
                 product?.oldPrice != product?.price)
               Padding(
                 padding: getMarginOrPadding(left: 12),
                 child: ProductSaleChip(discount: product?.discount ?? 0),
-              )
+              ),
           ],
         ),
         SizedBox(height: 4.dp),

@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
@@ -16,17 +19,66 @@ import 'package:inlek/features/presentation/widgets/map/address_plate.dart';
 import 'package:inlek/features/presentation/widgets/map/map_button.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
-class PharmacyMapWidget extends StatelessWidget {
+class PharmacyMapWidget extends StatefulWidget {
   const PharmacyMapWidget({super.key, this.onTapMap});
 
   final Function(Point point)? onTapMap;
 
   @override
+  State<PharmacyMapWidget> createState() => _PharmacyMapWidgetState();
+}
+
+class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
+  late PharmacyMapBloc _bloc;
+  Timer? _cameraMoveDebounce;
+  Point? _lastSent;
+  double? _lastZoom;
+
+  @override
+  void dispose() {
+    _cameraMoveDebounce?.cancel();
+    super.dispose();
+  }
+
+  void _onCameraChanged(CameraPosition position) {
+    _cameraMoveDebounce?.cancel();
+    _cameraMoveDebounce = Timer(const Duration(milliseconds: 300), () {
+      final lat = position.target.latitude;
+      final lon = position.target.longitude;
+      final zoom = position.zoom;
+
+      if (_lastSent == null || _lastZoom == null) {
+        _lastSent = Point(latitude: lat, longitude: lon);
+        _lastZoom = zoom;
+        _bloc.add(UpdatePharmacyMapEvent(position: position));
+        return;
+      }
+
+      final distanceMoved = Geolocator.distanceBetween(
+        _lastSent!.latitude,
+        _lastSent!.longitude,
+        lat,
+        lon,
+      );
+
+      if (distanceMoved > 200 || (zoom - _lastZoom!).abs() >= 1) {
+        _lastSent = Point(latitude: lat, longitude: lon);
+        _lastZoom = zoom;
+        _bloc.add(UpdatePharmacyMapEvent(position: position));
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    _bloc = context.read<PharmacyMapBloc>();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<PharmacyMapBloc, PharmacyMapState>(
       builder: (context, state) {
-        final bloc = context.read<PharmacyMapBloc>();
-
         return Stack(
           alignment: Alignment.bottomCenter,
           children: [
@@ -37,46 +89,16 @@ class PharmacyMapWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16.r),
                 ),
                 child: YandexMap(
-                    onMapCreated: (controller) => bloc
+                    onMapCreated: (controller) => _bloc
                       ..add(AttachControllerEvent(mapController: controller)),
                     onCameraPositionChanged: (position, reason, isGesture) =>
-                        bloc.add(UpdatePharmacyMapEvent(position: position)),
+                        _onCameraChanged(position),
                     gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
                       Factory<OneSequenceGestureRecognizer>(
                         () => EagerGestureRecognizer(),
                       ),
                     },
-                    onMapTap: onTapMap,
-                    /* (argument) async {
-                        final geocoderManager = sl<GeocoderManager>();
-        
-                        GeocodeResponse? response =
-                            await geocoderManager.getGeocodeFromPoint(
-                                argument.latitude, argument.longitude);
-        
-                        List<Component>? components =
-                            response?.firstAddress?.components;
-        
-                        String getComponentName(KindResponse kind) {
-                          return components
-                                  ?.firstWhereOrNull((e) => e.kind == kind)
-                                  ?.name ??
-                              '';
-                        }
-        
-                        String city =
-                            getComponentName(KindResponse.locality); // Город
-                        String street =
-                            getComponentName(KindResponse.street); // Улица
-                        String house =
-                            getComponentName(KindResponse.house); // Дом
-        
-                        String address =
-                            '$street, д.$house'.trim(); // Собираем адрес
-        
-                        print('Город: $city');
-                        print('Адрес: $address');
-                      },*/
+                    onMapTap: widget.onTapMap,
                     mapObjects: state.markers),
               ),
             ),
@@ -90,19 +112,19 @@ class PharmacyMapWidget extends StatelessWidget {
                   MapButton(
                       assetName: Paths.locationIconPath,
                       color: UiConstants.pink2Color,
-                      onPressed: () => bloc.add(MoveToCurrentLocationEvent())),
+                      onPressed: () => _bloc.add(MoveToCurrentLocationEvent())),
                   SizedBox(height: 16.dp),
                   MapButton(
                       assetName: Paths.plusIconPath,
                       color: Color(0xFF222222).withOpacity(.6),
-                      onPressed: () => bloc.add(ZoomInEvent())),
+                      onPressed: () => _bloc.add(ZoomInEvent())),
                   SizedBox(height: 4.dp),
                   MapButton(
                       assetName: Paths.minusIconPath,
                       color: Color(0xFF222222).withOpacity(.6),
-                      onPressed: () => bloc.add(ZoomOutEvent())),
+                      onPressed: () => _bloc.add(ZoomOutEvent())),
                   if (state.showStackWindow ||
-                      bloc.mapScreenType == MapScreenType.order)
+                      _bloc.mapScreenType == MapScreenType.order)
                     Padding(
                       padding: getMarginOrPadding(top: 16),
                       child: Builder(
@@ -113,7 +135,7 @@ class PharmacyMapWidget extends StatelessWidget {
                                   (state.selectedMarkerId ?? '213'))
                               ?.data;
 
-                          if (bloc.mapScreenType ==
+                          if (_bloc.mapScreenType ==
                               MapScreenType.courierDeliveryZones) {
                             PharmacyEntity pharmacy =
                                 PharmacyModel.fromJson(dataMap!);
@@ -139,12 +161,12 @@ class PharmacyMapWidget extends StatelessWidget {
                             return AddressPlate(
                               title: city,
                               body: street,
-                              onClose: () => bloc..add(SelectMarkerEvent()),
+                              onClose: () => _bloc..add(SelectMarkerEvent()),
                             );
-                          } else if (bloc.mapScreenType ==
+                          } else if (_bloc.mapScreenType ==
                               MapScreenType.product) {
                             return Container();
-                          } else if (bloc.mapScreenType ==
+                          } else if (_bloc.mapScreenType ==
                               MapScreenType.order) {
                             final hasError = dataMap?['hasError'] ?? false;
                             final address = dataMap?['address'];

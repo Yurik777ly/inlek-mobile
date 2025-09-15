@@ -15,7 +15,6 @@ class SplashScreenBloc extends Bloc<SplashScreenEvent, SplashScreenState> {
   SplashScreenBloc({required this.sharedPreferences, required this.getMeUC})
       : super(SplashScreenInitial()) {
     on<SplashScreenStarted>((event, emit) async {
-      //await Future.delayed(Duration(seconds: 2));
       String? token =
           sharedPreferences.getString(SharedPreferencesKeys.accessToken);
       if (token != null) {

@@ -1,15 +1,16 @@
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:inlek/core/connectivity_service.dart';
 
 abstract class NetworkInfo {
   Future<bool> get isConnected;
 }
 
 class NetworkInfoImpl implements NetworkInfo {
-  final InternetConnectionChecker internetConnectionChecker;
+  final ConnectivityService connectivityService;
 
-  NetworkInfoImpl(this.internetConnectionChecker);
+  NetworkInfoImpl(this.connectivityService);
 
   @override
-  Future<bool> get isConnected async =>
-      await internetConnectionChecker.hasConnection;
+  Future<bool> get isConnected async {
+    return await connectivityService.hasInternetConnection();
+  }
 }

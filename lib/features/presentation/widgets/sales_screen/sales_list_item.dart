@@ -58,7 +58,7 @@ class SalesListItem extends StatelessWidget {
                   height: 128.dp,
                   width: double.infinity,
                   imageUrl: '${dotenv.env['PUBLIC_URL']!}${action.image}',
-                  fit: BoxFit.cover,
+                  fit: BoxFit.fill,
                   cacheManager: CustomCacheManager(),
                   errorWidget: (context, url, error) => Icon(Icons.image,
                       size: 72.dp, color: UiConstants.white3Color),

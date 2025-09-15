@@ -150,7 +150,7 @@ class MainScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                floatingActionButton: homeState is HomeScreenInitial
+                floatingActionButton: homeState is! InternetUnavailable
                     ? Padding(
                         padding: getMarginOrPadding(bottom: 100, right: 5),
                         child: BlurryContainer(

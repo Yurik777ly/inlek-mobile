@@ -103,22 +103,27 @@ class PharmaciesScreen extends StatelessWidget {
                                   );
 
                                   debounce?.cancel();
+                                  debounce?.cancel();
                                   if (value.length <= 2) {
-                                    zoomToFirstAddress(context, null);
-                                  } else {
-                                    debounce = Timer(
-                                      Duration(milliseconds: 1500),
-                                      () async {
-                                        final geocoderManager =
-                                            sl<GeocoderManager>();
-                                        GeocodeResponse? response =
-                                            await geocoderManager
-                                                .getGeocodeFromAddress(value);
-
-                                        zoomToFirstAddress(context, response);
-                                      },
-                                    );
+                                    zoomToQueryAddress(context, '');
+                                    return [];
                                   }
+
+                                  debounce = Timer(Duration(milliseconds: 750),
+                                      () async {
+                                    final geocoderManager =
+                                        sl<GeocoderManager>();
+
+                                    List<String> addresses =
+                                        await geocoderManager
+                                            .getAddressSuggestions(value);
+
+                                    if (addresses.isNotEmpty &&
+                                        context.mounted) {
+                                      zoomToQueryAddress(
+                                          context, addresses.first);
+                                    }
+                                  });
                                 },
                               ),
                               Expanded(
@@ -226,40 +231,42 @@ class PharmaciesScreen extends StatelessWidget {
     );
   }
 
-  zoomToFirstAddress(BuildContext context, GeocodeResponse? response) {
-    if (response == null) {
+  Future<GeocodeResponse?> zoomToQueryAddress(
+    BuildContext context,
+    String query,
+  ) async {
+    if (query.isEmpty) {
       context.read<PharmacyMapBloc>().add(MoveToCurrentLocationEvent());
-      return;
+      return null;
     }
 
-    final firstFullAddress = response.firstFullAddress;
+    final geocoderManager = sl<GeocoderManager>();
+    final response = await geocoderManager.getGeocodeFromAddress(query);
 
-    if (firstFullAddress.point != null) {
-      final firstAddress = response.firstAddress;
+    double zoom = 12;
 
-      double zoom = 12;
+    if (response!.firstAddress!.components!
+        .any((e) => e.kind == KindResponse.house)) {
+      zoom = 20;
+    } else if (response.firstAddress!.components!
+        .any((e) => e.kind == KindResponse.street)) {
+      zoom = 16;
+    } else if (response.firstAddress!.components!
+        .any((e) => e.kind == KindResponse.locality)) {
+      zoom = 12;
+    }
 
-      if (firstAddress?.components?.any((e) => e.kind == KindResponse.house) ??
-          false) {
-        zoom = 20;
-      } else if (firstAddress?.components
-              ?.any((e) => e.kind == KindResponse.street) ??
-          false) {
-        zoom = 16;
-      } else if (firstAddress?.components
-              ?.any((e) => e.kind == KindResponse.locality) ??
-          false) {
-        zoom = 12;
-      }
-
+    if (context.mounted) {
       context.read<PharmacyMapBloc>().add(
             MoveToPoint(
               zoom: zoom,
               point: ym.Point(
-                  latitude: firstFullAddress.point!.lat,
-                  longitude: firstFullAddress.point!.lon),
+                latitude: response.firstPoint!.lat,
+                longitude: response.firstPoint!.lon,
+              ),
             ),
           );
     }
+    return response;
   }
 }

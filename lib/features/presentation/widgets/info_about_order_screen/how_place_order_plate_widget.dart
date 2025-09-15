@@ -16,7 +16,7 @@ class HowPlaceOrderPlateWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Skeleton.ignorePointer(
       child: GestureDetector(
-        onTap: () => Navigator.of(context).pushReplacement(
+        onTap: () => Navigator.of(context).push(
           Routes.createRoute(
             const HowPlaceOrderScreen(),
             settings: RouteSettings(name: Routes.howPlaceOrderScreen),

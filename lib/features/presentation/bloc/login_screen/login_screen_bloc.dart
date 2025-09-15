@@ -20,13 +20,14 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  LoginScreenBloc(
-      {required this.loginUC,
-      required this.getMeUC,
-      Map<String, dynamic>? args})
-      : super(const LoginScreenState()) {
-    if (args?['redirect_type'] == LoginScreenType.accountExists) {
-      phoneController.text = args?['phone'] ?? '';
+  LoginScreenBloc({
+    required this.loginUC,
+    required this.getMeUC,
+    String? phone,
+    LoginScreenType? loginScreenType,
+  }) : super(const LoginScreenState()) {
+    if (loginScreenType == LoginScreenType.accountExists) {
+      phoneController.text = phone ?? '';
     }
 
     phoneController.addListener(() {

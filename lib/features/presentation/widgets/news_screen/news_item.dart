@@ -50,7 +50,7 @@ class NewsItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16.r),
                 child: CachedNetworkImage(
                   imageUrl: '${dotenv.env['PUBLIC_URL']!}${news.image}',
-                  fit: BoxFit.cover,
+                  fit: BoxFit.fill,
                   height: 176.dp,
                   width: double.infinity,
                   cacheManager: CustomCacheManager(),

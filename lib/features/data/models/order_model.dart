@@ -31,6 +31,7 @@ class OrderModel extends OrderEntity {
     super.deliveryEntrance,
     super.deliveryFloor,
     super.deliveryApartment,
+    super.deliveryIntercom,
     super.deliveryComment,
     super.paymentId,
     super.paymentTitle,
@@ -51,76 +52,107 @@ class OrderModel extends OrderEntity {
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
+    final data = json['order'] ?? json;
+
+    String? fullDeliveryAddress;
+
+    final deliveryParts = [
+      data['delivery_city'],
+      data['delivery_street'],
+      data['delivery_house'],
+      (data['delivery_entrance'] ?? '').isNotEmpty
+          ? 'подъезд ${data['delivery_entrance']}'
+          : null,
+      (data['delivery_floor'] ?? '').isNotEmpty
+          ? 'этаж ${data['delivery_floor']}'
+          : null,
+      (data['delivery_apartment'] ?? '').isNotEmpty
+          ? 'кв. ${data['delivery_apartment']}'
+          : null,
+      (data['delivery_intercom'] ?? '').isNotEmpty
+          ? 'домофон ${data['delivery_intercom']}'
+          : null,
+    ];
+
+// Склеиваем непустые части через запятую
+    fullDeliveryAddress = deliveryParts
+        .where((e) => e != null && e.toString().trim().isNotEmpty)
+        .join(', ');
+
     return OrderModel(
-      orderId: json['order_id'],
-      address: json['address'],
-      fullDeliveryAddress: json['full_delivery_address'], // 👈
-      pharmacyId: json['pharmacy_id'],
-      pharmacyName: json['pharmacy_name'],
-      customerId: json['customer_id'],
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'] + 'Z').toLocal()
+      orderId: data['order_id'] ?? data['id'],
+      address: data['address'],
+      fullDeliveryAddress: data['full_delivery_address'] ??
+          data['delivery_info']?['address'] ??
+          fullDeliveryAddress,
+      pharmacyId: data['pharmacy_id'],
+      pharmacyName: data['pharmacy_name'],
+      customerId: data['customer_id'],
+      createdAt: data['created_at'] != null
+          ? DateTime.parse(data['created_at']).toLocal()
           : null,
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
+      updatedAt: data['updated_at'] != null
+          ? DateTime.parse(data['updated_at'])
           : null,
-      phone: json['phone'],
-      name: json['name'],
-      email: json['email'],
-      amount: json['amount'] != null
-          ? double.tryParse(json['amount'].toString())
+      phone: data['phone'],
+      name: data['name'],
+      email: data['email'],
+      amount: data['amount'] != null
+          ? double.tryParse(data['amount'].toString())
           : null,
-      currency: json['currency'],
-      statusId: json['status_id'],
-      status: json['status_id'] != null
-          ? OrderStatusExtension.fromId(json['status_id'])
+      currency: data['currency'],
+      statusId: data['status_id'],
+      status: data['status_id'] != null
+          ? OrderStatusExtension.fromId(data['status_id'])
           : null,
-      comment: json['comment'],
-      agree: json['agree'] == "true",
-      deliveryId: json['delivery_id'],
-      deliveryTitle: json['delivery_title'],
-      deliveryPrice: json['delivery_price'] != null
-          ? double.tryParse(json['delivery_price'].toString())
+      comment: data['comment'],
+      agree: data['agree'] == "true",
+      deliveryId: data['delivery_id'],
+      deliveryTitle: data['delivery_title'],
+      deliveryPrice: data['delivery_price'] != null
+          ? double.tryParse(data['delivery_price'].toString())
           : null,
-      deliveryCity: json['delivery_city'],
-      deliveryStreet: json['delivery_street'],
-      deliveryHouse: json['delivery_house'],
-      deliveryEntrance: json['delivery_entrance'],
-      deliveryFloor: json['delivery_floor'],
-      deliveryApartment: json['delivery_apartment'],
-      deliveryComment: json['delivery_comment'],
-      paymentId: json['payment_id'],
-      paymentTitle: json['payment_title'],
-      paymentCaption: json['payment_caption'],
-      sumPrices: json['sum_prices'] != null
-          ? double.tryParse(json['sum_prices'].toString())
+      deliveryCity: data['delivery_city'],
+      deliveryStreet: data['delivery_street'],
+      deliveryHouse: data['delivery_house'],
+      deliveryEntrance: data['delivery_entrance'],
+      deliveryFloor: data['delivery_floor'],
+      deliveryApartment: data['delivery_apartment'],
+      deliveryIntercom: data['delivery_intercom'],
+      deliveryComment: data['delivery_comment'],
+      paymentId: data['payment_id'],
+      paymentTitle: data['payment_title'],
+      paymentCaption: data['payment_caption'],
+      sumPrices: data['sum_prices'] != null
+          ? double.tryParse(
+              (data['sum_prices'] ?? data['products_price']).toString())
           : null,
-      sumPricesOld: json['sum_prices_old'] != null
-          ? double.tryParse(json['sum_prices_old'].toString())
+      sumPricesOld: data['sum_prices_old'] != null
+          ? double.tryParse(data['sum_prices_old'].toString())
           : null,
-      sumPricesSalesOld: json['sum_prices_sales_old'] != null
-          ? double.tryParse(json['sum_prices_sales_old'].toString())
+      sumPricesSalesOld: data['sum_prices_sales_old'] != null
+          ? double.tryParse(data['sum_prices_sales_old'].toString())
           : null,
-      deliverySum: json['delivery_sum'] != null
-          ? double.tryParse(json['delivery_sum'].toString())
+      deliverySum: data['delivery_sum'] != null
+          ? double.tryParse(data['delivery_sum'].toString())
           : null,
-      totalSum: json['total_sum'] != null
-          ? double.tryParse(json['total_sum'].toString())
+      totalSum: data['total_sum'] != null
+          ? double.tryParse(data['total_sum'].toString())
           : null,
-      isPaid: json['is_paid'] == true,
-      products: json['order_products_json'] != null
-          ? (json['order_products_json'] as List)
+      isPaid: data['is_paid'] == true,
+      products: data['order_products_json'] != null
+          ? (data['order_products_json'] as List)
               .map((e) => ProductModel.fromJson(e))
               .toList()
           : null,
       paymentType: PaymentTypeExtension.fromTitle(
-          json['payment_method_title'] ?? json['payment_method']),
+          data['payment_method'] ?? data['payment_type']),
       typeReceipt: TypeReceivingExtension.fromTitle(
-          json['delivery_method_title'] ?? json['delivery_method']),
-      pharmacy: json['pharmacy'] != null
-          ? PharmacyModel.fromJson(json['pharmacy'][0])
+          data['delivery_method_title'] ?? data['delivery_method']),
+      pharmacy: data['pharmacy'] != null
+          ? PharmacyModel.fromJson(data['pharmacy'][0])
           : null,
-      link: json['link'],
+      link: data['payment_link'] ?? json['additional']?['payment_link'],
       summary: json['summary'] != null
           ? OrderSummaryEntity(
               productsPrice:

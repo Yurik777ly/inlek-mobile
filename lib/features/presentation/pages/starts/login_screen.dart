@@ -26,13 +26,15 @@ class LoginScreen extends StatelessWidget {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
 
     LoginScreenType loginScreenType = args?['redirect_type'];
+    String? phone = args?['phone'];
 
     return BlocProvider(
       create: (context) => LoginScreenBloc(
-        args: args,
+        loginScreenType: loginScreenType,
+        phone: phone,
         loginUC: sl(),
         getMeUC: sl(),
-      ),
+      )..add(PhoneChangedEvent(phone ?? '')),
       child: BlocConsumer<LoginScreenBloc, LoginScreenState>(
         listener: (context, state) async {
           if (state is LogInState) {

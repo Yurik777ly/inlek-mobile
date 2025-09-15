@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 class LocationManager {
+  static Position? _cachedPosition;
+  static DateTime? _lastFetchedAt;
+
+  static const Duration _cacheDuration = Duration(minutes: 2);
+
   static Future<bool> isLocationServiceEnabled() async {
     return await Geolocator.isLocationServiceEnabled();
   }
@@ -39,6 +44,14 @@ class LocationManager {
   }
 
   static Future<Position?> determinePosition() async {
+    // Проверяем кэш
+    if (_cachedPosition != null && _lastFetchedAt != null) {
+      final difference = DateTime.now().difference(_lastFetchedAt!);
+      if (difference < _cacheDuration) {
+        return _cachedPosition;
+      }
+    }
+
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       return await Geolocator.getLastKnownPosition();
@@ -56,6 +69,13 @@ class LocationManager {
       return await Geolocator.getLastKnownPosition();
     }
 
-    return await Geolocator.getCurrentPosition();
+    // Получаем свежую позицию
+    final currentPosition = await Geolocator.getCurrentPosition();
+
+    // Сохраняем в кэш
+    _cachedPosition = currentPosition;
+    _lastFetchedAt = DateTime.now();
+
+    return currentPosition;
   }
 }

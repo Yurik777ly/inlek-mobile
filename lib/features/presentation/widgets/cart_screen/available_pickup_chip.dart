@@ -1,0 +1,43 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inlek/constants/extensions.dart';
+import 'package:inlek/constants/paths.dart';
+import 'package:inlek/constants/size_utils.dart';
+import 'package:inlek/constants/ui_constants.dart';
+
+class AvailablePickupChip extends StatelessWidget {
+  const AvailablePickupChip({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          padding: getMarginOrPadding(left: 8, right: 8, top: 4, bottom: 4),
+          decoration: BoxDecoration(
+            color: UiConstants.white2Color,
+            borderRadius: BorderRadius.circular(200.r),
+          ),
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                Paths.boxIconPath,
+                width: 16.dp,
+                height: 16.dp,
+                color: UiConstants.darkBlue2Color.withOpacity(.6),
+              ),
+              SizedBox(width: 4.dp),
+              Text(
+                'Доступно к самовывозу',
+                style: UiConstants.textStyle6.copyWith(
+                  color: UiConstants.darkBlue2Color.withOpacity(.6),
+                ),
+              )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}

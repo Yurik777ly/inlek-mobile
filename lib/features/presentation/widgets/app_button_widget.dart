@@ -1,10 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class AppButtonWidget extends StatelessWidget {
+class AppButtonWidget extends StatefulWidget {
   final bool isActive;
   final bool isLoading;
   final String? text;
@@ -17,6 +19,7 @@ class AppButtonWidget extends StatelessWidget {
   final Color? textColor;
   final Color? backgroundColor;
   final AlignmentGeometry alignment;
+  final Duration debounceDuration;
 
   const AppButtonWidget({
     super.key,
@@ -32,38 +35,73 @@ class AppButtonWidget extends StatelessWidget {
     this.textColor,
     this.backgroundColor,
     this.alignment = Alignment.center,
+    this.debounceDuration = const Duration(milliseconds: 500),
   });
+
+  @override
+  State<AppButtonWidget> createState() => _AppButtonWidgetState();
+}
+
+class _AppButtonWidgetState extends State<AppButtonWidget> {
+  Timer? _debounceTimer;
+  bool _isProcessing = false;
+
+  void _handleTap() {
+    if (_isProcessing || !widget.isActive) return;
+
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(widget.debounceDuration, () {
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+        });
+      }
+    });
+
+    setState(() {
+      _isProcessing = true;
+    });
+
+    widget.onTap?.call();
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Skeleton.ignorePointer(
       child: SizedBox(
-        width: isExpanded ? double.infinity : null,
+        width: widget.isExpanded ? double.infinity : null,
         child: ElevatedButton(
-          onPressed: isActive ? onTap : null,
+          onPressed: (widget.isActive && !_isProcessing) ? _handleTap : null,
           style: ElevatedButton.styleFrom(
               elevation: 0,
               disabledForegroundColor:
                   UiConstants.darkBlue2Color.withOpacity(.6),
-              foregroundColor: textColor ??
-                  (isFilled
+              foregroundColor: widget.textColor ??
+                  (widget.isFilled
                       ? UiConstants.whiteColor
                       : UiConstants.darkBlueColor),
               disabledBackgroundColor:
                   UiConstants.oliveGreenColor.withOpacity(.05),
-              backgroundColor: isFilled
-                  ? backgroundColor ?? UiConstants.purpleColor
+              backgroundColor: widget.isFilled
+                  ? widget.backgroundColor ?? UiConstants.purpleColor
                   : UiConstants.whiteColor,
               fixedSize: Size(double.infinity, double.infinity),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(borderRadius ?? 30.r),
-                  side: showBorder
+                  borderRadius:
+                      BorderRadius.circular(widget.borderRadius ?? 30.r),
+                  side: widget.showBorder
                       ? BorderSide(color: UiConstants.purpleColor)
                       : BorderSide.none),
-              alignment: alignment),
+              alignment: widget.alignment),
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 13.5.dp),
-            child: isLoading
+            child: (widget.isLoading || _isProcessing)
                 ? Center(
                     child: SizedBox(
                       height: 15,
@@ -72,9 +110,9 @@ class AppButtonWidget extends StatelessWidget {
                           color: UiConstants.pink2Color),
                     ),
                   )
-                : textWidget ??
+                : widget.textWidget ??
                     Text(
-                      text ?? '',
+                      widget.text ?? '',
                       style: UiConstants.textStyle3.copyWith(height: 1),
                     ),
           ),

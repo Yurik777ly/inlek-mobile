@@ -4,16 +4,15 @@ import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
-import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/order_entity.dart';
-import 'package:inlek/features/presentation/pages/profile/orders/order_screen.dart';
 import 'package:inlek/features/presentation/widgets/orders_screen/order_item_products_list.dart';
 import 'package:inlek/features/presentation/widgets/orders_screen/order_item_status_chip.dart';
 import 'package:inlek/features/presentation/widgets/right_arrow_button.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class OrderItem extends StatelessWidget {
-  const OrderItem({super.key, required this.order});
+  final VoidCallback onTapOrder;
+  const OrderItem({super.key, required this.order, required this.onTapOrder});
 
   final OrderEntity order;
 
@@ -21,13 +20,7 @@ class OrderItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Skeleton.ignorePointer(
       child: GestureDetector(
-        onTap: () => Navigator.of(context).push(
-          Routes.createRoute(
-            const OrderScreen(),
-            settings: RouteSettings(
-                name: Routes.orderScreen, arguments: order.orderId),
-          ),
-        ),
+        onTap: onTapOrder,
         child: Container(
           padding: getMarginOrPadding(all: 8),
           decoration: BoxDecoration(

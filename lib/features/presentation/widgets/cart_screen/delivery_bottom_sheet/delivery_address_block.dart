@@ -80,147 +80,95 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                 hasSearchWidget: false,
                 suggestionObjects: suggestionObjects,
                 suggestionFetcher: (query) async {
-                  if (query.length <= 2) return [];
-
                   debounce?.cancel();
+                  if (query.length <= 2) {
+                    return [];
+                  }
 
                   final completer = Completer<List<String>>();
-                  debounce = Timer(Duration(milliseconds: 1500), () async {
+                  debounce = Timer(Duration(milliseconds: 750), () async {
                     final geocoderManager = sl<GeocoderManager>();
-                    GeocodeResponse? response =
-                        await geocoderManager.getGeocodeFromAddress(query);
 
-                    suggestionObjects = response
-                            ?.response?.geoObjectCollection?.featureMember
-                            ?.map((e) => e.geoObject)
-                            .toList() ??
-                        [];
+                    List<String> addresses =
+                        await geocoderManager.getAddressSuggestions(query);
 
-                    // Извлекаем все адреса из ответа
-                    List<String> addresses = suggestionObjects
-                        .map((e) =>
-                            e?.metaDataProperty?.geocoderMetaData?.address
-                                ?.formatted ??
-                            '')
-                        .where((address) => address.isNotEmpty)
-                        .toList();
-
-                    // Если первый адрес содержит компонент "дом" — применяем его сразу
-                    /*final first = suggestionObjects.isNotEmpty
-                        ? suggestionObjects.first
-                        : null;
-
-                    final components = first?.metaDataProperty?.geocoderMetaData
-                            ?.address?.components ??
-                        [];
-
-                    final hasHouse =
-                        components.any((c) => c.kind == KindResponse.house);
-
-                    if (first != null && hasHouse) {
-                      Component? cityComponent;
-                      Component? streetComponent;
-                      Component? houseComponent;
-
-                      for (var component in components) {
-                        if (component.kind == KindResponse.locality) {
-                          cityComponent ??= component;
-                        } else if (component.kind == KindResponse.street) {
-                          streetComponent ??= component;
-                        } else if (component.kind == KindResponse.house) {
-                          houseComponent ??= component;
-                        }
-                      }
-
-                      setState(() {
-                        cartBloc.cityController.text =
-                            cityComponent?.name ?? '';
-
-                        if (streetComponent != null && houseComponent != null) {
-                          cartBloc.streetHomeController.text =
-                              '${streetComponent.name}, ${houseComponent.name}';
-                        } else if (streetComponent != null) {
-                          cartBloc.streetHomeController.text =
-                              streetComponent.name ?? '';
-                        } else if (houseComponent != null) {
-                          cartBloc.streetHomeController.text =
-                              houseComponent.name ?? '';
-                        } else {
-                          cartBloc.streetHomeController.text = '';
-                        }
-
-                        //cartBloc.add(UpdateDeliveryPriceEvent(address: first));
-                        //cartBloc.selectedAddress = first;
-                        //selectedAddress = first;
-                      });
-                    }*/
+                    setState(() {});
 
                     completer.complete(addresses);
                   });
 
                   return completer.future;
                 },
-                onSuggestionTap: (p0) {
-                  final geoObject = p0 as GeoObject?;
+                onSuggestionTap: (p0) async {
+                  final geocoderManager = sl<GeocoderManager>();
+                  final response =
+                      await geocoderManager.getGeocodeFromAddress(p0);
 
-                  // Check if the address contains a "house" component
-                  if (geoObject?.metaDataProperty?.geocoderMetaData?.address
-                          ?.components
-                          ?.any((component) =>
-                              component.kind == KindResponse.house) ??
-                      false) {
-                    setState(
-                      () {
-                        // Extract the city name from the address components
-                        final cityComponent = geoObject?.metaDataProperty
-                            ?.geocoderMetaData?.address?.components
-                            ?.firstWhere((component) =>
-                                component.kind == KindResponse.locality);
+                  if (response != null && response.firstAddress != null) {
+                    final geoObject = response.response?.geoObjectCollection
+                        ?.featureMember?.first.geoObject;
 
-                        // If the city component exists, assign it to the controller
-                        if (cityComponent != null) {
-                          cartBloc.cityController.text = cityComponent.name ??
-                              ''; // Fallback to empty string if name is null
-                        } else {
-                          cartBloc.cityController.text =
-                              ''; // If no city component found, set text to empty string
-                        }
+                    // Check if the address contains a "house" component
+                    if (geoObject?.metaDataProperty?.geocoderMetaData?.address
+                            ?.components
+                            ?.any((component) =>
+                                component.kind == KindResponse.house) ??
+                        false) {
+                      setState(
+                        () {
+                          // Extract the city name from the address components
+                          final cityComponent = geoObject?.metaDataProperty
+                              ?.geocoderMetaData?.address?.components
+                              ?.firstWhere((component) =>
+                                  component.kind == KindResponse.locality);
 
-                        // Extract the street and house number from the address components
-                        final streetComponent = geoObject?.metaDataProperty
-                            ?.geocoderMetaData?.address?.components
-                            ?.firstWhere((component) =>
-                                component.kind == KindResponse.street);
+                          // If the city component exists, assign it to the controller
+                          if (cityComponent != null) {
+                            cartBloc.cityController.text = cityComponent.name ??
+                                ''; // Fallback to empty string if name is null
+                          } else {
+                            cartBloc.cityController.text =
+                                ''; // If no city component found, set text to empty string
+                          }
 
-                        final houseComponent = geoObject?.metaDataProperty
-                            ?.geocoderMetaData?.address?.components
-                            ?.firstWhere((component) =>
-                                component.kind == KindResponse.house);
+                          // Extract the street and house number from the address components
+                          final streetComponent = geoObject?.metaDataProperty
+                              ?.geocoderMetaData?.address?.components
+                              ?.firstWhere((component) =>
+                                  component.kind == KindResponse.street);
 
-                        // Format and assign to streetHomeController
-                        if (streetComponent != null && houseComponent != null) {
-                          cartBloc.streetHomeController.text =
-                              '${streetComponent.name}, ${houseComponent.name}';
-                        } else if (streetComponent != null) {
-                          cartBloc.streetHomeController.text =
-                              streetComponent.name ??
-                                  ''; // If street found but not house
-                        } else if (houseComponent != null) {
-                          cartBloc.streetHomeController.text =
-                              houseComponent.name ??
-                                  ''; // If house found but not street
-                        } else {
-                          cartBloc.streetHomeController.text =
-                              ''; // If neither street nor house found
-                        }
+                          final houseComponent = geoObject?.metaDataProperty
+                              ?.geocoderMetaData?.address?.components
+                              ?.firstWhere((component) =>
+                                  component.kind == KindResponse.house);
 
-                        // Set the selected address as well
-                        cartBloc.add(UpdateDeliveryPriceEvent(address: p0));
+                          // Format and assign to streetHomeController
+                          if (streetComponent != null &&
+                              houseComponent != null) {
+                            cartBloc.streetHomeController.text =
+                                '${streetComponent.name}, ${houseComponent.name}';
+                          } else if (streetComponent != null) {
+                            cartBloc.streetHomeController.text =
+                                streetComponent.name ??
+                                    ''; // If street found but not house
+                          } else if (houseComponent != null) {
+                            cartBloc.streetHomeController.text =
+                                houseComponent.name ??
+                                    ''; // If house found but not street
+                          } else {
+                            cartBloc.streetHomeController.text =
+                                ''; // If neither street nor house found
+                          }
 
-                        selectedAddress = p0;
-                        cartBloc.selectedAddress = p0;
-                      },
-                    );
+                          selectedAddress = geoObject;
+                          cartBloc.selectedAddress = geoObject;
+
+                          // Set the selected address as well
+                          cartBloc.add(
+                              UpdateDeliveryPriceEvent(address: geoObject));
+                        },
+                      );
+                    }
                   }
                 },
                 onChangeField: (p0) {

@@ -19,6 +19,7 @@ class CodeScreenBloc extends Bloc<CodeScreenEvent, CodeScreenState> {
   static const int _initialTimerValue =
       60; // Значение таймера по умолчанию (60 секунд)
   Timer? _timer;
+  bool _isRequestingCode = false; // Флаг для защиты от множественных запросов
 
   final TextEditingController codeController =
       TextEditingController(); // Контроллер для кода
@@ -81,6 +82,9 @@ class CodeScreenBloc extends Bloc<CodeScreenEvent, CodeScreenState> {
   // Обработка запроса нового кода
   void _onRequestNewCode(
       RequestNewCodeEvent event, Emitter<CodeScreenState> emit) {
+    // Защита от множественных запросов
+    if (_isRequestingCode) return;
+
     _timer?.cancel(); // Остановка предыдущего таймера
     startTimer(screenContext); // Запуск нового таймера
   }
@@ -100,6 +104,10 @@ class CodeScreenBloc extends Bloc<CodeScreenEvent, CodeScreenState> {
 // Функция запуска таймера
   Future<void> startTimer(BuildContext context,
       {Future<String?> Function()? requestCodeFun, String? phone}) async {
+    // Защита от множественных запросов
+    if (_isRequestingCode) return;
+
+    _isRequestingCode = true;
     _timer?.cancel();
 
     // Вызываем функцию, если она предоставлена, иначе используем _requestCode
@@ -142,6 +150,9 @@ class CodeScreenBloc extends Bloc<CodeScreenEvent, CodeScreenState> {
         },
       );
     }
+
+    // Сброс флага в конце выполнения
+    _isRequestingCode = false;
   }
 
   Future<String> _requestCode() async {
@@ -172,6 +183,7 @@ class CodeScreenBloc extends Bloc<CodeScreenEvent, CodeScreenState> {
 
   Future reset({String? phone}) async {
     if (phone == state.phone && state.correctCode != null) _timer?.cancel();
+    _isRequestingCode = false; // Сброс флага при сбросе состояния
     add(CodeChangedEvent(""));
     codeController.text = "";
   }

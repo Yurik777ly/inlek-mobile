@@ -106,10 +106,14 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
   }
 
   void _onUpdateMap(
-      UpdatePharmacyMapEvent event, Emitter<PharmacyMapState> emit) async {
-    // Создание списка маркеров
+    UpdatePharmacyMapEvent event,
+    Emitter<PharmacyMapState> emit,
+  ) async {
+    final stopwatch = Stopwatch()..start();
+
+    // Создание списков для маркеров и полигонов
     List<PlacemarkMapObject> placemarks = [];
-    List<PolygonMapObject> polygons = []; // Список для полигонов
+    List<PolygonMapObject> polygons = [];
 
     // Обработка маркеров (PlacemarkMapObject)
     for (CustomMapObject point
@@ -119,8 +123,9 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
         opacity: 1,
         mapId: MapObjectId(point.mapObject.mapId.value),
         point: Point(
-            latitude: (point.mapObject as PlacemarkMapObject).point.latitude,
-            longitude: (point.mapObject as PlacemarkMapObject).point.longitude),
+          latitude: (point.mapObject as PlacemarkMapObject).point.latitude,
+          longitude: (point.mapObject as PlacemarkMapObject).point.longitude,
+        ),
         icon: PlacemarkIcon.single(
           PlacemarkIconStyle(image: icon),
         ),
@@ -130,16 +135,19 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
                 .firstWhereOrNull((e) =>
                     e.mapObject.mapId.value.toString() == point.mapId.value)
                 ?.data;
-            PharmacyEntity pharmacy = PharmacyModel.fromJson(dataMap!);
-            BottomSheetManager.showPharmacyInfoSheet(pharmacy);
-          }
-          if (mapScreenType == MapScreenType.cart) {
+            if (dataMap != null) {
+              PharmacyEntity pharmacy = PharmacyModel.fromJson(dataMap);
+              BottomSheetManager.showPharmacyInfoSheet(pharmacy);
+            }
+          } else if (mapScreenType == MapScreenType.cart) {
             final dataMap = state.points
                 .firstWhereOrNull((e) =>
                     e.mapObject.mapId.value.toString() == point.mapId.value)
                 ?.data;
-            CartPharmacyEntity pharmacy = CartPharmacyModel.fromJson(dataMap!);
-            BottomSheetManager.showPharmacySheet(screenContext!, pharmacy);
+            if (dataMap != null) {
+              CartPharmacyEntity pharmacy = CartPharmacyModel.fromJson(dataMap);
+              BottomSheetManager.showPharmacySheet(screenContext!, pharmacy);
+            }
           } else {
             add(SelectMarkerEvent(markerId: point.mapId.value));
           }
@@ -151,19 +159,17 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
     // Обработка полигонов (PolygonMapObject)
     for (CustomMapObject point
         in state.points.where((e) => e.mapObject is PolygonMapObject)) {
-      final polygon = point.mapObject as PolygonMapObject;
-      polygons.add(polygon);
+      polygons.add(point.mapObject as PolygonMapObject);
     }
 
     // Создание кластеризованной коллекции маркеров
     final clusterizedCollection = ClusterizedPlacemarkCollection(
       mapId: MapObjectId('clusterized_collection'),
       placemarks: placemarks,
-      radius: 60, // Радиус объединения маркеров в кластер
-      minZoom: 15, // Минимальный зум, при котором начинается кластеризация
+      radius: 60,
+      minZoom: 15,
       onClusterAdded:
           (ClusterizedPlacemarkCollection self, Cluster cluster) async {
-        // Создание иконки для кластера с указанием количества маркеров
         final clusterIcon = await Utils.createBitmapIcon(count: cluster.size);
         return cluster.copyWith(
           appearance: cluster.appearance.copyWith(
@@ -179,10 +185,14 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
       },
     );
 
-    // Добавление маркеров и полигонов на карту
+    // ❗ Оптимизация: перезаписываем markers, чтобы не плодились дубликаты
     emit(state.copyWith(
-      markers: [...state.markers, clusterizedCollection, ...polygons],
+      markers: [clusterizedCollection, ...polygons],
     ));
+
+    stopwatch.stop();
+    debugPrint(
+        '⏱️ _onUpdateMap executed in ${stopwatch.elapsedMilliseconds} ms');
   }
 
   Future _onZoomIn(ZoomInEvent event, Emitter<PharmacyMapState> emit) async {

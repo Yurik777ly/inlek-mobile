@@ -17,6 +17,8 @@ part 'home_screen_state.dart';
 
 class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
   final ConnectivityService connectivityService = ConnectivityService();
+  late StreamSubscription<bool> subscription;
+
   final List<GlobalKey<NavigatorState>> navigatorKeys =
       List.generate(4, (index) => GlobalKey<NavigatorState>());
 
@@ -41,15 +43,21 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
 
   HomeScreenBloc() : super(HomeScreenInitial()) {
     on<CheckInternetConnection>((event, emit) async {
-      final hasConnection = await connectivityService.hasInternetConnection();
-      if (hasConnection) {
+      //final hasConnection = await connectivityService.hasInternetConnection();
+      if (event.hasInternet) {
         emit(HomeScreenInitial());
       } else {
         emit(InternetUnavailable());
       }
     });
 
-    _startPeriodicCheck();
+    subscription = connectivityService.connectionStream.listen((hasInternet) {
+      print('Internet is ${hasInternet ? "available" : "not available"}');
+
+      add(CheckInternetConnection(hasInternet: hasInternet));
+    });
+
+    // _startPeriodicCheck();
 
     on<ChangePageEvent>(_onPageChanged);
     on<UploadContext>(_onUploadContext);
@@ -79,11 +87,11 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
     emit(HomeScreenPageChanged(selectedPageIndex));
   }
 
-  void _startPeriodicCheck() {
+  /*void _startPeriodicCheck() {
     _timer = Timer.periodic(Duration(seconds: 2), (timer) {
       add(CheckInternetConnection());
     });
-  }
+  }*/
 
   void _onUploadContext(UploadContext event, Emitter<HomeScreenState> emit) {
     emit(HomeScreenInitial().copyWith(context: event.context));
@@ -92,6 +100,7 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
   @override
   Future<void> close() {
     _timer?.cancel();
+    subscription.cancel();
     return super.close();
   }
 }

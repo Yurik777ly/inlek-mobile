@@ -95,13 +95,18 @@ class ProductModel extends ProductEntity {
           data['product_id'],
       mnn: json["mnn"],
       mnnLat: json["mnn_lat"],
-      name: json["product_title"] ?? json['pagetitle'] ?? json['name'],
+      name: json["product_title"] ??
+          json['pagetitle'] ??
+          json['name'] ??
+          json['title'],
       description: json["product_description"],
       code: json["code"],
       dose: json["dose"],
       form: json["form"],
       brand: json["brand"],
-      image: json["image"] ?? json["image_url_handle"],
+      image: json["image"] ??
+          json["image_url_handle"] ??
+          json['options']?['image'],
       recipe: json["recipe"],
       isRecipe: json["is_recipe"] == "true" ? true : false,
       isAlcohol: json["is_alcohol"] == "yes" ? true : false,

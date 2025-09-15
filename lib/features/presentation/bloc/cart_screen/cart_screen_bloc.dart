@@ -65,7 +65,6 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
   GeoObject? selectedAddress;
 
   Timer? _debounceTimer;
-  Timer? _refreshCartTimer;
 
   CartScreenBloc({
     required this.getCartUC,
@@ -76,6 +75,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     required this.sharedPreferences,
     required this.courierZoneManager,
   }) : super(CartScreenState()) {
+    debugPrint('CartScreenBloc created: $hashCode');
     on<InitEvent>(_inInit);
     on<LoadCartDataEvent>(_onLoadData);
     on<AddCartEvent>(_onAddCart);
@@ -106,6 +106,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         sharedPreferences.getInt(SharedPreferencesKeys.pharmacyId);
     final savedAddressString =
         sharedPreferences.getString(SharedPreferencesKeys.savedAddress);
+    //final savedCartTypeString =
+    //    sharedPreferences.getString(SharedPreferencesKeys.cartType);
 
     if (savedAddressString != null) {
       try {
@@ -114,7 +116,23 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       } catch (_) {}
     }
 
-    emit(state.copyWith(selectedPharmacyId: savedPharmacyId));
+    // Восстанавливаем тип корзины из SharedPreferences
+    /*TypeReceiving? savedCartType;
+    if (savedCartTypeString != null) {
+      try {
+        savedCartType = TypeReceiving.values.firstWhere(
+          (type) => type.name == savedCartTypeString,
+        );
+      } catch (_) {
+        // Если не удалось найти тип, используем значение по умолчанию
+        savedCartType = null;
+      }
+    }*/
+
+    emit(state.copyWith(
+      selectedPharmacyId: savedPharmacyId,
+      //cartType: savedCartType ?? TypeReceiving.delivery,
+    ));
     add(ChangeAvailableDeliveryEvent());
   }
 
@@ -269,23 +287,23 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
             ? TypeReceiving.delivery
             : state.cartType));
 
-    _debounceTimer = Timer(
-        Duration(milliseconds: wasLastProductRemoved ? 0 : 300), () async {
-      final result = await deleteCartUC(CartParams(
-          productId: event.productId.toString(),
-          quantity: newQuantity.toString()));
-      await result.fold<Future<void>>(
-        (_) async {
-          _handleCartUpdateError(emit, updatedProducts, product, event.context);
-        },
-        (_) async {
-          add(LoadCartDataEvent());
-          //if (wasLastProductRemoved) {
-          //  add(LoadCartDataEvent()); // Загружаем корзину только если товар был полностью удален
-          //}
-        },
-      );
-    });
+    //_debounceTimer = Timer(
+    //   Duration(milliseconds: wasLastProductRemoved ? 0 : 300), () async {
+    final result = await deleteCartUC(CartParams(
+        productId: event.productId.toString(),
+        quantity: newQuantity.toString()));
+    await result.fold<Future<void>>(
+      (_) async {
+        _handleCartUpdateError(emit, updatedProducts, product, event.context);
+      },
+      (_) async {
+        add(LoadCartDataEvent());
+        //if (wasLastProductRemoved) {
+        //  add(LoadCartDataEvent()); // Загружаем корзину только если товар был полностью удален
+        //}
+      },
+    );
+    //});
   }
 
   // Функция для добавления товара с задержкой
@@ -356,22 +374,11 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         }
       },
       (_) async {
-        // if (wasFirstTimeAdded) {
-        // Перезапускаем отложенное обновление корзины
-        _refreshCartTimer?.cancel();
-        _refreshCartTimer = Timer(
-          Duration(seconds: 2),
-          () {
-            if (!isClosed) {
-              add(LoadCartDataEvent());
-            }
-          },
-        );
-        //}
+        if (!isClosed) {
+          add(LoadCartDataEvent());
+        }
       },
     );
-    /*},
-    );*/
 
     add(PickAllProductsEvent(force: true));
   }
@@ -483,6 +490,10 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
   void _onChangeCartType(
       ChangeCartTypeEvent event, Emitter<CartScreenState> emit) async {
+    // Сохраняем тип корзины в SharedPreferences
+    /* await sharedPreferences.setString(
+        SharedPreferencesKeys.cartType, event.cartType.name);*/
+
     // Create a new list of products with isLoading set to true
     final updatedProducts = state.cartData?.products
         .map((product) => product.copyWith(isLoading: true))
@@ -562,11 +573,9 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
           promocodes: state.selectedPromoCodes.map((e) => e.promocode).toList(),
           pharmacyId: 0,
           delivery: 'delivery',
-          payment: state.paymentType == PaymentType.bepaid
-              ? 'bepaid'
-              : state.paymentType == PaymentType.oplati
-                  ? 'oplati'
-                  : 'erip',
+          payment: state.paymentType == PaymentType.courier
+              ? 'cash'
+              : state.paymentType.name,
           lastName: fNameController.text,
           firstName: sNameController.text,
           email: emailController.text,
@@ -617,20 +626,20 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
           sharedPreferences.setString(
               SharedPreferencesKeys.savedIntercom, doorPhoneController.text);
         }
+
         if (order?.link != null) {
-          await BottomSheetManager.showThanksForOrderSheet(
-              event.screenContext, order!);
-          if (await canLaunchUrl(Uri.parse(order.link!))) {
+          if (await canLaunchUrl(Uri.parse(order!.link!))) {
             await launchUrl(Uri.parse(order.link!),
                 mode: LaunchMode.externalApplication);
           } else {
             throw "Не удалось открыть ${order.link!}";
           }
         }
+        BottomSheetManager.showThanksForOrderSheet(event.screenContext, order!);
       },
     );
     // скрываем лоадер на кнопке
-    emit(state.copyWith(isOrderCompleting: false));
+    emit(state.copyWith(isOrderCompleting: false, selectedPromoCodes: []));
   }
 
   Future _onChangeAvailableDelivery(
