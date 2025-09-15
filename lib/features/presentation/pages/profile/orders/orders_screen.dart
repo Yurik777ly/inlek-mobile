@@ -15,7 +15,6 @@ import 'package:inlek/features/presentation/widgets/custom_checkbox.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/internet_no_internet_connection_widget.dart';
 import 'package:inlek/features/presentation/widgets/order_screen/empty_orders.dart';
 import 'package:inlek/features/presentation/widgets/orders_screen/order_item.dart';
-import 'package:inlek/locator_service.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class OrdersScreen extends StatelessWidget {
@@ -25,134 +24,128 @@ class OrdersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
       builder: (context, homeState) {
-        return BlocProvider(
-          create: (context) =>
-              OrdersScreenBloc(getOrderHistoryUC: sl())..add(LoadDataEvent()),
-          child: BlocBuilder<OrdersScreenBloc, OrdersScreenState>(
-            builder: (context, ordersState) {
-              final ordersBloc = context.read<OrdersScreenBloc>();
+        return BlocBuilder<OrdersScreenBloc, OrdersScreenState>(
+          builder: (context, ordersState) {
+            final ordersBloc = context.read<OrdersScreenBloc>();
 
-              // Отфильтрованный и отсортированный список заказов
-              List<OrderEntity> orders = List.from(ordersState.filteredOrders)
-                ..sort((a, b) => b.orderId!.compareTo(a.orderId!));
+            // Отфильтрованный и отсортированный список заказов
+            List<OrderEntity> orders = List.from(ordersState.filteredOrders)
+              ..sort((a, b) => b.orderId!.compareTo(a.orderId!));
 
-              if (ordersState.isOnlyActive) {
-                orders = orders
-                    .where((e) => ![OrderStatus.canceled, OrderStatus.received]
-                        .contains(e.status))
-                    .toList();
-              }
+            if (ordersState.isOnlyActive) {
+              orders = orders
+                  .where((e) => ![OrderStatus.canceled, OrderStatus.received]
+                      .contains(e.status))
+                  .toList();
+            }
 
-              return Scaffold(
-                backgroundColor: UiConstants.backgroundColor,
-                body: SafeArea(
-                  child: Skeletonizer(
-                    enabled: ordersState.isLoading,
-                    ignorePointers: false,
-                    child: Column(
-                      children: [
-                        CustomAppBar(
-                          hintText: 'Искать по заказам',
-                          controller: ordersBloc.queryController,
-                          title: 'История заказов',
-                          showBack: true,
-                          isShowFilterButton: true,
-                          onChangedField: (value) =>
-                              ordersBloc.add(ChangeQueryEvent(value)),
-                          onTapFilterButton: () =>
-                              BottomSheetManager.showOrdersFilterSheet(
-                                  UiConstants.homeContext!, context),
-                        ),
-                        Expanded(
-                          child: homeState is InternetUnavailable
-                              ? InternetNoInternetConnectionWidget()
-                              : Padding(
-                                  padding: getMarginOrPadding(
-                                    bottom: 94,
-                                    right: 20,
-                                    left: 20,
-                                    top: 16,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      CustomCheckbox(
-                                        title: Text(
-                                          'Только активные',
-                                          style:
-                                              UiConstants.textStyle2.copyWith(
-                                            color: UiConstants.blackColor,
-                                          ),
-                                        ),
-                                        isChecked: ordersState.isOnlyActive,
-                                        onChanged: (checked) => ordersBloc.add(
-                                          ChangeOnlyActiveOrdersEvent(checked),
+            return Scaffold(
+              backgroundColor: UiConstants.backgroundColor,
+              body: SafeArea(
+                child: Skeletonizer(
+                  enabled: ordersState.isLoading,
+                  ignorePointers: false,
+                  child: Column(
+                    children: [
+                      CustomAppBar(
+                        hintText: 'Искать по заказам',
+                        controller: ordersBloc.queryController,
+                        title: 'История заказов',
+                        showBack: true,
+                        isShowFilterButton: true,
+                        onChangedField: (value) =>
+                            ordersBloc.add(ChangeQueryEvent(value)),
+                        onTapFilterButton: () =>
+                            BottomSheetManager.showOrdersFilterSheet(
+                                UiConstants.homeContext!, context),
+                      ),
+                      Expanded(
+                        child: homeState is InternetUnavailable
+                            ? InternetNoInternetConnectionWidget()
+                            : Padding(
+                                padding: getMarginOrPadding(
+                                  bottom: 94,
+                                  right: 20,
+                                  left: 20,
+                                  top: 16,
+                                ),
+                                child: Column(
+                                  children: [
+                                    CustomCheckbox(
+                                      title: Text(
+                                        'Только активные',
+                                        style: UiConstants.textStyle2.copyWith(
+                                          color: UiConstants.blackColor,
                                         ),
                                       ),
-                                      SizedBox(height: 16.dp),
+                                      isChecked: ordersState.isOnlyActive,
+                                      onChanged: (checked) => ordersBloc.add(
+                                        ChangeOnlyActiveOrdersEvent(checked),
+                                      ),
+                                    ),
+                                    SizedBox(height: 16.dp),
 
-                                      // Контент заказов с учётом состояний
-                                      Expanded(
-                                        child: ordersState.orders.isEmpty
-                                            ? EmptyOrders()
-                                            : orders.isEmpty
-                                                ? Center(
-                                                    child: Text(
-                                                      ordersState
-                                                              .query.isNotEmpty
-                                                          ? 'Проверьте правильность номера заказа'
-                                                          : 'По выбранным фильтрам заказов нет',
-                                                      style: UiConstants
-                                                          .textStyle3
-                                                          .copyWith(
-                                                        color: UiConstants
-                                                            .darkBlueColor,
-                                                        fontWeight:
-                                                            FontWeight.w800,
-                                                      ),
-                                                    ),
-                                                  )
-                                                : ListView.separated(
-                                                    padding: EdgeInsets.zero,
-                                                    shrinkWrap: true,
-                                                    itemCount: orders.length,
-                                                    separatorBuilder: (_, __) =>
-                                                        SizedBox(height: 8.dp),
-                                                    itemBuilder:
-                                                        (context, index) =>
-                                                            OrderItem(
-                                                      order: orders[index],
-                                                      onTapOrder: () async {
-                                                        await Navigator.of(
-                                                                context)
-                                                            .push(
-                                                          Routes.createRoute(
-                                                            const OrderScreen(),
-                                                            settings: RouteSettings(
-                                                                name: Routes
-                                                                    .orderScreen,
-                                                                arguments: orders[
-                                                                        index]
-                                                                    .orderId),
-                                                          ),
-                                                        );
-
-                                                        ordersBloc.add(
-                                                            LoadDataEvent());
-                                                      },
+                                    // Контент заказов с учётом состояний
+                                    Expanded(
+                                      child: ordersState.orders.isEmpty
+                                          ? EmptyOrders()
+                                          : orders.isEmpty
+                                              ? Center(
+                                                  child: Text(
+                                                    ordersState.query.isNotEmpty
+                                                        ? 'Проверьте правильность номера заказа'
+                                                        : 'По выбранным фильтрам заказов нет',
+                                                    style: UiConstants
+                                                        .textStyle3
+                                                        .copyWith(
+                                                      color: UiConstants
+                                                          .darkBlueColor,
+                                                      fontWeight:
+                                                          FontWeight.w800,
                                                     ),
                                                   ),
-                                      ),
-                                    ],
-                                  ),
+                                                )
+                                              : ListView.separated(
+                                                  padding: EdgeInsets.zero,
+                                                  shrinkWrap: true,
+                                                  itemCount: orders.length,
+                                                  separatorBuilder: (_, __) =>
+                                                      SizedBox(height: 8.dp),
+                                                  itemBuilder:
+                                                      (context, index) =>
+                                                          OrderItem(
+                                                    order: orders[index],
+                                                    onTapOrder: () async {
+                                                      await Navigator.of(
+                                                              context)
+                                                          .push(
+                                                        Routes.createRoute(
+                                                          const OrderScreen(),
+                                                          settings: RouteSettings(
+                                                              name: Routes
+                                                                  .orderScreen,
+                                                              arguments:
+                                                                  orders[index]
+                                                                      .orderId),
+                                                        ),
+                                                      );
+
+                                                      ordersBloc
+                                                          .add(LoadDataEvent());
+                                                    },
+                                                  ),
+                                                ),
+                                    ),
+                                  ],
                                 ),
-                        ),
-                      ],
-                    ),
+                              ),
+                      ),
+                    ],
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         );
       },
     );

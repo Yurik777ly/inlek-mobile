@@ -144,7 +144,9 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                                           SizedBox(height: 32.dp),
                                           AppButtonWidget(
                                             isActive: state.isButtonActive &&
-                                                isFormValid,
+                                                isFormValid &&
+                                                !state.isSaving,
+                                            isLoading: state.isSaving,
                                             text: 'Сохранить',
                                             onTap: () {
                                               if (formKey.currentState

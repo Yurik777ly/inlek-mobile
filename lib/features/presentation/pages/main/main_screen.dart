@@ -10,15 +10,20 @@ import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/category_entity.dart';
+import 'package:inlek/features/domain/entities/order_entity.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/main_screen/main_screen_bloc.dart';
+import 'package:inlek/features/presentation/bloc/orders_screen/orders_screen_bloc.dart'
+    as orders;
 import 'package:inlek/features/presentation/pages/catalog/products/products_screen.dart';
+import 'package:inlek/features/presentation/pages/profile/orders/orders_screen.dart';
 import 'package:inlek/features/presentation/pages/profile/sales/sales_screen.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/block_widget.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/categories_grid_widget.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/custom_banner_widget.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/daily_products_list_widget.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/internet_no_internet_connection_widget.dart';
+import 'package:inlek/features/presentation/widgets/main_screen/orders_list_widget.dart';
 import 'package:inlek/features/presentation/widgets/sales_screen/sales_horizontal_list_widget.dart';
 import 'package:inlek/features/presentation/widgets/search_product_app_bar.dart';
 import 'package:inlek/locator_service.dart';
@@ -69,6 +74,53 @@ class MainScreen extends StatelessWidget {
                                           CustomBannerWidget(
                                               banners: state.banners ?? [],
                                               pageController: pageController),
+                                        if (!Skeletonizer.of(context).enabled)
+                                          BlocBuilder<orders.OrdersScreenBloc,
+                                              orders.OrdersScreenState>(
+                                            builder: (context, ordersState) {
+                                              // Получаем последние 3 заказа
+                                              List<OrderEntity> recentOrders =
+                                                  List.from(ordersState.orders)
+                                                    ..sort((a, b) => b.orderId!
+                                                        .compareTo(a.orderId!))
+                                                    ..take(3);
+
+                                              // Показываем блок только если есть заказы
+                                              if (recentOrders.isEmpty) {
+                                                return const SizedBox.shrink();
+                                              }
+
+                                              return BlockWidget(
+                                                contentPadding:
+                                                    getMarginOrPadding(
+                                                        left: 20,
+                                                        right: 20,
+                                                        top: 32),
+                                                title: 'Заказы',
+                                                clickableText:
+                                                    'Перейти ко всем',
+                                                onTap: () async {
+                                                  homeBloc.add(ChangePageEvent(
+                                                      3,
+                                                      forcePopToRoot: true));
+                                                  await Future.delayed(Duration(
+                                                      milliseconds: 300));
+                                                  homeBloc.navigatorKeys[3]
+                                                      .currentState!
+                                                      .push(
+                                                    Routes.createRoute(
+                                                      OrdersScreen(),
+                                                      settings: RouteSettings(
+                                                          name: Routes
+                                                              .ordersScreen),
+                                                    ),
+                                                  );
+                                                },
+                                                child: OrdersListWidget(
+                                                    orders: recentOrders),
+                                              );
+                                            },
+                                          ),
                                         if (!Skeletonizer.of(context).enabled &&
                                             (state.daily ?? []).isNotEmpty)
                                           BlockWidget(

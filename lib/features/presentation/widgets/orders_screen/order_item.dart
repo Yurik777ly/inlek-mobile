@@ -43,22 +43,11 @@ class OrderItem extends StatelessWidget {
                           color: UiConstants.darkBlueColor.withOpacity(.6),
                         ),
                       ),
-                      Row(
-                        children: [
-                          Text(
-                            'Заказ',
-                            style: UiConstants.textStyle3.copyWith(
-                                color: UiConstants.darkBlueColor,
-                                fontWeight: FontWeight.w800),
-                          ),
-                          SizedBox(width: 8.dp),
-                          Text(
-                            '#${order.orderId}',
-                            style: UiConstants.textStyle3.copyWith(
-                                color: UiConstants.darkBlueColor,
-                                fontWeight: FontWeight.w800),
-                          ),
-                        ],
+                      Text(
+                        'Заказ #${order.orderId}',
+                        style: UiConstants.textStyle3.copyWith(
+                            color: UiConstants.darkBlueColor,
+                            fontWeight: FontWeight.w800),
                       ),
                       SizedBox(height: 8.dp),
                       Text(

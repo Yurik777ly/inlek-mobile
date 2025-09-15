@@ -165,8 +165,15 @@ class PersonalDataScreenBloc
 
     on<SubmitEvent>(
       (event, emit) async {
+        // Устанавливаем состояние сохранения
+        emit(state.copyWith(isSaving: true));
+
         // Проверяем политику при попытке сохранить данные
         if (!state.isCheckedPolicyCheckbox) {
+          emit(state.copyWith(
+              isSaving: false,
+              showPolicyError: true,
+              installedPhone: state.installedPhone));
           ScaffoldMessenger.of(navigatorKey.currentContext!)
             ..hideCurrentSnackBar()
             ..showSnackBar(
@@ -174,13 +181,12 @@ class PersonalDataScreenBloc
                 content: Text('Примите условия обработки персональных данных'),
               ),
             );
-          emit(state.copyWith(
-              showPolicyError: true, installedPhone: state.installedPhone));
           return;
         }
 
         final isValidPhone = Utils.phoneRegexp.hasMatch(phoneController.text);
         if (state.installedPhone != phoneController.text && isValidPhone) {
+          emit(state.copyWith(isSaving: false));
           Utils.showCustomDialog(
             screenContext: navigatorKey.currentContext!,
             text: 'Номер телефона не подтверждён',
@@ -325,6 +331,9 @@ class PersonalDataScreenBloc
 
     return failureOrLoads.fold(
       (failure) {
+        // Сбрасываем состояние сохранения при ошибке
+        emit(state.copyWith(isSaving: false));
+
         String error = switch (failure) {
           SendingCodeTooOftenFailure _ =>
             'Слишком частая отправка кода или превышено число попыток за день',
@@ -370,8 +379,8 @@ class PersonalDataScreenBloc
           newPasswordController.clear();
           newPasswordConfirmController.clear();
 
-          // Clear policy error
-          emit(state.copyWith(showPolicyError: false));
+          // Clear policy error and reset saving state
+          emit(state.copyWith(showPolicyError: false, isSaving: false));
 
           Utils.showCustomDialog(
             screenContext: navigatorKey.currentContext!,

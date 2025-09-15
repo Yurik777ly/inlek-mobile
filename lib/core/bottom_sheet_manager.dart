@@ -319,6 +319,7 @@ class BottomSheetManager {
     CartScreenBloc cartBloc = screenContext.read<CartScreenBloc>();
     PersonalDataScreenBloc personalDataScreenBloc =
         screenContext.read<PersonalDataScreenBloc>();
+    OrdersScreenBloc ordersScreenBloc = screenContext.read<OrdersScreenBloc>();
 
     // сбрасываем при новом открытии
     cartBloc.cityController.text = '';
@@ -522,6 +523,7 @@ class BottomSheetManager {
                                       screenContext: screenContext,
                                       callback: () {
                                         personalDataScreenBloc.getProfile();
+                                        ordersScreenBloc.add(LoadDataEvent());
                                       },
                                     ));
                                 Navigator.pop(sheetContext);

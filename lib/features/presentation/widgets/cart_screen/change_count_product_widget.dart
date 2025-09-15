@@ -87,12 +87,27 @@ class _AddToCartButton extends StatelessWidget {
         child: Center(
           child: isLoading
               ? CircularProgressIndicator(color: UiConstants.pink2Color)
-              : Text(
-                  'В корзину',
-                  style: UiConstants.textStyle3.copyWith(
-                    color: UiConstants.whiteColor,
-                    height: 1,
-                  ),
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'В корзину',
+                      style: UiConstants.textStyle2.copyWith(
+                        color: UiConstants.whiteColor,
+                      ),
+                    ),
+                    if (product.isRecipe == true || product.isAlcohol == true)
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'Только самовывоз',
+                          style: UiConstants.textStyle8.copyWith(
+                            color: UiConstants.whiteColor,
+                            height: 1,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
         ),
       ),

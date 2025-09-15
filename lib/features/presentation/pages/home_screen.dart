@@ -14,6 +14,7 @@ import 'package:inlek/core/notification_manager.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
+import 'package:inlek/features/presentation/bloc/orders_screen/orders_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/personal_data_screen/personal_data_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/route_observer/route_observer_bloc.dart';
 import 'package:inlek/features/presentation/pages/catalog/products/product_screen.dart';
@@ -247,6 +248,11 @@ class _HomeScreenState extends State<HomeScreen> {
             updateMeUC: sl(),
             deleteMeUC: sl(),
           )..getProfile(),
+        ),
+        BlocProvider(
+          create: (context) => OrdersScreenBloc(
+            getOrderHistoryUC: sl(),
+          )..add(LoadDataEvent()),
         ),
         BlocProvider(
           create: (context) => RouteObserverBloc(),

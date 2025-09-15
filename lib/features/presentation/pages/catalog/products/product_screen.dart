@@ -21,6 +21,7 @@ import 'package:inlek/features/presentation/widgets/main_screen/block_widget.dar
 import 'package:inlek/features/presentation/widgets/main_screen/daily_products_list_widget.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/internet_no_internet_connection_widget.dart';
 import 'package:inlek/features/presentation/widgets/product_screen/instruction_widget.dart';
+import 'package:inlek/features/presentation/widgets/product_screen/prescription_widget.dart';
 import 'package:inlek/features/presentation/widgets/product_screen/product_banner_widget.dart';
 import 'package:inlek/features/presentation/widgets/product_screen/product_characteristic_widget.dart';
 import 'package:inlek/features/presentation/widgets/product_screen/product_receiving_methods_widget.dart';
@@ -98,6 +99,19 @@ class ProductScreen extends StatelessWidget {
                                                       productState.product),
                                             ),
                                             if (productState
+                                                        .product?.isAlcohol ==
+                                                    true ||
+                                                productState
+                                                        .product?.isRecipe ==
+                                                    true)
+                                              Padding(
+                                                padding: getMarginOrPadding(
+                                                    top: 16,
+                                                    left: 20,
+                                                    right: 20),
+                                                child: PrescriptionWidget(),
+                                              ),
+                                            if (productState
                                                     .product?.instruction !=
                                                 null)
                                               Padding(
@@ -161,7 +175,7 @@ class ProductScreen extends StatelessWidget {
                                                 ),
                                               ),
                                             if ((productState.product
-                                                        ?.relatedProducts ??
+                                                        ?.similarProducts ??
                                                     [])
                                                 .isNotEmpty)
                                               Padding(
@@ -175,7 +189,7 @@ class ProductScreen extends StatelessWidget {
                                                   child: ProductsListWidget(
                                                       products: productState
                                                               .product
-                                                              ?.relatedProducts ??
+                                                              ?.similarProducts ??
                                                           []),
                                                 ),
                                               ),

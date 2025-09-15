@@ -3,6 +3,7 @@ part of 'personal_data_screen_bloc.dart';
 class PersonalDataScreenState extends Equatable {
   final bool isLoading;
   final bool isButtonActive;
+  final bool isSaving;
   final GenderType? gender;
   final bool isCheckedNotificationCheckbox;
   final bool isCheckedPolicyCheckbox;
@@ -15,6 +16,7 @@ class PersonalDataScreenState extends Equatable {
   const PersonalDataScreenState({
     this.isLoading = true,
     this.isButtonActive = true,
+    this.isSaving = false,
     this.gender = GenderType.male,
     this.isCheckedNotificationCheckbox = false,
     this.isCheckedPolicyCheckbox = false,
@@ -28,6 +30,7 @@ class PersonalDataScreenState extends Equatable {
   PersonalDataScreenState copyWith({
     bool? isLoading,
     bool? isButtonActive,
+    bool? isSaving,
     GenderType? gender,
     bool? isCheckedNotificationCheckbox,
     bool? isCheckedPolicyCheckbox,
@@ -40,6 +43,7 @@ class PersonalDataScreenState extends Equatable {
     return PersonalDataScreenState(
       isLoading: isLoading ?? this.isLoading,
       isButtonActive: isButtonActive ?? this.isButtonActive,
+      isSaving: isSaving ?? this.isSaving,
       gender: gender ?? this.gender,
       isCheckedNotificationCheckbox:
           isCheckedNotificationCheckbox ?? this.isCheckedNotificationCheckbox,
@@ -57,6 +61,7 @@ class PersonalDataScreenState extends Equatable {
   List<Object?> get props => [
         isLoading,
         isButtonActive,
+        isSaving,
         gender,
         isCheckedNotificationCheckbox,
         isCheckedPolicyCheckbox,

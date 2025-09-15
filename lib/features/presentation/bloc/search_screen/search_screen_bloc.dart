@@ -39,6 +39,14 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
 
   Future<void> _onLoadData(
       LoadSearchDataEvent event, Emitter<SearchScreenState> emit) async {
+    // Сначала эмитим данные истории сразу (синхронно)
+    List<String> savedRequests = sharedPreferences
+            .getStringList(SharedPreferencesKeys.popularRequests) ??
+        [];
+
+    emit(state.copyWith(historyRequests: savedRequests));
+
+    // Затем асинхронно загружаем daily продукты
     List<ProductEntity> recommendedProducts = [];
     final failureOrLoads = await getDailyProductsUC();
 
@@ -46,13 +54,8 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
       recommendedProducts = products;
     });
 
-    List<String> savedRequests = sharedPreferences
-            .getStringList(SharedPreferencesKeys.popularRequests) ??
-        [];
-
-    emit(state.copyWith(
-        historyRequests: savedRequests,
-        recommendedProducts: recommendedProducts));
+    // Эмитим обновленное состояние с daily продуктами
+    emit(state.copyWith(recommendedProducts: recommendedProducts));
   }
 
   void _onChangeQuery(ChangeQueryEvent event, Emitter<SearchScreenState> emit) {
