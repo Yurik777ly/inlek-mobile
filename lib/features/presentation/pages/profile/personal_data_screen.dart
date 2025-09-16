@@ -148,13 +148,10 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
 
             return WillPopScope(
               onWillPop: () async {
-                final isValid = formKey.currentState?.validate() ?? false;
-
-                if (isValid) {
-                  personalDataBloc.add(
-                    BackButtonPressedEvent(context: context),
-                  );
-                }
+                // Всегда вызываем BackButtonPressedEvent, независимо от валидности формы
+                personalDataBloc.add(
+                  BackButtonPressedEvent(context: context),
+                );
 
                 // Возвращаем false, чтобы предотвратить автоматический pop
                 return false;
@@ -179,12 +176,9 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                                 title: 'Личные данные',
                                 showBack: true,
                                 onTapBack: () {
-                                  if (formKey.currentState?.validate() ??
-                                      false) {
-                                    personalDataBloc.add(
-                                      BackButtonPressedEvent(context: context),
-                                    );
-                                  }
+                                  personalDataBloc.add(
+                                    BackButtonPressedEvent(context: context),
+                                  );
                                 },
                               ),
                               Expanded(

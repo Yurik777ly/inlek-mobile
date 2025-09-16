@@ -65,6 +65,8 @@ class _SearchScreenPageContentState extends State<_SearchScreenPageContent> {
       body: SafeArea(
         child: BlocBuilder<SearchScreenBloc, SearchScreenState>(
           builder: (context, state) {
+            print(
+                'BlocBuilder rebuilding with state: ${state.historyRequests}');
             final searchBloc = context.read<SearchScreenBloc>();
             return Column(
               children: [
@@ -140,6 +142,7 @@ class _SearchScreenPageContentState extends State<_SearchScreenPageContent> {
 
                       if (hasQuery && products.isEmpty) {
                         return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
                               padding: getMarginOrPadding(
@@ -207,6 +210,7 @@ class _SearchScreenPageContentState extends State<_SearchScreenPageContent> {
 
   Widget _buildHistoryBlock(
       SearchScreenState state, SearchScreenBloc searchBloc) {
+    print('Building history block with requests: ${state.historyRequests}');
     return Column(
       children: [
         PopularityRequestsWidget(
@@ -341,19 +345,6 @@ class _SearchScreenPageContentState extends State<_SearchScreenPageContent> {
           },
         );
       },
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: getMarginOrPadding(bottom: 16),
-      child: Text(
-        title,
-        style: UiConstants.textStyle5.copyWith(
-          color: UiConstants.darkBlueColor,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
     );
   }
 

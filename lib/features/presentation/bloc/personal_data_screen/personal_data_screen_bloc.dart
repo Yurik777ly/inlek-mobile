@@ -239,10 +239,14 @@ class PersonalDataScreenBloc
               await BottomSheetManager.showUnsavedChangesSheet(event.context);
 
           if (shouldSave == true) {
-            // User chose to save, update profile and then leave
+            // User chose to save, try to update profile
             String? answer = await updateProfile();
             if (answer == null) {
+              // Successfully saved, can leave
               Navigator.of(event.context).pop();
+            } else {
+              // Failed to save due to validation errors, show validation errors
+              _showValidationErrors(event.context);
             }
           } else if (shouldSave == false) {
             // User chose not to save, just leave
@@ -255,6 +259,19 @@ class PersonalDataScreenBloc
         }
       },
     );
+  }
+
+  void _showValidationErrors(BuildContext context) {
+    // Показываем уведомление о невалидных полях
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(
+          content: Text('Исправьте ошибки в полях формы'),
+          backgroundColor: UiConstants.pink2Color,
+          duration: Duration(seconds: 3),
+        ),
+      );
   }
 
   Future getProfile() async {
@@ -345,7 +362,10 @@ class PersonalDataScreenBloc
             'Примите условия политики обработки персональных данных',
           _ => 'Ошибка обновления данных'
         };
-        if (!requestedCode) {
+
+        // Если это ошибка валидации (не связанная с политикой), не показываем диалог
+        // при вызове из BackButtonPressedEvent
+        if (!requestedCode && failure is! AcceptPersonalDataFailure) {
           Utils.showCustomDialog(
             screenContext: navigatorKey.currentContext!,
             text: error,

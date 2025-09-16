@@ -101,7 +101,7 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
 
           // Сохраняем запрос только если есть результаты
           if (hasResults) {
-            _saveRequestToSharedPrefs(event.text, emit);
+            _saveRequestToSharedPrefsSync(event.text, emit);
           }
         } else {
           emit(state.copyWith(isLoading: false));
@@ -110,11 +110,12 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
     );
   }
 
-  void _saveRequestToSharedPrefs(
-      String query, Emitter<SearchScreenState> emit) async {
-    List<String> savedRequests = sharedPreferences
-            .getStringList(SharedPreferencesKeys.popularRequests) ??
-        [];
+  void _saveRequestToSharedPrefsSync(
+      String query, Emitter<SearchScreenState> emit) {
+    print(
+        'Saving request to history: $query, current list: ${state.historyRequests}');
+
+    List<String> savedRequests = List.from(state.historyRequests);
 
     // Проверяем, есть ли уже такой запрос
     if (!savedRequests.contains(query)) {
@@ -122,10 +123,12 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
         savedRequests.removeLast(); // Удаляем последнее значение
       }
       savedRequests.insert(0, query); // Добавляем новое первым элементом
-      await sharedPreferences.setStringList(
+
+      // Сохраняем в SharedPreferences асинхронно (не блокируем UI)
+      sharedPreferences.setStringList(
           SharedPreferencesKeys.popularRequests, savedRequests);
 
-      // Обновляем стейт с новым списком истории
+      // Обновляем стейт с новым списком истории сразу
       print('Saving request to history: $query, new list: $savedRequests');
       emit(state.copyWith(historyRequests: savedRequests));
     }
