@@ -44,6 +44,7 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
             .getStringList(SharedPreferencesKeys.popularRequests) ??
         [];
 
+    print('Loading history requests: $savedRequests');
     emit(state.copyWith(historyRequests: savedRequests));
 
     // Затем асинхронно загружаем daily продукты
@@ -70,8 +71,7 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
     emit(state.copyWith(isLoading: true));
 
     _debounceTimer = Timer(const Duration(milliseconds: 1000), () {
-      add(ExecuteSearchEvent(
-          event.text)); // Вместо await выполняем через новое событие
+      add(ExecuteSearchEvent(event.text));
     });
   }
 
@@ -79,14 +79,10 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
       ExecuteSearchEvent event, Emitter<SearchScreenState> emit) async {
     emit(
       state.copyWith(
-        searchResult: SearchProductsV2Entity(categories: [], products: []),
+        searchResult:
+            SearchProductsV2Entity(categories: [], products: [], queries: []),
       ),
     );
-
-    // заполняем в стейте historyRequests из SharedPreferencesKeys
-    emit(state.copyWith(
-        historyRequests: sharedPreferences
-            .getStringList(SharedPreferencesKeys.popularRequests)));
 
     final failureOrLoads = await searchProductsV2UC(event.text);
 
@@ -95,13 +91,27 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
         state.copyWith(isLoading: false),
       ),
       (result) {
-        emit(state.copyWith(searchResult: result, isLoading: false));
-        _saveRequestToSharedPrefs(event.text);
+        if (result != null) {
+          // Проверяем, есть ли результаты (продукты, категории или queries)
+          final hasResults = (result.products.isNotEmpty ||
+              result.categories.isNotEmpty ||
+              result.queries.isNotEmpty);
+
+          emit(state.copyWith(searchResult: result, isLoading: false));
+
+          // Сохраняем запрос только если есть результаты
+          if (hasResults) {
+            _saveRequestToSharedPrefs(event.text, emit);
+          }
+        } else {
+          emit(state.copyWith(isLoading: false));
+        }
       },
     );
   }
 
-  void _saveRequestToSharedPrefs(String query) async {
+  void _saveRequestToSharedPrefs(
+      String query, Emitter<SearchScreenState> emit) async {
     List<String> savedRequests = sharedPreferences
             .getStringList(SharedPreferencesKeys.popularRequests) ??
         [];
@@ -114,6 +124,10 @@ class SearchScreenBloc extends Bloc<SearchScreenEvent, SearchScreenState> {
       savedRequests.insert(0, query); // Добавляем новое первым элементом
       await sharedPreferences.setStringList(
           SharedPreferencesKeys.popularRequests, savedRequests);
+
+      // Обновляем стейт с новым списком истории
+      print('Saving request to history: $query, new list: $savedRequests');
+      emit(state.copyWith(historyRequests: savedRequests));
     }
   }
 

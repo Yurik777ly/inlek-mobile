@@ -61,6 +61,7 @@ import 'package:inlek/features/presentation/widgets/pinput_widget.dart';
 import 'package:inlek/features/presentation/widgets/product_screen/product_pharmacy_widget.dart';
 import 'package:inlek/features/presentation/widgets/search_screen/price_range_widget.dart';
 import 'package:inlek/features/presentation/widgets/select_region_screen/city_search_field.dart';
+import 'package:inlek/features/presentation/widgets/validation_helper_widget.dart';
 import 'package:inlek/locator_service.dart';
 import 'package:inlek/main.dart';
 import 'package:intl/intl.dart';
@@ -281,7 +282,6 @@ class BottomSheetManager {
   static Future<bool?> showExitAccountSheet(BuildContext context) {
     return showModalBottomSheet<bool?>(
       useRootNavigator: true,
-      isScrollControlled: true,
       context: UiConstants.homeContext!,
       builder: (sheetContext) {
         return CustomBottomSheet(
@@ -315,6 +315,16 @@ class BottomSheetManager {
 
   static showDeliverySheet(BuildContext screenContext) {
     GlobalKey<FormState> formKey = GlobalKey();
+    final ScrollController scrollController = ScrollController();
+
+    // GlobalKeys для обязательных полей
+    final GlobalKey firstNameKey = GlobalKey();
+    final GlobalKey lastNameKey = GlobalKey();
+    final GlobalKey phoneKey = GlobalKey();
+    final GlobalKey emailKey = GlobalKey();
+    final GlobalKey commentKey = GlobalKey();
+    final GlobalKey cityKey = GlobalKey();
+    final GlobalKey streetKey = GlobalKey();
 
     CartScreenBloc cartBloc = screenContext.read<CartScreenBloc>();
     PersonalDataScreenBloc personalDataScreenBloc =
@@ -417,121 +427,147 @@ class BottomSheetManager {
           child: BlocBuilder<CartScreenBloc, CartScreenState>(
             bloc: cartBloc,
             builder: (context, state) {
-              return CustomBottomSheet(
-                padding:
-                    getMarginOrPadding(left: 20, right: 20, top: 8, bottom: 16),
-                color: UiConstants.backgroundColor,
-                child: Expanded(
-                  child: Form(
-                    key: formKey,
-                    child: ListView(
-                      padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
-                      ),
-                      shrinkWrap: true,
-                      children: [
-                        Text(
-                          'Доставка',
-                          style: UiConstants.textStyle1
-                              .copyWith(color: UiConstants.darkBlueColor),
-                        ),
-                        SizedBox(height: 16.dp),
-                        InfoPlateWidget(
-                            text:
-                                'Доставка производится только по Минску и Минскому району'),
-                        SizedBox(height: 16.dp),
-                        DeliveryCustomerBlock(screenContext: screenContext),
-                        if (cartBloc.state.cartType == TypeReceiving.delivery)
-                          Padding(
-                            padding: getMarginOrPadding(top: 16),
-                            child: DeliveryAddressBlock(
-                              screenContext: screenContext,
-                              onPickAddressOnMap: () =>
-                                  showSelectAddressOnMapSheet(screenContext,
-                                      sheetContext: sheetContext),
-                            ),
+              return Scaffold(
+                resizeToAvoidBottomInset: true,
+                body: CustomBottomSheet(
+                  padding: getMarginOrPadding(
+                      left: 20, right: 20, top: 8, bottom: 16),
+                  color: UiConstants.backgroundColor,
+                  child: Expanded(
+                    child: Form(
+                      key: formKey,
+                      child: ListView(
+                        controller: scrollController,
+                        shrinkWrap: true,
+                        children: [
+                          Text(
+                            'Доставка',
+                            style: UiConstants.textStyle1
+                                .copyWith(color: UiConstants.darkBlueColor),
                           ),
-                        if (cartBloc.state.cartType == TypeReceiving.delivery)
-                          Padding(
-                            padding: getMarginOrPadding(top: 16),
-                            child: DeliveryPaymentBlock(
-                              screenContext: screenContext,
-                              changedOnlineMethodTap: () async {
-                                PaymentType? paymentType =
-                                    await showPickOnlinePaymentSheet(
-                                        screenContext);
+                          SizedBox(height: 16.dp),
+                          InfoPlateWidget(
+                              text:
+                                  'Доставка производится только по Минску и Минскому району'),
+                          SizedBox(height: 16.dp),
+                          DeliveryCustomerBlock(
+                            screenContext: screenContext,
+                            firstNameKey: firstNameKey,
+                            lastNameKey: lastNameKey,
+                            phoneKey: phoneKey,
+                            emailKey: emailKey,
+                            commentKey: commentKey,
+                          ),
+                          if (cartBloc.state.cartType == TypeReceiving.delivery)
+                            Padding(
+                              padding: getMarginOrPadding(top: 16),
+                              child: DeliveryAddressBlock(
+                                screenContext: screenContext,
+                                onPickAddressOnMap: () =>
+                                    showSelectAddressOnMapSheet(screenContext,
+                                        sheetContext: sheetContext),
+                                cityKey: cityKey,
+                                streetKey: streetKey,
+                              ),
+                            ),
+                          if (cartBloc.state.cartType == TypeReceiving.delivery)
+                            Padding(
+                              padding: getMarginOrPadding(top: 16),
+                              child: DeliveryPaymentBlock(
+                                screenContext: screenContext,
+                                changedOnlineMethodTap: () async {
+                                  PaymentType? paymentType =
+                                      await showPickOnlinePaymentSheet(
+                                          screenContext);
 
-                                if (paymentType != null) {
-                                  cartBloc
-                                      .add(ChangePaymentTypeEvent(paymentType));
+                                  if (paymentType != null) {
+                                    cartBloc.add(
+                                        ChangePaymentTypeEvent(paymentType));
+                                  }
+                                },
+                              ),
+                            ),
+                          SizedBox(height: 16.dp),
+                          SizedBox(
+                            height: cartBloc.state.cartType ==
+                                        TypeReceiving.pickup ||
+                                    (cartBloc.state.cartType ==
+                                                TypeReceiving.delivery &&
+                                            cartBloc.selectedAddress == null ||
+                                        cartBloc.state.deliveryZone ==
+                                            DeliveryZoneType.none)
+                                ? null
+                                : 60.dp,
+                            child: AppButtonWidget(
+                              textWidget: cartBloc.state.isOrderCompleting
+                                  ? Center(
+                                      child: CircularProgressIndicator(
+                                          color: UiConstants.pink2Color),
+                                    )
+                                  : Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Оформить заказ',
+                                          style: UiConstants.textStyle3
+                                              .copyWith(height: 1),
+                                        ),
+                                        if (cartBloc.state.cartType ==
+                                                TypeReceiving.delivery &&
+                                            cartBloc.selectedAddress != null &&
+                                            cartBloc.state.deliveryZone !=
+                                                DeliveryZoneType.none)
+                                          Expanded(
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: Text(
+                                                'Стоимость доставки - ${cartBloc.state.deliveryPayment}р.',
+                                                style: UiConstants.textStyle8
+                                                    .copyWith(
+                                                        color: UiConstants
+                                                            .whiteColor,
+                                                        height: 1),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                              isActive: true,
+                              onTap: () {
+                                if ((formKey.currentState?.validate() ??
+                                        false) &&
+                                    !cartBloc.state.isOrderCompleting) {
+                                  screenContext
+                                      .read<CartScreenBloc>()
+                                      .add(CreateOrderEvent(
+                                        screenContext: screenContext,
+                                        callback: () {
+                                          personalDataScreenBloc.getProfile();
+                                          ordersScreenBloc.add(LoadDataEvent());
+                                        },
+                                      ));
+                                  Navigator.pop(sheetContext);
+                                } else {
+                                  // Показываем уведомление и скроллим к незаполненным полям
+                                  _showDeliveryValidationError(
+                                    context,
+                                    cartBloc,
+                                    firstNameKey,
+                                    lastNameKey,
+                                    phoneKey,
+                                    emailKey,
+                                    commentKey,
+                                    cityKey,
+                                    streetKey,
+                                    scrollController,
+                                  );
                                 }
                               },
                             ),
                           ),
-                        SizedBox(height: 16.dp),
-                        SizedBox(
-                          height: cartBloc.state.cartType ==
-                                      TypeReceiving.pickup ||
-                                  (cartBloc.state.cartType ==
-                                              TypeReceiving.delivery &&
-                                          cartBloc.selectedAddress == null ||
-                                      cartBloc.state.deliveryZone ==
-                                          DeliveryZoneType.none)
-                              ? null
-                              : 60.dp,
-                          child: AppButtonWidget(
-                            textWidget: cartBloc.state.isOrderCompleting
-                                ? Center(
-                                    child: CircularProgressIndicator(
-                                        color: UiConstants.pink2Color),
-                                  )
-                                : Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'Оформить заказ',
-                                        style: UiConstants.textStyle3
-                                            .copyWith(height: 1),
-                                      ),
-                                      if (cartBloc.state.cartType ==
-                                              TypeReceiving.delivery &&
-                                          cartBloc.selectedAddress != null &&
-                                          cartBloc.state.deliveryZone !=
-                                              DeliveryZoneType.none)
-                                        Expanded(
-                                          child: FittedBox(
-                                            fit: BoxFit.scaleDown,
-                                            child: Text(
-                                              'Стоимость доставки - ${cartBloc.state.deliveryPayment}р.',
-                                              style: UiConstants.textStyle8
-                                                  .copyWith(
-                                                      color: UiConstants
-                                                          .whiteColor,
-                                                      height: 1),
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                            isActive: true,
-                            onTap: () {
-                              if ((formKey.currentState?.validate() ?? false) &&
-                                  !cartBloc.state.isOrderCompleting) {
-                                screenContext
-                                    .read<CartScreenBloc>()
-                                    .add(CreateOrderEvent(
-                                      screenContext: screenContext,
-                                      callback: () {
-                                        personalDataScreenBloc.getProfile();
-                                        ordersScreenBloc.add(LoadDataEvent());
-                                      },
-                                    ));
-                                Navigator.pop(sheetContext);
-                              }
-                            },
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -1442,28 +1478,27 @@ class BottomSheetManager {
     );
   }
 
-  static showProductReceiptNotificationSheet(BuildContext homeContext) {
-    showModalBottomSheet(
-      context: homeContext,
+  static Future<bool?> showProductReceiptNotificationSheet() {
+    return showModalBottomSheet<bool?>(
+      context: navigatorKey.currentContext!,
+      useRootNavigator: true,
       builder: (sheetContext) {
         return CustomBottomSheet(
           //height: 180.dp,
-          child: Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Мы сообщим вам о поступлении данного товара пуш‑уведомлением',
-                  style: UiConstants.textStyle5
-                      .copyWith(color: UiConstants.darkBlueColor),
-                ),
-                Spacer(),
-                AppButtonWidget(
-                  text: 'Продолжить покупки',
-                  onTap: () => Navigator.pop(sheetContext),
-                ),
-              ],
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Мы сообщим вам о поступлении данного товара пуш‑уведомлением',
+                style: UiConstants.textStyle5
+                    .copyWith(color: UiConstants.darkBlueColor),
+              ),
+              32.ph,
+              AppButtonWidget(
+                text: 'Продолжить покупки',
+                onTap: () => Navigator.pop(sheetContext, true),
+              ),
+            ],
           ),
         );
       },
@@ -2123,5 +2158,99 @@ class BottomSheetManager {
         );
       },
     );
+  }
+
+  // Функция для показа уведомления о незаполненных полях в delivery sheet
+  static void _showDeliveryValidationError(
+    BuildContext context,
+    CartScreenBloc cartBloc,
+    GlobalKey firstNameKey,
+    GlobalKey lastNameKey,
+    GlobalKey phoneKey,
+    GlobalKey emailKey,
+    GlobalKey commentKey,
+    GlobalKey cityKey,
+    GlobalKey streetKey,
+    ScrollController scrollController,
+  ) {
+    List<String> emptyFields = [];
+
+    // Проверяем обязательные поля
+    if (cartBloc.fNameController.text.trim().isEmpty) {
+      emptyFields.add('Имя');
+    }
+    if (cartBloc.sNameController.text.trim().isEmpty) {
+      emptyFields.add('Фамилия');
+    }
+    if (cartBloc.phoneController.text.trim().isEmpty ||
+        !Utils.phoneRegexp.hasMatch(cartBloc.phoneController.text)) {
+      emptyFields.add('Телефон');
+    }
+
+    // Email обязателен только при онлайн оплате
+    if (cartBloc.state.paymentType != PaymentType.courier) {
+      if (cartBloc.emailController.text.trim().isEmpty ||
+          Utils.emailValidate(cartBloc.emailController.text) != null) {
+        emptyFields.add('Email');
+      }
+    }
+
+    // Проверяем поля адреса только при доставке
+    if (cartBloc.state.cartType == TypeReceiving.delivery) {
+      if (cartBloc.cityController.text.trim().isEmpty) {
+        emptyFields.add('Город');
+      }
+      if (cartBloc.streetHomeController.text.trim().isEmpty ||
+          cartBloc.selectedAddress == null ||
+          cartBloc.state.deliveryZone == DeliveryZoneType.none) {
+        emptyFields.add('Улица, дом');
+      }
+    }
+
+    if (emptyFields.isNotEmpty) {
+      ValidationHelper.showValidationError(
+        context,
+        emptyFields: emptyFields,
+        onShowFields: () {
+          // Скроллим к первому незаполненному полю
+          List<GlobalKey> fieldKeys = [
+            firstNameKey,
+            lastNameKey,
+            phoneKey,
+            emailKey
+          ];
+          List<bool Function()> validationChecks = [
+            () => cartBloc.fNameController.text.trim().isEmpty,
+            () => cartBloc.sNameController.text.trim().isEmpty,
+            () =>
+                cartBloc.phoneController.text.trim().isEmpty ||
+                !Utils.phoneRegexp.hasMatch(cartBloc.phoneController.text),
+            () =>
+                cartBloc.state.paymentType != PaymentType.courier &&
+                (cartBloc.emailController.text.trim().isEmpty ||
+                    Utils.emailValidate(cartBloc.emailController.text) != null),
+          ];
+
+          // Добавляем поля адреса только при доставке
+          if (cartBloc.state.cartType == TypeReceiving.delivery) {
+            fieldKeys.addAll([cityKey, streetKey]);
+            validationChecks.addAll([
+              () => cartBloc.cityController.text.trim().isEmpty,
+              () =>
+                  cartBloc.streetHomeController.text.trim().isEmpty ||
+                  cartBloc.selectedAddress == null ||
+                  cartBloc.state.deliveryZone == DeliveryZoneType.none,
+            ]);
+          }
+
+          ValidationHelper.scrollToFirstEmptyField(
+            context,
+            fieldKeys,
+            validationChecks,
+            scrollController,
+          );
+        },
+      );
+    }
   }
 }

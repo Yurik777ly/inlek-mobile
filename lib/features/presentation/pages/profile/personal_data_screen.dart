@@ -4,6 +4,7 @@ import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
@@ -16,6 +17,7 @@ import 'package:inlek/features/presentation/widgets/personal_data_screen/change_
 import 'package:inlek/features/presentation/widgets/personal_data_screen/checkboxed_block.dart';
 import 'package:inlek/features/presentation/widgets/personal_data_screen/contacts_block.dart';
 import 'package:inlek/features/presentation/widgets/personal_data_screen/general_information_block.dart';
+import 'package:inlek/features/presentation/widgets/validation_helper_widget.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class PersonalDataScreen extends StatefulWidget {
@@ -27,7 +29,14 @@ class PersonalDataScreen extends StatefulWidget {
 
 class _PersonalDataScreenState extends State<PersonalDataScreen> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final ScrollController scrollController = ScrollController();
   bool isFormValid = false;
+
+  // GlobalKeys для обязательных полей
+  final GlobalKey firstNameKey = GlobalKey();
+  final GlobalKey lastNameKey = GlobalKey();
+  final GlobalKey phoneKey = GlobalKey();
+  final GlobalKey emailKey = GlobalKey();
 
   @override
   void initState() {
@@ -45,6 +54,63 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
         isFormValid = formKey.currentState!.validate();
       });
     }
+  }
+
+  // Функция для скролла к незаполненным полям
+  void _scrollToFirstEmptyField() {
+    final personalDataBloc = context.read<PersonalDataScreenBloc>();
+
+    final fieldKeys = [firstNameKey, lastNameKey, phoneKey, emailKey];
+    final validationChecks = [
+      () => personalDataBloc.fNameController.text.trim().isEmpty,
+      () => personalDataBloc.sNameController.text.trim().isEmpty,
+      () =>
+          personalDataBloc.phoneController.text.trim().isEmpty ||
+          !Utils.phoneRegexp.hasMatch(personalDataBloc.phoneController.text),
+      () =>
+          personalDataBloc.emailController.text.trim().isEmpty ||
+          Utils.emailValidate(personalDataBloc.emailController.text) != null,
+    ];
+
+    ValidationHelper.scrollToFirstEmptyField(
+      context,
+      fieldKeys,
+      validationChecks,
+      scrollController,
+    );
+  }
+
+  // Функция для показа уведомления о незаполненных полях
+  void _showValidationSnackBar() {
+    final personalDataBloc = context.read<PersonalDataScreenBloc>();
+    List<String> emptyFields = [];
+
+    if (personalDataBloc.fNameController.text.trim().isEmpty) {
+      emptyFields.add('Имя');
+    }
+    if (personalDataBloc.sNameController.text.trim().isEmpty) {
+      emptyFields.add('Фамилия');
+    }
+    if (personalDataBloc.phoneController.text.trim().isEmpty ||
+        !Utils.phoneRegexp.hasMatch(personalDataBloc.phoneController.text)) {
+      emptyFields.add('Телефон');
+    }
+    if (personalDataBloc.emailController.text.trim().isEmpty ||
+        Utils.emailValidate(personalDataBloc.emailController.text) != null) {
+      emptyFields.add('Email');
+    }
+
+    ValidationHelper.showValidationError(
+      context,
+      emptyFields: emptyFields,
+      onShowFields: _scrollToFirstEmptyField,
+    );
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -94,6 +160,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                 return false;
               },
               child: Scaffold(
+                resizeToAvoidBottomInset: true,
                 backgroundColor: UiConstants.backgroundColor,
                 body: SafeArea(
                   child: Skeletonizer(
@@ -124,6 +191,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                                 child: homeState is InternetUnavailable
                                     ? InternetNoInternetConnectionWidget()
                                     : ListView(
+                                        controller: scrollController,
                                         shrinkWrap: true,
                                         padding: getMarginOrPadding(
                                             bottom: 94,
@@ -132,9 +200,14 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                                             top: 16),
                                         children: [
                                           GeneralInformationBlock(
-                                              screenContext: context),
+                                              screenContext: context,
+                                              firstNameKey: firstNameKey,
+                                              lastNameKey: lastNameKey),
                                           SizedBox(height: 16.dp),
-                                          ContactsBlock(screenContext: context),
+                                          ContactsBlock(
+                                              screenContext: context,
+                                              phoneKey: phoneKey,
+                                              emailKey: emailKey),
                                           SizedBox(height: 16.dp),
                                           ChangePasswordBlock(
                                               screenContext: context),
@@ -155,6 +228,10 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                                                 personalDataBloc.add(
                                                   SubmitEvent(context: context),
                                                 );
+                                              } else {
+                                                // Показываем уведомление и скроллим к незаполненным полям
+                                                _showValidationSnackBar();
+                                                _scrollToFirstEmptyField();
                                               }
                                             },
                                           ),

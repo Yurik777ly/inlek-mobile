@@ -14,9 +14,16 @@ import 'package:inlek/features/presentation/widgets/app_text_field_widget.dart';
 import 'package:inlek/locator_service.dart';
 
 class ContactsBlock extends StatefulWidget {
-  const ContactsBlock({super.key, required this.screenContext});
+  const ContactsBlock({
+    super.key,
+    required this.screenContext,
+    this.phoneKey,
+    this.emailKey,
+  });
 
   final BuildContext screenContext;
+  final GlobalKey? phoneKey;
+  final GlobalKey? emailKey;
 
   @override
   State<ContactsBlock> createState() => _ContactsBlockState();
@@ -58,6 +65,7 @@ class _ContactsBlockState extends State<ContactsBlock> {
                   },
                   builder: (context, state) {
                     return AppTextFieldWidget(
+                      key: widget.phoneKey,
                       title: 'Телефон',
                       hintText: '+375 (00) 000-00-00',
                       controller: personalDataBloc.phoneController,
@@ -103,6 +111,7 @@ class _ContactsBlockState extends State<ContactsBlock> {
               ),
               SizedBox(height: 16.dp),
               AppTextFieldWidget(
+                key: widget.emailKey,
                 title: 'Email',
                 hintText: 'Введите Email',
                 controller: personalDataBloc.emailController,

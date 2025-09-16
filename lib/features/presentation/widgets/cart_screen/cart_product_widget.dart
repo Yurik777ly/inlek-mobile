@@ -203,7 +203,9 @@ class CartProductWidget extends StatelessWidget {
                                     Padding(
                                       padding: getMarginOrPadding(bottom: 4),
                                       child: product.delivery ==
-                                              TypeReceiving.pickup
+                                                  TypeReceiving.pickup &&
+                                              cartBloc?.state.cartType !=
+                                                  TypeReceiving.pickup
                                           ? AvailablePickupChip()
                                           : OutStockChip(),
                                     )

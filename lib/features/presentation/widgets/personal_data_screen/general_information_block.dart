@@ -15,9 +15,16 @@ import 'package:inlek/features/presentation/widgets/app_text_field_widget.dart';
 import 'package:inlek/features/presentation/widgets/custom_radio_button.dart';
 
 class GeneralInformationBlock extends StatelessWidget {
-  const GeneralInformationBlock({super.key, required this.screenContext});
+  const GeneralInformationBlock({
+    super.key,
+    required this.screenContext,
+    this.firstNameKey,
+    this.lastNameKey,
+  });
 
   final BuildContext screenContext;
+  final GlobalKey? firstNameKey;
+  final GlobalKey? lastNameKey;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +47,7 @@ class GeneralInformationBlock extends StatelessWidget {
           child: Column(
             children: [
               AppTextFieldWidget(
+                key: firstNameKey,
                 title: 'Имя',
                 hintText: 'Введите имя',
                 controller: personalDataBloc.fNameController,
@@ -48,6 +56,7 @@ class GeneralInformationBlock extends StatelessWidget {
               ),
               SizedBox(height: 24.dp),
               AppTextFieldWidget(
+                key: lastNameKey,
                 title: 'Фамилия',
                 hintText: 'Введите фамилию',
                 controller: personalDataBloc.sNameController,

@@ -207,10 +207,19 @@ class ProductScreen extends StatelessWidget {
                                               ? AppButtonWidget(
                                                   text:
                                                       'Сообщить о поступлении',
-                                                  onTap: () => BottomSheetManager
-                                                      .showProductReceiptNotificationSheet(
-                                                          homeBloc
-                                                              .state.context!),
+                                                  onTap: () async {
+                                                    bool? isContinueShopping =
+                                                        await BottomSheetManager
+                                                            .showProductReceiptNotificationSheet();
+                                                    if (isContinueShopping ==
+                                                            true &&
+                                                        context.mounted) {
+                                                      homeBloc.add(
+                                                          ChangePageEvent(1,
+                                                              forcePopToRoot:
+                                                                  true));
+                                                    }
+                                                  },
                                                 )
                                               : BlocBuilder<CartScreenBloc,
                                                   CartScreenState>(

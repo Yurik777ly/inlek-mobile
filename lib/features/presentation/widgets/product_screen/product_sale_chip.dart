@@ -10,6 +10,8 @@ class ProductSaleChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (discount == 0) return SizedBox.shrink();
+
     return Skeleton.leaf(
       child: Container(
         padding: getMarginOrPadding(all: 4),

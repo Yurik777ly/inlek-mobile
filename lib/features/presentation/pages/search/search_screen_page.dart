@@ -63,29 +63,29 @@ class _SearchScreenPageContentState extends State<_SearchScreenPageContent> {
         surfaceTintColor: Colors.transparent,
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              color: UiConstants.whiteColor,
-              padding:
-                  getMarginOrPadding(top: 8, bottom: 8, right: 20, left: 20),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: getMarginOrPadding(right: 10),
-                    child: GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: SvgPicture.asset(Paths.arrowBackIconPath,
-                          color: UiConstants.darkBlue2Color.withOpacity(.6),
-                          width: 24.dp,
-                          height: 24.dp),
-                    ),
-                  ),
-                  Expanded(
-                    child: BlocBuilder<SearchScreenBloc, SearchScreenState>(
-                      builder: (context, state) {
-                        final searchBloc = context.read<SearchScreenBloc>();
-                        return AppTextFieldWidget(
+        child: BlocBuilder<SearchScreenBloc, SearchScreenState>(
+          builder: (context, state) {
+            final searchBloc = context.read<SearchScreenBloc>();
+            return Column(
+              children: [
+                Container(
+                  color: UiConstants.whiteColor,
+                  padding: getMarginOrPadding(
+                      top: 8, bottom: 8, right: 20, left: 20),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: getMarginOrPadding(right: 10),
+                        child: GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: SvgPicture.asset(Paths.arrowBackIconPath,
+                              color: UiConstants.darkBlue2Color.withOpacity(.6),
+                              width: 24.dp,
+                              height: 24.dp),
+                        ),
+                      ),
+                      Expanded(
+                        child: AppTextFieldWidget(
                           focusNode: searchBloc.focusNode,
                           hintText: 'Искать препараты',
                           controller: searchBloc.searchController,
@@ -119,88 +119,87 @@ class _SearchScreenPageContentState extends State<_SearchScreenPageContent> {
                               : null,
                           onChangedField: (p0) =>
                               searchBloc.add(ChangeQueryEvent(p0)),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: BlocBuilder<SearchScreenBloc, SearchScreenState>(
-                builder: (context, state) {
-                  final searchBloc = context.read<SearchScreenBloc>();
-
-                  if (state.isLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: UiConstants.pink2Color,
-                      ),
-                    );
-                  }
-
-                  final hasQuery = state.query.length >= 3;
-                  final products = state.searchResult?.products ?? [];
-
-                  if (hasQuery && products.isEmpty) {
-                    return Column(
-                      children: [
-                        Padding(
-                          padding:
-                              getMarginOrPadding(left: 20, right: 20, top: 16),
-                          child: Text(
-                            'Ничего не найдено по запросу «${state.query}»',
-                            style: UiConstants.textStyle5.copyWith(
-                                color:
-                                    UiConstants.darkBlue2Color.withOpacity(.6)),
-                          ),
                         ),
-                        32.ph,
-                        if ((state.recommendedProducts).isNotEmpty)
-                          BlockWidget(
-                            contentPadding:
-                                getMarginOrPadding(left: 20, right: 20),
-                            title: 'Рекомендуемые продукты',
-                            //clickableText: 'Все товары',
-                            onTap: () => Navigator.of(context).push(
-                              Routes.createRoute(
-                                ProductsScreen(),
-                                settings: RouteSettings(
-                                  name: Routes.productsScreen,
-                                  arguments: {
-                                    'title': 'Рекомендуемые продукты',
-                                    'products': state.recommendedProducts,
-                                  },
-                                ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Builder(
+                    builder: (context) {
+                      if (state.isLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: UiConstants.pink2Color,
+                          ),
+                        );
+                      }
+
+                      final hasQuery = state.query.length >= 3;
+                      final products = state.searchResult?.products ?? [];
+
+                      if (hasQuery && products.isEmpty) {
+                        return Column(
+                          children: [
+                            Padding(
+                              padding: getMarginOrPadding(
+                                  left: 20, right: 20, top: 16),
+                              child: Text(
+                                'Ничего не найдено по запросу «${state.query}»',
+                                style: UiConstants.textStyle5.copyWith(
+                                    color: UiConstants.darkBlue2Color
+                                        .withOpacity(.6)),
                               ),
                             ),
-                            child: ProductsListWidget(
-                                products: state.recommendedProducts),
-                          ),
-                      ],
-                    );
-                  }
+                            32.ph,
+                            if ((state.recommendedProducts).isNotEmpty)
+                              BlockWidget(
+                                contentPadding:
+                                    getMarginOrPadding(left: 20, right: 20),
+                                title: 'Рекомендуемые продукты',
+                                //clickableText: 'Все товары',
+                                onTap: () => Navigator.of(context).push(
+                                  Routes.createRoute(
+                                    ProductsScreen(),
+                                    settings: RouteSettings(
+                                      name: Routes.productsScreen,
+                                      arguments: {
+                                        'title': 'Рекомендуемые продукты',
+                                        'products': state.recommendedProducts,
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                child: ProductsListWidget(
+                                    products: state.recommendedProducts),
+                              ),
+                          ],
+                        );
+                      }
 
-                  return ListView(
-                    padding: getMarginOrPadding(
-                      top: 16,
-                      bottom: 94,
-                      left: 20,
-                      right: 20,
-                    ),
-                    children: [
-                      if (!hasQuery && state.historyRequests.isNotEmpty)
-                        _buildHistoryBlock(state, searchBloc),
-                      if (hasQuery) _buildSuggestionsBlock(state, searchBloc),
-                      hasQuery
-                          ? _buildSearchResults(state, searchBloc)
-                          : _buildPopularBlock(state, searchBloc),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ],
+                      return ListView(
+                        padding: getMarginOrPadding(
+                          top: 16,
+                          bottom: 94,
+                          left: 20,
+                          right: 20,
+                        ),
+                        children: [
+                          if (!hasQuery && state.historyRequests.isNotEmpty)
+                            _buildHistoryBlock(state, searchBloc),
+                          if (hasQuery)
+                            _buildSuggestionsBlock(state, searchBloc),
+                          hasQuery
+                              ? _buildSearchResults(state, searchBloc)
+                              : _buildPopularBlock(state, searchBloc),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -230,47 +229,85 @@ class _SearchScreenPageContentState extends State<_SearchScreenPageContent> {
   Widget _buildSuggestionsBlock(
       SearchScreenState state, SearchScreenBloc searchBloc) {
     final suggestions = (state.searchResult?.categories ?? []).take(5).toList();
-    if (suggestions.isEmpty) return const SizedBox();
+    final queries = state.searchResult?.queries ?? [];
+
+    if (suggestions.isEmpty && queries.isEmpty) return const SizedBox();
 
     return Column(
       children: [
-        ListView.separated(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: suggestions.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 16),
-          itemBuilder: (context, index) {
-            final suggestion = suggestions[index];
-            return GestureDetector(
-              onTap: () {
-                //searchBloc.add(SelectSuggestionsEvent(suggestion.categoryId!));
-                Navigator.push(
-                  context,
-                  Routes.createRoute(
-                    const ProductsScreen(),
-                    settings: RouteSettings(
-                      name: Routes.productsScreen,
-                      arguments: {
-                        'title': suggestion.pageTitle,
-                        'productParam': ProductParam(
-                          categoryId: suggestion.categoryId,
-                        ),
-                      },
-                    ),
+        // Результаты поиска (queries)
+        if (queries.isNotEmpty) ...[
+          BlockWidget(
+            title: 'Результаты поиска',
+            child: ListView.separated(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: queries.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 16),
+              itemBuilder: (context, index) {
+                final query = queries[index];
+                return GestureDetector(
+                  onTap: () {
+                    searchBloc.add(ChangeQueryEvent(query));
+                    searchBloc.searchController.text = query;
+                  },
+                  child: Text(
+                    query,
+                    style: UiConstants.textStyle3
+                        .copyWith(color: UiConstants.darkBlueColor),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 );
               },
-              child: Text(
-                suggestion.pageTitle ?? '-',
-                style: UiConstants.textStyle3
-                    .copyWith(color: UiConstants.darkBlueColor),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            );
-          },
-        ),
-        _divider(),
+            ),
+          ),
+          _divider(),
+        ],
+
+        // Категории
+        if (suggestions.isNotEmpty) ...[
+          BlockWidget(
+            title: 'Категории',
+            child: ListView.separated(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: suggestions.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 16),
+              itemBuilder: (context, index) {
+                final suggestion = suggestions[index];
+                return GestureDetector(
+                  onTap: () {
+                    //searchBloc.add(SelectSuggestionsEvent(suggestion.categoryId!));
+                    Navigator.push(
+                      context,
+                      Routes.createRoute(
+                        const ProductsScreen(),
+                        settings: RouteSettings(
+                          name: Routes.productsScreen,
+                          arguments: {
+                            'title': suggestion.pageTitle,
+                            'productParam': ProductParam(
+                              categoryId: suggestion.categoryId,
+                            ),
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    suggestion.pageTitle ?? '-',
+                    style: UiConstants.textStyle3
+                        .copyWith(color: UiConstants.darkBlueColor),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              },
+            ),
+          ),
+          _divider(),
+        ],
       ],
     );
   }
@@ -304,6 +341,19 @@ class _SearchScreenPageContentState extends State<_SearchScreenPageContent> {
           },
         );
       },
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: getMarginOrPadding(bottom: 16),
+      child: Text(
+        title,
+        style: UiConstants.textStyle5.copyWith(
+          color: UiConstants.darkBlueColor,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 

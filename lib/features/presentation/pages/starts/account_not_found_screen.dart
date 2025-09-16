@@ -23,82 +23,84 @@ class AccountNotFoundScreen extends StatelessWidget {
           toolbarHeight: 0,
           backgroundColor: UiConstants.whiteColor,
           surfaceTintColor: Colors.transparent),
-      body: Column(
-        children: [
-          Container(
-            padding:
-                getMarginOrPadding(left: 20, right: 20, bottom: 16, top: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: SvgPicture.asset(
-                    Paths.arrowBackIconPath,
-                    width: 24.dp,
-                    height: 24.dp,
-                    color: UiConstants.darkBlueColor.withOpacity(.4),
-                  ),
-                ),
-                SizedBox(height: 16.dp),
-                Text(
-                  'По данному номеру телефона не найдено аккаунта',
-                  style: UiConstants.textStyle1
-                      .copyWith(color: UiConstants.darkBlueColor),
-                ),
-                SizedBox(height: 8.dp),
-                Text(
-                  'Зарегистрируйтесь, чтобы совершать покупки и пользоваться нашей бонусной системой',
-                  style: UiConstants.textStyle2
-                      .copyWith(color: UiConstants.darkBlueColor),
-                )
-              ],
-            ),
-          ),
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              padding: getMarginOrPadding(right: 20, left: 20, bottom: 32),
-              decoration: BoxDecoration(
-                color: UiConstants.whiteColor,
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(16.r),
-                ),
-              ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Container(
+              padding:
+                  getMarginOrPadding(left: 20, right: 20, bottom: 16, top: 16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Image.asset(Paths.noFoundAccountIconPath,
-                      width: MediaQuery.of(context).size.width),
-                  Spacer(),
-                  AppButtonWidget(
-                    isActive: true,
-                    text: 'Зарегистироваться',
-                    onTap: () => Navigator.of(context).pushAndRemoveUntil(
-                      Routes.createRoute(
-                        const SignUpScreen(),
-                        settings: RouteSettings(
-                          name: Routes.signUpScreen,
-                          arguments: {
-                            'redirect_type': PasswordScreenType.signUp,
-                            'phone': args!['phone'],
-                          },
-                        ),
-                      ),
-                      (route) {
-                        return route.settings.name == "/login_screen" &&
-                            (route.settings.arguments as Map<String,
-                                    dynamic>?)?['redirect_type'] ==
-                                LoginScreenType.login;
-                      },
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: SvgPicture.asset(
+                      Paths.arrowBackIconPath,
+                      width: 24.dp,
+                      height: 24.dp,
+                      color: UiConstants.darkBlueColor.withOpacity(.4),
                     ),
+                  ),
+                  SizedBox(height: 16.dp),
+                  Text(
+                    'По данному номеру телефона не найдено аккаунта',
+                    style: UiConstants.textStyle1
+                        .copyWith(color: UiConstants.darkBlueColor),
+                  ),
+                  SizedBox(height: 8.dp),
+                  Text(
+                    'Зарегистрируйтесь, чтобы совершать покупки и пользоваться нашей бонусной системой',
+                    style: UiConstants.textStyle2
+                        .copyWith(color: UiConstants.darkBlueColor),
                   )
                 ],
               ),
             ),
-          ),
-        ],
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                padding: getMarginOrPadding(right: 20, left: 20, bottom: 32),
+                decoration: BoxDecoration(
+                  color: UiConstants.whiteColor,
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(16.r),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(Paths.noFoundAccountIconPath,
+                        width: MediaQuery.of(context).size.width),
+                    Spacer(),
+                    AppButtonWidget(
+                      isActive: true,
+                      text: 'Зарегистироваться',
+                      onTap: () => Navigator.of(context).pushAndRemoveUntil(
+                        Routes.createRoute(
+                          const SignUpScreen(),
+                          settings: RouteSettings(
+                            name: Routes.signUpScreen,
+                            arguments: {
+                              'redirect_type': PasswordScreenType.signUp,
+                              'phone': args!['phone'],
+                            },
+                          ),
+                        ),
+                        (route) {
+                          return route.settings.name == "/login_screen" &&
+                              (route.settings.arguments as Map<String,
+                                      dynamic>?)?['redirect_type'] ==
+                                  LoginScreenType.login;
+                        },
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

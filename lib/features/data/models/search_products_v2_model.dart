@@ -6,6 +6,7 @@ class SearchProductsV2Model extends SearchProductsV2Entity {
   const SearchProductsV2Model({
     required super.categories,
     required super.products,
+    required super.queries,
   });
 
   factory SearchProductsV2Model.fromJson(Map<String, dynamic> json) {
@@ -19,6 +20,9 @@ class SearchProductsV2Model extends SearchProductsV2Entity {
           ? (json['products'] as List)
               .map((e) => ProductModel.fromJson(e))
               .toList()
+          : [],
+      queries: json['queries'] != null
+          ? (json['queries'] as List).map((e) => e['name'] as String).toList()
           : [],
     );
   }

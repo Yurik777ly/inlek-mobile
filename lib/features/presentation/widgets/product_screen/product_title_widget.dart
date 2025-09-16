@@ -28,7 +28,8 @@ class ProductTitleWidget extends StatelessWidget {
               'от ${Utils.formatPrice(product?.price)}',
               style: UiConstants.textStyle9.copyWith(
                   color: product?.oldPrice != null &&
-                          product?.oldPrice != product?.price
+                          product?.oldPrice != product?.price &&
+                          (product?.oldPrice ?? 0) > 0
                       ? UiConstants.pink2Color
                       : UiConstants.blackColor),
             ),

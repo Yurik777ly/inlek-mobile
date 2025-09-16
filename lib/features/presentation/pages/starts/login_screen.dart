@@ -122,7 +122,10 @@ class LoginScreen extends StatelessWidget {
                                 settings: RouteSettings(
                                   name: Routes.signUpScreen,
                                   arguments: {
-                                    'redirect_type': PasswordScreenType.reset
+                                    'redirect_type': PasswordScreenType.reset,
+                                    'phone': state.isValidPhone
+                                        ? bloc.phoneController.text
+                                        : null
                                   },
                                 ),
                               ),
@@ -154,7 +157,10 @@ class LoginScreen extends StatelessWidget {
                               settings: RouteSettings(
                                 name: Routes.signUpScreen,
                                 arguments: {
-                                  'redirect_type': PasswordScreenType.signUp
+                                  'redirect_type': PasswordScreenType.signUp,
+                                  'phone': state.isValidPhone
+                                      ? bloc.phoneController.text
+                                      : null
                                 },
                               ),
                             ),

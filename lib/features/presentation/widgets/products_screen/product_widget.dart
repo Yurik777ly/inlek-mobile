@@ -86,7 +86,8 @@ class ProductWidget extends StatelessWidget {
                                 oldPrice: product.oldPrice,
                                 productsListScreenType:
                                     ProductsListScreenType.pharmacy),
-                            if (product.discount != null)
+                            if (product.discount != null &&
+                                product.discount != 0)
                               ProductSaleChip(discount: product.discount ?? 0)
                           ],
                         ),
