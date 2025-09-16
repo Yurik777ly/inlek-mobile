@@ -1975,19 +1975,6 @@ class BottomSheetManager {
               });
             }
 
-            Future clear() async {
-              selectedTypesReceivingIds.clear();
-              selectedStatuses.clear();
-
-              startDate = DateTime(DateTime.now().year, 1, 1);
-              endDate = DateTime(DateTime.now().year, 12, 31);
-
-              startDateController =
-                  TextEditingController(text: format.format(startDate!));
-              endDateController =
-                  TextEditingController(text: format.format(endDate!));
-            }
-
             return CustomBottomSheet(
               color: UiConstants.whiteColor,
               child: Expanded(

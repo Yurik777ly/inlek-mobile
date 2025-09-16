@@ -77,8 +77,6 @@ class GeneralInformationBlock extends StatelessWidget {
                   child: SvgPicture.asset(Paths.calendarIconPath),
                 ),
                 validator: Utils.dateValidate,
-                onChangedField: (p0) =>
-                    personalDataBloc.birthdayController.text = p0,
               ),
               SizedBox(height: 24.dp),
               Row(
