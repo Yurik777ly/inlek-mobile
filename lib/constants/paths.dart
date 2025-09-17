@@ -94,6 +94,7 @@ class Paths {
   static const String checkboxInactiveIconPath =
       '${_imagesPath}checkbox_inactive.svg';
   static const String emptySearchPath = '${_imagesPath}empty_search.png';
+  static const String logsIconPath = '${_imagesPath}document.svg';
 
   // json
   static const String courierZonesJsonPath = '${_jsonPath}apteka.json';

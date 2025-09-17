@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:inlek/core/connectivity_service.dart';
 import 'package:inlek/core/courier_zone_manager.dart';
 import 'package:inlek/core/geocoder_manager.dart';
+import 'package:inlek/core/http_client_with_logger.dart';
 import 'package:inlek/core/platform/error_handler.dart';
 import 'package:inlek/core/platform/network_info.dart';
 import 'package:inlek/features/data/datasources/auth_remote_data_source_impl.dart';
@@ -424,7 +425,7 @@ Future<void> init() async {
   await dotenv.load(fileName: ".env");
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
-  sl.registerLazySingleton(() => http.Client());
+  sl.registerLazySingleton<http.Client>(() => HttpClientWithLogger());
   sl.registerLazySingleton(() => InternetConnectionChecker.instance);
   sl.registerLazySingleton(
       () => YandexGeocoder(apiKey: dotenv.env['YANDEX_GEOCODER_API_KEY']!));
