@@ -48,12 +48,12 @@ class CatalogScreen extends StatelessWidget {
                               child: homeState is InternetUnavailable
                                   ? InternetNoInternetConnectionWidget()
                                   : ListView(
-                                      shrinkWrap: true,
                                       padding: getMarginOrPadding(
-                                          bottom: 94,
-                                          right: 20,
-                                          left: 20,
-                                          top: 16),
+                                        bottom: 94,
+                                        right: 20,
+                                        left: 20,
+                                        top: 16,
+                                      ),
                                       children: [
                                         Text(
                                           'Каталог',
@@ -78,7 +78,7 @@ class CatalogScreen extends StatelessWidget {
                                                 : state.categories ?? [])
                                       ],
                                     ),
-                            )
+                            ),
                           ],
                         );
                       },

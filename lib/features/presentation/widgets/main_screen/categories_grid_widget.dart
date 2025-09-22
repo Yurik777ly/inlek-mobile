@@ -20,45 +20,36 @@ class CategoriesGridWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     double itemHeight = 128.dp;
     double itemWidth = 156.dp;
-    double blocksSize = itemHeight * (categories.length / 2).round();
-    double mainAxisSpacingSize = 8.dp *
-        ((categories.length / 2 - 1) > 0 ? (categories.length / 2 - 1) : 0)
-            .round();
-    //print(
-    //    'Размеры блоков: $itemHeight * ${(countItem / 2).round()} = ${itemHeight * (countItem / 2).round()}');
-    //print(
-    //    'Размеры пробелов: ${8.dp} * ${((countItem / 2 - 1) > 0 ? (countItem / 2 - 1) : 0).round()} = ${8.dp * ((countItem / 2 - 1) > 0 ? (countItem / 2 - 1) : 0).round()}');
-    return SizedBox(
-      height: (blocksSize + mainAxisSpacingSize),
-      child: Skeleton.shade(
-        child: GridView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          padding: contentPadding,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 8.dp,
-            mainAxisSpacing: 8.dp,
-            childAspectRatio: itemWidth / itemHeight,
-          ),
-          itemCount: categories.length, // Количество элементов
-          itemBuilder: (context, index) {
-            final category = categories[index];
-            return GestureDetector(
-              onTap: () => Navigator.of(context).push(
-                Routes.createRoute(
-                  CategoryScreen(
-                    categoryId: category.categoryId,
-                    categoryTitle: category.pageTitle,
-                  ),
-                  settings: RouteSettings(name: Routes.categoryScreen),
-                ),
-              ),
-              child: CategoryWidget(
-                  imagePath: category.image ?? '',
-                  title: category.pageTitle ?? ''),
-            );
-          },
+    return Skeleton.shade(
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        padding: contentPadding,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 8.dp,
+          mainAxisSpacing: 8.dp,
+          childAspectRatio: itemWidth / itemHeight,
         ),
+        itemCount: categories.length,
+        // Количество элементов
+        itemBuilder: (context, index) {
+          final category = categories[index];
+          return GestureDetector(
+            onTap: () => Navigator.of(context).push(
+              Routes.createRoute(
+                CategoryScreen(
+                  categoryId: category.categoryId,
+                  categoryTitle: category.pageTitle,
+                ),
+                settings: RouteSettings(name: Routes.categoryScreen),
+              ),
+            ),
+            child: CategoryWidget(
+                imagePath: category.image ?? '',
+                title: category.pageTitle ?? ''),
+          );
+        },
       ),
     );
   }
