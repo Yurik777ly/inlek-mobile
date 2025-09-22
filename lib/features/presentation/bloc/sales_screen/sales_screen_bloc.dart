@@ -18,6 +18,7 @@ class SalesScreenBloc extends Bloc<SalesScreenEvent, SalesScreenState> {
 
   void _onLoadSales(
       LoadSalesEvent event, Emitter<SalesScreenState> emit) async {
+    emit(state.copyWith(isLoading: true));
     final failureOrLoads = await getActionsUC();
 
     failureOrLoads.fold(
