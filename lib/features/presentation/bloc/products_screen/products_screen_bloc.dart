@@ -62,7 +62,7 @@ class ProductsScreenBloc
     // Если скроллинг достиг нижней границы, загружаем следующую страницу
     if (productsController.position.pixels ==
         productsController.position.maxScrollExtent) {
-      if (state.searchProducts != null &&
+      if (!state.isLoadingProducts && state.searchProducts != null &&
           state.searchProducts!.currentPage < state.searchProducts!.lastPage) {
         // Загружаем следующую страницу
         add(LoadProductsEvent(page: state.searchProducts!.currentPage + 1));
