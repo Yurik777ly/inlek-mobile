@@ -67,7 +67,7 @@ class MainScreen extends StatelessWidget {
                                   ? InternetNoInternetConnectionWidget()
                                   : ListView(
                                       padding: getMarginOrPadding(
-                                          top: 16),
+                                          top: 16, bottom: 94,),
                                       children: [
                                         if (!Skeletonizer.of(context).enabled)
                                           CustomBannerWidget(
