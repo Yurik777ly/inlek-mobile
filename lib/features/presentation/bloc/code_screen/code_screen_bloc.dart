@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/error/failure.dart';
@@ -156,9 +157,11 @@ class CodeScreenBloc extends Bloc<CodeScreenEvent, CodeScreenState> {
   }
 
   Future<String> _requestCode() async {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
     final failureOrLoads = await requestCodeUC(
       AuthenticationParams(
         phone: Utils.formatPhoneNumber(state.phone!),
+        fbid: fcmToken,
       ),
     );
 

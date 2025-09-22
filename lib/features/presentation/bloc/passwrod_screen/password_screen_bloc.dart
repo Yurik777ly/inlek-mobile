@@ -70,10 +70,12 @@ class PasswordScreenBloc
             _passwordScreenType == PasswordScreenType.reset;
 
         if (_passwordScreenType == PasswordScreenType.signUp) {
+          final fcmToken = await FirebaseMessaging.instance.getToken();
           final failureOrLoads = await registrationUC(
             AuthenticationParams(
               phone: Utils.formatPhoneNumber(state.phone!),
               code: state.code,
+              fbid: fcmToken,
             ),
           );
 

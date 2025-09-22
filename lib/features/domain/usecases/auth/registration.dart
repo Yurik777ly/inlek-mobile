@@ -11,6 +11,6 @@ class RegistrationUC extends UseCaseParam<void, AuthenticationParams> {
 
   @override
   Future<Either<Failure, void>> call(AuthenticationParams params) async {
-    return await authRepository.registration(params.phone, params.code!);
+    return await authRepository.registration(params.phone, params.code!, params.fbid);
   }
 }

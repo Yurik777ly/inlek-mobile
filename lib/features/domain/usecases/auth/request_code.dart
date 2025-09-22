@@ -11,6 +11,6 @@ class RequestCodeUC extends UseCaseParam<void, AuthenticationParams> {
 
   @override
   Future<Either<Failure, int>> call(AuthenticationParams params) async {
-    return await authRepository.requestCode(params.phone);
+    return await authRepository.requestCode(params.phone, params.fbid);
   }
 }

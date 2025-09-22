@@ -9,10 +9,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class AuthRemoteDataSource {
   Future<bool?> isPhoneExists(String phone);
-  Future<int> requestCode(String phone);
-  Future<void> registration(String phone, String code);
+  Future<int> requestCode(String phone, String? fcmToken);
+  Future<void> registration(String phone, String code, String? fcmToken);
   Future<void> updatePassword(String phone, String password, String code);
-  Future<void> login(String phone, String password, String fcmToken);
+  Future<void> login(String phone, String password, String? fcmToken);
   Future<void> logout();
 }
 
@@ -26,7 +26,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   });
 
   @override
-  Future<void> login(String phone, String password, String fcmToken) async {
+  Future<void> login(String phone, String password, String? fcmToken) async {
     String baseUrl = dotenv.env['BASE_URL']!;
     String url = '${baseUrl}auth/login';
 
@@ -117,12 +117,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<void> registration(String phone, String code) async {
+  Future<void> registration(String phone, String code, String? fcmToken) async {
     String baseUrl = dotenv.env['BASE_URL']!;
     String url = '${baseUrl}auth/registration';
 
     log('POST $url');
-    log('Request body: ${jsonEncode({'phone': phone, 'code': code})}');
+    log('Request body: ${jsonEncode({'phone': phone, 'code': code, 'fcmToken': fcmToken})}');
 
     try {
       final response = await client.post(
@@ -153,12 +153,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<int> requestCode(String phone) async {
+  Future<int> requestCode(String phone, String? fcmToken) async {
     String baseUrl = dotenv.env['BASE_URL']!;
     String url = '${baseUrl}auth/request-code';
 
     log('POST $url');
-    log('Request body: ${jsonEncode({'phone': phone})}');
+    log('Request body: ${jsonEncode({'phone': phone, 'fcm_token': fcmToken})}');
 
     try {
       final response = await client.post(
