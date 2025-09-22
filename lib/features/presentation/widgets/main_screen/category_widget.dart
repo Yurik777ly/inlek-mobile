@@ -23,7 +23,7 @@ class CategoryWidget extends StatelessWidget {
       ),
       child: Column(
         children: [
-          SvgPicture.network('${dotenv.env['PUBLIC_URL']!}$imagePath',
+          if(imagePath.isNotEmpty)SvgPicture.network('${dotenv.env['PUBLIC_URL']!}$imagePath',
               width: 40, height: 40),
           SizedBox(height: 12.dp),
           Text(title,
