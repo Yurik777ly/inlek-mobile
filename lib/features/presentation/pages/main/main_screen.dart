@@ -66,9 +66,8 @@ class MainScreen extends StatelessWidget {
                               child: homeState is InternetUnavailable
                                   ? InternetNoInternetConnectionWidget()
                                   : ListView(
-                                      shrinkWrap: true,
                                       padding: getMarginOrPadding(
-                                          bottom: 94, top: 16),
+                                          top: 16),
                                       children: [
                                         if (!Skeletonizer.of(context).enabled)
                                           CustomBannerWidget(
@@ -82,9 +81,7 @@ class MainScreen extends StatelessWidget {
                                               List<OrderEntity> recentOrders =
                                                   List.from(ordersState.orders)
                                                     ..sort((a, b) => b.orderId!
-                                                        .compareTo(a.orderId!))
-                                                    ..take(3);
-
+                                                        .compareTo(a.orderId!));
                                               // Показываем блок только если есть заказы
                                               if (recentOrders.isEmpty) {
                                                 return const SizedBox.shrink();
@@ -117,7 +114,7 @@ class MainScreen extends StatelessWidget {
                                                   );
                                                 },
                                                 child: OrdersListWidget(
-                                                    orders: recentOrders),
+                                                    orders: recentOrders.take(3).toList()),
                                               );
                                             },
                                           ),
