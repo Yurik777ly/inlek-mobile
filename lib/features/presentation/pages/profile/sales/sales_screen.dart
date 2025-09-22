@@ -13,36 +13,8 @@ import 'package:inlek/features/presentation/widgets/sales_screen/sales_list_item
 import 'package:inlek/locator_service.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class SalesScreen extends StatefulWidget {
+class SalesScreen extends StatelessWidget {
   const SalesScreen({super.key});
-
-  @override
-  State<SalesScreen> createState() => _SalesScreenState();
-}
-
-class _SalesScreenState extends State<SalesScreen> {
-  bool isLoading = true;
-  late Timer _timer;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _timer = Timer(Duration(seconds: 5), () {
-      _timer.cancel();
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +37,7 @@ class _SalesScreenState extends State<SalesScreen> {
                     justifyMultiLineText: false,
                     textBoneBorderRadius:
                         TextBoneBorderRadius.fromHeightFactor(.5),
-                    enabled: isLoading,
+                    enabled: state.isLoading,
                     child: Builder(
                       builder: (context) {
                         return Column(
