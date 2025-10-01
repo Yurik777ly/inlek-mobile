@@ -244,8 +244,7 @@ class CartProductWidget extends StatelessWidget {
                               if (product.stockCount == 0)
                                 Padding(
                                   padding: getMarginOrPadding(bottom: 4),
-                                  child: product.delivery ==
-                                              TypeReceiving.pickup &&
+                                  child: product.otherPharmacy == 1 &&
                                           (effectiveCartBloc?.state.cartType ??
                                                   state.cartType) !=
                                               TypeReceiving.pickup

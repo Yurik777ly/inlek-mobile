@@ -45,6 +45,7 @@ class ProductEntity extends BaseProductEntity {
   final ProductPricesEntity? prices;
   final ProductTotalsEntity? totals;
   final String? instruction;
+  final int? otherPharmacy;
 
   const ProductEntity({
     super.productId = 0,
@@ -90,6 +91,7 @@ class ProductEntity extends BaseProductEntity {
     this.prices,
     this.totals,
     this.instruction,
+    this.otherPharmacy,
   });
 
   ProductEntity copyWith({
@@ -136,6 +138,7 @@ class ProductEntity extends BaseProductEntity {
     ProductPricesEntity? prices,
     ProductTotalsEntity? totals,
     String? instruction,
+    int? otherPharmacy,
   }) {
     return ProductEntity(
       productId: productId ?? this.productId,
@@ -181,6 +184,7 @@ class ProductEntity extends BaseProductEntity {
       prices: prices ?? this.prices,
       totals: totals ?? this.totals,
       instruction: instruction ?? this.instruction,
+      otherPharmacy: otherPharmacy ?? this.otherPharmacy,
     );
   }
 
@@ -228,6 +232,7 @@ class ProductEntity extends BaseProductEntity {
         prices,
         totals,
         instruction,
+        otherPharmacy,
       ];
 }
 

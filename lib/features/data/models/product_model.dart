@@ -46,6 +46,7 @@ class ProductModel extends ProductEntity {
     super.prices,
     super.totals,
     super.instruction,
+    super.otherPharmacy,
   });
 
   @override
@@ -93,6 +94,7 @@ class ProductModel extends ProductEntity {
       productId: json["product_id"] ??
           (json["id"] is String ? int.tryParse(json["id"]) : json["id"]) ??
           data['product_id'],
+      otherPharmacy: json['other_pharmacy'],
       mnn: json["mnn"],
       mnnLat: json["mnn_lat"],
       name: json["product_title"] ??
