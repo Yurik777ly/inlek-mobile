@@ -282,6 +282,9 @@ class _CartScreenState extends State<CartScreen> {
                                               // кнопка оформления
 
                                               AppButtonWidget(
+                                                isActive: cartState
+                                                    .selectedProductIds
+                                                    .isNotEmpty,
                                                 text: 'Перейти к оформлению',
                                                 textWidget:
                                                     cartState.isOrderCompleting

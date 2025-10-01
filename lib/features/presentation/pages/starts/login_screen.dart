@@ -49,136 +49,142 @@ class LoginScreen extends StatelessWidget {
           final bloc = context.read<LoginScreenBloc>();
 
           return AppTemplate(
-            canBack: loginScreenType == LoginScreenType.accountExists,
+            hasBack: loginScreenType == LoginScreenType.accountExists,
             title: loginScreenType == LoginScreenType.login
                 ? 'Войти в аккаунт'
                 : 'Такой аккаунт уже существует',
-            bodyPadding:
-                getMarginOrPadding(left: 20, right: 20, top: 16, bottom: 24),
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
               children: [
-                AppTextFieldWidget(
-                  title: 'Телефон',
-                  hintText: '+375 (00) 000-00-00',
-                  controller: bloc.phoneController,
-                  errorText: state.phoneErrorText,
-                  keyboardType: TextInputType.phone,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    CustomPhoneInputFormatter()
-                  ],
-                  validator: Utils.validatePhone,
-                ),
-                SizedBox(height: 24.dp),
-                AppTextFieldWidget(
-                  title: 'Пароль',
-                  hintText: 'Введите пароль',
-                  isObscuredText: true,
-                  controller: bloc.passwordController,
-                  errorText: state.showError
-                      ? state.passwordErrorText
-                      : null, // Показывать ошибку при неверном пароле
-                ),
-                SizedBox(height: 32.dp),
-                AppButtonWidget(
-                  isActive: state.isButtonActive,
-                  text: 'Войти',
-                  onTap: () => bloc.add(SubmitLoginEvent()),
-                ),
-                SizedBox(height: 32.dp),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Забыли пароль?',
-                      style: UiConstants.textStyle3.copyWith(
-                        color: UiConstants.darkBlue2Color.withOpacity(.6),
+                Expanded(
+                  child: ListView(
+                    children: [
+                      AppTextFieldWidget(
+                        title: 'Телефон',
+                        hintText: '+375 (00) 000-00-00',
+                        controller: bloc.phoneController,
+                        errorText: state.phoneErrorText,
+                        keyboardType: TextInputType.phone,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          CustomPhoneInputFormatter()
+                        ],
+                        validator: Utils.validatePhone,
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () => loginScreenType ==
-                              LoginScreenType.accountExists
-                          ? Navigator.of(context).pushAndRemoveUntil(
-                              Routes.createRoute(
-                                const SignUpScreen(),
-                                settings: RouteSettings(
-                                  name: Routes.signUpScreen,
-                                  arguments: {
-                                    'redirect_type': PasswordScreenType.reset
-                                  },
-                                ),
-                              ),
-                              (route) {
-                                return route.settings.name == "/login_screen" &&
-                                    (route.settings.arguments as Map<String,
-                                            dynamic>?)?['redirect_type'] ==
-                                        LoginScreenType.login;
-                              },
-                            )
-                          : Navigator.of(context).push(
-                              Routes.createRoute(
-                                const SignUpScreen(),
-                                settings: RouteSettings(
-                                  name: Routes.signUpScreen,
-                                  arguments: {
-                                    'redirect_type': PasswordScreenType.reset,
-                                    'phone': state.isValidPhone
-                                        ? bloc.phoneController.text
-                                        : null
-                                  },
-                                ),
-                              ),
-                            ),
-                      child: Text(
-                        'Восстановить',
-                        style: UiConstants.textStyle3
-                            .copyWith(color: UiConstants.purpleColor),
+                      SizedBox(height: 24.dp),
+                      AppTextFieldWidget(
+                        title: 'Пароль',
+                        hintText: 'Введите пароль',
+                        isObscuredText: true,
+                        controller: bloc.passwordController,
+                        errorText: state.showError
+                            ? state.passwordErrorText
+                            : null, // Показывать ошибку при неверном пароле
                       ),
-                    ),
-                  ],
-                ),
-                if (loginScreenType == LoginScreenType.login)
-                  Padding(
-                    padding: getMarginOrPadding(top: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Нет аккаунта?',
-                          style: UiConstants.textStyle3.copyWith(
-                            color: UiConstants.darkBlue2Color.withOpacity(.6),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => Navigator.of(context).push(
-                            Routes.createRoute(
-                              const SignUpScreen(),
-                              settings: RouteSettings(
-                                name: Routes.signUpScreen,
-                                arguments: {
-                                  'redirect_type': PasswordScreenType.signUp,
-                                  'phone': state.isValidPhone
-                                      ? bloc.phoneController.text
-                                      : null
-                                },
-                              ),
+                      SizedBox(height: 32.dp),
+                      AppButtonWidget(
+                        isActive: state.isButtonActive,
+                        text: 'Войти',
+                        onTap: () => bloc.add(SubmitLoginEvent()),
+                      ),
+                      SizedBox(height: 32.dp),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Забыли пароль?',
+                            style: UiConstants.textStyle3.copyWith(
+                              color: UiConstants.darkBlue2Color.withOpacity(.6),
                             ),
                           ),
-                          child: Text(
-                            'Зарегистрироваться',
-                            style: UiConstants.textStyle3
-                                .copyWith(color: UiConstants.purpleColor),
+                          GestureDetector(
+                            onTap: () =>
+                                loginScreenType == LoginScreenType.accountExists
+                                    ? Navigator.of(context).pushAndRemoveUntil(
+                                        Routes.createRoute(
+                                          const SignUpScreen(),
+                                          settings: RouteSettings(
+                                            name: Routes.signUpScreen,
+                                            arguments: {
+                                              'redirect_type':
+                                                  PasswordScreenType.reset
+                                            },
+                                          ),
+                                        ),
+                                        (route) {
+                                          return route.settings.name ==
+                                                  "/login_screen" &&
+                                              (route.settings.arguments as Map<
+                                                          String, dynamic>?)?[
+                                                      'redirect_type'] ==
+                                                  LoginScreenType.login;
+                                        },
+                                      )
+                                    : Navigator.of(context).push(
+                                        Routes.createRoute(
+                                          const SignUpScreen(),
+                                          settings: RouteSettings(
+                                            name: Routes.signUpScreen,
+                                            arguments: {
+                                              'redirect_type':
+                                                  PasswordScreenType.reset,
+                                              'phone': state.isValidPhone
+                                                  ? bloc.phoneController.text
+                                                  : null
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                            child: Text(
+                              'Восстановить',
+                              style: UiConstants.textStyle3
+                                  .copyWith(color: UiConstants.purpleColor),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (loginScreenType == LoginScreenType.login)
+                        Padding(
+                          padding: getMarginOrPadding(top: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Нет аккаунта?',
+                                style: UiConstants.textStyle3.copyWith(
+                                  color: UiConstants.darkBlue2Color
+                                      .withOpacity(.6),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () => Navigator.of(context).push(
+                                  Routes.createRoute(
+                                    const SignUpScreen(),
+                                    settings: RouteSettings(
+                                      name: Routes.signUpScreen,
+                                      arguments: {
+                                        'redirect_type':
+                                            PasswordScreenType.signUp,
+                                        'phone': state.isValidPhone
+                                            ? bloc.phoneController.text
+                                            : null
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Зарегистрироваться',
+                                  style: UiConstants.textStyle3
+                                      .copyWith(color: UiConstants.purpleColor),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                    ],
                   ),
-                Spacer(),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: PolicyTextWidget(),
                 ),
+                16.ph,
+                PolicyTextWidget(),
               ],
             ),
           );

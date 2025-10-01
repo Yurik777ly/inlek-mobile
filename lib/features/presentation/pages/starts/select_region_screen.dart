@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -34,66 +36,82 @@ class SelectRegionScreen extends StatelessWidget {
           final bloc = context.read<SelectRegionScreenBloc>();
 
           return AppTemplate(
-            canBack: selectRegionScreenType == SelectRegionScreenType.main,
+            hasBack: selectRegionScreenType == SelectRegionScreenType.main,
             title: 'Выберите регион',
-            bodyPadding:
-                getMarginOrPadding(left: 20, right: 20, top: 16, bottom: 24),
-            body: Stack(
-              children: [
-                SingleChildScrollView(
-                  padding: getMarginOrPadding(bottom: 120),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+            child: SafeArea(
+              bottom: true,
+              left: false,
+              right: false,
+              top: false,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.zero,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SvgPicture.asset(Paths.locationIconPath,
-                              width: 24.dp, height: 24.dp),
-                          SizedBox(width: 8.dp),
-                          Text(
-                            state.detectedCity ?? 'Определение...',
-                            style: UiConstants.textStyle5
-                                .copyWith(color: UiConstants.darkBlueColor),
+                          Row(
+                            children: [
+                              SvgPicture.asset(Paths.locationIconPath,
+                                  width: 24.dp, height: 24.dp),
+                              SizedBox(width: 8.dp),
+                              Text(
+                                state.detectedCity ?? 'Определение...',
+                                style: UiConstants.textStyle5
+                                    .copyWith(color: UiConstants.darkBlueColor),
+                              ),
+                            ],
                           ),
+                          SizedBox(height: 4.dp),
+                          Text(
+                            'На основе вашей геолокации',
+                            style: UiConstants.textStyle3.copyWith(
+                              color: UiConstants.darkBlue2Color.withOpacity(.6),
+                            ),
+                          ),
+                          SizedBox(height: 16.dp),
+                          CitySearchField(
+                            prefixIcon: Paths.searchIconPath,
+                            hintText: 'Найти другой город',
+                            controller: bloc.regionController,
+                            minFetcherLength: 1,
+                            suggestionFetcher: (query) {
+                              final completer = Completer<List<String>>();
+
+                              completer.complete(
+                                state.popularCities
+                                    .map((e) => e.pagetitle)
+                                    .where((title) => title
+                                        .toLowerCase()
+                                        .startsWith(query.toLowerCase()))
+                                    .toList(),
+                              );
+
+                              return completer.future;
+                            },
+                            onSuggestionTap: (p0) {
+                              bloc.regionController.text = p0;
+                            },
+                            suggestionObjects: state.popularCities,
+                          ),
+                          if (state.showError)
+                            Padding(
+                              padding: getMarginOrPadding(top: 16),
+                              child: InfoPlateWidget(
+                                  text:
+                                      'Мы еще не работаем в этом городе, выберите другой'),
+                            ),
+                          SizedBox(height: 16.dp),
+                          PopularityCitiesWidget(
+                              regions: state.popularCities,
+                              onTapRegion: (CityEntity region) => bloc
+                                  .regionController.text = region.pagetitle),
                         ],
                       ),
-                      SizedBox(height: 4.dp),
-                      Text(
-                        'На основе вашей геолокации',
-                        style: UiConstants.textStyle3.copyWith(
-                          color: UiConstants.darkBlue2Color.withOpacity(.6),
-                        ),
-                      ),
-                      SizedBox(height: 16.dp),
-                      CitySearchField(
-                        hintText: 'Найти другой город',
-                        controller: bloc.regionController,
-                        suggestions: state.popularCities
-                            .map((e) => e.pagetitle)
-                            .toList(),
-                        suggestionObjects: state.popularCities,
-                      ),
-                      if (state.showError)
-                        Padding(
-                          padding: getMarginOrPadding(top: 16),
-                          child: InfoPlateWidget(
-                              text:
-                                  'Мы еще не работаем в этом городе, выберите другой'),
-                        ),
-                      SizedBox(height: 16.dp),
-                      PopularityCitiesWidget(
-                          regions: state.popularCities,
-                          onTapRegion: (CityEntity region) =>
-                              bloc.regionController.text = region.pagetitle),
-                      // Spacer(),
-                    ],
+                    ),
                   ),
-                ),
-                Positioned(
-                  bottom: 16,
-                  left: 0,
-                  right: 0,
-                  child: Column(
+                  Column(
                     children: [
                       AppButtonWidget(
                         isActive: state.isButtonActive,
@@ -141,8 +159,8 @@ class SelectRegionScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inlek/constants/extensions.dart';
-import 'package:inlek/constants/size_utils.dart';
-import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/widgets/product_screen/product_banner_item.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class ProductBannerWidget extends StatelessWidget {
   const ProductBannerWidget(
@@ -18,7 +14,8 @@ class ProductBannerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(
+        Container(
+          color: Colors.white,
           height: 260.dp,
           child: PageView.builder(
             controller: pageController,
@@ -27,7 +24,8 @@ class ProductBannerWidget extends StatelessWidget {
                 ProductBannerItem(product: product),
           ),
         ),
-        Skeleton.ignore(
+
+        /*  Skeleton.ignore(
           child: Align(
             alignment: AlignmentDirectional.center,
             child: Padding(
@@ -48,7 +46,7 @@ class ProductBannerWidget extends StatelessWidget {
               ),
             ),
           ),
-        )
+        )*/
       ],
     );
   }

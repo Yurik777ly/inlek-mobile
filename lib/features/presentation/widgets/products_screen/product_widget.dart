@@ -54,7 +54,7 @@ class ProductWidget extends StatelessWidget {
                     height: 112.dp,
                     width: double.infinity,
                     imageUrl: '${dotenv.env['PUBLIC_URL']!}${product.image}',
-                    fit: BoxFit.fitHeight,
+                    fit: BoxFit.contain,
                     cacheManager: CustomCacheManager(),
                     errorWidget: (context, url, error) => SvgPicture.asset(
                         Paths.drugTemplateIconPath,

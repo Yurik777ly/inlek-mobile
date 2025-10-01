@@ -26,6 +26,7 @@ class PasswordScreenBloc
   final TextEditingController password2Controller = TextEditingController();
 
   PasswordScreenType? _passwordScreenType;
+  bool _isSubmitting = false;
 
   PasswordScreenBloc(
       {required this.updatePasswordUC,
@@ -57,122 +58,133 @@ class PasswordScreenBloc
 
     on<SubmitPasswordEvent>(
       (event, emit) async {
+        if (_isSubmitting) return;
+        emit(state.copyWith(isLoading: true));
         if (password2Controller.text != password1Controller.text) {
           emit(state.copyWith(
             showError: true,
             passwordErrorText: 'Пароли не совпадают',
+            isLoading: false,
           ));
           return;
         }
 
-        // Флаг для регистрации или сброса
-        bool successSignUpOrResetScreen =
-            _passwordScreenType == PasswordScreenType.reset;
+        _isSubmitting = true;
+        try {
+          // Флаг для регистрации или сброса
+          bool successSignUpOrResetScreen =
+              _passwordScreenType == PasswordScreenType.reset;
 
-        if (_passwordScreenType == PasswordScreenType.signUp) {
-          final fcmToken = await FirebaseMessaging.instance.getToken();
-          final failureOrLoads = await registrationUC(
-            AuthenticationParams(
-              phone: Utils.formatPhoneNumber(state.phone!),
-              code: state.code,
-              fbid: fcmToken,
-            ),
-          );
+          if (_passwordScreenType == PasswordScreenType.signUp) {
+            final fcmToken = await FirebaseMessaging.instance.getToken();
+            final failureOrLoads = await registrationUC(
+              AuthenticationParams(
+                phone: Utils.formatPhoneNumber(state.phone!),
+                code: state.code,
+                fbid: fcmToken,
+              ),
+            );
 
-          await failureOrLoads.fold(
-            (failure) async {
-              switch (failure) {
-                case PhoneDontFoundFailure _:
-                  emit(state.copyWith(
-                    showError: true,
-                    passwordErrorText: 'Телефон не зарегистрирован',
-                  ));
-                  break;
-                case PhoneAlreadyTakenFailure _:
-                  emit(state.copyWith(
-                    showError: true,
-                    passwordErrorText: 'Телефон уже зарегистрирован',
-                  ));
-                  break;
-                default:
-                  emit(state.copyWith(
-                    showError: true,
-                    passwordErrorText: 'Неизвестная ошибка',
-                  ));
-                  break;
-              }
-            },
-            (_) async {
-              successSignUpOrResetScreen = true;
-            },
-          );
-        }
+            await failureOrLoads.fold(
+              (failure) async {
+                switch (failure) {
+                  case PhoneDontFoundFailure _:
+                    emit(state.copyWith(
+                      showError: true,
+                      passwordErrorText: 'Телефон не зарегистрирован',
+                    ));
+                    break;
+                  case PhoneAlreadyTakenFailure _:
+                    emit(state.copyWith(
+                      showError: true,
+                      passwordErrorText: 'Телефон уже зарегистрирован',
+                    ));
+                    break;
+                  default:
+                    emit(state.copyWith(
+                      showError: true,
+                      passwordErrorText: 'Неизвестная ошибка',
+                    ));
+                    break;
+                }
+              },
+              (_) async {
+                successSignUpOrResetScreen = true;
+              },
+            );
+          }
 
-        if (successSignUpOrResetScreen) {
-          final failureOrLoads = await updatePasswordUC(
-            AuthenticationParams(
-              phone: Utils.formatPhoneNumber(state.phone!),
-              password: password1Controller.text,
-              code: state.code,
-            ),
-          );
+          if (successSignUpOrResetScreen) {
+            final failureOrLoads = await updatePasswordUC(
+              AuthenticationParams(
+                phone: Utils.formatPhoneNumber(state.phone!),
+                password: password1Controller.text,
+                code: state.code,
+              ),
+            );
 
-          await failureOrLoads.fold(
-            (failure) async {
-              switch (failure) {
-                case AccountDontExistsFailure _:
-                  emit(state.copyWith(
-                    showError: true,
-                    passwordErrorText: 'Аккаунта с таким номером не существует',
-                  ));
-                  break;
-                case PasswordMatchesPreviousOneFailure _:
-                  emit(state.copyWith(
-                    showError: true,
-                    passwordErrorText: 'Пароль должен отличатся от старого',
-                  ));
-                  break;
-                case SessionExpiredFailure _:
-                  emit(state.copyWith(
-                    showError: true,
-                    passwordErrorText: 'Сессия истекла или код не был запрошен',
-                  ));
-                  break;
-                case ConfirmationCodeWrongException _:
-                  emit(state.copyWith(
-                    showError: true,
-                    passwordErrorText: 'Код не совпал',
-                  ));
-                  break;
-                default:
-                  emit(state.copyWith(
-                    showError: true,
-                    passwordErrorText: 'Неизвестная ошибка',
-                  ));
-                  break;
-              }
-            },
-            (_) async {
-              final loginResult = await loginUC(
-                AuthenticationParams(
-                  phone: Utils.formatPhoneNumber(state.phone!),
-                  password: password1Controller.text,
-                  fbid: await FirebaseMessaging.instance.getToken(),
-                ),
-              );
+            await failureOrLoads.fold(
+              (failure) async {
+                switch (failure) {
+                  case AccountDontExistsFailure _:
+                    emit(state.copyWith(
+                      showError: true,
+                      passwordErrorText:
+                          'Аккаунта с таким номером не существует',
+                    ));
+                    break;
+                  case PasswordMatchesPreviousOneFailure _:
+                    emit(state.copyWith(
+                      showError: true,
+                      passwordErrorText: 'Пароль должен отличатся от старого',
+                    ));
+                    break;
+                  case SessionExpiredFailure _:
+                    emit(state.copyWith(
+                      showError: true,
+                      passwordErrorText:
+                          'Сессия истекла или код не был запрошен',
+                    ));
+                    break;
+                  case ConfirmationCodeWrongException _:
+                    emit(state.copyWith(
+                      showError: true,
+                      passwordErrorText: 'Код не совпал',
+                    ));
+                    break;
+                  default:
+                    emit(state.copyWith(
+                      showError: true,
+                      passwordErrorText: 'Неизвестная ошибка',
+                    ));
+                    break;
+                }
+              },
+              (_) async {
+                final loginResult = await loginUC(
+                  AuthenticationParams(
+                    phone: Utils.formatPhoneNumber(state.phone!),
+                    password: password1Controller.text,
+                    fbid: await FirebaseMessaging.instance.getToken(),
+                  ),
+                );
 
-              await loginResult.fold(
-                (failure) async {
-                  emit(state.copyWith(showError: false));
-                  emit(NavigateLoginState());
-                },
-                (_) async {
-                  emit(state.copyWith(showError: false));
-                  emit(NavigateHomeState());
-                },
-              );
-            },
-          );
+                await loginResult.fold(
+                  (failure) async {
+                    emit(state.copyWith(showError: false));
+                    emit(NavigateLoginState());
+                  },
+                  (_) async {
+                    emit(state.copyWith(showError: false));
+                    emit(NavigateHomeState());
+                  },
+                );
+              },
+            );
+          }
+        } finally {
+          _isSubmitting = false;
+          emit(state.copyWith(isLoading: false));
         }
       },
     );

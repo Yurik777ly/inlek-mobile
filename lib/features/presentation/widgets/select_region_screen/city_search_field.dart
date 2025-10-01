@@ -1,35 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
-import 'package:inlek/features/presentation/widgets/app_text_field_widget.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+import 'package:searchfield/searchfield.dart';
 
 typedef SuggestionFetcher = Future<List<String>> Function(String query);
 
-class CitySearchField extends StatefulWidget {
-  const CitySearchField({
-    super.key,
-    required this.controller,
-    this.suggestions,
-    this.suggestionFetcher,
-    this.suggestionObjects,
-    this.hintText,
-    this.title,
-    this.onSuggestionTap,
-    this.onChangeField,
-    this.hasSearchWidget = true,
-    this.widthOverlay,
-    this.validator,
-    this.offset = const Offset(0, 55),
-  }) : assert(
-            suggestions != null ||
-                suggestionFetcher != null && suggestionObjects != null,
-            'Either suggestions or suggestionFetcher and suggestionObjects must be provided');
+class CitySearchField extends StatelessWidget {
+  const CitySearchField(
+      {super.key,
+      this.value,
+      required this.controller,
+      this.suggestions,
+      this.suggestionFetcher,
+      this.suggestionObjects,
+      this.hintText,
+      this.title,
+      this.onSuggestionTap,
+      this.onChangeField,
+      this.hasSearchWidget = true,
+      this.validator,
+      this.fillColor = UiConstants.white2Color,
+      this.prefixIcon,
+      this.minFetcherLength = 3})
+      : assert(
+          suggestions != null ||
+              suggestionFetcher != null && suggestionObjects != null,
+          'Either suggestions or suggestionFetcher and suggestionObjects must be provided',
+        );
 
+  final String? value;
   final TextEditingController controller;
   final List<String>? suggestions;
   final SuggestionFetcher? suggestionFetcher;
@@ -39,170 +41,182 @@ class CitySearchField extends StatefulWidget {
   final Function(dynamic)? onSuggestionTap;
   final Function(String)? onChangeField;
   final bool hasSearchWidget;
-  final double? widthOverlay;
-  final Offset offset;
   final String? Function(String?)? validator;
-
-  @override
-  State<CitySearchField> createState() => _CitySearchFieldState();
-}
-
-class _CitySearchFieldState extends State<CitySearchField> {
-  OverlayEntry? _overlayEntry;
-  final LayerLink _layerLink = LayerLink();
-  List<String> _filteredSuggestions = [];
-  bool _isLoading = false;
-  final FocusNode _focusNode = FocusNode();
-
-  void _showOverlay() {
-    if (!_focusNode.hasFocus) return;
-    _removeOverlay();
-
-    _overlayEntry = OverlayEntry(
-      builder: (context) => Positioned(
-        width: widget.widthOverlay ?? MediaQuery.of(context).size.width - 40.dp,
-        child: CompositedTransformFollower(
-          link: _layerLink,
-          showWhenUnlinked: false,
-          offset: widget.offset,
-          child: Material(
-            color: UiConstants.whiteColor,
-            elevation: 1,
-            borderRadius: BorderRadius.circular(16.r),
-            child: SizedBox(
-              height: _filteredSuggestions.isNotEmpty ? 115.dp : 0,
-              child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      padding: EdgeInsets.zero,
-                      itemCount: _filteredSuggestions.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          contentPadding: getMarginOrPadding(
-                              left: 16, right: 16, top: 8, bottom: 8),
-                          minTileHeight: 0,
-                          minVerticalPadding: 0,
-                          title: Text(_filteredSuggestions[index]),
-                          onTap: () {
-                            widget.controller.text =
-                                _filteredSuggestions[index];
-                            _removeOverlay();
-                            if (widget.onSuggestionTap != null) {
-                              dynamic onSuggestionSelected =
-                                  (widget.suggestionObjects ?? []).isNotEmpty
-                                      ? widget.suggestionObjects![index]
-                                      : _filteredSuggestions[index];
-
-                              widget.onSuggestionTap
-                                  ?.call(onSuggestionSelected);
-                            }
-                          },
-                        );
-                      },
-                    ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    Overlay.of(context).insert(_overlayEntry!);
-  }
-
-  void _removeOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-  }
-
-  Future<void> _updateSuggestions(String query) async {
-    if (query.isEmpty) {
-      _removeOverlay();
-      setState(() {
-        _filteredSuggestions.clear();
-        _isLoading = false;
-      });
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    if (widget.suggestionFetcher != null) {
-      // Динамическая загрузка подсказок
-      final suggestions = await widget.suggestionFetcher!(query);
-      setState(() {
-        _filteredSuggestions = suggestions;
-        _isLoading = false;
-      });
-    } else {
-      // Фиксированный список
-      setState(() {
-        _filteredSuggestions = (widget.suggestions ?? [])
-            .where((city) => city.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-        _isLoading = false;
-      });
-    }
-
-    if (_filteredSuggestions.isNotEmpty) {
-      _showOverlay();
-    } else {
-      _removeOverlay();
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _focusNode.addListener(() {
-      if (!_focusNode.hasFocus) {
-        Future.delayed(Duration(milliseconds: 100), () {
-          _removeOverlay();
-        });
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _removeOverlay();
-    _focusNode.dispose();
-    super.dispose();
-  }
+  final String? prefixIcon;
+  final int minFetcherLength;
+  final Color fillColor;
 
   @override
   Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: AppTextFieldWidget(
-        focusNode: _focusNode,
-        title: widget.title,
-        hintText: widget.hintText,
-        controller: widget.controller,
-        prefixWidget: widget.hasSearchWidget
-            ? SvgPicture.asset(Paths.searchIconPath)
-            : null,
-        suffixWidget: widget.hasSearchWidget
-            ? widget.controller.text.isNotEmpty
-                ? Skeleton.ignore(
-                    child: GestureDetector(
-                      onTap: () {
-                        widget.controller.clear();
-                        _removeOverlay();
-                        widget.onChangeField?.call('');
-                      },
-                      child: SvgPicture.asset(Paths.closeIconPath),
-                    ),
-                  )
-                : null
-            : null,
-        validator: widget.validator,
-        onChangedField: (value) {
-          _updateSuggestions(value);
-          widget.onChangeField?.call(value);
-        },
-      ),
+    FocusNode focusNode = FocusNode();
+    return Column(
+      children: [
+        if (title != null)
+          Padding(
+            padding: getMarginOrPadding(bottom: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (title != null)
+                  Text(
+                    title ?? '',
+                    style: UiConstants.textStyle3
+                        .copyWith(color: UiConstants.darkBlueColor),
+                  ),
+              ],
+            ),
+          ),
+        ValueListenableBuilder<TextEditingValue>(
+          valueListenable: controller,
+          builder: (context, value, child) {
+            return SearchField<String>(
+                validator: validator,
+                focusNode: focusNode,
+                controller: controller,
+                suggestionItemDecoration: BoxDecoration(
+                  border: Border.all(style: BorderStyle.none),
+                ),
+                maxSuggestionBoxHeight: 124.dp,
+                hint: hintText ?? 'Не указано',
+                suggestions: (suggestions ?? const [])
+                    .map(
+                      (item) => SearchFieldListItem(
+                        item,
+                        item: item,
+                        child: Text(
+                          item,
+                          style: UiConstants.textStyle3
+                              .copyWith(color: UiConstants.darkBlueColor),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                searchInputDecoration: SearchInputDecoration(
+                  searchStyle: UiConstants.textStyle3
+                      .copyWith(color: UiConstants.darkBlueColor),
+                  fillColor: fillColor,
+                  filled: true,
+                  counterText: "",
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.dp),
+                    borderSide: BorderSide(color: Colors.transparent),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.dp),
+                    borderSide:
+                        const BorderSide(width: 3, color: Colors.transparent),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.dp),
+                    borderSide: BorderSide(
+                        width: 3,
+                        color: UiConstants.purple2Color.withOpacity(.2)),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.dp),
+                    borderSide: const BorderSide(
+                        width: 3, color: UiConstants.pinkColor),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.dp),
+                    borderSide: const BorderSide(
+                        width: 3, color: UiConstants.pinkColor),
+                  ),
+                  contentPadding: getMarginOrPadding(
+                      left: 16, right: 16, top: 10, bottom: 10),
+                  hintStyle: UiConstants.textStyle3.copyWith(
+                      color: UiConstants.darkBlue2Color.withOpacity(.6),
+                      height: 1),
+                  prefixIconConstraints: BoxConstraints(maxWidth: 52.dp),
+                  suffixIconConstraints: BoxConstraints(maxWidth: 52.dp),
+                  prefixIcon: prefixIcon != null
+                      ? Padding(
+                          padding: getMarginOrPadding(right: 12, left: 16),
+                          child: SvgPicture.asset(
+                            prefixIcon ?? '',
+                            color: UiConstants.darkBlue2Color
+                                .withValues(alpha: .6),
+                            height: 24,
+                            width: 24,
+                          ),
+                        )
+                      : null,
+                  suffixIcon: value.text.isNotEmpty
+                      ? GestureDetector(
+                          onTap: () {
+                            controller.clear();
+                            onChangeField?.call('');
+                          },
+                          child: Padding(
+                            padding: getMarginOrPadding(right: 16, left: 12),
+                            child: SvgPicture.asset(
+                              Paths.close2IconPath,
+                              color: UiConstants.darkBlue2Color
+                                  .withValues(alpha: .6),
+                              height: 24,
+                              width: 24,
+                            ),
+                          ),
+                        )
+                      : null,
+                ),
+                suggestionsDecoration: SuggestionDecoration(
+                  color: UiConstants.whiteColor,
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(16.dp),
+                  ),
+                ),
+                onSearchTextChanged: (String query) async {
+                  // If a fetcher is provided, only query when input length >= 3
+                  if (suggestionFetcher != null) {
+                    if (query.trim().length < minFetcherLength) {
+                      return <SearchFieldListItem<String>>[];
+                    }
+                    final fetched = await suggestionFetcher!.call(query.trim());
+                    return fetched
+                        .map((region) => SearchFieldListItem<String>(
+                              region,
+                              item: region,
+                              child: Text(
+                                region,
+                                style: UiConstants.textStyle3
+                                    .copyWith(color: UiConstants.darkBlueColor),
+                              ),
+                            ))
+                        .toList();
+                  }
+
+                  // Fallback to local suggestions (optionally filter by query)
+                  final base = suggestions ?? const <String>[];
+                  final filtered = query.isEmpty
+                      ? base
+                      : base
+                          .where((s) =>
+                              s.toLowerCase().contains(query.toLowerCase()))
+                          .toList();
+                  return filtered
+                      .map((region) => SearchFieldListItem<String>(
+                            region,
+                            item: region,
+                            child: Text(
+                              region,
+                              style: UiConstants.textStyle3
+                                  .copyWith(color: UiConstants.redColor),
+                            ),
+                          ))
+                      .toList();
+                },
+                onSuggestionTap: (SearchFieldListItem<String> item) {
+                  onSuggestionTap?.call(item.item);
+                },
+                onTapOutside: (p0) {
+                  FocusScope.of(context).unfocus();
+                  focusNode.unfocus();
+                },
+                suggestionState: Suggestion.expand);
+          },
+        ),
+      ],
     );
   }
 }

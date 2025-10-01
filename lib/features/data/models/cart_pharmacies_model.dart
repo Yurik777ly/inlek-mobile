@@ -12,25 +12,27 @@ class CartPharmaciesProductModel extends CartPharmaciesProductEntity {
     super.oldPrice,
     super.isRecipe,
     super.isAlcohol,
+    super.delivery,
   });
 
   factory CartPharmaciesProductModel.fromJson(Map<String, dynamic> json) =>
       CartPharmaciesProductModel(
-        productId: json['product_id'],
-        name: json['name'],
-        image: json['image'],
-        requestedQuantity: json['requested_quantity'],
-        stockCount: json['stock_count'] != null
-            ? (json['stock_count'] as num).toInt()
-            : 0,
-        availability: json['availability'],
-        price: json['price'] != null ? (json['price'] as num).toDouble() : null,
-        oldPrice: json['price_old'] != null
-            ? (json['price_old'] as num).toDouble()
-            : null,
-        isRecipe: json['is_recipe'] ?? false,
-        isAlcohol: json['is_alcohol'] ?? false,
-      );
+          productId: json['product_id'],
+          name: json['name'],
+          image: json['image'],
+          requestedQuantity: json['requested_quantity'],
+          stockCount: json['stock_count'] != null
+              ? (json['stock_count'] as num).toInt()
+              : 0,
+          availability: json['availability'],
+          price:
+              json['price'] != null ? (json['price'] as num).toDouble() : null,
+          oldPrice: json['price_old'] != null
+              ? (json['price_old'] as num).toDouble()
+              : null,
+          isRecipe: json['is_recipe'] ?? false,
+          isAlcohol: json['is_alcohol'] ?? false,
+          delivery: json['delivery']);
 }
 
 class CartPharmacyModel extends CartPharmacyEntity {

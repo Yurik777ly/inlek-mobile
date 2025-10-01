@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:inlek/constants/extensions.dart';
-import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/pages/catalog/products/product_screen.dart';
@@ -31,47 +30,43 @@ class ProductsGridWidget extends StatelessWidget {
             : products.length;
     double itemHeight = 285.dp;
     double itemWidth = 156.dp;
-    double blocksSize = itemHeight * (itemCount / 2).round();
-    double mainAxisSpacingSize =
-        8.dp * ((itemCount / 2 - 1) > 0 ? (itemCount / 2 - 1) : 0).round();
-    return SizedBox(
-      height: (blocksSize + mainAxisSpacingSize),
-      child: Skeleton.ignorePointer(
-        child: Skeleton.shade(
-          child: GridView.builder(
-            physics: scrollPhysics,
-            controller: controller,
-            padding: getMarginOrPadding(bottom: 94),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 8.dp,
-              mainAxisSpacing: 8.dp,
-              childAspectRatio: itemWidth / itemHeight,
-            ),
-            itemCount: itemCount,
-            itemBuilder: (context, index) {
-              print(isLoading);
-              if (isLoadingProducts && index > products.length - 1) {
-                return Skeletonizer(
-                    enabled: isLoadingProducts,
-                    child: Skeleton.unite(
-                        child: ProductWidget(product: ProductEntity())));
-              }
-              return GestureDetector(
-                onTap: () => Navigator.of(context).push(
-                  Routes.createRoute(
-                    const ProductScreen(),
-                    settings: RouteSettings(
-                      name: Routes.productScreen,
-                      arguments: {'id': products[index].productId},
-                    ),
+
+    return Skeleton.ignorePointer(
+      child: Skeleton.shade(
+        child: GridView.builder(
+          shrinkWrap: true,
+          physics: scrollPhysics,
+          controller: controller,
+          padding: scrollPhysics != null ? null : EdgeInsets.only(bottom: 94),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 8.dp,
+            mainAxisSpacing: 8.dp,
+            childAspectRatio: itemWidth / itemHeight,
+          ),
+          itemCount: itemCount,
+          itemBuilder: (context, index) {
+            print(isLoading);
+            if (isLoadingProducts && index > products.length - 1) {
+              return Skeletonizer(
+                  enabled: isLoadingProducts,
+                  child: Skeleton.unite(
+                      child: ProductWidget(product: ProductEntity())));
+            }
+            return GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                Routes.createRoute(
+                  const ProductScreen(),
+                  settings: RouteSettings(
+                    name: Routes.productScreen,
+                    arguments: {'id': products[index].productId},
                   ),
                 ),
-                child: ProductWidget(
-                    product: isLoading ? ProductEntity() : products[index]),
-              );
-            },
-          ),
+              ),
+              child: ProductWidget(
+                  product: isLoading ? ProductEntity() : products[index]),
+            );
+          },
         ),
       ),
     );

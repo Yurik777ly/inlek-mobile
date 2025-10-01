@@ -1,3 +1,4 @@
+import 'package:inlek/constants/enums.dart';
 import 'package:inlek/features/domain/entities/base_pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/base_product_entity.dart';
 
@@ -9,19 +10,20 @@ class CartPharmaciesProductEntity extends BaseProductEntity {
   final double? oldPrice;
   final bool? isRecipe;
   final bool? isAlcohol;
+  final TypeReceiving? delivery;
 
-  const CartPharmaciesProductEntity({
-    required super.productId,
-    required super.name,
-    required super.image,
-    this.requestedQuantity,
-    this.stockCount,
-    this.availability,
-    this.price,
-    this.oldPrice,
-    this.isRecipe,
-    this.isAlcohol,
-  });
+  const CartPharmaciesProductEntity(
+      {required super.productId,
+      required super.name,
+      required super.image,
+      this.requestedQuantity,
+      this.stockCount,
+      this.availability,
+      this.price,
+      this.oldPrice,
+      this.isRecipe,
+      this.isAlcohol,
+      this.delivery});
 
   @override
   List<Object?> get props =>
@@ -34,6 +36,7 @@ class CartPharmaciesProductEntity extends BaseProductEntity {
         oldPrice,
         isRecipe,
         isAlcohol,
+        delivery,
       ];
 }
 

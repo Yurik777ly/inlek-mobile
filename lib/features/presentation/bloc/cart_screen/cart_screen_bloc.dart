@@ -65,6 +65,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
   GeoObject? selectedAddress;
 
   Timer? _debounceTimer;
+  // Incrementing token for deduplicating concurrent load requests
+  int _loadDataRequestId = 0;
 
   CartScreenBloc({
     required this.getCartUC,
@@ -140,6 +142,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     LoadCartDataEvent event,
     Emitter<CartScreenState> emit,
   ) async {
+    // Bump request id to invalidate all previous pending requests
+    final int requestId = ++_loadDataRequestId;
     add(UpdateDeliveryPriceEvent());
 
     final failureOrCart = await getCartUC(
@@ -152,61 +156,28 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
           deliveryZone: state.deliveryZone),
     );
 
+    // If a newer request was started, ignore this response
+    if (requestId != _loadDataRequestId) {
+      return;
+    }
+
     failureOrCart.fold(
       (_) => emit(state.copyWith(
           isLoading: false, errorText: 'Ошибка загрузки данных')),
       (cartData) {
-        final oldProducts = state.cartData?.products ?? [];
-        final newProducts = cartData.products ?? [];
-
-        final fixedNewProducts = newProducts.map((product) {
-          if (product.stockCount != null &&
-              product.quantity != null &&
-              product.quantity! > product.stockCount!) {
-            return product.copyWith(
-                quantity: product.stockCount, availability: 'full');
-          }
-          return product;
-        }).toList();
-
-        final mergedProducts = oldProducts.map((oldProduct) {
-          final updated = fixedNewProducts.firstWhereOrNull(
-            (newProduct) => newProduct.productId == oldProduct.productId,
-          );
-
-          ProductEntity resultProduct;
-
-          if (oldProduct.isLoading && updated != null) {
-            resultProduct = updated;
-          } else {
-            resultProduct = oldProduct;
-          }
-
-          return resultProduct;
-        }).toList();
-
-        // If the cart is empty, set cartType to delivery
-        if (fixedNewProducts.isEmpty &&
-            state.cartType != TypeReceiving.delivery) {
-          emit(state.copyWith(
+        emit(state.copyWith(
             isLoading: false,
-            cartType: state.isAvailableDelivery ? TypeReceiving.delivery : null,
-            cartData: cartData.copyWith(products: []),
+            cartData: cartData,
+            cartType: !state.isAvailableDelivery ? TypeReceiving.pickup : null,
             errorText: null,
-          ));
-        } else {
-          emit(state.copyWith(
-              isLoading: false,
-              cartData: cartData.copyWith(
-                products:
-                    event.isFirstLoading ? fixedNewProducts : mergedProducts,
-              ),
-              errorText: null));
-        }
+            isAllProductsChecked: cartData.products.isEmpty ? false : null));
+        // После загрузки данных пересчитываем состояние чекбоксов
+        _recalculateSelectionsAfterLoad(cartData, emit);
       },
     );
-
-    add(PickAllProductsEvent(force: true));
+    if (requestId == 1 && event.isFirstLoading) {
+      add(PickAllProductsEvent(force: true));
+    }
   }
 
   void _toggleShowPharmaciesWorkingNow(
@@ -241,6 +212,28 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
             .where((e) => e.availability != 'absent')
             .every((e) => selectedProductIds.contains(e.productId)) ??
         false;
+  }
+
+  // Пересчитывает selectedProductIds и isAllProductsChecked на основе актуальных данных корзины
+  void _recalculateSelectionsAfterLoad(
+      CartEntity cartData, Emitter<CartScreenState> emit) {
+    // Оставляем в selectedProductIds только те id, которые присутствуют и доступны
+    final availableProductIds = cartData.products
+        .where((e) => e.availability != 'absent')
+        .map((e) => e.productId)
+        .toSet();
+
+    final updatedSelected = state.selectedProductIds
+        .where((id) => availableProductIds.contains(id))
+        .toSet();
+
+    final updatedIsAllChecked = availableProductIds.isNotEmpty &&
+        availableProductIds.every((id) => updatedSelected.contains(id));
+
+    emit(state.copyWith(
+      selectedProductIds: updatedSelected,
+      isAllProductsChecked: updatedIsAllChecked,
+    ));
   }
 
   // Функция для удаления товара с задержкой
@@ -380,7 +373,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       },
     );
 
-    add(PickAllProductsEvent(force: true));
+    //add(PickAllProductsEvent(force: true));
   }
 
   Future<void> _onClearCart(

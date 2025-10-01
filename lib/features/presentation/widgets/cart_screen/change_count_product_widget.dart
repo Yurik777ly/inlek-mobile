@@ -18,16 +18,28 @@ class ChangeCountProductWidget extends StatelessWidget {
     required this.product,
     this.cartOrProductType = CartOrProductType.product,
     this.screenContext,
+    this.cartBloc,
   });
 
   final ProductEntity product;
   final CartOrProductType cartOrProductType;
   final BuildContext? screenContext;
+  final CartScreenBloc? cartBloc;
 
   @override
   Widget build(BuildContext context) {
-    final cartBloc = (screenContext ?? context).read<CartScreenBloc>();
-    final cartProduct = (cartBloc.state.cartData?.products ?? [])
+    // Use provided bloc or try to get from context
+    CartScreenBloc? effectiveCartBloc = cartBloc;
+    if (effectiveCartBloc == null) {
+      try {
+        effectiveCartBloc = (screenContext ?? context).read<CartScreenBloc>();
+      } catch (e) {
+        // If no bloc is available, return empty container
+        return Container();
+      }
+    }
+
+    final cartProduct = (effectiveCartBloc.state.cartData?.products ?? [])
         .firstWhereOrNull((e) => e.productId == product.productId);
     final isCart = cartOrProductType == CartOrProductType.cart;
     final isProduct = cartOrProductType == CartOrProductType.product;
@@ -42,14 +54,14 @@ class ChangeCountProductWidget extends StatelessWidget {
 
     if (isProduct && count == 0 && cartProduct?.availability != 'absent') {
       return _AddToCartButton(
-          product: product, cartBloc: cartBloc, isLoading: isLoading);
+          product: product, cartBloc: effectiveCartBloc, isLoading: isLoading);
     } else if (isCart) {
       return CartQuantityChanger(
         count: count,
         price: price,
         isAddDisabled: isAddDisabled,
         product: product,
-        cartBloc: cartBloc,
+        cartBloc: effectiveCartBloc,
         screenContext: screenContext,
       );
     } else {
@@ -58,7 +70,7 @@ class ChangeCountProductWidget extends StatelessWidget {
         price: price,
         isAddDisabled: isAddDisabled,
         product: product,
-        cartBloc: cartBloc,
+        cartBloc: effectiveCartBloc,
         screenContext: screenContext,
       );
     }
@@ -195,6 +207,7 @@ class CartQuantityChanger extends StatelessWidget {
             children: [
               Expanded(
                 child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: () => cartBloc.add(
                     DeleteCartEvent(
                       context: screenContext ?? context,
@@ -213,12 +226,15 @@ class CartQuantityChanger extends StatelessWidget {
               ),
               Expanded(
                 child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: isAddDisabled
-                      ? () => ScaffoldMessenger.of(context)
-                        ..hideCurrentSnackBar()
-                        ..showSnackBar(const SnackBar(
-                          content: Text('Больше нет в наличии'),
-                        ))
+                      ? () {
+                          ScaffoldMessenger.of(context)
+                            ..hideCurrentSnackBar()
+                            ..showSnackBar(const SnackBar(
+                              content: Text('Больше нет в наличии'),
+                            ));
+                        }
                       : () => cartBloc.add(
                             AddCartEvent(
                               context: screenContext ?? context,

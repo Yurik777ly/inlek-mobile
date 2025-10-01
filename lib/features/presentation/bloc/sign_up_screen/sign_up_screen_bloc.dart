@@ -50,7 +50,8 @@ class SignUpScreenBloc extends Bloc<SignUpScreenEvent, SignUpScreenState> {
 
     on<GetCodeEvent>(
       (event, emit) async {
-        if (state.isValidPhone) {
+        if (state.isValidPhone && !state.isLoading) {
+          emit(state.copyWith(isLoading: true));
           // проверка на существование такого номера в системе
           final failureOrLoads = await isPhoneExistsUC(
             AuthenticationParams(
@@ -58,40 +59,45 @@ class SignUpScreenBloc extends Bloc<SignUpScreenEvent, SignUpScreenState> {
             ),
           );
 
-          return failureOrLoads.fold(
-            (failure) => switch (failure) {
-              InvalidFormatFailure _ => emit(state.copyWith(
-                  showError: true, phoneErrorText: 'Неверный формат телефона')),
-              ServerFailure _ => emit(state.copyWith(
-                  showError: true, phoneErrorText: 'Неизвестная ошибка')),
-              _ => emit(state.copyWith(
-                  showError: true, phoneErrorText: 'Неизвестная ошибка')),
-            },
-            (isExists) {
-              // регистрация
-              if (_passwordScreenType == PasswordScreenType.signUp) {
-                // номер телефона уже зарегистрирован
-                if (isExists!) {
-                  emit(state.copyWith(showError: false));
-                  emit(AccountAlreadyExistsState());
-                  return;
+          try {
+            return failureOrLoads.fold(
+              (failure) => switch (failure) {
+                InvalidFormatFailure _ => emit(state.copyWith(
+                    showError: true,
+                    phoneErrorText: 'Неверный формат телефона')),
+                ServerFailure _ => emit(state.copyWith(
+                    showError: true, phoneErrorText: 'Неизвестная ошибка')),
+                _ => emit(state.copyWith(
+                    showError: true, phoneErrorText: 'Неизвестная ошибка')),
+              },
+              (isExists) {
+                // регистрация
+                if (_passwordScreenType == PasswordScreenType.signUp) {
+                  // номер телефона уже зарегистрирован
+                  if (isExists!) {
+                    emit(state.copyWith(showError: false));
+                    emit(AccountAlreadyExistsState());
+                    return;
+                  }
+
+                  // восстановление пароля
+                } else {
+                  // номер телефона ещё не зарегистрирован
+                  if (!isExists!) {
+                    emit(state.copyWith(showError: false));
+                    emit(NotFoundAccountState());
+                    return;
+                  }
                 }
 
-                // восстановление пароля
-              } else {
-                // номер телефона ещё не зарегистрирован
-                if (!isExists!) {
-                  emit(state.copyWith(showError: false));
-                  emit(NotFoundAccountState());
-                  return;
-                }
-              }
-
-              // вызывает состояние получения кода (перенаправление на другой экран)
-              emit(state.copyWith(showError: false));
-              emit(GetCodeState());
-            },
-          );
+                // вызывает состояние получения кода (перенаправление на другой экран)
+                emit(state.copyWith(showError: false));
+                emit(GetCodeState());
+              },
+            );
+          } finally {
+            emit(state.copyWith(isLoading: false));
+          }
         }
       },
     );

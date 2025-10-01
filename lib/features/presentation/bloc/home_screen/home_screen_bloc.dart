@@ -75,9 +75,9 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
 
   void _onInitHome(InitHomeEvent event, Emitter<HomeScreenState> emit) {
     if (event.initPersonalDataScreen) {
-      add(ChangePageEvent(4));
+      add(ChangePageEvent(3));
 
-      navigatorKeys[4].currentState?.push(
+      navigatorKeys[3].currentState?.push(
             Routes.createRoute(
               const PersonalDataScreen(),
               settings: const RouteSettings(name: Routes.personalDataScreen),

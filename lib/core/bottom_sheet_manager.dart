@@ -441,15 +441,20 @@ class BottomSheetManager {
                         shrinkWrap: true,
                         children: [
                           Text(
-                            'Доставка',
+                            cartBloc.state.cartType == TypeReceiving.delivery
+                                ? 'Доставка'
+                                : 'Самовывоз',
                             style: UiConstants.textStyle1
                                 .copyWith(color: UiConstants.darkBlueColor),
                           ),
                           SizedBox(height: 16.dp),
-                          InfoPlateWidget(
-                              text:
-                                  'Доставка производится только по Минску и Минскому району'),
-                          SizedBox(height: 16.dp),
+                          if (cartBloc.state.cartType == TypeReceiving.delivery)
+                            Padding(
+                              padding: getMarginOrPadding(bottom: 16),
+                              child: InfoPlateWidget(
+                                  text:
+                                      'Доставка производится только по Минску и Минскому району'),
+                            ),
                           DeliveryCustomerBlock(
                             screenContext: screenContext,
                             firstNameKey: firstNameKey,
@@ -778,6 +783,7 @@ class BottomSheetManager {
                               Skeleton.ignorePointer(
                                 child: Skeleton.shade(
                                   child: CitySearchField(
+                                    validator: Utils.validate,
                                     hintText: 'Искать улицу или район',
                                     controller: searchAddressController,
                                     suggestionObjects: suggestionObjects,
@@ -1423,7 +1429,7 @@ class BottomSheetManager {
                     ),
                     SizedBox(height: 16.dp),
                     Text(
-                      pharmacy.address,
+                      pharmacy.address ?? '-',
                       style: UiConstants.textStyle2.copyWith(
                         color: UiConstants.darkBlueColor,
                       ),

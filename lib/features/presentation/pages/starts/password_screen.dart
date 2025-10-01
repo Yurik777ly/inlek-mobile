@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/extensions.dart';
-import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/bloc/passwrod_screen/password_screen_bloc.dart';
 import 'package:inlek/features/presentation/pages/home_screen.dart';
@@ -59,16 +58,14 @@ class PasswordScreen extends StatelessWidget {
           final bloc = context.read<PasswordScreenBloc>();
 
           return AppTemplate(
-            canBack: true,
+            hasBack: true,
             title: passwordScreenType == PasswordScreenType.signUp
                 ? 'Придумайте пароль'
                 : 'Восстановление пароля',
-            subTitleText: passwordScreenType == PasswordScreenType.reset
+            subtitle: passwordScreenType == PasswordScreenType.reset
                 ? 'Придумайте новый пароль:'
                 : null,
-            bodyPadding:
-                getMarginOrPadding(left: 20, right: 20, top: 16, bottom: 24),
-            body: Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppTextFieldWidget(
@@ -86,7 +83,8 @@ class PasswordScreen extends StatelessWidget {
                     errorText: state.passwordErrorText),
                 SizedBox(height: 32.dp),
                 AppButtonWidget(
-                  isActive: state.isButtonActive,
+                  isActive: state.isButtonActive && !state.isLoading,
+                  isLoading: state.isLoading,
                   text: 'Подтвердить',
                   onTap: () => bloc.add(SubmitPasswordEvent()),
                 ),

@@ -49,9 +49,9 @@ class CodeScreen extends StatelessWidget {
         builder: (context, state) {
           final bloc = context.read<CodeScreenBloc>();
           return AppTemplate(
-            canBack: true,
+            hasBack: true,
             title: 'Введите код',
-            subTitleWidget: RichText(
+            subtitleWidget: RichText(
               text: TextSpan(
                 children: [
                   TextSpan(
@@ -73,7 +73,7 @@ class CodeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            body: Column(
+            child: Column(
               children: [
                 PinputWidget(
                     controller: bloc.codeController,

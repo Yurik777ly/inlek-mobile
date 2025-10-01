@@ -78,160 +78,198 @@ class ProductScreen extends StatelessWidget {
                             Expanded(
                               child: homeState is InternetUnavailable
                                   ? InternetNoInternetConnectionWidget()
-                                  : Stack(
-                                      alignment: Alignment.bottomCenter,
-                                      children: [
-                                        ListView(
-                                          shrinkWrap: true,
-                                          padding: getMarginOrPadding(
-                                              bottom: 120, top: 16),
+                                  : (productState.error != null
+                                      ? Center(
+                                          child: Padding(
+                                            padding: getMarginOrPadding(
+                                                left: 20, right: 20),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                SvgPicture.asset(
+                                                  Paths.infoIconPath,
+                                                  width: 48,
+                                                  height: 48,
+                                                  color: UiConstants.redColor,
+                                                ),
+                                                SizedBox(height: 16),
+                                                Text(
+                                                  productState.error ??
+                                                      'Ошибка',
+                                                  style: UiConstants.textStyle5
+                                                      .copyWith(
+                                                    color: UiConstants
+                                                        .darkBlueColor,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                      : Stack(
+                                          alignment: Alignment.bottomCenter,
                                           children: [
-                                            ProductBannerWidget(
-                                                pageController:
-                                                    productBloc.pageController,
-                                                product: productState.product),
-                                            SizedBox(height: 16.dp),
-                                            Padding(
+                                            ListView(
+                                              shrinkWrap: true,
                                               padding: getMarginOrPadding(
-                                                  left: 20, right: 20),
-                                              child: ProductTitleWidget(
-                                                  product:
-                                                      productState.product),
-                                            ),
-                                            if (productState
-                                                        .product?.isAlcohol ==
-                                                    true ||
-                                                productState
-                                                        .product?.isRecipe ==
-                                                    true)
-                                              Padding(
-                                                padding: getMarginOrPadding(
-                                                    top: 16,
-                                                    left: 20,
-                                                    right: 20),
-                                                child: PrescriptionWidget(),
-                                              ),
-                                            if (productState
-                                                    .product?.instruction !=
-                                                null)
-                                              Padding(
-                                                padding: getMarginOrPadding(
-                                                    top: 16,
-                                                    left: 20,
-                                                    right: 20),
-                                                child: InstructionWidget(
-                                                    instruction: productState
-                                                            .product
-                                                            ?.instruction ??
-                                                        ''),
-                                              ),
-                                            SizedBox(height: 16.dp),
-                                            Padding(
-                                              padding: getMarginOrPadding(
-                                                  left: 20, right: 20),
-                                              child:
-                                                  ProductReceivingMethodsWidget(
-                                                isLoadingPharmacies:
-                                                    productState
-                                                        .isLoadingPharmacies,
-                                                pharmacies:
-                                                    productState.pharmacies ??
-                                                        [],
-                                                product: productState.product ??
-                                                    ProductEntity(),
-                                              ),
-                                            ),
-                                            SizedBox(height: 16.dp),
-                                            Padding(
-                                              padding: getMarginOrPadding(
-                                                  left: 20, right: 20),
-                                              child: DropdownWidget(
-                                                title: 'Характеристики',
-                                                child:
-                                                    ProductCharacteristicWidget(
-                                                        product: productState
-                                                            .product),
-                                              ),
-                                            ),
-                                            if (productState
-                                                    .product?.description !=
-                                                null)
-                                              Padding(
-                                                padding: getMarginOrPadding(
-                                                    left: 20,
-                                                    right: 20,
-                                                    top: 16),
-                                                child: DropdownWidget(
-                                                  title: 'Описание',
-                                                  child: Skeleton.replace(
-                                                    child: CustomFlutterHtml(
-                                                        isLoading: productState
-                                                            .isLoadingProducts,
-                                                        content: productState
+                                                  bottom: 120, top: 16),
+                                              children: [
+                                                ProductBannerWidget(
+                                                    pageController: productBloc
+                                                        .pageController,
+                                                    product:
+                                                        productState.product),
+                                                SizedBox(height: 16.dp),
+                                                Padding(
+                                                  padding: getMarginOrPadding(
+                                                      left: 20, right: 20),
+                                                  child: ProductTitleWidget(
+                                                      product:
+                                                          productState.product),
+                                                ),
+                                                if (productState.product
+                                                            ?.isAlcohol ==
+                                                        true ||
+                                                    productState.product
+                                                            ?.isRecipe ==
+                                                        true)
+                                                  Padding(
+                                                    padding: getMarginOrPadding(
+                                                        top: 16,
+                                                        left: 20,
+                                                        right: 20),
+                                                    child: PrescriptionWidget(),
+                                                  ),
+                                                if (productState
+                                                        .product?.instruction !=
+                                                    null)
+                                                  Padding(
+                                                    padding: getMarginOrPadding(
+                                                        top: 16,
+                                                        left: 20,
+                                                        right: 20),
+                                                    child: InstructionWidget(
+                                                        instruction: productState
                                                                 .product
-                                                                ?.description ??
-                                                            '-'),
+                                                                ?.instruction ??
+                                                            ''),
+                                                  ),
+                                                SizedBox(height: 16.dp),
+                                                Padding(
+                                                  padding: getMarginOrPadding(
+                                                      left: 20, right: 20),
+                                                  child:
+                                                      ProductReceivingMethodsWidget(
+                                                    isLoadingPharmacies:
+                                                        productState
+                                                            .isLoadingPharmacies,
+                                                    pharmacies: productState
+                                                            .pharmacies ??
+                                                        [],
+                                                    product:
+                                                        productState.product ??
+                                                            ProductEntity(),
                                                   ),
                                                 ),
-                                              ),
-                                            if ((productState.product
-                                                        ?.similarProducts ??
-                                                    [])
-                                                .isNotEmpty)
-                                              Padding(
-                                                padding:
-                                                    getMarginOrPadding(top: 32),
-                                                child: BlockWidget(
-                                                  contentPadding:
-                                                      getMarginOrPadding(
-                                                          left: 20, right: 20),
-                                                  title: 'Аналоги',
-                                                  child: ProductsListWidget(
-                                                      products: productState
-                                                              .product
-                                                              ?.similarProducts ??
-                                                          []),
+                                                SizedBox(height: 16.dp),
+                                                Padding(
+                                                  padding: getMarginOrPadding(
+                                                      left: 20, right: 20),
+                                                  child: DropdownWidget(
+                                                    title: 'Характеристики',
+                                                    child:
+                                                        ProductCharacteristicWidget(
+                                                            product:
+                                                                productState
+                                                                    .product),
+                                                  ),
                                                 ),
-                                              ),
-                                            SizedBox(height: 32.dp),
+                                                if (productState
+                                                        .product?.description !=
+                                                    null)
+                                                  Padding(
+                                                    padding: getMarginOrPadding(
+                                                        left: 20,
+                                                        right: 20,
+                                                        top: 16),
+                                                    child: DropdownWidget(
+                                                      title: 'Описание',
+                                                      child: Skeleton.replace(
+                                                        child: CustomFlutterHtml(
+                                                            isLoading: productState
+                                                                .isLoadingProducts,
+                                                            content: productState
+                                                                    .product
+                                                                    ?.description ??
+                                                                '-'),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                if ((productState.product
+                                                            ?.similarProducts ??
+                                                        [])
+                                                    .isNotEmpty)
+                                                  Padding(
+                                                    padding: getMarginOrPadding(
+                                                        top: 32),
+                                                    child: BlockWidget(
+                                                      contentPadding:
+                                                          getMarginOrPadding(
+                                                              left: 20,
+                                                              right: 20),
+                                                      title: 'Аналоги',
+                                                      child: ProductsListWidget(
+                                                          products: productState
+                                                                  .product
+                                                                  ?.similarProducts ??
+                                                              []),
+                                                    ),
+                                                  ),
+                                                SizedBox(height: 32.dp),
+                                              ],
+                                            ),
+                                            Positioned(
+                                              left: 20.dp,
+                                              right: 20.dp,
+                                              bottom: 94,
+                                              child: productState.product
+                                                              ?.availability ==
+                                                          'absent' ||
+                                                      productState
+                                                          .isLoadingProducts
+                                                  ? AppButtonWidget(
+                                                      text:
+                                                          'Сообщить о поступлении',
+                                                      onTap: () async {
+                                                        bool?
+                                                            isContinueShopping =
+                                                            await BottomSheetManager
+                                                                .showProductReceiptNotificationSheet();
+                                                        if (isContinueShopping ==
+                                                                true &&
+                                                            context.mounted) {
+                                                          homeBloc.add(
+                                                              ChangePageEvent(1,
+                                                                  forcePopToRoot:
+                                                                      true));
+                                                        }
+                                                      },
+                                                    )
+                                                  : BlocBuilder<CartScreenBloc,
+                                                      CartScreenState>(
+                                                      builder:
+                                                          (context, state) {
+                                                        return ChangeCountProductWidget(
+                                                            product:
+                                                                productState
+                                                                    .product!);
+                                                      },
+                                                    ),
+                                            ),
                                           ],
-                                        ),
-                                        Positioned(
-                                          left: 20.dp,
-                                          right: 20.dp,
-                                          bottom: 94,
-                                          child: productState.product
-                                                          ?.availability ==
-                                                      'absent' ||
-                                                  productState.isLoadingProducts
-                                              ? AppButtonWidget(
-                                                  text:
-                                                      'Сообщить о поступлении',
-                                                  onTap: () async {
-                                                    bool? isContinueShopping =
-                                                        await BottomSheetManager
-                                                            .showProductReceiptNotificationSheet();
-                                                    if (isContinueShopping ==
-                                                            true &&
-                                                        context.mounted) {
-                                                      homeBloc.add(
-                                                          ChangePageEvent(1,
-                                                              forcePopToRoot:
-                                                                  true));
-                                                    }
-                                                  },
-                                                )
-                                              : BlocBuilder<CartScreenBloc,
-                                                  CartScreenState>(
-                                                  builder: (context, state) {
-                                                    return ChangeCountProductWidget(
-                                                        product: productState
-                                                            .product!);
-                                                  },
-                                                ),
-                                        ),
-                                      ],
-                                    ),
+                                        )),
                             ),
                           ],
                         );

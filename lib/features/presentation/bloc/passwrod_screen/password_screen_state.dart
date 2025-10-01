@@ -6,6 +6,7 @@ class PasswordScreenState extends Equatable {
   final bool isButtonActive;
   final String? passwordErrorText;
   final bool showError;
+  final bool isLoading;
 
   const PasswordScreenState({
     this.phone,
@@ -13,6 +14,7 @@ class PasswordScreenState extends Equatable {
     this.isButtonActive = false,
     this.passwordErrorText,
     this.showError = false,
+    this.isLoading = false,
   });
 
   PasswordScreenState copyWith({
@@ -21,6 +23,7 @@ class PasswordScreenState extends Equatable {
     bool? isButtonActive,
     String? passwordErrorText,
     bool? showError,
+    bool? isLoading,
   }) {
     return PasswordScreenState(
       phone: phone ?? this.phone,
@@ -28,6 +31,7 @@ class PasswordScreenState extends Equatable {
       isButtonActive: isButtonActive ?? this.isButtonActive,
       passwordErrorText: passwordErrorText,
       showError: showError ?? this.showError,
+      isLoading: isLoading ?? this.isLoading,
     );
   }
 
@@ -36,6 +40,7 @@ class PasswordScreenState extends Equatable {
         isButtonActive,
         passwordErrorText,
         showError,
+        isLoading,
       ];
 }
 

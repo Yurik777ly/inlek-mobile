@@ -78,9 +78,8 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                 child: CitySearchField(
                   title: 'Улица, дом',
                   hintText: 'Укажите адрес',
-                  widthOverlay: MediaQuery.of(context).size.width - 72.dp,
-                  offset: const Offset(0, 80),
                   controller: cartBloc.streetHomeController,
+                  fillColor: UiConstants.white3Color,
                   validator: (p0) {
                     String? error = Utils.validate(p0);
                     if (error == null) {

@@ -53,11 +53,19 @@ class ProductScreenBloc extends Bloc<ProductScreenEvent, ProductScreenState> {
           ));
         },
         (product) {
-          emit(state.copyWith(
-            isLoadingProducts: false,
-            product: product,
-            error: null,
-          ));
+          if (product == null) {
+            emit(state.copyWith(
+              isLoadingProducts: false,
+              product: null,
+              error: 'Ошибка загрузки товара',
+            ));
+          } else {
+            emit(state.copyWith(
+              isLoadingProducts: false,
+              product: product,
+              error: null,
+            ));
+          }
         },
       );
     } else {
@@ -81,14 +89,14 @@ class ProductScreenBloc extends Bloc<ProductScreenEvent, ProductScreenState> {
         (failure) {
           emit(state.copyWith(
             isLoadingPharmacies: false,
-            error: 'Ошибка загрузки аптек',
+            errorPharmacies: 'Ошибка загрузки аптек',
           ));
         },
         (pharmacies) {
           emit(state.copyWith(
             isLoadingPharmacies: false,
             pharmacies: pharmacies,
-            error: null,
+            errorPharmacies: null,
           ));
         },
       );

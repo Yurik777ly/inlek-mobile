@@ -20,7 +20,7 @@ class ProductBannerItem extends StatelessWidget {
           width: double.infinity,
           height: double.infinity,
           imageUrl: '${dotenv.env['PUBLIC_URL']!}${product?.image}',
-          fit: BoxFit.fitHeight,
+          fit: BoxFit.contain,
           cacheManager: CustomCacheManager(),
           errorWidget: (context, url, error) =>
               Icon(Icons.image, size: 56.dp, color: UiConstants.whiteColor),

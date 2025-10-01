@@ -1,98 +1,97 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:inlek/constants/extensions.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:inlek/constants/paths.dart';
-import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 
 class AppTemplate extends StatelessWidget {
-  const AppTemplate(
-      {super.key,
-      required this.title,
-      this.subTitleText,
-      this.subTitleWidget,
-      required this.body,
-      this.canBack = false,
-      this.bodyPadding});
-
   final String title;
-  final String? subTitleText;
-  final Widget? subTitleWidget;
-  final Widget body;
-  final bool canBack;
-  final EdgeInsetsGeometry? bodyPadding;
+  final String? subtitle;
+  final Widget? subtitleWidget;
+  final Widget child;
+  final bool hasBack;
+
+  const AppTemplate({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.subtitleWidget,
+    required this.child,
+    this.hasBack = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion(
-      value: const SystemUiOverlayStyle(
-          statusBarIconBrightness: Brightness.light,
-          systemNavigationBarColor: Colors.transparent),
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage(Paths.backgroundGradientIconPath),
-                fit: BoxFit.cover),
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(toolbarHeight: 0, backgroundColor: Colors.transparent),
+      backgroundColor: UiConstants.backgroundColor,
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(Paths.backgroundGradientIconPath),
+            fit: BoxFit.cover,
           ),
-          child: Column(
-            children: [
-              Container(
-                padding: getMarginOrPadding(
-                    left: 20, right: 20, top: kTextTabBarHeight, bottom: 16),
-                height: 230.dp,
-                width: double.infinity,
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: Container(
+                alignment: Alignment.bottomLeft,
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16).add(
+                  EdgeInsetsGeometry.only(
+                    top: MediaQuery.of(context).padding.top,
+                  ),
+                ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (canBack)
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: SvgPicture.asset(Paths.arrowBackIconPath,
-                            width: 24.dp, height: 24.dp),
+                    if (hasBack)
+                      InkWell(
+                        onTap: () => Navigator.of(context).pop(),
+                        child: SvgPicture.asset(
+                          Paths.arrowBackIconPath,
+                          width: 24,
+                          height: 24,
+                        ),
                       ),
                     Spacer(),
                     Text(
                       title,
-                      style: UiConstants.textStyle1
-                          .copyWith(color: UiConstants.whiteColor),
+                      style: UiConstants.textStyle1.copyWith(
+                        color: UiConstants.whiteColor,
+                      ),
                     ),
-                    if (subTitleText != null)
+                    if (subtitle != null || subtitleWidget != null)
                       Padding(
-                        padding: getMarginOrPadding(bottom: 8),
-                        child: Text(
-                          subTitleText ?? '',
-                          style: UiConstants.textStyle2
-                              .copyWith(color: UiConstants.whiteColor),
-                        ),
-                      )
-                    else if (subTitleWidget != null)
-                      Padding(
-                        padding: getMarginOrPadding(bottom: 8),
-                        child: subTitleWidget ?? Container(),
-                      )
+                        padding: EdgeInsetsGeometry.only(top: 8),
+                        child: subtitleWidget ??
+                            Text(
+                              subtitle ?? '',
+                              style: UiConstants.textStyle2.copyWith(
+                                color: UiConstants.whiteColor,
+                              ),
+                            ),
+                      ),
                   ],
                 ),
               ),
-              Expanded(
-                child: Container(
-                    width: double.infinity,
-                    padding: bodyPadding ??
-                        getMarginOrPadding(top: 32, right: 20, left: 20),
-                    decoration: BoxDecoration(
-                      color: UiConstants.whiteColor,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(16.r),
-                      ),
-                    ),
-                    child: SafeArea(child: body)),
+            ),
+            Expanded(
+              flex: 2,
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: UiConstants.whiteColor,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  child: child,
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

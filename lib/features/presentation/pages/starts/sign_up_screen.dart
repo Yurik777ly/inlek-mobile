@@ -81,16 +81,14 @@ class SignUpScreen extends StatelessWidget {
           final bloc = context.read<SignUpScreenBloc>();
 
           return AppTemplate(
-            canBack: true,
+            hasBack: true,
             title: passwordScreenType == PasswordScreenType.signUp
                 ? 'Регистрация'
                 : 'Восстановление пароля',
-            subTitleText: passwordScreenType == PasswordScreenType.signUp
+            subtitle: passwordScreenType == PasswordScreenType.signUp
                 ? 'Зарегистрируйтесь, чтобы совершать покупки, копить бонусы и иметь быстрый доступ к карте лояльности.'
                 : 'Введите номер телефона, который был использован при регистрации:',
-            bodyPadding:
-                getMarginOrPadding(left: 20, right: 20, top: 16, bottom: 24),
-            body: Form(
+            child: Form(
               autovalidateMode: AutovalidateMode.always,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,7 +106,8 @@ class SignUpScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 32.dp),
                   AppButtonWidget(
-                    isActive: state.isValidPhone,
+                    isActive: state.isValidPhone && !state.isLoading,
+                    isLoading: state.isLoading,
                     text: 'Получить код',
                     onTap: () => bloc.add(GetCodeEvent()),
                   ),

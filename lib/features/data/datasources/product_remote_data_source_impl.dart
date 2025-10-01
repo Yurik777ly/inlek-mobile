@@ -196,14 +196,13 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
   @override
   Future<SearchProductsV2Model?> searchProductsV2(String query) async {
-    //String baseUrl = "${dotenv.env['PUBLIC_URL']}api/v1/";
+    String baseUrl = "${dotenv.env['BASE_URL']}v2/";
 
     final String? serverToken =
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
 
     //final uri = Uri.parse('${baseUrl}search?search=$query');
-    final uri = Uri.parse(
-        'https://api.rees46.ru/search?shop_id=a46b953ef509cadb85a3692a13dfac&did=KwkHbFxeho&sid=ptXCvgYD4F&type=instant_search&search_query=$query&collapse=true');
+    final uri = Uri.parse('${baseUrl}search?query=$query');
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
