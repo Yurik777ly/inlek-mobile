@@ -37,6 +37,8 @@ class ErrorHandlerImpl implements ErrorHandler {
         return Left(AccountDontExistsFailure());
       } on AcceptPersonalDataException {
         return Left(AcceptPersonalDataFailure());
+      } on OutOfStockException {
+        return Left(OutOfStockFailure());
       } catch (e) {
         return Left(ServerFailure());
       }

@@ -99,6 +99,16 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
       log('Response Body: ${response.body}',
           name: 'CartRemoteDataSourceImpl.addCart');
 
+      switch (response.statusCode) {
+        case 200:
+          break;
+        case 422:
+          throw OutOfStockException();
+
+        default:
+          throw ServerException();
+      }
+
       if (response.statusCode != 200) {
         throw ServerException();
       }

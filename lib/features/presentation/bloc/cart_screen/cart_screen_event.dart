@@ -20,7 +20,14 @@ class AddCartEvent extends CartScreenEvent {
   final BuildContext? context;
   final int productId;
   final int? count;
-  const AddCartEvent({this.context, required this.productId, this.count});
+  final VoidCallback? onSuccess;
+  final VoidCallback? onError;
+  const AddCartEvent(
+      {this.context,
+      required this.productId,
+      this.count,
+      this.onSuccess,
+      this.onError});
 }
 
 class DeleteCartEvent extends CartScreenEvent {
@@ -117,4 +124,39 @@ class UpdateDeliveryPriceEvent extends CartScreenEvent {
 class ChangeAvailableDeliveryEvent extends CartScreenEvent {
   final CityEntity? city;
   const ChangeAvailableDeliveryEvent({this.city});
+}
+
+class UpdateLocalCartDataEvent extends CartScreenEvent {
+  final int productId;
+  final int quantity;
+  final bool wasFirstTimeAdded;
+  final bool wasCartEmpty;
+  final VoidCallback? onSuccess;
+
+  const UpdateLocalCartDataEvent({
+    required this.productId,
+    required this.quantity,
+    required this.wasFirstTimeAdded,
+    required this.wasCartEmpty,
+    this.onSuccess,
+  });
+
+  @override
+  List<Object?> get props =>
+      [productId, quantity, wasFirstTimeAdded, wasCartEmpty];
+}
+
+class UpdateLocalCartDeleteEvent extends CartScreenEvent {
+  final int productId;
+  final int newQuantity;
+  final bool isCartEmptyAfterRemoval;
+
+  const UpdateLocalCartDeleteEvent({
+    required this.productId,
+    required this.newQuantity,
+    required this.isCartEmptyAfterRemoval,
+  });
+
+  @override
+  List<Object?> get props => [productId, newQuantity, isCartEmptyAfterRemoval];
 }

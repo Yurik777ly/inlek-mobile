@@ -11,7 +11,7 @@ import 'package:inlek/core/custom_cache_manager.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 
-class SearchProductsItem extends StatelessWidget {
+class SearchProductsItem extends StatefulWidget {
   const SearchProductsItem(
       {super.key, required this.product, required this.onProductTap});
 
@@ -19,9 +19,32 @@ class SearchProductsItem extends StatelessWidget {
   final Function() onProductTap;
 
   @override
+  State<SearchProductsItem> createState() => _SearchProductsItemState();
+}
+
+class _SearchProductsItemState extends State<SearchProductsItem> {
+  bool? _localIsChecked;
+
+  @override
+  void initState() {
+    super.initState();
+    // Синхронизируем локальное состояние с текущим состоянием корзины
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final cartState = context.read<CartScreenBloc>().state;
+      final isInCart = (cartState.cartData?.products ?? [])
+          .any((e) => e.productId == widget.product.productId);
+      if (isInCart) {
+        setState(() {
+          _localIsChecked = true;
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onProductTap,
+      onTap: widget.onProductTap,
       child: Card(
         margin: EdgeInsets.zero,
         elevation: 0,
@@ -34,7 +57,8 @@ class SearchProductsItem extends StatelessWidget {
                 child: CachedNetworkImage(
                   height: 60.dp,
                   width: 60.dp,
-                  imageUrl: '${dotenv.env['PUBLIC_URL']!}${product.image}',
+                  imageUrl:
+                      '${dotenv.env['PUBLIC_URL']!}${widget.product.image}',
                   fit: BoxFit.cover,
                   cacheManager: CustomCacheManager(),
                   errorWidget: (context, url, error) => SvgPicture.asset(
@@ -53,7 +77,7 @@ class SearchProductsItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: Text(product.name,
+                      child: Text(widget.product.name,
                           style: UiConstants.textStyle8.copyWith(
                             color: UiConstants.darkBlueColor,
                           ),
@@ -61,7 +85,7 @@ class SearchProductsItem extends StatelessWidget {
                           overflow: TextOverflow.ellipsis),
                     ),
                     Text(
-                      'от ${Utils.formatPrice(product.price)}',
+                      'от ${Utils.formatPrice(widget.product.price)}',
                       style: UiConstants.textStyle3.copyWith(
                           color: UiConstants.darkBlueColor,
                           fontWeight: FontWeight.w800,
@@ -73,24 +97,39 @@ class SearchProductsItem extends StatelessWidget {
               SizedBox(width: 16.dp),
               BlocBuilder<CartScreenBloc, CartScreenState>(
                 builder: (context, state) {
-                  final isChecked = (state.cartData?.products ?? [])
-                      .any((e) => e.productId == product.productId);
+                  // Используем локальное состояние если оно установлено, иначе проверяем в корзине
+                  final isInCart = (state.cartData?.products ?? [])
+                      .any((e) => e.productId == widget.product.productId);
+                  final isChecked = _localIsChecked ?? isInCart;
 
                   return GestureDetector(
                     onTap: () {
                       if (isChecked) {
+                        // Сбрасываем локальное состояние при удалении
+                        setState(() {
+                          _localIsChecked = false;
+                        });
                         context.read<CartScreenBloc>().add(
                               DeleteCartEvent(
                                 context: context,
-                                productId: product.productId,
+                                productId: widget.product.productId,
                                 count: 0,
                               ),
                             );
                       } else {
+                        // Добавляем товар с колбэком
                         context.read<CartScreenBloc>().add(
                               AddCartEvent(
                                 context: context,
-                                productId: product.productId,
+                                productId: widget.product.productId,
+                                onSuccess: () {
+                                  // Устанавливаем локальное состояние только при успешном добавлении
+                                  if (mounted) {
+                                    setState(() {
+                                      _localIsChecked = true;
+                                    });
+                                  }
+                                },
                               ),
                             );
                       }

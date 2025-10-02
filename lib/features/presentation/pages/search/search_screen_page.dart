@@ -241,30 +241,27 @@ class _SearchScreenPageContentState extends State<_SearchScreenPageContent> {
       children: [
         // Результаты поиска (queries)
         if (queries.isNotEmpty) ...[
-          BlockWidget(
-            title: 'Результаты поиска',
-            child: ListView.separated(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: queries.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 16),
-              itemBuilder: (context, index) {
-                final query = queries[index];
-                return GestureDetector(
-                  onTap: () {
-                    searchBloc.add(ChangeQueryEvent(query));
-                    searchBloc.searchController.text = query;
-                  },
-                  child: Text(
-                    query,
-                    style: UiConstants.textStyle3
-                        .copyWith(color: UiConstants.darkBlueColor),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
-              },
-            ),
+          ListView.separated(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: queries.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            itemBuilder: (context, index) {
+              final query = queries[index];
+              return GestureDetector(
+                onTap: () {
+                  searchBloc.add(ChangeQueryEvent(query));
+                  searchBloc.searchController.text = query;
+                },
+                child: Text(
+                  query,
+                  style: UiConstants.textStyle3
+                      .copyWith(color: UiConstants.darkBlueColor),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
           ),
           _divider(),
         ],

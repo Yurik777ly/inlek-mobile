@@ -11,6 +11,7 @@ import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/core/courier_zone_manager.dart';
+import 'package:inlek/core/error/failure.dart';
 import 'package:inlek/core/params/cart_detailed_params.dart';
 import 'package:inlek/core/params/cart_params.dart';
 import 'package:inlek/core/params/order_param.dart';
@@ -65,6 +66,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
   GeoObject? selectedAddress;
 
   Timer? _debounceTimer;
+  Timer? _addCartDebounceTimer;
+  Timer? _deleteCartDebounceTimer;
   // Incrementing token for deduplicating concurrent load requests
   int _loadDataRequestId = 0;
 
@@ -98,6 +101,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     on<CreateOrderEvent>(_onCreateOrder);
     on<UpdateDeliveryPriceEvent>(_onUpdateDeliveryPrice);
     on<ChangeAvailableDeliveryEvent>(_onChangeAvailableDelivery);
+    on<UpdateLocalCartDataEvent>(_onUpdateLocalCartData);
+    on<UpdateLocalCartDeleteEvent>(_onUpdateLocalCartDelete);
 
     on<ScrollUpListEvent>((_, __) => controller.animateTo(0,
         duration: const Duration(milliseconds: 700), curve: Curves.easeOut));
@@ -236,144 +241,127 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     ));
   }
 
-  // Функция для удаления товара с задержкой
+  // Функция для удаления товара с дебаунс таймером
   Future<void> _onDeleteCart(
       DeleteCartEvent event, Emitter<CartScreenState> emit) async {
     add(UpdateDeliveryPriceEvent());
-    // Эмитируем текущее состояние, чтобы UI обновился
-    // emit(state.copyWith(isLoading: true));
 
-    // Ожидаем 2 секунды, прежде чем выполнить запрос, но сбрасываем таймер, если событие повторяется
-    _debounceTimer
-        ?.cancel(); // Сбрасываем предыдущий таймер, если событие повторяется
+    // Сбрасываем предыдущий таймер удаления, если событие повторяется
+    _deleteCartDebounceTimer?.cancel();
 
-    // Выполняем логику удаления товара из корзины
-    ProductEntity? product = state.cartData?.products
-        .firstWhereOrNull((e) => e.productId == event.productId);
-    if (product == null) return;
+    // Устанавливаем дебаунс таймер на 300ms
+    _deleteCartDebounceTimer =
+        Timer(const Duration(milliseconds: 300), () async {
+      // Выполняем логику удаления товара из корзины
+      ProductEntity? product = state.cartData?.products
+          .firstWhereOrNull((e) => e.productId == event.productId);
+      if (product == null) return;
 
-    int newQuantity = product.availability == 'absent'
-        ? 0
-        : event.count ?? (product.quantity ?? 0) - 1;
-    List<ProductEntity> updatedProducts =
-        List.from(state.cartData?.products ?? []);
-    Set<int> updatedSelectedProductIds = Set.from(state.selectedProductIds);
+      int newQuantity = product.availability == 'absent'
+          ? 0
+          : event.count ?? (product.quantity ?? 0) - 1;
 
-    bool wasLastProductRemoved = false;
+      final currentProducts = state.cartData?.products ?? [];
+      final updatedProducts = List<ProductEntity>.from(currentProducts);
 
-    if (newQuantity > 0) {
-      updatedProducts[updatedProducts.indexOf(product)] =
-          product.copyWith(quantity: newQuantity);
-    } else {
-      updatedProducts.remove(product);
-      updatedSelectedProductIds.remove(product.productId);
-      wasLastProductRemoved = true;
-    }
+      if (newQuantity > 0) {
+        final productIndex = updatedProducts.indexOf(product);
+        updatedProducts[productIndex] = product.copyWith(quantity: newQuantity);
+      } else {
+        updatedProducts.remove(product);
+      }
 
-    // Check if cart becomes empty after this operation
-    bool isCartEmptyAfterRemoval = updatedProducts.isEmpty;
+      // Check if cart becomes empty after this operation
+      bool isCartEmptyAfterRemoval = updatedProducts.isEmpty;
 
-    emit(state.copyWith(
-        cartData: state.cartData?.copyWith(products: updatedProducts),
-        selectedProductIds: updatedSelectedProductIds,
-        cartType: isCartEmptyAfterRemoval && state.isAvailableDelivery
-            ? TypeReceiving.delivery
-            : state.cartType));
+      // Выполняем API запрос БЕЗ локального обновления состояния
+      final result = await deleteCartUC(CartParams(
+          productId: event.productId.toString(),
+          quantity: newQuantity.toString()));
 
-    //_debounceTimer = Timer(
-    //   Duration(milliseconds: wasLastProductRemoved ? 0 : 300), () async {
-    final result = await deleteCartUC(CartParams(
-        productId: event.productId.toString(),
-        quantity: newQuantity.toString()));
-    await result.fold<Future<void>>(
-      (_) async {
-        _handleCartUpdateError(emit, updatedProducts, product, event.context);
-      },
-      (_) async {
-        add(LoadCartDataEvent());
-        //if (wasLastProductRemoved) {
-        //  add(LoadCartDataEvent()); // Загружаем корзину только если товар был полностью удален
-        //}
-      },
-    );
-    //});
+      await result.fold<Future<void>>(
+        (_) async {
+          _handleCartUpdateError(emit, updatedProducts, product, event.context);
+        },
+        (_) async {
+          // При успешном ответе отправляем событие для обновления локального состояния
+          add(UpdateLocalCartDeleteEvent(
+            productId: event.productId,
+            newQuantity: newQuantity,
+            isCartEmptyAfterRemoval: isCartEmptyAfterRemoval,
+          ));
+        },
+      );
+    });
   }
 
-  // Функция для добавления товара с задержкой
+  // Функция для добавления товара с дебаунс таймером
   Future<void> _onAddCart(
       AddCartEvent event, Emitter<CartScreenState> emit) async {
     add(UpdateDeliveryPriceEvent());
-    // Эмитируем текущее состояние, чтобы UI обновился
-    //emit(state.copyWith(isLoading: true));
 
-    // Ожидаем 2 секунды, прежде чем выполнить запрос, но сбрасываем таймер, если событие повторяется
-    _debounceTimer
-        ?.cancel(); // Сбрасываем предыдущий таймер, если событие повторяется
+    // Сбрасываем предыдущий таймер добавления, если событие повторяется
+    _addCartDebounceTimer?.cancel();
 
-    int newQuantity = 1;
+    // Устанавливаем дебаунс таймер на 300ms
+    _addCartDebounceTimer = Timer(const Duration(milliseconds: 300), () async {
+      final currentProducts = state.cartData?.products ?? [];
+      final productIndex =
+          currentProducts.indexWhere((e) => e.productId == event.productId);
 
-    final updatedProducts =
-        List<ProductEntity>.from(state.cartData?.products ?? []);
-    final productIndex =
-        updatedProducts.indexWhere((e) => e.productId == event.productId);
+      int newQuantity = 1;
+      bool wasFirstTimeAdded = productIndex == -1;
+      bool wasCartEmpty = currentProducts.isEmpty;
 
-    bool wasFirstTimeAdded = productIndex == -1; // Товар отсутствовал в корзине
-    bool wasCartEmpty =
-        (state.cartData?.products ?? []).isEmpty; // Корзина была пустая
+      if (!wasFirstTimeAdded) {
+        ProductEntity product = currentProducts[productIndex];
+        newQuantity = event.count ?? (product.quantity ?? 0) + 1;
+      }
 
-    if (!wasFirstTimeAdded) {
-      ProductEntity product = updatedProducts[productIndex];
-      newQuantity = event.count ?? (product.quantity ?? 0) + 1;
-      updatedProducts[productIndex] = product.copyWith(quantity: newQuantity);
-    } else {
-      updatedProducts.add(ProductEntity(
-          productId: event.productId, quantity: newQuantity, isLoading: true));
-    }
+      // Выполняем API запрос БЕЗ локального обновления состояния
+      final failureOrCart = await addCartUC(CartParams(
+          productId: event.productId.toString(),
+          quantity: newQuantity.toString()));
 
-    emit(state.copyWith(
-        cartData: state.cartData?.copyWith(products: updatedProducts),
-        isLoading: false));
+      await failureOrCart.fold<Future<void>>(
+        (failure) async {
+          // При ошибке показываем диалог
+          final navigatorContext = event.context ?? UiConstants.homeContext;
 
-    // If cart was empty and this is the first product, set cartType to delivery
-    if (wasCartEmpty && wasFirstTimeAdded) {
-      emit(state.copyWith(
-          cartType: state.isAvailableDelivery ? TypeReceiving.delivery : null));
-    }
+          String errorMessage;
+          if (failure is OutOfStockFailure) {
+            errorMessage = 'Больше нет в наличии';
+          } else {
+            errorMessage = 'Ошибка добавления товара в корзину';
+          }
 
-    /*_debounceTimer = Timer(
-      Duration(milliseconds: wasFirstTimeAdded ? 0 : 300),
-      () async {*/
-    final failureOrCart = await addCartUC(CartParams(
-        productId: event.productId.toString(),
-        quantity: newQuantity.toString()));
-    await failureOrCart.fold<Future<void>>(
-      (_) async {
-        emit(state.copyWith(
-            cartData: state.cartData?.copyWith(products: updatedProducts),
-            isLoading: false));
+          if (navigatorContext != null) {
+            Utils.showCustomDialog(
+              screenContext: navigatorContext,
+              text: errorMessage,
+              action: (ctx) {
+                if (Navigator.canPop(ctx)) Navigator.of(ctx).pop();
+              },
+            );
+          } else {
+            debugPrint("Не удалось показать диалог: context null");
+          }
 
-        final navigatorContext = event.context ?? UiConstants.homeContext;
-
-        if (navigatorContext != null) {
-          Utils.showCustomDialog(
-            screenContext: navigatorContext,
-            text: 'Ошибка добавления товара в корзину',
-            action: (ctx) {
-              if (Navigator.canPop(ctx)) Navigator.of(ctx).pop();
-            },
-          );
-        } else {
-          debugPrint("Не удалось показать диалог: context null");
-        }
-      },
-      (_) async {
-        if (!isClosed) {
-          add(LoadCartDataEvent());
-        }
-      },
-    );
-
-    //add(PickAllProductsEvent(force: true));
+          // Вызываем колбэк при ошибке
+          event.onError?.call();
+        },
+        (_) async {
+          // При успешном ответе отправляем событие для обновления локального состояния
+          add(UpdateLocalCartDataEvent(
+            productId: event.productId,
+            quantity: newQuantity,
+            wasFirstTimeAdded: wasFirstTimeAdded,
+            wasCartEmpty: wasCartEmpty,
+            onSuccess: event.onSuccess,
+          ));
+        },
+      );
+    });
   }
 
   Future<void> _onClearCart(
@@ -654,5 +642,95 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
             : TypeReceiving.pickup));
 
     add(LoadCartDataEvent(isFirstLoading: true));
+  }
+
+  void _onUpdateLocalCartData(
+      UpdateLocalCartDataEvent event, Emitter<CartScreenState> emit) {
+    final currentProducts = state.cartData?.products ?? [];
+    final productIndex =
+        currentProducts.indexWhere((e) => e.productId == event.productId);
+
+    final updatedProducts = List<ProductEntity>.from(currentProducts);
+
+    if (!event.wasFirstTimeAdded && productIndex != -1) {
+      ProductEntity product = updatedProducts[productIndex];
+      updatedProducts[productIndex] =
+          product.copyWith(quantity: event.quantity);
+    } else {
+      updatedProducts.add(
+          ProductEntity(productId: event.productId, quantity: event.quantity));
+    }
+
+    emit(state.copyWith(
+        cartData: state.cartData?.copyWith(products: updatedProducts),
+        isLoading: false));
+
+    // If cart was empty and this is the first product, set cartType to delivery
+    if (event.wasCartEmpty && event.wasFirstTimeAdded) {
+      emit(state.copyWith(
+          cartType: state.isAvailableDelivery ? TypeReceiving.delivery : null));
+    }
+
+    // Загружаем актуальные данные корзины для синхронизации
+    if (!isClosed) {
+      add(LoadCartDataEvent());
+    }
+
+    // Вызываем колбэк при успешном добавлении
+    event.onSuccess?.call();
+  }
+
+  void _onUpdateLocalCartDelete(
+      UpdateLocalCartDeleteEvent event, Emitter<CartScreenState> emit) {
+    final currentProducts = state.cartData?.products ?? [];
+    final updatedProducts = List<ProductEntity>.from(currentProducts);
+    Set<int> updatedSelectedProductIds = Set.from(state.selectedProductIds);
+
+    final productIndex =
+        updatedProducts.indexWhere((e) => e.productId == event.productId);
+
+    if (productIndex != -1) {
+      if (event.newQuantity > 0) {
+        final product = updatedProducts[productIndex];
+        updatedProducts[productIndex] =
+            product.copyWith(quantity: event.newQuantity);
+      } else {
+        updatedProducts.removeAt(productIndex);
+        updatedSelectedProductIds.remove(event.productId);
+      }
+    }
+
+    emit(state.copyWith(
+        cartData: state.cartData?.copyWith(products: updatedProducts),
+        selectedProductIds: updatedSelectedProductIds,
+        cartType: event.isCartEmptyAfterRemoval && state.isAvailableDelivery
+            ? TypeReceiving.delivery
+            : state.cartType));
+
+    // Загружаем актуальные данные корзины для синхронизации
+    if (!isClosed) {
+      add(LoadCartDataEvent());
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _debounceTimer?.cancel();
+    _addCartDebounceTimer?.cancel();
+    _deleteCartDebounceTimer?.cancel();
+    controller.dispose();
+    fNameController.dispose();
+    sNameController.dispose();
+    phoneController.dispose();
+    emailController.dispose();
+    cityController.dispose();
+    streetHomeController.dispose();
+    entranceController.dispose();
+    floorController.dispose();
+    flatController.dispose();
+    doorPhoneController.dispose();
+    commentController.dispose();
+    promocodeController.dispose();
+    return super.close();
   }
 }
