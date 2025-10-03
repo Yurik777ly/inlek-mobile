@@ -18,7 +18,6 @@ import 'package:inlek/core/params/order_param.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/data/models/city_model.dart';
 import 'package:inlek/features/domain/entities/cart_entity.dart';
-import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
 import 'package:inlek/features/domain/entities/city_entity.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
@@ -155,7 +154,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       CartDetailedParams(
           pharmacyId: state.cartType == TypeReceiving.pickup
               ? state.selectedPharmacyId
-              : null,
+              : UiConstants.deliveryPharmacyId,
           promocodes:
               state.selectedPromoCodes.map((e) => e.promocode).join('|'),
           deliveryZone: state.deliveryZone),
@@ -172,6 +171,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       (cartData) {
         emit(state.copyWith(
             isLoading: false,
+            isLoadingPharmacy: false,
             cartData: cartData,
             cartType: !state.isAvailableDelivery ? TypeReceiving.pickup : null,
             errorText: null,
@@ -183,6 +183,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     if (requestId == 1 && event.isFirstLoading) {
       add(PickAllProductsEvent(force: true));
     }
+    print('Тип корзины: ${state.cartType.title}');
   }
 
   void _toggleShowPharmaciesWorkingNow(
@@ -483,7 +484,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     // Update the state with the new products list
     emit(state.copyWith(
         cartData: state.cartData?.copyWith(products: updatedProducts),
-        cartType: event.cartType));
+        cartType: event.cartType,
+        isLoadingPharmacy: true));
 
     if ((updatedProducts ?? []).isNotEmpty) {
       add(LoadCartDataEvent(isFirstLoading: true));
@@ -497,10 +499,6 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
   Future _onSelectPharmacy(
       SelectPharmacy event, Emitter<CartScreenState> emit) async {
-    // сохраняем объект аптеки в prefs
-    await sharedPreferences.setInt(
-        SharedPreferencesKeys.pharmacyId, event.pharmacy.pharmacyId);
-
     // Create a new list of products with isLoading set to true
     final updatedProducts = state.cartData?.products
         .map((product) => product.copyWith(isLoading: true))
@@ -508,9 +506,9 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
     // Update the state with the new products list
     emit(state.copyWith(
-      selectedPharmacyId: event.pharmacy.pharmacyId,
-      cartData: state.cartData?.copyWith(products: updatedProducts),
-    ));
+        selectedPharmacyId: event.pharmacyId,
+        cartData: state.cartData?.copyWith(products: updatedProducts),
+        isLoadingPharmacy: true));
 
     add(LoadCartDataEvent(isFirstLoading: true));
   }
@@ -635,11 +633,21 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       }
     })();
 
+    // удаляем аптеку из памяти
+    await sharedPreferences.remove(SharedPreferencesKeys.pharmacyId);
+
+    final updatedProducts = state.cartData?.products
+        .map((product) => product.copyWith(isLoading: true))
+        .toList();
+
     emit(state.copyWith(
+        cartData: state.cartData?.copyWith(products: updatedProducts),
         isAvailableDelivery: city?.isDeliveryAvailable,
         cartType: city?.isDeliveryAvailable == true
             ? state.cartType
-            : TypeReceiving.pickup));
+            : TypeReceiving.pickup,
+        selectedPharmacyId: -1,
+        isLoadingPharmacy: true));
 
     add(LoadCartDataEvent(isFirstLoading: true));
   }

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/features/domain/entities/base_product_entity.dart';
+import 'package:inlek/features/domain/entities/category_entity.dart';
 import 'package:inlek/features/domain/entities/product_prices_entity.dart';
 import 'package:inlek/features/domain/entities/product_totals_entity.dart';
 
@@ -46,6 +47,7 @@ class ProductEntity extends BaseProductEntity {
   final ProductTotalsEntity? totals;
   final String? instruction;
   final int? otherPharmacy;
+  final List<CategoryEntity>? categoriesJson;
 
   const ProductEntity({
     super.productId = 0,
@@ -92,6 +94,7 @@ class ProductEntity extends BaseProductEntity {
     this.totals,
     this.instruction,
     this.otherPharmacy,
+    this.categoriesJson,
   });
 
   ProductEntity copyWith({
@@ -139,6 +142,7 @@ class ProductEntity extends BaseProductEntity {
     ProductTotalsEntity? totals,
     String? instruction,
     int? otherPharmacy,
+    List<CategoryEntity>? categoriesJson,
   }) {
     return ProductEntity(
       productId: productId ?? this.productId,
@@ -185,6 +189,7 @@ class ProductEntity extends BaseProductEntity {
       totals: totals ?? this.totals,
       instruction: instruction ?? this.instruction,
       otherPharmacy: otherPharmacy ?? this.otherPharmacy,
+      categoriesJson: categoriesJson ?? this.categoriesJson,
     );
   }
 
@@ -233,6 +238,7 @@ class ProductEntity extends BaseProductEntity {
         totals,
         instruction,
         otherPharmacy,
+        categoriesJson,
       ];
 }
 

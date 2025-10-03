@@ -6,8 +6,8 @@ class CartDetailedParams {
   final String promocodes;
 
   CartDetailedParams({
-    int? pharmacyId,
+    this.pharmacyId,
     this.deliveryZone = DeliveryZoneType.none,
     this.promocodes = "",
-  }) : pharmacyId = pharmacyId ?? 6864;
+  });
 }

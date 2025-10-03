@@ -2,6 +2,7 @@ part of 'cart_screen_bloc.dart';
 
 class CartScreenState extends Equatable {
   final bool isLoading;
+  final bool isLoadingPharmacy;
   final bool isOrderCompleting;
   final String? errorText;
   final String? promocodeErrorText;
@@ -21,6 +22,7 @@ class CartScreenState extends Equatable {
 
   const CartScreenState({
     this.isLoading = true,
+    this.isLoadingPharmacy = false,
     this.isOrderCompleting = false,
     this.errorText,
     this.promocodeErrorText,
@@ -41,6 +43,7 @@ class CartScreenState extends Equatable {
 
   CartScreenState copyWith({
     bool? isLoading,
+    bool? isLoadingPharmacy,
     bool? isOrderCompleting,
     String? errorText,
     String? promocodeErrorText,
@@ -61,6 +64,7 @@ class CartScreenState extends Equatable {
   }) {
     return CartScreenState(
       isLoading: isLoading ?? this.isLoading,
+      isLoadingPharmacy: isLoadingPharmacy ?? this.isLoadingPharmacy,
       isOrderCompleting: isOrderCompleting ?? this.isOrderCompleting,
       errorText: errorText,
       promocodeErrorText: promocodeErrorText,
@@ -68,7 +72,9 @@ class CartScreenState extends Equatable {
       selectedProductIds: selectedProductIds ?? this.selectedProductIds,
       isAllProductsChecked: isAllProductsChecked ?? this.isAllProductsChecked,
       pharmacies: pharmacies ?? this.pharmacies,
-      selectedPharmacyId: selectedPharmacyId ?? this.selectedPharmacyId,
+      selectedPharmacyId: selectedPharmacyId == -1
+          ? null
+          : selectedPharmacyId ?? this.selectedPharmacyId,
       isShowPharmaciesWorkingNow:
           isShowPharmaciesWorkingNow ?? this.isShowPharmaciesWorkingNow,
       isShowPharmaciesProductsInStock: isShowPharmaciesProductsInStock ??
@@ -85,6 +91,7 @@ class CartScreenState extends Equatable {
   @override
   List<Object?> get props => [
         isLoading,
+        isLoadingPharmacy,
         isOrderCompleting,
         errorText,
         promocodeErrorText,

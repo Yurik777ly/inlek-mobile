@@ -9,6 +9,7 @@ import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/routes.dart';
+import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/domain/entities/city_entity.dart';
 import 'package:inlek/features/presentation/bloc/select_region_screen/select_region_screen_bloc.dart';
 import 'package:inlek/features/presentation/pages/home_screen.dart';
@@ -18,6 +19,7 @@ import 'package:inlek/features/presentation/widgets/cart_screen/delivery_bottom_
 import 'package:inlek/features/presentation/widgets/select_region_screen/city_search_field.dart';
 import 'package:inlek/features/presentation/widgets/select_region_screen/popularity_cities_widget.dart';
 import 'package:inlek/locator_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SelectRegionScreen extends StatelessWidget {
   const SelectRegionScreen({super.key, this.selectRegionScreenType});
@@ -131,6 +133,8 @@ class SelectRegionScreen extends StatelessWidget {
                                 ),
                                 (route) => false);
                           } else {
+                            sl<SharedPreferences>()
+                                .remove(SharedPreferencesKeys.pharmacyId);
                             Navigator.pop(context, state.selectedRegion);
                           }
                         },

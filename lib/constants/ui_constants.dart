@@ -113,4 +113,6 @@ class UiConstants {
     fontWeight: FontWeight.w400,
     fontFamily: 'Rubik',
   );
+
+  static const int deliveryPharmacyId = 17599997;
 }

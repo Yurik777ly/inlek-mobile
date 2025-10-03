@@ -86,8 +86,8 @@ class ChangePaymentTypeEvent extends CartScreenEvent {
 }
 
 class SelectPharmacy extends CartScreenEvent {
-  final CartPharmacyEntity pharmacy;
-  const SelectPharmacy(this.pharmacy);
+  final int pharmacyId;
+  const SelectPharmacy(this.pharmacyId);
 }
 
 class ToggleShowPharmaciesWorkingNowEvent extends CartScreenEvent {

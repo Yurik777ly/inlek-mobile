@@ -34,8 +34,20 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
     final String? serverToken =
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
 
-    final uri = Uri.parse(
-        '${baseUrl}cart/detailed?delivery_zone=${params.deliveryZone == DeliveryZoneType.none ? '' : params.deliveryZone.name}&pharmacy_id=${params.pharmacyId}&promocodes=${params.promocodes}');
+    // Формируем query-параметры динамически
+    final Map<String, String> queryParameters = {};
+    if (params.deliveryZone != DeliveryZoneType.none) {
+      queryParameters['delivery_zone'] = params.deliveryZone.name;
+    }
+    if (params.pharmacyId != null) {
+      queryParameters['pharmacy_id'] = params.pharmacyId.toString();
+    }
+    if (params.promocodes.isNotEmpty) {
+      queryParameters['promocodes'] = params.promocodes;
+    }
+
+    final uri = Uri.parse('${baseUrl}cart/detailed')
+        .replace(queryParameters: queryParameters);
 
     final headers = {
       'Content-Type': 'application/json',

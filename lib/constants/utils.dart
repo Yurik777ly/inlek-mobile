@@ -95,8 +95,19 @@ class Utils {
       }
 
       final now = DateTime.now();
-      if (parsedDate.isAfter(DateTime(now.year, now.month, now.day))) {
-        return 'Дата не может быть в будущем';
+      final today = DateTime(now.year, now.month, now.day);
+      final maxAgeDate = DateTime(now.year - 105, now.month, now.day);
+
+      // Проверяем, что дата не позднее текущей
+      if (parsedDate.isAfter(today)) {
+        return 'Дата не может быть позднее текущей даты';
+      }
+
+      // Проверяем, что дата не раньше чем 105 лет назад
+      if (parsedDate.isBefore(maxAgeDate)) {
+        final minDateFormatted =
+            '${maxAgeDate.day.toString().padLeft(2, '0')} / ${maxAgeDate.month.toString().padLeft(2, '0')} / ${maxAgeDate.year}';
+        return 'Дата не может быть раньше $minDateFormatted';
       }
 
       return null; // дата корректна

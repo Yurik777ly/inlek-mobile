@@ -1469,7 +1469,7 @@ class BottomSheetManager {
                       text: 'Заберу отсюда',
                       isActive: true,
                       onTap: () {
-                        cartBloc.add(SelectPharmacy(pharmacy));
+                        cartBloc.add(SelectPharmacy(pharmacy.pharmacyId));
                         Navigator.pop(sheetContext);
                         Navigator.pop(UiConstants.homeContext!);
                       },

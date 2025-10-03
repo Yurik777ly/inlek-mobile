@@ -29,6 +29,59 @@ import 'package:inlek/features/presentation/widgets/product_screen/product_title
 import 'package:inlek/locator_service.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+class _ProductAnalogResult {
+  final List<ProductEntity> products;
+  final String title;
+
+  const _ProductAnalogResult({
+    required this.products,
+    required this.title,
+  });
+}
+
+_ProductAnalogResult? _getProductsToDisplay(ProductEntity product) {
+  // Определяем, является ли товар ЛП (лекарственным препаратом)
+  // ЛП - это товары с категориями ID 3 или 344
+  final isLP = product.categoriesJson?.any((category) =>
+          category.categoryId == 3 || category.categoryId == 344) ??
+      false;
+
+  if (isLP) {
+    // Для ЛП: сначала аналоги, потом похожие товары
+    if ((product.relatedProducts ?? []).isNotEmpty) {
+      return _ProductAnalogResult(
+        products: product.relatedProducts!,
+        title: 'Аналоги',
+      );
+    } else if ((product.similarProducts ?? []).isNotEmpty) {
+      return _ProductAnalogResult(
+        products: product.similarProducts!,
+        title: 'Похожие товары',
+      );
+    }
+  } else {
+    // Для не-ЛП: сначала похожие товары, потом аналоги, потом товары бренда
+    if ((product.similarProducts ?? []).isNotEmpty) {
+      return _ProductAnalogResult(
+        products: product.similarProducts!,
+        title: 'Похожие товары',
+      );
+    } else if ((product.relatedProducts ?? []).isNotEmpty) {
+      return _ProductAnalogResult(
+        products: product.relatedProducts!,
+        title: 'Аналоги',
+      );
+    } else if ((product.brandProducts ?? []).isNotEmpty) {
+      return _ProductAnalogResult(
+        products: product.brandProducts!,
+        title: 'Товары бренда',
+      );
+    }
+  }
+
+  return null;
+}
+
 class ProductScreen extends StatelessWidget {
   const ProductScreen({super.key});
 
@@ -207,26 +260,38 @@ class ProductScreen extends StatelessWidget {
                                                       ),
                                                     ),
                                                   ),
-                                                if ((productState.product
-                                                            ?.similarProducts ??
-                                                        [])
-                                                    .isNotEmpty)
-                                                  Padding(
-                                                    padding: getMarginOrPadding(
-                                                        top: 32),
-                                                    child: BlockWidget(
-                                                      contentPadding:
+                                                Builder(
+                                                  builder: (context) {
+                                                    final product =
+                                                        productState.product;
+                                                    if (product == null)
+                                                      return SizedBox.shrink();
+
+                                                    final analogResult =
+                                                        _getProductsToDisplay(
+                                                            product);
+                                                    if (analogResult == null)
+                                                      return SizedBox.shrink();
+
+                                                    return Padding(
+                                                      padding:
                                                           getMarginOrPadding(
-                                                              left: 20,
-                                                              right: 20),
-                                                      title: 'Аналоги',
-                                                      child: ProductsListWidget(
-                                                          products: productState
-                                                                  .product
-                                                                  ?.similarProducts ??
-                                                              []),
-                                                    ),
-                                                  ),
+                                                              top: 32),
+                                                      child: BlockWidget(
+                                                        contentPadding:
+                                                            getMarginOrPadding(
+                                                                left: 20,
+                                                                right: 20),
+                                                        title:
+                                                            analogResult.title,
+                                                        child: ProductsListWidget(
+                                                            products:
+                                                                analogResult
+                                                                    .products),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
                                                 SizedBox(height: 32.dp),
                                               ],
                                             ),

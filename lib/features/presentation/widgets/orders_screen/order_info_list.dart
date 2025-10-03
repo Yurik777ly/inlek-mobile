@@ -65,14 +65,15 @@ class OrderInfoList extends StatelessWidget {
         ),
 
         // Способ оплаты
-        Padding(
-          padding: getMarginOrPadding(top: 8),
-          child: OrderInfoItem(
-            imagePath: Paths.cardIconPath,
-            title: 'Способ оплаты',
-            subtitle: order?.paymentType?.title ?? order?.paymentTitle,
+        if (order?.typeReceipt == TypeReceiving.delivery)
+          Padding(
+            padding: getMarginOrPadding(top: 8),
+            child: OrderInfoItem(
+              imagePath: Paths.cardIconPath,
+              title: 'Способ оплаты',
+              subtitle: order?.paymentType?.title ?? order?.paymentTitle,
+            ),
           ),
-        ),
 
         // Комментарий к заказу
         if ((order?.comment?.isNotEmpty ?? false))

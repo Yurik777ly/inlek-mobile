@@ -8,7 +8,6 @@ import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/geocoder_manager.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
-import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
 import 'package:inlek/features/domain/entities/order_entity.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
@@ -219,21 +218,7 @@ class OrderScreen extends StatelessWidget {
 
           if (orderType == TypeReceiving.pickup) {
             cartBloc.add(
-              SelectPharmacy(
-                CartPharmacyEntity(
-                  pharmacyId: orderState.order?.pharmacyId ?? 0,
-                  pharmacyName: orderState.order?.pharmacy?.address ?? '',
-                  address: orderState.order?.pharmacy?.address ?? '',
-                  coordinates: orderState.order?.pharmacy?.coordinates ?? '',
-                  schedule: orderState.order?.pharmacy?.schedule ?? '',
-                  distanceMeters: 0,
-                  products: [],
-                  totalProducts: 0,
-                  totalPrice: 0,
-                  totalPriceOld: 0,
-                  totalDiscount: 0,
-                ),
-              ),
+              SelectPharmacy(orderState.order?.pharmacyId ?? 0),
             );
           } else {
             sl<SharedPreferences>().setString(

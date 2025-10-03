@@ -1,4 +1,5 @@
 import 'package:inlek/constants/extensions.dart';
+import 'package:inlek/features/data/models/category_model.dart';
 import 'package:inlek/features/data/models/product_prices_model.dart';
 import 'package:inlek/features/data/models/product_totals_model.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
@@ -47,9 +48,9 @@ class ProductModel extends ProductEntity {
     super.totals,
     super.instruction,
     super.otherPharmacy,
+    super.categoriesJson,
   });
 
-  @override
   factory ProductModel.fromJson(Map<String, dynamic> data) {
     Map<String, dynamic> json = data["product_info"] ?? data;
     json = json["product_charachters"] ?? json;
@@ -157,10 +158,14 @@ class ProductModel extends ProductEntity {
           ? ProductTotalsModel.fromJson(data["product_totals"])
           : null,
       instruction: json['instruction'],
+      categoriesJson: data['categories_json'] != null
+          ? (data['categories_json'] as List)
+              .map((e) => CategoryModel.fromJson(e))
+              .toList()
+          : null,
     );
   }
 
-  @override
   Map<String, dynamic> toJson() => {
         "product_id": productId,
         "product_info": {
@@ -205,7 +210,9 @@ class ProductModel extends ProductEntity {
           'promocodes_json': [],
           "prices": (prices as ProductPricesModel?)?.toJson(),
           "product_totals": (totals as ProductTotalsModel?)?.toJson(),
-        }
+        },
+        'categories_json':
+            categoriesJson?.map((e) => (e as CategoryModel).toJson()).toList(),
       };
 }
 
@@ -260,7 +267,6 @@ class PropertiesModel extends PropertiesEntity {
             json["release_form"] == null ? null : json["release_form"]["value"],
       );
 
-  @override
   PropertiesModel copyWith({
     String? brand,
     String? country,
