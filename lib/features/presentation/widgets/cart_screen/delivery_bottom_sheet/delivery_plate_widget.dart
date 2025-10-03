@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -29,10 +28,10 @@ class InfoPlateWidget extends StatelessWidget {
                 color: UiConstants.whiteColor.withOpacity(.4),
                 borderRadius: BorderRadius.circular(8.r),
               ),
-              child: SvgPicture.asset(Paths.infoIconPath,
-                  width: 16.dp, height: 16.dp),
+              child:
+                  SvgPicture.asset(Paths.infoIconPath, width: 16, height: 16),
             ),
-            SizedBox(width: 12.dp),
+            SizedBox(width: 12),
             Expanded(
               child: Text(
                 text,

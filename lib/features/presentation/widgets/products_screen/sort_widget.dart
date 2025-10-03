@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/widgets/products_screen/sort_button.dart';
@@ -33,7 +32,7 @@ class SortWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 SortButton(onTap: onTap, iconPath: iconPath),
-                SizedBox(width: 8.dp),
+                SizedBox(width: 8),
                 Text(
                   caption,
                   style: UiConstants.textStyle3

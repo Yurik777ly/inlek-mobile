@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/bloc/about_us_screen/about_us_screen_bloc.dart';
@@ -47,13 +46,13 @@ class AboutUsScreen extends StatelessWidget {
                                     shrinkWrap: true,
                                     children: [
                                       OnlinePharmBlock(),
-                                      SizedBox(height: 16.dp),
+                                      SizedBox(height: 16),
                                       LegalAddressBlock(),
-                                      SizedBox(height: 16.dp),
+                                      SizedBox(height: 16),
                                       GosfarmnadzorBlock(),
-                                      SizedBox(height: 16.dp),
+                                      SizedBox(height: 16),
                                       SocialNetworkBlock(),
-                                      SizedBox(height: 16.dp),
+                                      SizedBox(height: 16),
                                       BookCommentsBlock(),
                                     ],
                                   ),

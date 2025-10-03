@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -22,21 +21,22 @@ class EmptyCartWidget extends StatelessWidget {
             style: UiConstants.textStyle9
                 .copyWith(color: UiConstants.darkBlueColor),
           ),
-          SizedBox(height: 8.dp),
+          SizedBox(height: 8),
           Text(
             'Наполните ее товарами из каталога',
             style: UiConstants.textStyle3.copyWith(
               color: UiConstants.darkBlue2Color.withOpacity(.6),
             ),
           ),
-          SizedBox(height: 16.dp),
+          SizedBox(height: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset(Paths.emptyCartIconPath,
-                    width: MediaQuery.of(context).size.width),
-                Spacer(),
+                Expanded(
+                  child: Image.asset(Paths.emptyCartIconPath,
+                      width: MediaQuery.of(context).size.width),
+                ),
                 AppButtonWidget(
                   isActive: true,
                   text: 'За покупками',

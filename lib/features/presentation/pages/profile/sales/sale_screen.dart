@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/share_utils.dart';
 import 'package:inlek/constants/size_utils.dart';
@@ -72,10 +71,10 @@ class SaleScreen extends StatelessWidget {
                                           right: 20),
                                       children: [
                                         BannerItem(
-                                            height: 200.dp,
+                                            height: 200,
                                             url:
                                                 '${dotenv.env['PUBLIC_URL']!}${state.action?.image}'),
-                                        SizedBox(height: 10.dp),
+                                        SizedBox(height: 10),
                                         Text(
                                           state.action?.pageTitle ?? '',
                                           style: UiConstants.textStyle5
@@ -83,7 +82,7 @@ class SaleScreen extends StatelessWidget {
                                                   color: UiConstants
                                                       .darkBlueColor),
                                         ),
-                                        SizedBox(height: 32.dp),
+                                        SizedBox(height: 32),
                                         BlocProvider(
                                           create: (context) =>
                                               ProductsScreenBloc(
@@ -109,7 +108,7 @@ class SaleScreen extends StatelessWidget {
                                                             color: UiConstants
                                                                 .darkBlueColor),
                                                   ),
-                                                  SizedBox(height: 16.dp),
+                                                  SizedBox(height: 16),
                                                   Row(
                                                     children: [
                                                       Expanded(
@@ -123,7 +122,7 @@ class SaleScreen extends StatelessWidget {
                                                                       context),
                                                         ),
                                                       ),
-                                                      SizedBox(width: 8.dp),
+                                                      SizedBox(width: 8),
                                                       Expanded(
                                                         child: SortWidget(
                                                           caption: 'Фильтр',
@@ -137,7 +136,7 @@ class SaleScreen extends StatelessWidget {
                                                       ),
                                                     ],
                                                   ),
-                                                  SizedBox(height: 16.dp),
+                                                  SizedBox(height: 16),
                                                   ProductsGridWidget(
                                                       products: state
                                                               .searchProducts

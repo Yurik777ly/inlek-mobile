@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/article_entity.dart';
@@ -41,7 +40,7 @@ class ArticlesListWidget extends StatelessWidget {
                 ),
               ),
             ),
-        separatorBuilder: (context, index) => SizedBox(height: 16.dp),
+        separatorBuilder: (context, index) => SizedBox(height: 16),
         itemCount: noContainParentArticles.length);
   }
 }

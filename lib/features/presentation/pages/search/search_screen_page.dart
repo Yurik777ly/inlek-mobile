@@ -82,8 +82,8 @@ class _SearchScreenPageContentState extends State<_SearchScreenPageContent> {
                           onTap: () => Navigator.pop(context),
                           child: SvgPicture.asset(Paths.arrowBackIconPath,
                               color: UiConstants.darkBlue2Color.withOpacity(.6),
-                              width: 24.dp,
-                              height: 24.dp),
+                              width: 24,
+                              height: 24),
                         ),
                       ),
                       Expanded(
@@ -349,8 +349,8 @@ class _SearchScreenPageContentState extends State<_SearchScreenPageContent> {
         padding: getMarginOrPadding(top: 16, bottom: 16),
         child: Divider(
           color: UiConstants.white5Color,
-          thickness: 2.dp,
-          height: 34.dp,
+          thickness: 2,
+          height: 34,
         ),
       );
 }

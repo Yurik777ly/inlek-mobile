@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inlek/constants/extensions.dart';
 
 EdgeInsets getMarginOrPadding({
   double? all,
@@ -9,10 +8,10 @@ EdgeInsets getMarginOrPadding({
   double? bottom,
 }) {
   if (all != null) {
-    left = all.dp;
-    top = all.dp;
-    right = all.dp;
-    bottom = all.dp;
+    left = all;
+    top = all;
+    right = all;
+    bottom = all;
     return EdgeInsets.only(
       left: left,
       top: top,
@@ -21,9 +20,9 @@ EdgeInsets getMarginOrPadding({
     );
   }
   return EdgeInsets.only(
-    left: left?.dp ?? 0,
-    top: top?.dp ?? 0,
-    right: right?.dp ?? 0,
-    bottom: bottom?.dp ?? 0,
+    left: left ?? 0,
+    top: top ?? 0,
+    right: right ?? 0,
+    bottom: bottom ?? 0,
   );
 }

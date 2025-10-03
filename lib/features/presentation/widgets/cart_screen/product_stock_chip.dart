@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -28,7 +27,7 @@ class ProductStockChip extends StatelessWidget {
                   shape: BoxShape.circle),
               child: SvgPicture.asset(Paths.giftconPath),
             ),
-            SizedBox(width: 8.dp),
+            SizedBox(width: 8),
             Expanded(
               child: RichText(
                 text: TextSpan(

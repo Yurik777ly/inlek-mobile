@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/widgets/product_screen/product_banner_item.dart';
 
@@ -16,7 +15,7 @@ class ProductBannerWidget extends StatelessWidget {
       children: [
         Container(
           color: Colors.white,
-          height: 260.dp,
+          height: 260,
           child: PageView.builder(
             controller: pageController,
             itemCount: 1,
@@ -35,9 +34,9 @@ class ProductBannerWidget extends StatelessWidget {
                 count: 1,
                 axisDirection: Axis.horizontal,
                 effect: WormEffect(
-                    spacing: 4.dp,
-                    dotWidth: 6.dp,
-                    dotHeight: 6.dp,
+                    spacing: 4,
+                    dotWidth: 6,
+                    dotHeight: 6,
                     dotColor: UiConstants.white4Color,
                     activeDotColor: UiConstants.darkBlueColor.withOpacity(.6)),
                 onDotClicked: (index) => pageController.animateToPage(index,

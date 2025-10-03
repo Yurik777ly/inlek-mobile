@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
@@ -33,9 +32,8 @@ class SearchProductsWidget extends StatelessWidget {
                 ),
             separatorBuilder: (context, index) => Container(
                   padding: getMarginOrPadding(top: 8, bottom: 8),
-                  height: 18.dp,
-                  child:
-                      Divider(color: UiConstants.white5Color, thickness: 2.dp),
+                  height: 18,
+                  child: Divider(color: UiConstants.white5Color, thickness: 2),
                 ),
             itemCount: products.length),
       ),

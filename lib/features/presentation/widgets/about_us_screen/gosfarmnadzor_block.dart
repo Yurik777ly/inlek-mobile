@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/launch_url_utils.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/features/presentation/widgets/about_us_screen/about_us_block_template.dart';
@@ -21,7 +20,7 @@ class GosfarmnadzorBlock extends StatelessWidget {
           onTap: () =>
               LaunchUrlUtils.sendEmail(toEmail: 'info@gospharmnadzor.by'),
         ),
-        SizedBox(height: 8.dp),
+        SizedBox(height: 8),
         OrderInfoItem(
             imagePath: Paths.pointIconPath,
             title: 'Адрес',

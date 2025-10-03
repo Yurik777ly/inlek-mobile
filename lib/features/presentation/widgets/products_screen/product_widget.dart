@@ -37,7 +37,7 @@ class ProductWidget extends StatelessWidget {
         ),
       ),
       child: Container(
-        width: 148.dp,
+        width: 148,
         decoration: BoxDecoration(
           color: UiConstants.whiteColor,
           borderRadius: BorderRadius.circular(16.r),
@@ -51,7 +51,7 @@ class ProductWidget extends StatelessWidget {
                     top: Radius.circular(16.r),
                   ),
                   child: CachedNetworkImage(
-                    height: 112.dp,
+                    height: 112,
                     width: double.infinity,
                     imageUrl: '${dotenv.env['PUBLIC_URL']!}${product.image}',
                     fit: BoxFit.contain,
@@ -77,7 +77,7 @@ class ProductWidget extends StatelessWidget {
                                 .copyWith(color: UiConstants.darkBlueColor),
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis),
-                        SizedBox(height: 8.dp),
+                        SizedBox(height: 8),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -104,12 +104,12 @@ class ProductWidget extends StatelessWidget {
               ],
             ),
             Positioned(
-              top: 4.dp,
-              left: 8.dp,
-              right: 8.dp,
+              top: 4,
+              left: 8,
+              right: 8,
               child: Wrap(
-                spacing: 4.dp,
-                runSpacing: 4.dp,
+                spacing: 4,
+                runSpacing: 4,
                 children: [
                   if (product.productSticker != null)
                     ProductChipWidget(

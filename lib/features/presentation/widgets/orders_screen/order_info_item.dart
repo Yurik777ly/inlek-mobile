@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/widgets/right_arrow_button.dart';
@@ -48,8 +47,8 @@ class OrderInfoItem extends StatelessWidget {
               children: [
                 Skeleton.unite(
                   child: Container(
-                    height: 40.dp,
-                    width: 40.dp,
+                    height: 40,
+                    width: 40,
                     padding: getMarginOrPadding(all: 12),
                     decoration: BoxDecoration(
                       color: imageBackgroundColor ?? UiConstants.white2Color,
@@ -65,7 +64,7 @@ class OrderInfoItem extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(width: 8.dp),
+                SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

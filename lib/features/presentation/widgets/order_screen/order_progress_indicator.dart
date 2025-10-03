@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
@@ -82,7 +81,7 @@ class OrderProgressIndicator extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 8.dp),
+          SizedBox(height: 8),
           Padding(
             padding: getMarginOrPadding(left: 27.5, right: 27.5),
             child: Stack(
@@ -122,13 +121,13 @@ class OrderProgressIndicator extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 2.dp),
+          SizedBox(height: 2),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(
               orderStatuses.length,
               (index) => SizedBox(
-                width: 62.dp,
+                width: 62,
                 child: Text(
                     Utils.getRussianOrderStatus(
                       orderStatuses[index],

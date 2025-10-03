@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -139,7 +138,7 @@ class _GidTextFieldState extends State<AppTextFieldWidget> {
             ),
           ),
         Container(
-          height: widget.isExpanded ? 44.dp : null,
+          height: widget.isExpanded ? 44 : null,
           decoration: BoxDecoration(boxShadow: widget.boxShadow),
           child: TextFormField(
             focusNode: widget.focusNode,
@@ -196,8 +195,8 @@ class _GidTextFieldState extends State<AppTextFieldWidget> {
                   color: UiConstants.darkBlue2Color.withOpacity(.6), height: 1),
               suffixIconConstraints: widget.hasSuffixConstrains
                   ? BoxConstraints(
-                      maxHeight: 24.dp,
-                      maxWidth: 48.dp, // чуть больше, чтобы влез `Padding`
+                      maxHeight: 24,
+                      maxWidth: 48, // чуть больше, чтобы влез `Padding`
                     )
                   : null,
               suffixIcon: Skeleton.ignore(
@@ -209,15 +208,15 @@ class _GidTextFieldState extends State<AppTextFieldWidget> {
                     padding:
                         widget.suffixPadding ?? getMarginOrPadding(right: 10),
                     child: SizedBox(
-                      width: widget.hasSuffixConstrains ? 24.dp : null,
-                      height: widget.hasSuffixConstrains ? 24.dp : null,
+                      width: widget.hasSuffixConstrains ? 24 : null,
+                      height: widget.hasSuffixConstrains ? 24 : null,
                       child: widget.isObscuredText
                           ? SvgPicture.asset(
                               isShowPassword
                                   ? Paths.visibilityOffIconPath
                                   : Paths.visibilityOnIconPath,
-                              width: 24.dp,
-                              height: 24.dp,
+                              width: 24,
+                              height: 24,
                               color: UiConstants.darkBlueColor.withOpacity(.4),
                             )
                           : widget.suffixWidget,
@@ -232,7 +231,7 @@ class _GidTextFieldState extends State<AppTextFieldWidget> {
                       padding: getMarginOrPadding(left: 16, right: 12),
                       child: widget.prefixWidget)
                   : null,
-              prefixIconConstraints: BoxConstraints(maxWidth: 52.dp),
+              prefixIconConstraints: BoxConstraints(maxWidth: 52),
               errorText: widget.isShowError ? widget.errorText : null,
               errorStyle: (widget.textStyle ?? UiConstants.textStyle10)
                   .copyWith(

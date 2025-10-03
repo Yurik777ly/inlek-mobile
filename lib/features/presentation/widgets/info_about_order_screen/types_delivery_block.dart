@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/widgets/about_us_screen/about_us_block_template.dart';
@@ -33,7 +32,7 @@ class TypesDeliveryBlock extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 8.dp),
+        SizedBox(height: 8),
         OrderInfoItem(
           imagePath: Paths.bagIconPath,
           subtitleWidget: RichText(

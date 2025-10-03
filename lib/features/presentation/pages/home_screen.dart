@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/app_route_observer.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/notification_manager.dart';
@@ -328,7 +327,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         Positioned(
                           child: Container(
-                            height: 65.dp,
+                            height: 65,
                             margin: getMarginOrPadding(
                                 left: 20, right: 20, bottom: 8),
                             padding: getMarginOrPadding(all: 8),

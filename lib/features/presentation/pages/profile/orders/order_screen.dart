@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -113,7 +112,7 @@ class OrderScreen extends StatelessWidget {
                                                     title:
                                                         'В вашем заказе есть рецептурные препараты. Пожалуйста, не забудьте взять с собой рецепт.'),
                                               ),
-                                            SizedBox(height: 32.dp),
+                                            SizedBox(height: 32),
                                             ProductsListWidget(
                                                 title: 'Товары',
                                                 products: orderState
@@ -122,7 +121,7 @@ class OrderScreen extends StatelessWidget {
                                                 productsListScreenType:
                                                     ProductsListScreenType
                                                         .order),
-                                            SizedBox(height: 32.dp),
+                                            SizedBox(height: 32),
                                             BlockWidget(
                                               title: 'Информация о заказе',
                                               spacing: 8,
@@ -138,7 +137,7 @@ class OrderScreen extends StatelessWidget {
                                                     ].join(', '),
                                               ),
                                             ),
-                                            SizedBox(height: 32.dp),
+                                            SizedBox(height: 32),
                                             /*if (orderState.order?.status ==
                                                 OrderStatus.canceled)*/
                                             Padding(

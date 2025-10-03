@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
@@ -84,17 +83,17 @@ class InfoAboutOrderScreen extends StatelessWidget {
                                             text:
                                                 'Доставка производится только по Минску и Минскому району',
                                           ),
-                                          SizedBox(height: 16.dp),
+                                          SizedBox(height: 16),
                                           TypesDeliveryBlock(),
-                                          SizedBox(height: 16.dp),
+                                          SizedBox(height: 16),
                                           CostCourierDeliveryBlock(),
-                                          SizedBox(height: 16.dp),
+                                          SizedBox(height: 16),
                                           CourierDeliveryTimeBlock(),
-                                          SizedBox(height: 16.dp),
+                                          SizedBox(height: 16),
                                           OrdersWithDeliveryAcceptedBlock(),
-                                          SizedBox(height: 16.dp),
+                                          SizedBox(height: 16),
                                           CourierDeliveryTermsBlock(),
-                                          SizedBox(height: 16.dp),
+                                          SizedBox(height: 16),
                                           CourierDeliveryZonesBlock(),
                                         ],
                                       ),

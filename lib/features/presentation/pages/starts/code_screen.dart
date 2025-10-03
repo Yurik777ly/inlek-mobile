@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/routes.dart';
@@ -79,7 +78,7 @@ class CodeScreen extends StatelessWidget {
                     controller: bloc.codeController,
                     focusNode: bloc.codeFocusNode,
                     showError: state.showError),
-                SizedBox(height: 32.dp),
+                SizedBox(height: 32),
                 AppButtonWidget(
                   isActive: state.isButtonActive,
                   text: 'Войти',
@@ -87,7 +86,7 @@ class CodeScreen extends StatelessWidget {
                     SubmitCodeEvent(),
                   ),
                 ),
-                SizedBox(height: 16.dp),
+                SizedBox(height: 16),
                 if (state.canRequestNewCode)
                   GestureDetector(
                     onTap: () => bloc.add(RequestNewCodeEvent()),

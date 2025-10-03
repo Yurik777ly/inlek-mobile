@@ -70,7 +70,7 @@ class LoginScreen extends StatelessWidget {
                         ],
                         validator: Utils.validatePhone,
                       ),
-                      SizedBox(height: 24.dp),
+                      SizedBox(height: 24),
                       AppTextFieldWidget(
                         title: 'Пароль',
                         hintText: 'Введите пароль',
@@ -80,13 +80,13 @@ class LoginScreen extends StatelessWidget {
                             ? state.passwordErrorText
                             : null, // Показывать ошибку при неверном пароле
                       ),
-                      SizedBox(height: 32.dp),
+                      SizedBox(height: 32),
                       AppButtonWidget(
                         isActive: state.isButtonActive,
                         text: 'Войти',
                         onTap: () => bloc.add(SubmitLoginEvent()),
                       ),
-                      SizedBox(height: 32.dp),
+                      SizedBox(height: 32),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

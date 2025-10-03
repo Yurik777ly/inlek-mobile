@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
@@ -67,7 +64,7 @@ class SalesScreen extends StatelessWidget {
                                                 ),
                                             separatorBuilder:
                                                 (context, index) =>
-                                                    SizedBox(height: 16.dp),
+                                                    SizedBox(height: 16),
                                             itemCount:
                                                 (state.actions ?? []).length)
                                       ],

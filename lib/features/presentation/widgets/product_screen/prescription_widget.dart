@@ -17,7 +17,7 @@ class PrescriptionWidget extends StatelessWidget {
           children: [
             SvgPicture.asset(Paths.infoIconPath,
                 color: UiConstants.pink2Color, width: 16.w, height: 16.h),
-            SizedBox(width: 8.dp),
+            SizedBox(width: 8),
             Expanded(
               child: Text(
                 'По рецепту, доступен только самовывоз из аптеки',

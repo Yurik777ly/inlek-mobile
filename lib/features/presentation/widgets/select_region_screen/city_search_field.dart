@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -76,7 +75,7 @@ class CitySearchField extends StatelessWidget {
                 suggestionItemDecoration: BoxDecoration(
                   border: Border.all(style: BorderStyle.none),
                 ),
-                maxSuggestionBoxHeight: 124.dp,
+                maxSuggestionBoxHeight: 124,
                 hint: hintText ?? 'Не указано',
                 suggestions: (suggestions ?? const [])
                     .map(
@@ -98,27 +97,27 @@ class CitySearchField extends StatelessWidget {
                   filled: true,
                   counterText: "",
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.dp),
+                    borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(color: Colors.transparent),
                   ),
                   disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.dp),
+                    borderRadius: BorderRadius.circular(12),
                     borderSide:
                         const BorderSide(width: 3, color: Colors.transparent),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.dp),
+                    borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
                         width: 3,
                         color: UiConstants.purple2Color.withOpacity(.2)),
                   ),
                   errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.dp),
+                    borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
                         width: 3, color: UiConstants.pinkColor),
                   ),
                   focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.dp),
+                    borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
                         width: 3, color: UiConstants.pinkColor),
                   ),
@@ -127,8 +126,8 @@ class CitySearchField extends StatelessWidget {
                   hintStyle: UiConstants.textStyle3.copyWith(
                       color: UiConstants.darkBlue2Color.withOpacity(.6),
                       height: 1),
-                  prefixIconConstraints: BoxConstraints(maxWidth: 52.dp),
-                  suffixIconConstraints: BoxConstraints(maxWidth: 52.dp),
+                  prefixIconConstraints: BoxConstraints(maxWidth: 52),
+                  suffixIconConstraints: BoxConstraints(maxWidth: 52),
                   prefixIcon: prefixIcon != null
                       ? Padding(
                           padding: getMarginOrPadding(right: 12, left: 16),
@@ -163,7 +162,7 @@ class CitySearchField extends StatelessWidget {
                 suggestionsDecoration: SuggestionDecoration(
                   color: UiConstants.whiteColor,
                   borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(16.dp),
+                    bottom: Radius.circular(16),
                   ),
                 ),
                 onSearchTextChanged: (String query) async {

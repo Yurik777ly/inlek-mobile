@@ -8,7 +8,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -113,12 +112,12 @@ class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
                       assetName: Paths.locationIconPath,
                       color: UiConstants.pink2Color,
                       onPressed: () => _bloc.add(MoveToCurrentLocationEvent())),
-                  SizedBox(height: 16.dp),
+                  SizedBox(height: 16),
                   MapButton(
                       assetName: Paths.plusIconPath,
                       color: Color(0xFF222222).withOpacity(.6),
                       onPressed: () => _bloc.add(ZoomInEvent())),
-                  SizedBox(height: 4.dp),
+                  SizedBox(height: 4),
                   MapButton(
                       assetName: Paths.minusIconPath,
                       color: Color(0xFF222222).withOpacity(.6),

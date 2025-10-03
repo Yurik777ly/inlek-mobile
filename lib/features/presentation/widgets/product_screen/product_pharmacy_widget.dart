@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -31,8 +30,8 @@ class ProductPharmacyWidget extends StatelessWidget {
                 Skeleton.replace(
                   child: Container(
                     margin: getMarginOrPadding(right: 9),
-                    height: 24.dp,
-                    width: 24.dp,
+                    height: 24,
+                    width: 24,
                     padding: getMarginOrPadding(all: 4),
                     decoration: BoxDecoration(
                         color: UiConstants.purple3Color,
@@ -53,7 +52,7 @@ class ProductPharmacyWidget extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 16.dp),
+          SizedBox(height: 16),
           Text(
             pharmacy.address ?? '-',
             style: UiConstants.textStyle2

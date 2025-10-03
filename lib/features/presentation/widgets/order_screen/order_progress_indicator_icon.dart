@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -18,8 +17,8 @@ class OrderProgressIndicatorIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Skeleton.unite(
       child: Container(
-        height: 40.dp,
-        width: 40.dp,
+        height: 40,
+        width: 40,
         padding: getMarginOrPadding(all: 10),
         decoration: BoxDecoration(
           color: isActive ? UiConstants.purple3Color : UiConstants.whiteColor,

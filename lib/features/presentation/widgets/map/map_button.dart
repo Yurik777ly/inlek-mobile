@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/ui_constants.dart';
 
 class MapButton extends StatelessWidget {
@@ -18,13 +17,12 @@ class MapButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: onPressed,
-      icon: SvgPicture.asset(assetName,
-          width: 16.dp, height: 16.dp, color: color),
+      icon: SvgPicture.asset(assetName, width: 16, height: 16, color: color),
       style: ElevatedButton.styleFrom(
         padding: EdgeInsets.zero,
         elevation: 0,
         backgroundColor: UiConstants.whiteColor.withOpacity(.9),
-        fixedSize: Size(36.dp, 36.dp),
+        fixedSize: Size(36, 36),
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.r), side: BorderSide.none),
       ),

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -67,7 +66,9 @@ class MainScreen extends StatelessWidget {
                                   ? InternetNoInternetConnectionWidget()
                                   : ListView(
                                       padding: getMarginOrPadding(
-                                          top: 16, bottom: 94,),
+                                        top: 16,
+                                        bottom: 94,
+                                      ),
                                       children: [
                                         if (!Skeletonizer.of(context).enabled)
                                           CustomBannerWidget(
@@ -114,7 +115,9 @@ class MainScreen extends StatelessWidget {
                                                   );
                                                 },
                                                 child: OrdersListWidget(
-                                                    orders: recentOrders.take(3).toList()),
+                                                    orders: recentOrders
+                                                        .take(3)
+                                                        .toList()),
                                               );
                                             },
                                           ),
@@ -171,7 +174,7 @@ class MainScreen extends StatelessWidget {
                                           ),
                                         if (!Skeletonizer.of(context).enabled &&
                                             (state.categories ?? []).isNotEmpty)
-                                          SizedBox(height: 32.dp),
+                                          SizedBox(height: 32),
                                         BlockWidget(
                                           contentPadding: getMarginOrPadding(
                                               left: 20, right: 20),

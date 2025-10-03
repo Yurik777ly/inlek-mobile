@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -56,8 +55,8 @@ class SelectRegionScreen extends StatelessWidget {
                           Row(
                             children: [
                               SvgPicture.asset(Paths.locationIconPath,
-                                  width: 24.dp, height: 24.dp),
-                              SizedBox(width: 8.dp),
+                                  width: 24, height: 24),
+                              SizedBox(width: 8),
                               Text(
                                 state.detectedCity ?? 'Определение...',
                                 style: UiConstants.textStyle5
@@ -65,14 +64,14 @@ class SelectRegionScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          SizedBox(height: 4.dp),
+                          SizedBox(height: 4),
                           Text(
                             'На основе вашей геолокации',
                             style: UiConstants.textStyle3.copyWith(
                               color: UiConstants.darkBlue2Color.withOpacity(.6),
                             ),
                           ),
-                          SizedBox(height: 16.dp),
+                          SizedBox(height: 16),
                           CitySearchField(
                             prefixIcon: Paths.searchIconPath,
                             hintText: 'Найти другой город',
@@ -104,7 +103,7 @@ class SelectRegionScreen extends StatelessWidget {
                                   text:
                                       'Мы еще не работаем в этом городе, выберите другой'),
                             ),
-                          SizedBox(height: 16.dp),
+                          SizedBox(height: 16),
                           PopularityCitiesWidget(
                               regions: state.popularCities,
                               onTapRegion: (CityEntity region) => bloc
@@ -139,7 +138,7 @@ class SelectRegionScreen extends StatelessWidget {
                           }
                         },
                       ),
-                      SizedBox(height: 8.dp),
+                      SizedBox(height: 8),
                       AppButtonWidget(
                         text: 'Пропустить',
                         isFilled: false,

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -48,8 +47,7 @@ class PromoCodePlateWidget extends StatelessWidget {
           ),
           GestureDetector(
             onTap: onDelete,
-            child: SvgPicture.asset(Paths.closeIconPath,
-                width: 24.dp, height: 24.dp),
+            child: SvgPicture.asset(Paths.closeIconPath, width: 24, height: 24),
           )
         ],
       ),

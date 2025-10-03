@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
@@ -21,7 +20,7 @@ class ProductTitleWidget extends StatelessWidget {
           style:
               UiConstants.textStyle5.copyWith(color: UiConstants.darkBlueColor),
         ),
-        SizedBox(height: 8.dp),
+        SizedBox(height: 8),
         Row(
           children: [
             Text(
@@ -55,7 +54,7 @@ class ProductTitleWidget extends StatelessWidget {
               ),
           ],
         ),
-        SizedBox(height: 4.dp),
+        SizedBox(height: 4),
         Text(
           'Цена может меняться в зависимости от аптеки и способа получения.',
           style: UiConstants.textStyle8.copyWith(

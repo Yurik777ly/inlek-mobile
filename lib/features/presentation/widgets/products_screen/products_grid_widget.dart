@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/pages/catalog/products/product_screen.dart';
@@ -28,8 +27,8 @@ class ProductsGridWidget extends StatelessWidget {
         : isLoadingProducts
             ? products.length + 4
             : products.length;
-    double itemHeight = 285.dp;
-    double itemWidth = 156.dp;
+    double itemHeight = 285;
+    double itemWidth = 156;
 
     return Skeleton.ignorePointer(
       child: Skeleton.shade(
@@ -40,8 +39,8 @@ class ProductsGridWidget extends StatelessWidget {
           padding: scrollPhysics != null ? null : EdgeInsets.only(bottom: 94),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            crossAxisSpacing: 8.dp,
-            mainAxisSpacing: 8.dp,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
             childAspectRatio: itemWidth / itemHeight,
           ),
           itemCount: itemCount,

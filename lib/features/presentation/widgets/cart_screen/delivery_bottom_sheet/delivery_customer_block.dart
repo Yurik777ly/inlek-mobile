@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
@@ -41,7 +40,7 @@ class DeliveryCustomerBlock extends StatelessWidget {
           style:
               UiConstants.textStyle5.copyWith(color: UiConstants.darkBlueColor),
         ),
-        SizedBox(height: 8.dp),
+        SizedBox(height: 8),
         Container(
           padding: getMarginOrPadding(all: 16),
           decoration: BoxDecoration(
@@ -58,7 +57,7 @@ class DeliveryCustomerBlock extends StatelessWidget {
                     controller: cartBloc.fNameController,
                     validator: Utils.nameValidate),
               ),
-              SizedBox(height: 24.dp),
+              SizedBox(height: 24),
               OptimizedFormField(
                 fieldKey: lastNameKey,
                 child: AppTextFieldWidget(
@@ -67,7 +66,7 @@ class DeliveryCustomerBlock extends StatelessWidget {
                     controller: cartBloc.sNameController,
                     validator: Utils.nameValidate),
               ),
-              SizedBox(height: 24.dp),
+              SizedBox(height: 24),
               OptimizedFormField(
                 fieldKey: phoneKey,
                 child: AppTextFieldWidget(
@@ -81,7 +80,7 @@ class DeliveryCustomerBlock extends StatelessWidget {
                     ],
                     validator: Utils.validatePhone),
               ),
-              SizedBox(height: 24.dp),
+              SizedBox(height: 24),
               OptimizedFormField(
                 fieldKey: emailKey,
                 child: AppTextFieldWidget(

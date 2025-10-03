@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -35,7 +34,7 @@ class AddressPlate extends StatelessWidget {
                   style: UiConstants.textStyle5
                       .copyWith(color: UiConstants.darkBlueColor),
                 ),
-                SizedBox(height: 8.dp),
+                SizedBox(height: 8),
                 Text(
                   body,
                   style: UiConstants.textStyle2
@@ -51,8 +50,8 @@ class AddressPlate extends StatelessWidget {
                 onTap: onClose,
                 child: SvgPicture.asset(
                   Paths.closeIconPath,
-                  width: 24.dp,
-                  height: 24.dp,
+                  width: 24,
+                  height: 24,
                   color: UiConstants.darkBlue2Color.withOpacity(.6),
                 ),
               ),

@@ -49,21 +49,21 @@ class OrderItem extends StatelessWidget {
                             color: UiConstants.darkBlueColor,
                             fontWeight: FontWeight.w800),
                       ),
-                      SizedBox(height: 8.dp),
+                      SizedBox(height: 8),
                       Text(
                         Utils.formatDate(order.createdAt!),
                         style: UiConstants.textStyle3.copyWith(
                           color: UiConstants.darkBlue2Color.withOpacity(.6),
                         ),
                       ),
-                      SizedBox(height: 8.dp),
+                      SizedBox(height: 8),
                       OrderItemStatusChip(orderStatus: order.status!)
                     ],
                   ),
                   RightArrowButton(),
                 ],
               ),
-              SizedBox(height: 8.dp),
+              SizedBox(height: 8),
               OrderItemProductsList(orderProducts: order.products ?? [])
             ],
           ),

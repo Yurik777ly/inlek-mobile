@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/share_utils.dart';
 import 'package:inlek/constants/size_utils.dart';
@@ -74,15 +73,15 @@ class ArticleScreen extends StatelessWidget {
                                           right: 20),
                                       children: [
                                         BannerItem(
-                                          height: 200.dp,
+                                          height: 200,
                                           url:
                                               '${dotenv.env['PUBLIC_URL']!}${state.article?.image}',
                                         ),
-                                        SizedBox(height: 16.dp),
+                                        SizedBox(height: 16),
                                         DateIconWidget(
                                           date: DateTime.now(),
                                         ),
-                                        SizedBox(height: 8.dp),
+                                        SizedBox(height: 8),
                                         Text(
                                           state.article?.pageTitle ?? '',
                                           style: UiConstants.textStyle5
@@ -91,13 +90,13 @@ class ArticleScreen extends StatelessWidget {
                                                       .darkBlueColor),
                                         ),
                                         if (Skeletonizer.of(context).enabled)
-                                          SizedBox(height: 16.dp),
+                                          SizedBox(height: 16),
                                         Skeleton.replace(
                                           child: CustomFlutterHtml(
                                               isLoading: state.isLoading,
                                               content: state.article?.content),
                                         ),
-                                        SizedBox(height: 32.dp),
+                                        SizedBox(height: 32),
                                         BlockWidget(
                                           title: 'Читайте также',
                                           clickableText: 'Все статьи',

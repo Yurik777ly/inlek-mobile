@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/widgets/right_arrow_button.dart';
@@ -57,8 +56,8 @@ class ProductReceivingMethodItem extends StatelessWidget {
               ),
               if (onTapArrowButton != null)
                 RightArrowButton(
-                    width: 35.dp,
-                    height: 35.dp,
+                    width: 35,
+                    height: 35,
                     padding: getMarginOrPadding(all: 4),
                     onTap: onTap),
             ],

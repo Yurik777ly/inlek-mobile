@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
@@ -83,7 +82,7 @@ class OrdersScreen extends StatelessWidget {
                                         ChangeOnlyActiveOrdersEvent(checked),
                                       ),
                                     ),
-                                    SizedBox(height: 16.dp),
+                                    SizedBox(height: 16),
 
                                     // Контент заказов с учётом состояний
                                     Expanded(
@@ -110,7 +109,7 @@ class OrdersScreen extends StatelessWidget {
                                                   shrinkWrap: true,
                                                   itemCount: orders.length,
                                                   separatorBuilder: (_, __) =>
-                                                      SizedBox(height: 8.dp),
+                                                      SizedBox(height: 8),
                                                   itemBuilder:
                                                       (context, index) =>
                                                           OrderItem(

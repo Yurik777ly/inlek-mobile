@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
@@ -50,13 +49,13 @@ class _SearchProductsItemState extends State<SearchProductsItem> {
         elevation: 0,
         color: Colors.transparent,
         child: SizedBox(
-          height: 60.dp,
+          height: 60,
           child: Row(
             children: [
               ClipRRect(
                 child: CachedNetworkImage(
-                  height: 60.dp,
-                  width: 60.dp,
+                  height: 60,
+                  width: 60,
                   imageUrl:
                       '${dotenv.env['PUBLIC_URL']!}${widget.product.image}',
                   fit: BoxFit.cover,
@@ -94,7 +93,7 @@ class _SearchProductsItemState extends State<SearchProductsItem> {
                   ],
                 ),
               ),
-              SizedBox(width: 16.dp),
+              SizedBox(width: 16),
               BlocBuilder<CartScreenBloc, CartScreenState>(
                 builder: (context, state) {
                   // Используем локальное состояние если оно установлено, иначе проверяем в корзине
@@ -136,8 +135,8 @@ class _SearchProductsItemState extends State<SearchProductsItem> {
                     },
                     child: SvgPicture.asset(
                       Paths.cartIconPath,
-                      height: 24.dp,
-                      width: 24.dp,
+                      height: 24,
+                      width: 24,
                       color: isChecked ? UiConstants.purple2Color : null,
                     ),
                   );

@@ -23,18 +23,18 @@ class ProductBannerItem extends StatelessWidget {
           fit: BoxFit.contain,
           cacheManager: CustomCacheManager(),
           errorWidget: (context, url, error) =>
-              Icon(Icons.image, size: 56.dp, color: UiConstants.whiteColor),
+              Icon(Icons.image, size: 56, color: UiConstants.whiteColor),
           progressIndicatorBuilder: (context, url, progress) => Center(
             child: CircularProgressIndicator(color: UiConstants.pink2Color),
           ),
         ),
         Positioned(
-          top: 8.dp,
-          left: 20.dp,
-          right: 20.dp,
+          top: 8,
+          left: 20,
+          right: 20,
           child: Wrap(
-            spacing: 8.dp,
-            runSpacing: 8.dp,
+            spacing: 8,
+            runSpacing: 8,
             children: [
               if (product?.productSticker != null)
                 ProductChipWidget(

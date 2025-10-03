@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/category_entity.dart';
 import 'package:inlek/features/presentation/pages/catalog/category_screen.dart';
@@ -18,8 +17,8 @@ class CategoriesGridWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double itemHeight = 128.dp;
-    double itemWidth = 156.dp;
+    double itemHeight = 128;
+    double itemWidth = 156;
     return Skeleton.shade(
       child: GridView.builder(
         shrinkWrap: true,
@@ -27,8 +26,8 @@ class CategoriesGridWidget extends StatelessWidget {
         padding: contentPadding,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          crossAxisSpacing: 8.dp,
-          mainAxisSpacing: 8.dp,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
           childAspectRatio: itemWidth / itemHeight,
         ),
         itemCount: categories.length,

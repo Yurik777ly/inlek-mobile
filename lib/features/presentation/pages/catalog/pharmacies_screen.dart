@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/bottom_sheet_manager.dart';
@@ -157,7 +156,7 @@ class PharmaciesScreen extends StatelessWidget {
                                                   selectedIndex: pharmaciesState
                                                       .selectorIndex),
                                             ),
-                                            SizedBox(height: 16.dp),
+                                            SizedBox(height: 16),
                                             Expanded(
                                               child: pharmaciesState
                                                           .selectorIndex ==
@@ -202,8 +201,8 @@ class PharmaciesScreen extends StatelessWidget {
                                                                 separatorBuilder: (context,
                                                                         index) =>
                                                                     SizedBox(
-                                                                        height: 8
-                                                                            .dp),
+                                                                        height:
+                                                                            8),
                                                                 itemCount:
                                                                     pharmaciesState
                                                                         .filteredPharmacies

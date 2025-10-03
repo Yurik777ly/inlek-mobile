@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/domain/entities/banner_entity.dart';
@@ -62,7 +61,7 @@ class _CustomBannerWidgetState extends State<CustomBannerWidget> {
     return Column(
       children: [
         SizedBox(
-          height: 184.dp,
+          height: 184,
           child: PageView.builder(
             controller: widget.pageController,
             itemCount: widget.banners.length,
@@ -106,9 +105,9 @@ class _CustomBannerWidgetState extends State<CustomBannerWidget> {
                 count: widget.banners.isNotEmpty ? widget.banners.length : 1,
                 axisDirection: Axis.horizontal,
                 effect: WormEffect(
-                  spacing: 4.dp,
-                  dotWidth: 6.dp,
-                  dotHeight: 6.dp,
+                  spacing: 4,
+                  dotWidth: 6,
+                  dotHeight: 6,
                   dotColor: UiConstants.white4Color,
                   activeDotColor: UiConstants.darkBlueColor.withOpacity(.6),
                 ),

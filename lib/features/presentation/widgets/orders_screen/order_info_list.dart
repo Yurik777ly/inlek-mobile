@@ -33,7 +33,7 @@ class OrderInfoList extends StatelessWidget {
           title: 'Номер заказа',
           subtitle: '${order?.orderId}',
         ),
-        SizedBox(height: 8.dp),
+        SizedBox(height: 8),
 
         // Время заказа
         OrderInfoItem(
@@ -41,7 +41,7 @@ class OrderInfoList extends StatelessWidget {
           title: 'Время заказа',
           subtitle: Utils.formatDateTime(order?.createdAt),
         ),
-        SizedBox(height: 8.dp),
+        SizedBox(height: 8),
 
         // Способ получения
         OrderInfoItem(
@@ -87,7 +87,7 @@ class OrderInfoList extends StatelessWidget {
           ),
 
         // Цены
-        SizedBox(height: 8.dp),
+        SizedBox(height: 8),
         OrderInfoItem(
           imagePath: Paths.cardIconPath,
           title: 'Стоимость товаров',
@@ -114,7 +114,7 @@ class OrderInfoList extends StatelessWidget {
                   '${order?.summary?.deliveryPrice ?? order?.deliverySum ?? 0} BYN',
             ),
           ),
-        SizedBox(height: 8.dp),
+        SizedBox(height: 8),
         OrderInfoItem(
           imagePath: Paths.cardIconPath,
           title: 'Итого',

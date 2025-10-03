@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
@@ -45,7 +44,7 @@ class ProductReceivingMethodsWidget extends StatelessWidget {
             onTapArrowButton: () {},
           ),
         ),
-        SizedBox(width: 8.dp),
+        SizedBox(width: 8),
         Expanded(
           child: ProductReceivingMethodItem(
               title: 'Самовывоз', subtitle: 'от 30 мин'),

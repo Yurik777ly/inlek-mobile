@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/launch_url_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/widgets/about_us_screen/about_us_block_template.dart';
@@ -18,12 +17,12 @@ class OrdersWithDeliveryAcceptedBlock extends StatelessWidget {
         TextWithParagraphDotWidget(
             boldPart: 'Круглосуточно ежедневно',
             regularPart: ' через приложение'),
-        SizedBox(height: 8.dp),
+        SizedBox(height: 8),
         TextWithParagraphDotWidget(
             boldPart: 'По режиму работы колл-центра',
             regularPart:
                 ' по многоканальному номеру через фармацевтического работника колл-центра'),
-        SizedBox(height: 8.dp),
+        SizedBox(height: 8),
         TextWithParagraphDotWidget(
           child: Expanded(
             child: RichText(
@@ -61,7 +60,7 @@ class OrdersWithDeliveryAcceptedBlock extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 8.dp),
+        SizedBox(height: 8),
         HowPlaceOrderPlateWidget()
       ],
     );

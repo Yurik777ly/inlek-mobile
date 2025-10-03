@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:intl/intl.dart';
@@ -16,10 +15,10 @@ class DateIconWidget extends StatelessWidget {
     return Row(
       children: [
         Skeleton.replace(
-          child: SvgPicture.asset(Paths.calendarIconPath,
-              width: 16.dp, height: 16.dp),
+          child:
+              SvgPicture.asset(Paths.calendarIconPath, width: 16, height: 16),
         ),
-        SizedBox(width: 6.dp),
+        SizedBox(width: 6),
         Text(
           date != null ? DateFormat('dd.MM.yyyy').format(date!) : '',
           style: UiConstants.textStyle3.copyWith(

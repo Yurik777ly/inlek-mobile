@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/external_links.dart';
 import 'package:inlek/constants/launch_url_utils.dart';
 import 'package:inlek/constants/paths.dart';
@@ -22,7 +21,7 @@ class SocialNetworkBlock extends StatelessWidget {
             onTap: LaunchUrlUtils.openInstagramProfile,
             imageBackgroundColor: UiConstants.purple3Color,
             imageForegroundColor: UiConstants.purpleColor),
-        SizedBox(height: 8.dp),
+        SizedBox(height: 8),
         OrderInfoItem(
             imagePath: Paths.tiktokIconPath,
             title: 'Tik Tok',

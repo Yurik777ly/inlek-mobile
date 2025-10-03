@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
@@ -37,7 +36,7 @@ class _CheckboxesBlockState extends State<CheckboxesBlock> {
             ChangeNotificationCheckboxEvent(isChecked ?? false),
           ),
         ),
-        SizedBox(height: 16.dp),
+        SizedBox(height: 16),
         CustomCheckbox(
           isEnabled: !personalDataBloc.state.isCheckedPolicyCheckbox,
           title: RichText(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/formatters/custom_phone_input_formatter.dart';
@@ -104,7 +103,7 @@ class SignUpScreen extends StatelessWidget {
                       CustomPhoneInputFormatter()
                     ],
                   ),
-                  SizedBox(height: 32.dp),
+                  SizedBox(height: 32),
                   AppButtonWidget(
                     isActive: state.isValidPhone && !state.isLoading,
                     isLoading: state.isLoading,

@@ -22,7 +22,7 @@ class OrderSmallItem extends StatelessWidget {
       child: GestureDetector(
         onTap: onTapOrder,
         child: Container(
-          height: 103.dp,
+          height: 103,
           padding: getMarginOrPadding(all: 8),
           decoration: BoxDecoration(
             color: UiConstants.whiteColor,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -20,7 +19,7 @@ class InternetNoInternetConnectionWidget extends StatelessWidget {
             style: UiConstants.textStyle1
                 .copyWith(color: UiConstants.darkBlueColor),
           ),
-          SizedBox(height: 8.dp),
+          SizedBox(height: 8),
           Text(
             'Проверьте подключение к интернету или попробуйте позднее.',
             style: UiConstants.textStyle2

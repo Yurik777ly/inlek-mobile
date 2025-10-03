@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -57,8 +56,8 @@ class _ChangePasswordBlockState extends State<ChangePasswordBlock>
                   duration: const Duration(milliseconds: 300),
                   child: SvgPicture.asset(
                     Paths.dropdownArrowIconPath,
-                    width: 24.dp,
-                    height: 24.dp,
+                    width: 24,
+                    height: 24,
                   ),
                 ),
               ],
@@ -90,7 +89,7 @@ class _ChangePasswordBlockState extends State<ChangePasswordBlock>
                             ].any((e) => e.isNotEmpty),
                         onChangedField: (_) => setState(() {}),
                       ),
-                      SizedBox(height: 24.dp),
+                      SizedBox(height: 24),
                       AppTextFieldWidget(
                         title: 'Новый пароль',
                         hintText: 'Введите пароль',
@@ -115,7 +114,7 @@ class _ChangePasswordBlockState extends State<ChangePasswordBlock>
                                 : false,
                         onChangedField: (_) => setState(() {}),
                       ),
-                      SizedBox(height: 24.dp),
+                      SizedBox(height: 24),
                       AppTextFieldWidget(
                         title: 'Подтвердите пароль',
                         hintText: 'Введите пароль',

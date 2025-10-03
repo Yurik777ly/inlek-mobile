@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/widgets/about_us_screen/about_us_block_template.dart';
@@ -22,7 +21,7 @@ class CourierDeliveryTimeBlock extends StatelessWidget {
           subtitleStyle:
               UiConstants.textStyle2.copyWith(color: UiConstants.darkBlueColor),
         ),
-        SizedBox(height: 16.dp),
+        SizedBox(height: 16),
         Text(
           'Заказы, оформленные до 16:00, доставляются в день заказа. Заказы, оформленные после 16:00, доставляются на следующий день.\n\nПо согласованию с покупателем время доставки может быть изменено.',
           style:

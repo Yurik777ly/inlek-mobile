@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -39,8 +38,8 @@ class SubcategoryItem extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8.r),
                 child: Container(
-                  height: 40.dp,
-                  width: 40.dp,
+                  height: 40,
+                  width: 40,
                   //padding: getMarginOrPadding(all: 12),
                   decoration: BoxDecoration(
                     color: UiConstants.purple3Color,
@@ -66,7 +65,7 @@ class SubcategoryItem extends StatelessWidget {
                           ),
                           errorWidget: (context, url, error) => Icon(
                             Icons.image,
-                            size: 24.dp,
+                            size: 24,
                             color: UiConstants.purpleColor.withOpacity(0.6),
                           ),
                           progressIndicatorBuilder: (context, url, progress) =>
@@ -86,7 +85,7 @@ class SubcategoryItem extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(width: 8.dp),
+            SizedBox(width: 8),
             Expanded(
               child: Text(title,
                   style: (titleStyle ?? UiConstants.textStyle2)
@@ -99,8 +98,8 @@ class SubcategoryItem extends StatelessWidget {
                 flipX: true,
                 child: SvgPicture.asset(Paths.arrowBackIconPath,
                     color: UiConstants.darkBlue2Color.withOpacity(.6),
-                    width: 24.dp,
-                    height: 24.dp),
+                    width: 24,
+                    height: 24),
               ),
             )
           ],

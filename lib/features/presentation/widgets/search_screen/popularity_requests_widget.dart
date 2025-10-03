@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/block_widget.dart';
 import 'package:inlek/features/presentation/widgets/search_screen/search_history_item.dart';
 
@@ -28,8 +27,8 @@ class PopularityRequestsWidget extends StatelessWidget {
       child: Align(
         alignment: Alignment.topLeft,
         child: Wrap(
-          spacing: 8.dp,
-          runSpacing: 8.dp,
+          spacing: 8,
+          runSpacing: 8,
           children: List.generate(
             popularityRequests.length,
             (index) {

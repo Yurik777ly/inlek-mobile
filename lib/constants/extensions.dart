@@ -25,9 +25,9 @@ extension DpExtensionInt on int {
 }
 
 extension EmptyPadding on num {
-  SizedBox get ph => SizedBox(height: toDouble().dp);
+  SizedBox get ph => SizedBox(height: toDouble());
 
-  SizedBox get pw => SizedBox(width: toDouble().dp);
+  SizedBox get pw => SizedBox(width: toDouble());
 }
 
 extension StringExtensions on String? {

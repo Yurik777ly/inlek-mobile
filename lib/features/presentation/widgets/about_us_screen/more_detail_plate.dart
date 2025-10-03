@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -35,14 +34,14 @@ class MoreDetailPlate extends StatelessWidget {
       ),
       onPressed: onTap,
       child: SizedBox(
-        height: 43.dp,
+        height: 43,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Skeleton.unite(
               child: Container(
-                width: 40.dp,
-                height: 40.dp,
+                width: 40,
+                height: 40,
                 padding: getMarginOrPadding(all: 12),
                 decoration: BoxDecoration(
                   color: UiConstants.whiteColor.withOpacity(.4),
@@ -56,7 +55,7 @@ class MoreDetailPlate extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(width: 8.dp),
+            SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

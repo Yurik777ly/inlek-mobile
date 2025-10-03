@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
@@ -30,7 +29,7 @@ class OrderItemStatusChip extends StatelessWidget {
                   : UiConstants.greenColor,
             ),
           ),
-          SizedBox(width: 4.dp),
+          SizedBox(width: 4),
           Text(
             Utils.getRussianOrderStatus(orderStatus),
             style: UiConstants.textStyle6.copyWith(

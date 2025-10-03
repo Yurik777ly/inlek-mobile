@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/presentation/widgets/how_place_order_screen/how_place_order_image.dart';
@@ -34,10 +33,10 @@ class AddProductToCartBlock extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 16.dp),
+          SizedBox(height: 16),
           HowPlaceOrderImage(
-              imagePath: Paths.howPlaceOrder3IconPath, height: 568.dp),
-          SizedBox(height: 16.dp),
+              imagePath: Paths.howPlaceOrder3IconPath, height: 568),
+          SizedBox(height: 16),
           RichText(
             text: TextSpan(
               style: descriptionStyle,
@@ -50,14 +49,14 @@ class AddProductToCartBlock extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 16.dp),
+          SizedBox(height: 16),
           HowPlaceOrderImage(
-              imagePath: Paths.howPlaceOrder4IconPath, height: 568.dp),
-          SizedBox(height: 16.dp),
+              imagePath: Paths.howPlaceOrder4IconPath, height: 568),
+          SizedBox(height: 16),
           Text(
               'После оформления заказа на указанную электронную почту придет письмо о получении Вашего заказа.\n\nОбработка заказа фармацевтическим работником осуществляется в течение 30 минут с момента получения.\n\nДождитесь звонка фармацевтического работника для фармацевтического консультирования и подтверждения заказа.',
               style: descriptionStyle),
-          SizedBox(height: 16.dp),
+          SizedBox(height: 16),
           PinkContainerWidget(
             children: [
               RichText(

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -100,7 +99,7 @@ class _AppButtonWidgetState extends State<AppButtonWidget> {
                       : BorderSide.none),
               alignment: widget.alignment),
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 13.5.dp),
+            padding: EdgeInsets.symmetric(vertical: 13.5),
             child: (widget.isLoading || _isProcessing)
                 ? Center(
                     child: SizedBox(

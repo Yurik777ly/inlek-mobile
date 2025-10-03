@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -164,8 +163,8 @@ class CartQuantityChanger extends StatelessWidget {
                 child: Center(
                   child: SvgPicture.asset(
                     Paths.minusIconPath,
-                    width: 16.dp,
-                    height: 16.dp,
+                    width: 16,
+                    height: 16,
                     color: UiConstants.darkBlueColor,
                   ),
                 ),
@@ -191,8 +190,8 @@ class CartQuantityChanger extends StatelessWidget {
                 child: Center(
                   child: SvgPicture.asset(
                     Paths.plusIconPath,
-                    width: 16.dp,
-                    height: 16.dp,
+                    width: 16,
+                    height: 16,
                     color: isAddDisabled
                         ? UiConstants.blackColor.withOpacity(.4)
                         : UiConstants.darkBlueColor,
@@ -282,7 +281,7 @@ class ProductQuantityChanger extends StatelessWidget {
     return GestureDetector(
       onTap: () {},
       child: Container(
-        height: 44.dp,
+        height: 44,
         padding: getMarginOrPadding(left: 20, right: 20, top: 5.5, bottom: 5.5),
         decoration: BoxDecoration(
           color: UiConstants.purpleColor,
@@ -297,8 +296,8 @@ class ProductQuantityChanger extends StatelessWidget {
                   Center(
                     child: SvgPicture.asset(
                       Paths.minusIconPath,
-                      width: 24.dp,
-                      height: 24.dp,
+                      width: 24,
+                      height: 24,
                       color: UiConstants.whiteColor,
                     ),
                   ),
@@ -355,8 +354,8 @@ class ProductQuantityChanger extends StatelessWidget {
                   Center(
                     child: SvgPicture.asset(
                       Paths.plusIconPath,
-                      width: 24.dp,
-                      height: 24.dp,
+                      width: 24,
+                      height: 24,
                       color: isAddDisabled
                           ? UiConstants.whiteColor.withOpacity(.4)
                           : UiConstants.whiteColor,

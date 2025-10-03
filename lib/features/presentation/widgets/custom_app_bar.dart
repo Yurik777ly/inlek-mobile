@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -64,8 +63,8 @@ class CustomAppBar extends StatelessWidget {
                         onTap: onTapBack ?? () => Navigator.pop(context),
                         child: SvgPicture.asset(Paths.arrowBackIconPath,
                             color: UiConstants.darkBlue2Color.withOpacity(.6),
-                            width: 24.dp,
-                            height: 24.dp),
+                            width: 24,
+                            height: 24),
                       ),
                     ),
                   Expanded(
@@ -93,7 +92,7 @@ class CustomAppBar extends StatelessWidget {
                     child: Padding(
                       padding: getMarginOrPadding(right: 8),
                       child: SvgPicture.asset(Paths.locationIconPath,
-                          width: 24.dp, height: 24.dp),
+                          width: 24, height: 24),
                     ),
                   ),
                 if (showBack && title == null && action == null)
@@ -103,8 +102,8 @@ class CustomAppBar extends StatelessWidget {
                       onTap: () => Navigator.pop(context),
                       child: SvgPicture.asset(Paths.arrowBackIconPath,
                           color: UiConstants.darkBlue2Color.withOpacity(.6),
-                          width: 24.dp,
-                          height: 24.dp),
+                          width: 24,
+                          height: 24),
                     ),
                   ),
                 Expanded(

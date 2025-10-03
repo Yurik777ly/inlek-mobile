@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/ui_constants.dart';
 
 class ProductCharacteristicItem extends StatelessWidget {
@@ -20,7 +19,7 @@ class ProductCharacteristicItem extends StatelessWidget {
             color: UiConstants.darkBlue2Color.withOpacity(.6),
           ),
         ),
-        SizedBox(height: 4.dp),
+        SizedBox(height: 4),
         Text(
           subtitle,
           style:

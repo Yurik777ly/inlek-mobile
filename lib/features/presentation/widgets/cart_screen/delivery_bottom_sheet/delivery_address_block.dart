@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
@@ -53,7 +52,7 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
           style:
               UiConstants.textStyle5.copyWith(color: UiConstants.darkBlueColor),
         ),
-        SizedBox(height: 8.dp),
+        SizedBox(height: 8),
         Container(
           padding: getMarginOrPadding(all: 16),
           decoration: BoxDecoration(
@@ -72,7 +71,7 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                     controller: cartBloc.cityController,
                     validator: Utils.validate),
               ),
-              SizedBox(height: 24.dp),
+              SizedBox(height: 24),
               OptimizedFormField(
                 fieldKey: widget.streetKey,
                 child: CitySearchField(
@@ -198,7 +197,7 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                   },
                 ),
               ),
-              SizedBox(height: 24.dp),
+              SizedBox(height: 24),
               Row(
                 children: [
                   Expanded(
@@ -207,7 +206,7 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                         hintText: 'Не указано',
                         controller: cartBloc.entranceController),
                   ),
-                  SizedBox(width: 8.dp),
+                  SizedBox(width: 8),
                   Expanded(
                     child: AppTextFieldWidget(
                         title: 'Этаж',
@@ -216,7 +215,7 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                   ),
                 ],
               ),
-              SizedBox(height: 24.dp),
+              SizedBox(height: 24),
               Row(
                 children: [
                   Expanded(
@@ -225,7 +224,7 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                         hintText: 'Не указано',
                         controller: cartBloc.flatController),
                   ),
-                  SizedBox(width: 8.dp),
+                  SizedBox(width: 8),
                   Expanded(
                     child: AppTextFieldWidget(
                         title: 'Домофон',
@@ -234,7 +233,7 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                   ),
                 ],
               ),
-              SizedBox(height: 24.dp),
+              SizedBox(height: 24),
               AppTextFieldWidget(
                   title: 'Комментарий к заказу',
                   hintText: 'Укажите, что необходимо учесть при доставке',

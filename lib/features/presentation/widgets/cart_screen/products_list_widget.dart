@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:inlek/constants/enums.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/domain/entities/base_product_entity.dart';
@@ -43,7 +42,7 @@ class ProductsListWidget extends StatelessWidget {
               ),
             ),
           ),
-        if (products.isNotEmpty) SizedBox(height: 16.dp),
+        if (products.isNotEmpty) SizedBox(height: 16),
         ListView.separated(
             padding: EdgeInsets.zero,
             shrinkWrap: true,
@@ -53,7 +52,7 @@ class ProductsListWidget extends StatelessWidget {
                 product: products[index],
                 productsListScreenType: productsListScreenType,
                 screenContext: screenContext),
-            separatorBuilder: (context, index) => SizedBox(height: 8.dp),
+            separatorBuilder: (context, index) => SizedBox(height: 8),
             itemCount: products.length),
       ],
     );

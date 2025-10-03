@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
     Size designSize =
         const Size(360, 728 + kToolbarHeight + kBottomNavigationBarHeight);
     return ScreenUtilInit(
-      designSize: designSize,
+      /*designSize: designSize,
       fontSizeResolver: (fontSize, instance) {
         final display = View.of(context).display;
         final screenSize = display.size / display.devicePixelRatio;
@@ -81,7 +81,7 @@ class MyApp extends StatelessWidget {
         return fontSize * scaleWidth;
       },
       //inTextAdapt: true,
-      //splitScreenMode: true,
+      //splitScreenMode: true,*/
       builder: (_, child) {
         return MaterialApp(
             navigatorKey: navigatorKey,

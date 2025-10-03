@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/domain/entities/order_entity.dart';
@@ -16,7 +15,7 @@ class OrdersListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 103.dp,
+      height: 105,
       child: ListView.separated(
           padding: getMarginOrPadding(left: 20, right: 20),
           scrollDirection: Axis.horizontal,
@@ -36,7 +35,7 @@ class OrdersListWidget extends StatelessWidget {
                   }
                 },
               ),
-          separatorBuilder: (context, index) => SizedBox(width: 8.dp),
+          separatorBuilder: (context, index) => SizedBox(width: 8),
           itemCount: orders.length),
     );
   }
