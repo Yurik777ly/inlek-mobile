@@ -139,7 +139,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       selectedPharmacyId: savedPharmacyId,
       //cartType: savedCartType ?? TypeReceiving.delivery,
     ));
-    add(ChangeAvailableDeliveryEvent());
+    add(LoadCartDataEvent(isFirstLoading: true));
   }
 
   Future<void> _onLoadData(
@@ -173,7 +173,11 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
             isLoading: false,
             isLoadingPharmacy: false,
             cartData: cartData,
-            cartType: !state.isAvailableDelivery ? TypeReceiving.pickup : null,
+            cartType: !state.isAvailableDelivery
+                ? TypeReceiving.pickup
+                : cartData.products.isEmpty
+                    ? TypeReceiving.delivery
+                    : null,
             errorText: null,
             isAllProductsChecked: cartData.products.isEmpty ? false : null));
         // После загрузки данных пересчитываем состояние чекбоксов
@@ -376,9 +380,9 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
           action: (context) => Navigator.of(context).pop()),
       (_) {
         // Set cartType to delivery when clearing cart
-        emit(state.copyWith(
+        /*emit(state.copyWith(
             cartType:
-                state.isAvailableDelivery ? TypeReceiving.delivery : null));
+                state.isAvailableDelivery ? TypeReceiving.delivery : null));*/
         add(LoadCartDataEvent(isFirstLoading: true));
       },
     );
@@ -509,6 +513,11 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         selectedPharmacyId: event.pharmacyId,
         cartData: state.cartData?.copyWith(products: updatedProducts),
         isLoadingPharmacy: true));
+
+    if (event.pharmacyId != -1) {
+      sharedPreferences.setInt(
+          SharedPreferencesKeys.pharmacyId, event.pharmacyId);
+    }
 
     add(LoadCartDataEvent(isFirstLoading: true));
   }

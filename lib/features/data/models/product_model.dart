@@ -54,12 +54,19 @@ class ProductModel extends ProductEntity {
   factory ProductModel.fromJson(Map<String, dynamic> data) {
     Map<String, dynamic> json = data["product_info"] ?? data;
     json = json["product_charachters"] ?? json;
-    var price =
-        json['price'] ?? json["product_price_from"] ?? json["product_price_"];
+
+    var price = extractOption(data['options'], 'price') ??
+        data['price'] ??
+        json['price'] ??
+        json["product_price_from"] ??
+        json["product_price_"];
     if (price != null) {
       price = double.tryParse(price.toString());
     }
-    var priceOld = json['price_old'] ??
+
+    var priceOld = extractOption(data['options'], 'price_old') ??
+        data['price_old'] ??
+        json['price_old'] ??
         json["product_price_from_old"] ??
         json["product_price_old"];
     if (priceOld != null) {
@@ -91,6 +98,13 @@ class ProductModel extends ProductEntity {
       }
     }
 
+    int? count = int.tryParse((json["count"] ??
+                data['count'] ??
+                json["stock_count"] ??
+                data["stock_count"])
+            ?.toString() ??
+        "0");
+
     return ProductModel(
       productId: json["product_id"] ??
           (json["id"] is String ? int.tryParse(json["id"]) : json["id"]) ??
@@ -107,9 +121,11 @@ class ProductModel extends ProductEntity {
       dose: json["dose"],
       form: json["form"],
       brand: json["brand"],
-      image: json["image"] ??
-          json["image_url_handle"] ??
-          json['options']?['image'],
+      image: ((json["image"] ??
+                  json["image_url_handle"] ??
+                  json['options']?['image']) ??
+              '')
+          .trim(),
       recipe: json["recipe"],
       isRecipe: json["is_recipe"] == "true" ? true : false,
       isAlcohol: json["is_alcohol"] == "yes" ? true : false,
@@ -128,8 +144,7 @@ class ProductModel extends ProductEntity {
       productTrademark: json["product_trademark"],
       productDateRegister: json["product_date_register"],
       productTimeRegister: json["product_time_register"],
-      count: int.tryParse(
-          (json["count"] ?? json["stock_count"])?.toString() ?? "0"),
+      count: count,
       requiredQuantity: json['required_quantity'],
       availability: data['availability'] ?? json["availability"],
       pagetitle: json["pagetitle"] ?? json['name'],
@@ -214,6 +229,12 @@ class ProductModel extends ProductEntity {
         'categories_json':
             categoriesJson?.map((e) => (e as CategoryModel).toJson()).toList(),
       };
+
+  static dynamic extractOption(dynamic source, String key) {
+    if (source is Map) return source[key];
+    if (source is List && source.isNotEmpty) return source.first[key];
+    return null;
+  }
 }
 
 class PromocodeModel extends PromocodeEntity {

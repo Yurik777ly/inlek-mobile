@@ -79,6 +79,12 @@ class OrderModel extends OrderEntity {
         .where((e) => e != null && e.toString().trim().isNotEmpty)
         .join(', ');
 
+    List<ProductModel>? products = data['order_products_json'] != null
+        ? (data['order_products_json'] as List)
+            .map((e) => ProductModel.fromJson(e))
+            .toList()
+        : null;
+
     return OrderModel(
       orderId: data['order_id'] ?? data['id'],
       address: data['address'],
@@ -140,11 +146,7 @@ class OrderModel extends OrderEntity {
           ? double.tryParse(data['total_sum'].toString())
           : null,
       isPaid: data['is_paid'] == true,
-      products: data['order_products_json'] != null
-          ? (data['order_products_json'] as List)
-              .map((e) => ProductModel.fromJson(e))
-              .toList()
-          : null,
+      products: products,
       paymentType: PaymentTypeExtension.fromTitle(
           data['payment_method'] ?? data['payment_type']),
       typeReceipt: TypeReceivingExtension.fromTitle(
