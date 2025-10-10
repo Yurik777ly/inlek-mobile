@@ -147,7 +147,7 @@ class CodeScreenBloc extends Bloc<CodeScreenEvent, CodeScreenState> {
         text: codeOrMsg,
         action: (_) {
           Navigator.of(screenContext).pop();
-          Navigator.of(screenContext).pop();
+          //Navigator.of(screenContext).pop();
         },
       );
     }

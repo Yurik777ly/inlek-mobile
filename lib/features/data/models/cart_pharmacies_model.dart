@@ -51,6 +51,7 @@ class CartPharmacyModel extends CartPharmacyEntity {
     super.totalPriceOld = 0,
     super.totalDiscount = 0,
     super.availability,
+    super.requestedQuantity,
   });
 
   factory CartPharmacyModel.fromJson(Map<String, dynamic> json) =>
@@ -74,6 +75,7 @@ class CartPharmacyModel extends CartPharmacyEntity {
         totalPriceOld: (json['total_price_old'] as num?)?.toDouble() ?? 0.0,
         totalDiscount: (json['total_discount'] as num?)?.toDouble() ?? 0.0,
         availability: json['availability'] ?? 'full',
+        requestedQuantity: json['requested_quantity'],
       );
 
   @override

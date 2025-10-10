@@ -29,7 +29,7 @@ class PasswordScreenState extends Equatable {
       phone: phone ?? this.phone,
       code: code ?? this.code,
       isButtonActive: isButtonActive ?? this.isButtonActive,
-      passwordErrorText: passwordErrorText,
+      passwordErrorText: passwordErrorText ?? this.passwordErrorText,
       showError: showError ?? this.showError,
       isLoading: isLoading ?? this.isLoading,
     );

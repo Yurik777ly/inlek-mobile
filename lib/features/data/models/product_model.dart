@@ -50,6 +50,7 @@ class ProductModel extends ProductEntity {
     super.otherPharmacy,
     super.categoriesJson,
     super.availableSomewhere,
+    super.requestedQuantity,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> data) {
@@ -107,80 +108,82 @@ class ProductModel extends ProductEntity {
         "0");
 
     return ProductModel(
-        productId: json["product_id"] ??
-            (json["id"] is String ? int.tryParse(json["id"]) : json["id"]) ??
-            data['product_id'],
-        otherPharmacy: json['other_pharmacy'],
-        mnn: json["mnn"],
-        mnnLat: json["mnn_lat"],
-        name: json["product_title"] ??
-            json['pagetitle'] ??
-            json['name'] ??
-            json['title'],
-        description: json["product_description"],
-        code: json["code"],
-        dose: json["dose"],
-        form: json["form"],
-        brand: json["brand"],
-        image: ((json["image"] ??
-                    json["image_url_handle"] ??
-                    json['options']?['image']) ??
-                data['picture'] ??
-                '')
-            .trim(),
-        recipe: json["recipe"],
-        isRecipe: json["is_recipe"] == "true" ? true : false,
-        isAlcohol: json["is_alcohol"] == "yes" ? true : false,
-        country: json["country"],
-        delivery: TypeReceivingExtension.fromTitle(json["delivery"]),
-        price: price,
-        oldPrice: priceOld,
-        discount: discount,
-        parent: json["parent"],
-        termin: json["termin"],
-        temperature: json["temperature"],
-        releaseForm: json["release_form"],
-        productInsert: json["product_insert"],
-        productSticker: json["product_sticker"],
-        productRegister: json["product_register"],
-        productTrademark: json["product_trademark"],
-        productDateRegister: json["product_date_register"],
-        productTimeRegister: json["product_time_register"],
-        count: count,
-        requiredQuantity: json['required_quantity'],
-        availability: data['availability'] ?? json["availability"],
-        pagetitle: json["pagetitle"] ?? json['name'],
-        brandProducts: data['brand_products'] != null
-            ? (data['brand_products'] as List)
-                .map((e) => ProductModel.fromJson(e))
-                .toList()
-            : [],
-        relatedProducts: data['related_products'] != null
-            ? (data['related_products'] as List)
-                .map((e) => ProductModel.fromJson(e))
-                .toList()
-            : [],
-        similarProducts: data['similar_products'] != null
-            ? (data['similar_products'] as List)
-                .map((e) => ProductModel.fromJson(e))
-                .toList()
-            : [],
-        stockCount: stockCount,
-        quantity: data['quantity'],
-        promocodesJson: [],
-        prices: data["prices"] != null
-            ? ProductPricesModel.fromJson(data["prices"])
-            : null,
-        totals: data["product_totals"] != null
-            ? ProductTotalsModel.fromJson(data["product_totals"])
-            : null,
-        instruction: json['instruction'],
-        categoriesJson: data['categories_json'] != null
-            ? (data['categories_json'] as List)
-                .map((e) => CategoryModel.fromJson(e))
-                .toList()
-            : null,
-        availableSomewhere: data['is_available']);
+      productId: json["product_id"] ??
+          (json["id"] is String ? int.tryParse(json["id"]) : json["id"]) ??
+          data['product_id'],
+      otherPharmacy: json['other_pharmacy'],
+      mnn: json["mnn"],
+      mnnLat: json["mnn_lat"],
+      name: json["product_title"] ??
+          json['pagetitle'] ??
+          json['name'] ??
+          json['title'],
+      description: json["product_description"],
+      code: json["code"],
+      dose: json["dose"],
+      form: json["form"],
+      brand: json["brand"],
+      image: ((json["image"] ??
+                  json["image_url_handle"] ??
+                  json['options']?['image']) ??
+              data['picture'] ??
+              '')
+          .trim(),
+      recipe: json["recipe"],
+      isRecipe: json["is_recipe"] == "true" ? true : false,
+      isAlcohol: json["is_alcohol"] == "yes" ? true : false,
+      country: json["country"],
+      delivery: TypeReceivingExtension.fromTitle(json["delivery"]),
+      price: price,
+      oldPrice: priceOld,
+      discount: discount,
+      parent: json["parent"],
+      termin: json["termin"],
+      temperature: json["temperature"],
+      releaseForm: json["release_form"],
+      productInsert: json["product_insert"],
+      productSticker: json["product_sticker"],
+      productRegister: json["product_register"],
+      productTrademark: json["product_trademark"],
+      productDateRegister: json["product_date_register"],
+      productTimeRegister: json["product_time_register"],
+      count: count,
+      requiredQuantity: json['required_quantity'],
+      availability: data['availability'] ?? json["availability"],
+      pagetitle: json["pagetitle"] ?? json['name'],
+      brandProducts: data['brand_products'] != null
+          ? (data['brand_products'] as List)
+              .map((e) => ProductModel.fromJson(e))
+              .toList()
+          : [],
+      relatedProducts: data['related_products'] != null
+          ? (data['related_products'] as List)
+              .map((e) => ProductModel.fromJson(e))
+              .toList()
+          : [],
+      similarProducts: data['similar_products'] != null
+          ? (data['similar_products'] as List)
+              .map((e) => ProductModel.fromJson(e))
+              .toList()
+          : [],
+      stockCount: stockCount,
+      quantity: data['quantity'],
+      promocodesJson: [],
+      prices: data["prices"] != null
+          ? ProductPricesModel.fromJson(data["prices"])
+          : null,
+      totals: data["product_totals"] != null
+          ? ProductTotalsModel.fromJson(data["product_totals"])
+          : null,
+      instruction: json['instruction'],
+      categoriesJson: data['categories_json'] != null
+          ? (data['categories_json'] as List)
+              .map((e) => CategoryModel.fromJson(e))
+              .toList()
+          : null,
+      availableSomewhere: data['is_available'],
+      requestedQuantity: data['requested_quantity'],
+    );
   }
 
   Map<String, dynamic> toJson() => {

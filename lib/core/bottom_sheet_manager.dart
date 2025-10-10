@@ -1235,14 +1235,21 @@ class BottomSheetManager {
                                     context: screenContext)
                                   ..add(LoadPharmaciesCartDataEvent(
                                       products: cartState.cartData!.products
+                                          // это выбрет только те товары, которые отмчены, а так же те, которых нет в наличии
+                                          .where((e) =>
+                                              cartState.selectedProductIds
+                                                  .contains(e.productId) ||
+                                              e.availability == 'absent')
                                           .map(
                                             (toElement) =>
                                                 CartPharmaciesProductParam(
                                               productId: toElement.productId,
-                                              quantity:
-                                                  (toElement.quantity ?? 1)
-                                                      .clamp(1, double.infinity)
-                                                      .toInt(),
+                                              quantity: (toElement
+                                                          .requestedQuantity ??
+                                                      toElement.quantity ??
+                                                      1)
+                                                  .clamp(1, double.infinity)
+                                                  .toInt(),
                                             ),
                                           )
                                           .toList())),

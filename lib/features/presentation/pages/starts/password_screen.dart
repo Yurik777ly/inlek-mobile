@@ -72,6 +72,7 @@ class PasswordScreen extends StatelessWidget {
                     hintText: 'Введите пароль',
                     isObscuredText: true,
                     controller: bloc.password1Controller,
+                    isShowError: state.showError,
                     errorText: state.passwordErrorText),
                 SizedBox(height: 24),
                 AppTextFieldWidget(
@@ -79,6 +80,7 @@ class PasswordScreen extends StatelessWidget {
                     hintText: 'Введите пароль',
                     isObscuredText: true,
                     controller: bloc.password2Controller,
+                    isShowError: state.showError,
                     errorText: state.passwordErrorText),
                 SizedBox(height: 32),
                 AppButtonWidget(

@@ -50,6 +50,7 @@ class CartPharmacyEntity extends BasePharmacyEntity {
   final double totalPriceOld;
   final double totalDiscount;
   final String? availability;
+  final int? requestedQuantity;
 
   const CartPharmacyEntity({
     required super.pharmacyId,
@@ -64,6 +65,7 @@ class CartPharmacyEntity extends BasePharmacyEntity {
     required this.totalPriceOld,
     required this.totalDiscount,
     this.availability,
+    this.requestedQuantity,
   });
 
   @override

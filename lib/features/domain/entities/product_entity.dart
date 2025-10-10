@@ -49,6 +49,7 @@ class ProductEntity extends BaseProductEntity {
   final int? otherPharmacy;
   final List<CategoryEntity>? categoriesJson;
   final int? availableSomewhere;
+  final int? requestedQuantity;
 
   const ProductEntity({
     super.productId = 0,
@@ -97,6 +98,7 @@ class ProductEntity extends BaseProductEntity {
     this.otherPharmacy,
     this.categoriesJson,
     this.availableSomewhere,
+    this.requestedQuantity,
   });
 
   ProductEntity copyWith({
@@ -146,6 +148,7 @@ class ProductEntity extends BaseProductEntity {
     int? otherPharmacy,
     List<CategoryEntity>? categoriesJson,
     int? availableSomewhere,
+    int? requestedQuantity,
   }) {
     return ProductEntity(
       productId: productId ?? this.productId,
@@ -194,6 +197,7 @@ class ProductEntity extends BaseProductEntity {
       otherPharmacy: otherPharmacy ?? this.otherPharmacy,
       categoriesJson: categoriesJson ?? this.categoriesJson,
       availableSomewhere: availableSomewhere ?? this.availableSomewhere,
+      requestedQuantity: requestedQuantity ?? this.requestedQuantity,
     );
   }
 
@@ -244,6 +248,7 @@ class ProductEntity extends BaseProductEntity {
         otherPharmacy,
         categoriesJson,
         availableSomewhere,
+        requestedQuantity,
       ];
 }
 
