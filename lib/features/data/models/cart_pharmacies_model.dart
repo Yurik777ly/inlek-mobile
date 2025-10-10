@@ -13,26 +13,28 @@ class CartPharmaciesProductModel extends CartPharmaciesProductEntity {
     super.isRecipe,
     super.isAlcohol,
     super.delivery,
+    super.otherPharmacy,
   });
 
   factory CartPharmaciesProductModel.fromJson(Map<String, dynamic> json) =>
       CartPharmaciesProductModel(
-          productId: json['product_id'],
-          name: json['name'],
-          image: json['image'],
-          requestedQuantity: json['requested_quantity'],
-          stockCount: json['stock_count'] != null
-              ? (json['stock_count'] as num).toInt()
-              : 0,
-          availability: json['availability'],
-          price:
-              json['price'] != null ? (json['price'] as num).toDouble() : null,
-          oldPrice: json['price_old'] != null
-              ? (json['price_old'] as num).toDouble()
-              : null,
-          isRecipe: json['is_recipe'] ?? false,
-          isAlcohol: json['is_alcohol'] ?? false,
-          delivery: json['delivery']);
+        productId: json['product_id'],
+        name: json['name'],
+        image: json['image'],
+        requestedQuantity: json['requested_quantity'],
+        stockCount: json['stock_count'] != null
+            ? (json['stock_count'] as num).toInt()
+            : 0,
+        availability: json['availability'],
+        price: json['price'] != null ? (json['price'] as num).toDouble() : null,
+        oldPrice: json['price_old'] != null
+            ? (json['price_old'] as num).toDouble()
+            : null,
+        isRecipe: json['is_recipe'] ?? false,
+        isAlcohol: json['is_alcohol'] ?? false,
+        delivery: json['delivery'],
+        otherPharmacy: json['other_pharmacy'],
+      );
 }
 
 class CartPharmacyModel extends CartPharmacyEntity {
@@ -58,9 +60,11 @@ class CartPharmacyModel extends CartPharmacyEntity {
         address: json['address'],
         coordinates: json['coordinates'],
         schedule: json['schedule'],
-        distanceMeters: (json['distance_meters'] is double)
-            ? json['distance_meters'].toInt()
-            : json['distance_meters'],
+        distanceMeters: (json['distance_meters'] == null)
+            ? 0
+            : (json['distance_meters'] is double)
+                ? (json['distance_meters'] as double).toInt()
+                : json['distance_meters'] as int,
         products: (json['products'] as List?)
                 ?.map((e) => CartPharmaciesProductModel.fromJson(e))
                 .toList() ??

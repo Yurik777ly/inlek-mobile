@@ -30,7 +30,7 @@ class Utils {
     fontSize: FontSize(htmlTextStyle.fontSize!),
     color: UiConstants.darkBlueColor,
     fontWeight: htmlTextStyle.fontWeight!,
-    height: Height((htmlTextStyle.height ?? 1) * htmlTextStyle.fontSize!),
+    lineHeight: LineHeight((htmlTextStyle.height ?? 1)),
     fontFamily: htmlTextStyle.fontFamily,
   );
 
@@ -490,7 +490,8 @@ class Utils {
     Jivo.display.present();
   }
 
-  static Future<void> openDocFile(String path, {String? name}) async {
+  static Future<bool> openDocFile(String path,
+      {String? name, required BuildContext context}) async {
     try {
       // Читаем файл из assets
       final ByteData data = await rootBundle.load(path);
@@ -505,14 +506,38 @@ class Utils {
       await tempFile.writeAsBytes(bytes, flush: true);
 
       // Открываем файл
-      final a = await OpenFile.open(tempFile.path);
+      final result = await OpenFile.open(tempFile.path);
       if (kDebugMode) {
-        print(a);
+        print(result);
       }
+
+      // Проверяем результат открытия файла
+      if (result.type != ResultType.done) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Не удалось открыть документ, возможно, нет программы для открытия'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return false;
+      }
+
+      return true;
     } catch (e) {
       if (kDebugMode) {
         print('Ошибка при открытии файла: $e');
       }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Не удалось открыть документ, возможно, нет программы для открытия'),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+      return false;
     }
   }
 }

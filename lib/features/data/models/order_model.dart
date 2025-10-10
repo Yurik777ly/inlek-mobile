@@ -154,7 +154,9 @@ class OrderModel extends OrderEntity {
       pharmacy: data['pharmacy'] != null
           ? PharmacyModel.fromJson(data['pharmacy'][0])
           : null,
-      link: data['payment_link'] ?? json['additional']?['payment_link'],
+      link: data['payment_link'] ??
+          json['additional']?['payment_link'] ??
+          json['payment_info']?['payment_link'],
       summary: json['summary'] != null
           ? OrderSummaryEntity(
               productsPrice:

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/constants/utils.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/summary_block/summary_price_item.dart';
@@ -38,7 +39,7 @@ class SummaryPricesBlock extends StatelessWidget {
         return Column(
           children: [
             SummaryPriceItem(
-              title: '${products.length} товаров',
+              title: Utils.getProductCountText(products.length),
               price: productsTotal,
             ),
             if (state.cartType == TypeReceiving.delivery)

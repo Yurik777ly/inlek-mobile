@@ -8,6 +8,7 @@ import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
+import 'package:inlek/core/bottom_sheet_manager.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 
@@ -87,7 +88,13 @@ class _AddToCartButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => cartBloc.add(AddCartEvent(productId: product.productId)),
+      onTap: () async {
+        if (product.availableSomewhere == 0) {
+          await BottomSheetManager.showProductReceiptNotificationSheet();
+        } else {
+          cartBloc.add(AddCartEvent(productId: product.productId));
+        }
+      },
       child: Container(
         height: 44,
         padding: getMarginOrPadding(left: 20, right: 20, top: 5.5, bottom: 5.5),
@@ -101,12 +108,16 @@ class _AddToCartButton extends StatelessWidget {
               : Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      'В корзину',
-                      style: UiConstants.textStyle2.copyWith(
-                        color: UiConstants.whiteColor,
+                    if (product.availableSomewhere == 0)
+                      SvgPicture.asset(Paths.bellIconPath,
+                          color: UiConstants.whiteColor)
+                    else
+                      Text(
+                        'В корзину',
+                        style: UiConstants.textStyle2.copyWith(
+                          color: UiConstants.whiteColor,
+                        ),
                       ),
-                    ),
                     if (product.isRecipe == true || product.isAlcohol == true)
                       FittedBox(
                         fit: BoxFit.scaleDown,

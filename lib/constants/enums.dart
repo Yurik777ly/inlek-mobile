@@ -12,7 +12,7 @@ enum PaymentType { courier, oplati, bepaid, erip, cash }
 
 enum PharmacyProductsAvailability { partially, fully }
 
-enum ProductsListScreenType { cart, pharmacy, order }
+enum ProductsListScreenType { cart, pharmacy, order, product }
 
 enum CartOrProductType { cart, product }
 

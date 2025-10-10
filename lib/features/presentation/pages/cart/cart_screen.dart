@@ -255,6 +255,8 @@ class _CartScreenState extends State<CartScreen> {
                                                   child: ProductsListWidget(
                                                       title:
                                                           'Товары закончились',
+                                                      subtitle:
+                                                          'Эти товары останутся в корзине, их можно будет оформить отдельным заказом в другой аптеке.',
                                                       products:
                                                           noInStockProducts,
                                                       productsListScreenType:

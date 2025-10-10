@@ -10,7 +10,7 @@ class ProductParam extends Equatable {
   final String? recipe;
   final int? action;
   final String? delivery;
-  final bool? available;
+  final int? available;
   final int? perPage;
   final int? page;
   final String? sortBy;
@@ -51,26 +51,6 @@ class ProductParam extends Equatable {
         categoryId,
       ];
 
-  factory ProductParam.fromJson(Map<String, dynamic> json) {
-    return ProductParam(
-      priceFrom: json['price_from'] as int?,
-      priceTo: json['price_to'] as int?,
-      releaseForm:
-          (json['release_form'] as List?)?.map((e) => e as String).toList(),
-      form: (json['form'] as List?)?.map((e) => e as String).toList(),
-      brand: (json['brand'] as List?)?.map((e) => e as String).toList(),
-      country: (json['country'] as List?)?.map((e) => e as String).toList(),
-      recipe: json['recipe'] as String?,
-      action: json['action'] == true ? 1 : null,
-      delivery: json['delivery'] as String?,
-      available: json['available'] as bool?,
-      perPage: json['per_page'] as int?,
-      page: json['page'] as int?,
-      sortBy: json['sortby'] as String?,
-      categoryId: json['category_id'] as int?,
-    );
-  }
-
   Map<String, dynamic> toJson() {
     final map = {
       'price_from': priceFrom,
@@ -104,7 +84,7 @@ class ProductParam extends Equatable {
     String? recipe,
     int? action,
     String? delivery,
-    bool? available,
+    int? available,
     int? perPage,
     int? page,
     String? sortBy,

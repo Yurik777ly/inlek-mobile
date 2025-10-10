@@ -86,8 +86,7 @@ class _CustomBannerWidgetState extends State<CustomBannerWidget> {
                       }
                     },
                     child: BannerItem(
-                      url:
-                          '${dotenv.env['PUBLIC_BANNERS_URL']!}${banner.image}',
+                      url: '${dotenv.env['PUBLIC_URL']!}${banner.image}',
                     ),
                   ),
                 ),

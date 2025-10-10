@@ -66,13 +66,14 @@ class LegalAddressBlock extends StatelessWidget {
           ),
         ),
         MoreDetailPlate(
-            onTap: () => Utils.openDocFile(Paths.licenses, name: 'Лицензии'),
+            onTap: () => Utils.openDocFile(Paths.licenses,
+                name: 'Лицензии', context: context),
             imagePath: Paths.licenseIconPath,
             title: 'Лицензии'),
         SizedBox(height: 8),
         MoreDetailPlate(
             onTap: () => Utils.openDocFile(Paths.publicOfferAgreement,
-                name: 'Публичная_оферта'),
+                name: 'Публичная_оферта', context: context),
             imagePath: Paths.offerIconPath,
             title: 'Публичная оферта'),
       ],

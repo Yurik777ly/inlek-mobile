@@ -5,9 +5,16 @@ import 'package:inlek/constants/ui_constants.dart';
 
 class PharmacyAvailableProductsChip extends StatelessWidget {
   const PharmacyAvailableProductsChip(
-      {super.key, required this.allProductsAvailable});
+      {super.key,
+      required this.allProductsAvailable,
+      this.allProductsCount,
+      this.availableProductsCount,
+      this.isShowAvailableCount = false});
 
   final bool allProductsAvailable;
+  final int? allProductsCount;
+  final int? availableProductsCount;
+  final bool isShowAvailableCount;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +29,9 @@ class PharmacyAvailableProductsChip extends StatelessWidget {
             borderRadius: BorderRadius.circular(200.r),
           ),
           child: Text(
-            allProductsAvailable ? 'В наличии' : 'Частично в наличии',
+            allProductsAvailable
+                ? 'В наличии'
+                : 'Частично в наличии${isShowAvailableCount ? ' $availableProductsCount из $allProductsCount' : ''}',
             style: UiConstants.textStyle8.copyWith(
               color: UiConstants.darkBlue2Color.withOpacity(.6),
             ),

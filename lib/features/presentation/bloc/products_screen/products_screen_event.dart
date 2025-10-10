@@ -61,6 +61,14 @@ class SelectCountryEvent extends ProductsScreenEvent {
   List<Object> get props => [country, isChecked ?? false];
 }
 
+class ToggleAvailableEvent extends ProductsScreenEvent {
+  final bool? isAvailable;
+  const ToggleAvailableEvent(this.isAvailable);
+
+  @override
+  List<Object?> get props => [isAvailable];
+}
+
 class ToggleWithoutPrescriptionEvent extends ProductsScreenEvent {
   final bool? isWithoutPrescription;
   const ToggleWithoutPrescriptionEvent(this.isWithoutPrescription);

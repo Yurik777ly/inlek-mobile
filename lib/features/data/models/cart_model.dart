@@ -16,12 +16,12 @@ class CartModel extends CartEntity {
   factory CartModel.fromJson(Map<String, dynamic> json) {
     CartPharmacyModel? pharmacy;
 
-    if (json['pharmacy_name'] != null) {
+    if (json['pharmacy_id'] != null) {
       pharmacy = CartPharmacyModel(
-          pharmacyName: json['pharmacy_name'],
-          availability: json['pharmacy_availability'],
+          pharmacyName: json['pharmacy_name'] ?? '',
+          availability: json['pharmacy_availability'] ?? '',
           pharmacyId: json['pharmacy_id'],
-          address: json['pharmacy_address']);
+          address: json['pharmacy_address'] ?? '');
     }
 
     return CartModel(

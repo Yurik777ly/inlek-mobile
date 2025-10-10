@@ -45,13 +45,14 @@ class ProductsScreenBloc
     on<SelectReleaseFormEvent>(_onSelectReleaseForm);
     on<SelectManufacturerEvent>(_onSelectManufacturer);
     on<SelectCountryEvent>(_onSelectCountry);
+    on<ToggleAvailableEvent>(_onToggleAvailable);
     on<ToggleWithoutPrescriptionEvent>(_onToggleWithoutPrescription);
     on<ToggleParticipatesInCampaignEvent>(_onToggleParticipatesInCampaign);
     on<ToggleDeliveryPossibleEvent>(_onToggleDeliveryPossible);
     on<ClearEvent>(_onClear);
 
     minValueController.text = '0';
-    maxValueController.text = '50';
+    maxValueController.text = '500';
 
     // Добавляем слушатель для скролла
     if (products == null) productsController.addListener(_scrollListener);
@@ -62,7 +63,8 @@ class ProductsScreenBloc
     // Если скроллинг достиг нижней границы, загружаем следующую страницу
     if (productsController.position.pixels ==
         productsController.position.maxScrollExtent) {
-      if (!state.isLoadingProducts && state.searchProducts != null &&
+      if (!state.isLoadingProducts &&
+          state.searchProducts != null &&
           state.searchProducts!.currentPage < state.searchProducts!.lastPage) {
         // Загружаем следующую страницу
         add(LoadProductsEvent(page: state.searchProducts!.currentPage + 1));
@@ -159,6 +161,7 @@ class ProductsScreenBloc
           delivery: state.isDeliveryPossible == true ? 'true' : null,
           action: state.isParticipatesInCampaign ? 1 : null,
           recipe: state.isWithoutPrescription == true ? 'false' : null,
+          available: state.isAvailable ? 1 : 0,
         ),
       );
 
@@ -329,6 +332,11 @@ class ProductsScreenBloc
     emit(state.copyWith(selectedCountries: updatedCountries));
   }
 
+  void _onToggleAvailable(
+      ToggleAvailableEvent event, Emitter<ProductsScreenState> emit) {
+    emit(state.copyWith(isAvailable: event.isAvailable));
+  }
+
   void _onToggleWithoutPrescription(
       ToggleWithoutPrescriptionEvent event, Emitter<ProductsScreenState> emit) {
     emit(state.copyWith(isWithoutPrescription: event.isWithoutPrescription));
@@ -356,6 +364,7 @@ class ProductsScreenBloc
           isDeliveryPossible: false,
           isParticipatesInCampaign: false,
           isWithoutPrescription: false,
+          isAvailable: false,
           minSelectedPrice: state.minAllowedPrice,
           maxSelectedPrice: state.maxAllowedPrice),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
@@ -16,12 +17,14 @@ class CartPharmacyWidget extends StatelessWidget {
     this.onButtonTap,
     this.screenContext,
     this.isLoading = false,
+    this.isShowAvailableCount = false,
   });
 
   final CartPharmacyEntity pharmacy;
   final bool isLoading;
   final Function()? onButtonTap;
   final BuildContext? screenContext;
+  final bool isShowAvailableCount;
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +39,6 @@ class CartPharmacyWidget extends StatelessWidget {
           // Финальный флаг: и все есть, и все full
           final bool allProductsAvailable = pharmacy.availability == 'full';
 
-          //bool allProductsAvailable = state.selectedProductIds.every(
-          //    (e) => pharmacy.availableProducts.map((e) => e.id).contains(e));
           return Container(
             padding:
                 getMarginOrPadding(top: 16, bottom: 16, left: 20, right: 20),
@@ -60,10 +61,12 @@ class CartPharmacyWidget extends StatelessWidget {
                   style: UiConstants.textStyle2
                       .copyWith(color: UiConstants.darkBlueColor),
                 ),
-                Padding(
-                  padding: getMarginOrPadding(top: 16),
-                  child: PharmacyAvailableProductsChip(
-                      allProductsAvailable: allProductsAvailable),
+                16.ph,
+                PharmacyAvailableProductsChip(
+                  allProductsAvailable: allProductsAvailable,
+                  allProductsCount: pharmacy.products.length,
+                  availableProductsCount: pharmacy.totalProducts,
+                  isShowAvailableCount: isShowAvailableCount,
                 ),
                 if (onButtonTap != null)
                   Padding(

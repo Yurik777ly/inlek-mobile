@@ -17,32 +17,28 @@
 
          This Theme is only used starting with V2 of Flutter's Android embedding. -->
 
-    <!-- 🔹 Кастомная тема для JivoSDK -->
-    <style name="JivoSDKCustomTheme" parent="Base.Theme.JivoSDK">
-        <!-- Цвета -->
-        <item name="colorPrimary">#3d4360</item>
-        <item name="colorPrimaryVariant">#3d4360</item>
-        <item name="colorAccent">#3d4360</item>
-
-        <!-- Статус-бар -->
-        <item name="colorPrimaryDark">#3d4360</item>               <!-- для старых API -->
-        <item name="android:statusBarColor">#3d4360</item>         <!-- для современных -->
-        <item name="android:windowLightStatusBar">false</item>     <!-- или true, если нужны тёмные иконки -->
-
-        <!-- Навигационная панель -->
-        <item name="android:navigationBarColor">#000000</item>
-
-        <!-- Не рисуем под системными панелями -->
-        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:windowTranslucentNavigation">false</item>
-        <item name="android:windowFullscreen">false</item>
-        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
-        <item name="android:fitsSystemWindows">true</item>
+    <style name="JivoSDKTheme" parent="Base.Theme.JivoSDK">
+        <item name="android:statusBarColor">@color/jivo_sdk_primary_graphite_700</item>
     </style>
 
     <style name="JivoSDKThemeSwitcher">
-        <item name="theme">@style/JivoSDKCustomTheme</item>
+        <item name="theme">@style/Main.Theme.JivoSDK.Graphite</item>
     </style>
 
+    <style name="Widget.JivoSDK.AppBarLayout" parent="Widget.Material3.AppBarLayout">
+        <item name="android:background">@drawable/bg_appbar</item>
+    </style>
+
+    <style name="Widget.JivoSDK.Toolbar" parent="">
+        <item name="navigationIcon">@drawable/jivo_sdk_vic_arrow_24dp</item>
+        <item name="navigationIconTint">?attr/colorOnPrimary</item>
+        <item name="title">@string/chat_title_placeholder</item>
+        <item name="subtitle">@string/chat_subtitle_placeholder</item>
+        <item name="titleTextAppearance">?attr/textAppearanceSubtitle2</item>
+        <item name="titleTextColor">?attr/colorOnPrimary</item>
+        <item name="subtitleTextColor">@color/jivo_sdk_color_on_surface_84</item>
+        <item name="subtitleTextAppearance">?attr/textAppearanceCaption</item>
+        <item name="logo">@drawable/vic_logo</item>
+        <item name="titleMarginStart">8dp</item>
+    </style>
 </resources>

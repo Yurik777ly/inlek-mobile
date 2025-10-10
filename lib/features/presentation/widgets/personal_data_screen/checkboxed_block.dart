@@ -55,7 +55,8 @@ class _CheckboxesBlockState extends State<CheckboxesBlock> {
                   recognizer: TapGestureRecognizer()
                     ..onTap = () => Utils.openDocFile(
                         Paths.personalDataProcessingPolicy,
-                        name: 'Пполитика_обработки_персональных_данных'),
+                        name: 'Пполитика_обработки_персональных_данных',
+                        context: context),
                 ),
               ],
             ),

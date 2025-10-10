@@ -27,7 +27,6 @@ import 'package:inlek/features/domain/usecases/cart/delete_cart.dart';
 import 'package:inlek/features/domain/usecases/cart/get_cart.dart';
 import 'package:inlek/features/domain/usecases/orders/create_order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:yandex_geocoder/yandex_geocoder.dart';
 
 part 'cart_screen_event.dart';
@@ -615,14 +614,14 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
               SharedPreferencesKeys.savedIntercom, doorPhoneController.text);
         }
 
-        if (order?.link != null) {
+        /*if (order?.link != null) {
           if (await canLaunchUrl(Uri.parse(order!.link!))) {
             await launchUrl(Uri.parse(order.link!),
                 mode: LaunchMode.externalApplication);
           } else {
             throw "Не удалось открыть ${order.link!}";
           }
-        }
+        }*/
         BottomSheetManager.showThanksForOrderSheet(event.screenContext, order!);
       },
     );

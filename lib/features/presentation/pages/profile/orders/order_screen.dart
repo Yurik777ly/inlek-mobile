@@ -11,6 +11,7 @@ import 'package:inlek/features/domain/entities/order_entity.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/order_screen/order_screen_bloc.dart';
+import 'package:inlek/features/presentation/bloc/orders_screen/orders_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/app_button_widget.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/info_border_plate.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/products_list_widget.dart';
@@ -20,7 +21,9 @@ import 'package:inlek/features/presentation/widgets/main_screen/internet_no_inte
 import 'package:inlek/features/presentation/widgets/order_screen/order_progress_indicator.dart';
 import 'package:inlek/features/presentation/widgets/order_screen/order_status_widget.dart';
 import 'package:inlek/features/presentation/widgets/orders_screen/order_info_list.dart';
+import 'package:inlek/features/presentation/widgets/payment_webview_screen.dart';
 import 'package:inlek/locator_service.dart';
+import 'package:inlek/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -37,7 +40,7 @@ class OrderScreen extends StatelessWidget {
         return BlocProvider(
           create: (context) =>
               OrderScreenBloc(getOneOrderUC: sl(), repeatOrderUC: sl())
-                ..add(LoadDataEvent(orderId)),
+                ..add(LoadOrderEvent(orderId)),
           child: BlocBuilder<OrderScreenBloc, OrderScreenState>(
             builder: (context, orderState) {
               //OrderScreenBloc orderBloc = context.read<OrderScreenBloc>();
@@ -97,6 +100,46 @@ class OrderScreen extends StatelessWidget {
                                                     typeReceipt: orderState
                                                         .order!.typeReceipt!),
                                               ),
+                                            if (orderState.order?.status ==
+                                                OrderStatus.awaitingPayment)
+                                              Padding(
+                                                padding:
+                                                    getMarginOrPadding(top: 16),
+                                                child: AppButtonWidget(
+                                                  text: 'Оплатить',
+                                                  onTap: () async {
+                                                    await Navigator.of(
+                                                            navigatorKey
+                                                                .currentContext!)
+                                                        .push(
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            PaymentWebViewScreen(
+                                                          url: orderState.order
+                                                                  ?.link ??
+                                                              '',
+                                                          onPaymentCompleted:
+                                                              () {},
+                                                        ),
+                                                      ),
+                                                    );
+                                                    // Обновляем заказы
+                                                    final orderBloc =
+                                                        context.read<
+                                                            OrderScreenBloc>();
+                                                    orderBloc.add(
+                                                        LoadOrderEvent(
+                                                            orderId));
+
+                                                    // Обновляем список заказов
+                                                    final ordersBloc =
+                                                        context.read<
+                                                            OrdersScreenBloc>();
+                                                    ordersBloc
+                                                        .add(LoadDataEvent());
+                                                  },
+                                                ),
+                                              ),
                                             if ((orderState.order?.products ??
                                                     [])
                                                 .any((e) =>
@@ -138,23 +181,23 @@ class OrderScreen extends StatelessWidget {
                                               ),
                                             ),
                                             SizedBox(height: 32),
-                                            /*if (orderState.order?.status ==
-                                                OrderStatus.canceled)*/
-                                            Padding(
-                                              padding:
-                                                  getMarginOrPadding(bottom: 8),
-                                              child: AppButtonWidget(
-                                                isLoading:
-                                                    orderState.isRepeatingOrder,
-                                                text: 'Повторить заказ',
-                                                onTap: () => _onRepeatOrder(
-                                                  context,
-                                                  homeBloc,
-                                                  orderState,
-                                                  orderId!,
+                                            if (orderState.order?.status ==
+                                                OrderStatus.canceled)
+                                              Padding(
+                                                padding: getMarginOrPadding(
+                                                    bottom: 8),
+                                                child: AppButtonWidget(
+                                                  isLoading: orderState
+                                                      .isRepeatingOrder,
+                                                  text: 'Повторить заказ',
+                                                  onTap: () => _onRepeatOrder(
+                                                    context,
+                                                    homeBloc,
+                                                    orderState,
+                                                    orderId!,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
                                             Skeleton.replace(
                                               child: AppButtonWidget(
                                                   text: 'Связаться с нами',

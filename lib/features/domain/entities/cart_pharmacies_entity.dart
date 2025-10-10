@@ -11,6 +11,7 @@ class CartPharmaciesProductEntity extends BaseProductEntity {
   final bool? isRecipe;
   final bool? isAlcohol;
   final TypeReceiving? delivery;
+  final int? otherPharmacy;
 
   const CartPharmaciesProductEntity(
       {required super.productId,
@@ -23,7 +24,8 @@ class CartPharmaciesProductEntity extends BaseProductEntity {
       this.oldPrice,
       this.isRecipe,
       this.isAlcohol,
-      this.delivery});
+      this.delivery,
+      this.otherPharmacy});
 
   @override
   List<Object?> get props =>

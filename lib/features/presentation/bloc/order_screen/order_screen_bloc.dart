@@ -12,11 +12,11 @@ class OrderScreenBloc extends Bloc<OrderScreenEvent, OrderScreenState> {
   final RepeatOrderUC repeatOrderUC;
   OrderScreenBloc({required this.getOneOrderUC, required this.repeatOrderUC})
       : super(OrderScreenState()) {
-    on<LoadDataEvent>(_onLoadData);
+    on<LoadOrderEvent>(_onLoadData);
     on<RepeatOrderEvent>(_onRepeatOrderEvent);
   }
 
-  void _onLoadData(LoadDataEvent event, Emitter<OrderScreenState> emit) async {
+  void _onLoadData(LoadOrderEvent event, Emitter<OrderScreenState> emit) async {
     if (event.orderId == null) {
       emit(
         state.copyWith(isLoading: false, error: 'Ошибка загрузки данных'),

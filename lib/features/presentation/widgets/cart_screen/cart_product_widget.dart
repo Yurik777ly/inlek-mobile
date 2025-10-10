@@ -102,7 +102,7 @@ class CartProductWidget extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(
+      onTap: () => Navigator.of(screenContext ?? context).push(
         Routes.createRoute(
           const ProductScreen(),
           settings: RouteSettings(
@@ -199,7 +199,7 @@ class CartProductWidget extends StatelessWidget {
                               width: 104,
                               imageUrl:
                                   '${dotenv.env['PUBLIC_URL']!}${product.image}',
-                              fit: BoxFit.fitHeight,
+                              fit: BoxFit.contain,
                               cacheManager: CustomCacheManager(),
                               errorWidget: (context, url, error) =>
                                   SvgPicture.asset(Paths.drugTemplateIconPath,
@@ -244,7 +244,7 @@ class CartProductWidget extends StatelessWidget {
                               if (product.stockCount == 0)
                                 Padding(
                                   padding: getMarginOrPadding(bottom: 4),
-                                  child: product.otherPharmacy == 1 &&
+                                  child: product?.otherPharmacy == 1 &&
                                           (effectiveCartBloc?.state.cartType ??
                                                   state.cartType) !=
                                               TypeReceiving.pickup

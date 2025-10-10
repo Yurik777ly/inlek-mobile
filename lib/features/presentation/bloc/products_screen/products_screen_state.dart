@@ -17,6 +17,7 @@ class ProductsScreenState extends Equatable {
   final Set<String> selectedManufacturers;
   final List<String> countries;
   final Set<String> selectedCountries;
+  final bool isAvailable; // есть в наличии фильтр
   final bool isWithoutPrescription;
   final bool isParticipatesInCampaign;
   final bool isDeliveryPossible;
@@ -29,9 +30,9 @@ class ProductsScreenState extends Equatable {
     this.productSortType = ProductSortType.popularity,
     this.searchProducts,
     this.minAllowedPrice = 0,
-    this.maxAllowedPrice = 50,
+    this.maxAllowedPrice = 500,
     this.minSelectedPrice = 0,
-    this.maxSelectedPrice = 50,
+    this.maxSelectedPrice = 500,
     this.releaseForms = const [],
     this.selectedReleaseForms = const {},
     this.manufacturers = const [],
@@ -39,6 +40,7 @@ class ProductsScreenState extends Equatable {
     this.countries = const [],
     this.selectedCountries = const {},
     this.isWithoutPrescription = false,
+    this.isAvailable = false,
     this.isParticipatesInCampaign = false,
     this.isDeliveryPossible = false,
   });
@@ -60,6 +62,7 @@ class ProductsScreenState extends Equatable {
     Set<String>? selectedManufacturers,
     List<String>? countries,
     Set<String>? selectedCountries,
+    bool? isAvailable,
     bool? isWithoutPrescription,
     bool? isParticipatesInCampaign,
     bool? isDeliveryPossible,
@@ -82,6 +85,7 @@ class ProductsScreenState extends Equatable {
           selectedManufacturers ?? this.selectedManufacturers,
       countries: countries ?? this.countries,
       selectedCountries: selectedCountries ?? this.selectedCountries,
+      isAvailable: isAvailable ?? this.isAvailable,
       isWithoutPrescription:
           isWithoutPrescription ?? this.isWithoutPrescription,
       isParticipatesInCampaign:
@@ -108,6 +112,7 @@ class ProductsScreenState extends Equatable {
         selectedManufacturers,
         countries,
         selectedCountries,
+        isAvailable,
         isWithoutPrescription,
         isParticipatesInCampaign,
         isDeliveryPossible,

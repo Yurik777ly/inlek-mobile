@@ -56,9 +56,10 @@ class _SearchProductsItemState extends State<SearchProductsItem> {
                 child: CachedNetworkImage(
                   height: 60,
                   width: 60,
-                  imageUrl:
-                      '${dotenv.env['PUBLIC_URL']!}${widget.product.image}',
-                  fit: BoxFit.cover,
+                  imageUrl: (widget.product.image?.contains('http') ?? false)
+                      ? (widget.product.image ?? '')
+                      : '${dotenv.env['PUBLIC_URL']!}${widget.product.image}',
+                  fit: BoxFit.contain,
                   cacheManager: CustomCacheManager(),
                   errorWidget: (context, url, error) => SvgPicture.asset(
                       Paths.drugTemplateIconPath,

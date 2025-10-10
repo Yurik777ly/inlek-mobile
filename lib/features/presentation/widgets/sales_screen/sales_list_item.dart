@@ -27,6 +27,9 @@ class SalesListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ProductEntity? productWhereDiscountDontNull = (action.actionProducts ?? [])
+        .firstWhereOrNull((e) => e.discount != null);
+
     return GestureDetector(
       onTap: () => Navigator.of(context).push(
         Routes.createRoute(
@@ -90,25 +93,27 @@ class SalesListItem extends StatelessWidget {
                           color: UiConstants.darkBlue2Color.withOpacity(.6),
                         ),
                       ),
-                      Skeleton.unite(
-                        child: Container(
-                          padding: getMarginOrPadding(all: 4),
-                          decoration: BoxDecoration(
-                            color: UiConstants.pink2Color.withOpacity(.05),
-                            borderRadius: BorderRadius.circular(200.r),
+                      if (productWhereDiscountDontNull != null)
+                        Skeleton.unite(
+                          child: Container(
+                            padding: getMarginOrPadding(all: 4),
+                            decoration: BoxDecoration(
+                              color: UiConstants.pink2Color.withOpacity(.05),
+                              borderRadius: BorderRadius.circular(200.r),
+                            ),
+                            child: Builder(builder: (context) {
+                              ProductEntity? productWhereDiscountDontNull =
+                                  (action.actionProducts ?? [])
+                                      .firstWhereOrNull(
+                                          (e) => e.discount != null);
+                              return Text(
+                                '-${productWhereDiscountDontNull?.discount}%',
+                                style: UiConstants.textStyle6
+                                    .copyWith(color: UiConstants.pink2Color),
+                              );
+                            }),
                           ),
-                          child: Builder(builder: (context) {
-                            ProductEntity? productWhereDiscountDontNull =
-                                (action.actionProducts ?? []).firstWhereOrNull(
-                                    (e) => e.discount != null);
-                            return Text(
-                              '-${productWhereDiscountDontNull?.discount}%',
-                              style: UiConstants.textStyle6
-                                  .copyWith(color: UiConstants.pink2Color),
-                            );
-                          }),
                         ),
-                      ),
                     ],
                   ),
                 ],

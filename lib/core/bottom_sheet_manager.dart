@@ -1340,30 +1340,48 @@ class BottomSheetManager {
                                               child:
                                                   CircularProgressIndicator())
                                           : selectorIndex == 0
-                                              ? ListView.separated(
-                                                  padding: getMarginOrPadding(
-                                                      bottom: 16),
-                                                  shrinkWrap: true,
-                                                  itemBuilder: (context,
-                                                          index) =>
-                                                      CartPharmacyWidget(
-                                                          pharmacy: state
-                                                                  .filteredPharmacies[
-                                                              index],
-                                                          onButtonTap: () =>
-                                                              showPharmacySheet(
-                                                                screenContext,
-                                                                state.filteredPharmacies[
-                                                                    index],
-                                                              ),
-                                                          screenContext:
-                                                              screenContext),
-                                                  separatorBuilder:
-                                                      (context, index) =>
-                                                          SizedBox(height: 8),
-                                                  itemCount: state
-                                                      .filteredPharmacies
-                                                      .length)
+                                              ? state.filteredPharmacies.isEmpty
+                                                  ? Center(
+                                                      child: Text(
+                                                        'По выбранным фильтрам аптек нет',
+                                                        style: UiConstants
+                                                            .textStyle3
+                                                            .copyWith(
+                                                                color: UiConstants
+                                                                    .darkBlueColor,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w800),
+                                                      ),
+                                                    )
+                                                  : ListView.separated(
+                                                      padding:
+                                                          getMarginOrPadding(
+                                                              bottom: 16),
+                                                      shrinkWrap: true,
+                                                      itemBuilder: (context,
+                                                              index) =>
+                                                          CartPharmacyWidget(
+                                                              pharmacy:
+                                                                  state.filteredPharmacies[
+                                                                      index],
+                                                              onButtonTap: () =>
+                                                                  showPharmacySheet(
+                                                                    screenContext,
+                                                                    state.filteredPharmacies[
+                                                                        index],
+                                                                  ),
+                                                              screenContext:
+                                                                  screenContext,
+                                                              isShowAvailableCount:
+                                                                  true),
+                                                      separatorBuilder:
+                                                          (context, index) =>
+                                                              SizedBox(
+                                                                  height: 8),
+                                                      itemCount: state
+                                                          .filteredPharmacies
+                                                          .length)
                                               : Padding(
                                                   padding: getMarginOrPadding(
                                                       bottom: 16),
@@ -1694,6 +1712,14 @@ class BottomSheetManager {
                       padding: getMarginOrPadding(top: 16, bottom: 16),
                       child: Divider(color: UiConstants.white5Color),
                     ),
+                    DropdownBlockItem(
+                      text: 'Есть в наличии',
+                      isChecked: state.isAvailable,
+                      onChanged: (isChecked) => productsScreenBloc.add(
+                        ToggleAvailableEvent(isChecked),
+                      ),
+                    ),
+                    SizedBox(height: 8),
                     DropdownBlockItem(
                       text: 'Без рецепта',
                       isChecked: state.isWithoutPrescription,

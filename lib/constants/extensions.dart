@@ -68,6 +68,8 @@ extension OrderStatusExtension on OrderStatus {
         return OrderStatus.courier;
       case 8:
         return OrderStatus.canceled;
+      case 10:
+        return OrderStatus.awaitingPayment;
       default:
         return OrderStatus.processing;
     }
@@ -89,6 +91,8 @@ extension OrderStatusExtension on OrderStatus {
         return OrderStatus.courier;
       case 'Отменен':
         return OrderStatus.canceled;
+      case 'Ожидает оплаты':
+        return OrderStatus.awaitingPayment;
       default:
         return OrderStatus.processing;
     }

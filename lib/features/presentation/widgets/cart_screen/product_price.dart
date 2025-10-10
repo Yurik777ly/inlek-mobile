@@ -32,11 +32,11 @@ class ProductPrice extends StatelessWidget {
         FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(
-            /*'${[
+            '${[
               ProductsListScreenType.cart,
-              ProductsListScreenType.order
-            ].contains(productsListScreenType) ? '' : 'от '}${Utils.formatPrice(price)}',*/
-            Utils.formatPrice(price),
+              ProductsListScreenType.order,
+              ProductsListScreenType.pharmacy
+            ].contains(productsListScreenType) ? '' : 'от '}${Utils.formatPrice(price)}',
             style: UiConstants.textStyle14.copyWith(
                 color: oldPrice != null && oldPrice != price && oldPrice != 0
                     ? UiConstants.pink2Color

@@ -35,7 +35,7 @@ class ProductFilterBloc extends Bloc<ProductFilterEvent, ProductFilterState> {
     on<LoadFilterDataEvent>(_onLoadFilterData);
 
     minValueController.text = '0';
-    maxValueController.text = '50';
+    maxValueController.text = '500';
   }
 
   void _onChangePrice(
@@ -106,7 +106,7 @@ class ProductFilterBloc extends Bloc<ProductFilterEvent, ProductFilterState> {
 
   void _onClear(ClearEvent event, Emitter<ProductFilterState> emit) {
     minValueController.text = '0';
-    maxValueController.text = '50';
+    maxValueController.text = '500';
     emit(
       state.copyWith(
           selectedCountries: {},
@@ -150,9 +150,9 @@ class ProductFilterBloc extends Bloc<ProductFilterEvent, ProductFilterState> {
 
     emit(state.copyWith(
       minAllowedPrice: 0,
-      maxAllowedPrice: 50,
+      maxAllowedPrice: 1000,
       minSelectedPrice: 0,
-      maxSelectedPrice: 50,
+      maxSelectedPrice: 1000,
       releaseForms: forms,
       selectedReleaseForms: {},
       manufacturers: brands,

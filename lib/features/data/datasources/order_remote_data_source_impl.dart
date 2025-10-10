@@ -89,7 +89,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
         final data = json.decode(response.body);
 
         if (data['data']?['order'] != null) {
-          return OrderModel.fromJson(data['data']?['order']);
+          return OrderModel.fromJson(data['data']);
         }
         return null;
       } else {

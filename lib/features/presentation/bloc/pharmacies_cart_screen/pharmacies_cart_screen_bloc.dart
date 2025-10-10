@@ -109,13 +109,7 @@ class PharmaciesCartScreenBloc
         (id) => e.products.any((product) => product.productId == id),
       );
 
-      final filteredProducts = e.products
-          .where((product) => selectedProductIds.contains(product.productId))
-          .toList();
-
-      final bool allAvailable = filteredProducts.every(
-        (product) => product.availability == 'full',
-      );
+      final bool allAvailable = e.availability == 'full';
 
       final bool allProductsAvailable =
           (allSelectedProductsExist && allAvailable) ||
