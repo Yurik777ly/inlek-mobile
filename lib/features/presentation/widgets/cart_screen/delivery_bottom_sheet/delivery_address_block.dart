@@ -22,12 +22,14 @@ class DeliveryAddressBlock extends StatefulWidget {
     required this.onPickAddressOnMap,
     this.cityKey,
     this.streetKey,
+    this.scrollController,
   });
 
   final BuildContext screenContext;
   final Function() onPickAddressOnMap;
   final GlobalKey? cityKey;
   final GlobalKey? streetKey;
+  final ScrollController? scrollController;
 
   @override
   State<DeliveryAddressBlock> createState() => _DeliveryAddressBlockState();
@@ -40,6 +42,54 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
   // Стейт для отслеживания выбранного адреса
   List<GeoObject?> suggestionObjects = [];
   GeoObject? selectedAddress;
+
+  // FocusNode для поля "Улица, дом"
+  late FocusNode streetFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    streetFocusNode = FocusNode();
+    streetFocusNode.addListener(_onStreetFocusChange);
+  }
+
+  @override
+  void dispose() {
+    streetFocusNode.removeListener(_onStreetFocusChange);
+    streetFocusNode.dispose();
+    debounce?.cancel();
+    super.dispose();
+  }
+
+  void _onStreetFocusChange() {
+    if (streetFocusNode.hasFocus && widget.scrollController != null) {
+      // Увеличиваем задержку для корректного скролла после появления клавиатуры
+      Future.delayed(Duration(milliseconds: 600), () {
+        if (widget.scrollController!.hasClients) {
+          // Находим позицию поля "Город" и скроллим к нему
+          if (widget.cityKey?.currentContext != null) {
+            final RenderBox? renderBox = widget.cityKey!.currentContext!
+                .findRenderObject() as RenderBox?;
+            if (renderBox != null) {
+              final position = renderBox.localToGlobal(Offset.zero);
+              final scrollPosition = widget.scrollController!.position;
+
+              // Вычисляем позицию для скролла (поле "Город" вверху экрана)
+              final targetOffset = scrollPosition.pixels +
+                  position.dy -
+                  100; // 100px отступ сверху
+
+              widget.scrollController!.animateTo(
+                targetOffset.clamp(0.0, scrollPosition.maxScrollExtent),
+                duration: Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+              );
+            }
+          }
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +129,7 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                   hintText: 'Укажите адрес',
                   controller: cartBloc.streetHomeController,
                   fillColor: UiConstants.white3Color,
+                  focusNode: streetFocusNode,
                   validator: (p0) {
                     String? error = Utils.validate(p0);
                     if (error == null) {

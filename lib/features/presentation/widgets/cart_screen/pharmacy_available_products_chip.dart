@@ -6,14 +6,12 @@ import 'package:inlek/constants/ui_constants.dart';
 class PharmacyAvailableProductsChip extends StatelessWidget {
   const PharmacyAvailableProductsChip(
       {super.key,
-      required this.allProductsAvailable,
-      this.allProductsCount,
-      this.availableProductsCount,
+      required this.availability,
+      this.sumAvailability,
       this.isShowAvailableCount = false});
 
-  final bool allProductsAvailable;
-  final int? allProductsCount;
-  final int? availableProductsCount;
+  final String? availability;
+  final String? sumAvailability;
   final bool isShowAvailableCount;
 
   @override
@@ -23,15 +21,19 @@ class PharmacyAvailableProductsChip extends StatelessWidget {
         Container(
           padding: getMarginOrPadding(left: 8, right: 8, top: 4, bottom: 4),
           decoration: BoxDecoration(
-            color: allProductsAvailable
+            color: availability == 'full'
                 ? UiConstants.limeColor
-                : UiConstants.yellowColor,
+                : availability == 'part'
+                    ? UiConstants.yellowColor
+                    : UiConstants.white2Color,
             borderRadius: BorderRadius.circular(200.r),
           ),
           child: Text(
-            allProductsAvailable
+            availability == 'full'
                 ? 'В наличии'
-                : 'Частично в наличии${isShowAvailableCount ? ' $availableProductsCount из $allProductsCount' : ''}',
+                : availability == 'part'
+                    ? 'Частично в наличии${isShowAvailableCount ? ' $sumAvailability' : ''}'
+                    : 'Нет в наличии',
             style: UiConstants.textStyle8.copyWith(
               color: UiConstants.darkBlue2Color.withOpacity(.6),
             ),

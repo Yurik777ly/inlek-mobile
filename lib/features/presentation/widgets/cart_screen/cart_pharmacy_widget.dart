@@ -63,9 +63,8 @@ class CartPharmacyWidget extends StatelessWidget {
                 ),
                 16.ph,
                 PharmacyAvailableProductsChip(
-                  allProductsAvailable: allProductsAvailable,
-                  allProductsCount: pharmacy.products.length,
-                  availableProductsCount: pharmacy.requestedQuantity,
+                  availability: pharmacy.availability,
+                  sumAvailability: pharmacy.sumAvailability,
                   isShowAvailableCount: isShowAvailableCount,
                 ),
                 if (onButtonTap != null)

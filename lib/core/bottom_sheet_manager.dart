@@ -473,6 +473,7 @@ class BottomSheetManager {
                                         sheetContext: sheetContext),
                                 cityKey: cityKey,
                                 streetKey: streetKey,
+                                scrollController: scrollController,
                               ),
                             ),
                           if (cartBloc.state.cartType == TypeReceiving.delivery)
@@ -1460,7 +1461,7 @@ class BottomSheetManager {
                     ),
                     SizedBox(height: 16),
                     PharmacyAvailableProductsChip(
-                        allProductsAvailable: pharmacy.availability == 'full'),
+                        availability: pharmacy.availability),
                     SizedBox(height: 32),
                     // список с законченными товарами
                     if (outOfStockProducts.isNotEmpty)

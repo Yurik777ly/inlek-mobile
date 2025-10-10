@@ -23,7 +23,8 @@ class CitySearchField extends StatelessWidget {
       this.validator,
       this.fillColor = UiConstants.white2Color,
       this.prefixIcon,
-      this.minFetcherLength = 3})
+      this.minFetcherLength = 3,
+      this.focusNode})
       : assert(
           suggestions != null ||
               suggestionFetcher != null && suggestionObjects != null,
@@ -44,10 +45,11 @@ class CitySearchField extends StatelessWidget {
   final String? prefixIcon;
   final int minFetcherLength;
   final Color fillColor;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
-    FocusNode focusNode = FocusNode();
+    FocusNode localFocusNode = focusNode ?? FocusNode();
     return Column(
       children: [
         if (title != null)
@@ -70,7 +72,7 @@ class CitySearchField extends StatelessWidget {
           builder: (context, value, child) {
             return SearchField<String>(
                 validator: validator,
-                focusNode: focusNode,
+                focusNode: localFocusNode,
                 controller: controller,
                 suggestionItemDecoration: BoxDecoration(
                   border: Border.all(style: BorderStyle.none),
@@ -210,7 +212,7 @@ class CitySearchField extends StatelessWidget {
                 },
                 onTapOutside: (p0) {
                   FocusScope.of(context).unfocus();
-                  focusNode.unfocus();
+                  localFocusNode.unfocus();
                 },
                 suggestionState: Suggestion.expand);
           },
