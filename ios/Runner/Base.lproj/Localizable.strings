@@ -1,0 +1,43 @@
+/* 
+  Localizable.strings
+  Inlek
+
+  Created for JivoSDK localization requirements.
+*/
+
+/* JivoSDK Required Keys */
+"JV_MESSAGE_TITLE" = "New Message";
+"JV_MESSAGE" = "You have a new message";
+
+/* Additional JivoSDK Keys (Optional but recommended) */
+"JV_TYPING" = "typing...";
+"JV_AGENT_TYPING" = "Agent is typing...";
+"JV_AGENT_IS_TYPING" = "Agent is typing...";
+"JV_AGENT_STOPPED_TYPING" = "Agent stopped typing";
+"JV_AGENT_JOINED" = "Agent joined the conversation";
+"JV_AGENT_LEFT" = "Agent left the conversation";
+"JV_AGENT_OFFLINE" = "Agent is offline";
+"JV_AGENT_ONLINE" = "Agent is online";
+"JV_CONNECTION_ERROR" = "Connection error";
+"JV_CONNECTION_RESTORED" = "Connection restored";
+"JV_SEND" = "Send";
+"JV_ATTACH_FILE" = "Attach file";
+"JV_TAKE_PHOTO" = "Take photo";
+"JV_CHOOSE_FROM_GALLERY" = "Choose from gallery";
+"JV_CANCEL" = "Cancel";
+"JV_OK" = "OK";
+"JV_ERROR" = "Error";
+"JV_FILE_TOO_LARGE" = "File is too large";
+"JV_UNSUPPORTED_FILE_TYPE" = "Unsupported file type";
+"JV_NETWORK_ERROR" = "Network error";
+"JV_RETRY" = "Retry";
+"JV_LOADING" = "Loading...";
+"JV_NO_MESSAGES" = "No messages yet";
+"JV_WRITE_MESSAGE" = "Write a message...";
+"JV_AGENT" = "Agent";
+"JV_YOU" = "You";
+"JV_TODAY" = "Today";
+"JV_YESTERDAY" = "Yesterday";
+"JV_LAST_SEEN" = "Last seen";
+"JV_ONLINE" = "Online";
+"JV_OFFLINE" = "Offline";

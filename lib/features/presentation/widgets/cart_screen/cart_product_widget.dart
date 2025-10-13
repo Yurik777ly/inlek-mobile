@@ -102,15 +102,24 @@ class CartProductWidget extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: () => Navigator.of(screenContext ?? context).push(
-        Routes.createRoute(
-          const ProductScreen(),
-          settings: RouteSettings(
-            name: Routes.productScreen,
-            arguments: {'id': product.productId},
+      behavior: HitTestBehavior.deferToChild,
+      onTapDown: (details) {
+        print(
+            '➕ CartProductWidget: onTapDown at ${details.localPosition} for product ${product.productId}');
+      },
+      onTap: () {
+        print(
+            '➕ CartProductWidget: onTap triggered for product ${product.productId}');
+        Navigator.of(screenContext ?? context).push(
+          Routes.createRoute(
+            const ProductScreen(),
+            settings: RouteSettings(
+              name: Routes.productScreen,
+              arguments: {'id': product.productId},
+            ),
           ),
-        ),
-      ),
+        );
+      },
       child: DismissibleTile(
         onDismissed: (_) {
           if (effectiveCartBloc != null) {
@@ -299,15 +308,22 @@ class CartProductWidget extends StatelessWidget {
                                   if (productsListScreenType ==
                                           ProductsListScreenType.cart &&
                                       product.availability != 'absent')
-                                    Padding(
-                                      padding: getMarginOrPadding(
-                                          top: 2, bottom: 2, left: 8),
-                                      child: ChangeCountProductWidget(
-                                          product: product,
-                                          cartOrProductType:
-                                              CartOrProductType.cart,
-                                          screenContext: screenContext,
-                                          cartBloc: effectiveCartBloc),
+                                    GestureDetector(
+                                      onTap: () {
+                                        print(
+                                            '🔒 Blocking tap on ChangeCountProductWidget for product ${product.productId}');
+                                        // Блокируем нажатие, не делаем ничего
+                                      },
+                                      child: Padding(
+                                        padding: getMarginOrPadding(
+                                            top: 2, bottom: 2, left: 8),
+                                        child: ChangeCountProductWidget(
+                                            product: product,
+                                            cartOrProductType:
+                                                CartOrProductType.cart,
+                                            screenContext: screenContext,
+                                            cartBloc: effectiveCartBloc),
+                                      ),
                                     )
                                   else if (productsListScreenType ==
                                       ProductsListScreenType.order)

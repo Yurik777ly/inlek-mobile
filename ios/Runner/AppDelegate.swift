@@ -28,7 +28,7 @@ import JivoSDK
     }
     
     override func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        Jivo.notifications.setPushToken(data: nil)
+        print("Failed to register for remote notifications: \(error)")
     }
     
     override func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {

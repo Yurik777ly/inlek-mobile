@@ -1,0 +1,43 @@
+/* 
+  Localizable.strings (Russian)
+  Inlek
+
+  Created for JivoSDK localization requirements.
+*/
+
+/* JivoSDK Required Keys */
+"JV_MESSAGE_TITLE" = "Новое сообщение";
+"JV_MESSAGE" = "У вас новое сообщение";
+
+/* Additional JivoSDK Keys (Optional but recommended) */
+"JV_TYPING" = "печатает...";
+"JV_AGENT_TYPING" = "Агент печатает...";
+"JV_AGENT_IS_TYPING" = "Агент печатает...";
+"JV_AGENT_STOPPED_TYPING" = "Агент перестал печатать";
+"JV_AGENT_JOINED" = "Агент присоединился к разговору";
+"JV_AGENT_LEFT" = "Агент покинул разговор";
+"JV_AGENT_OFFLINE" = "Агент не в сети";
+"JV_AGENT_ONLINE" = "Агент в сети";
+"JV_CONNECTION_ERROR" = "Ошибка соединения";
+"JV_CONNECTION_RESTORED" = "Соединение восстановлено";
+"JV_SEND" = "Отправить";
+"JV_ATTACH_FILE" = "Прикрепить файл";
+"JV_TAKE_PHOTO" = "Сделать фото";
+"JV_CHOOSE_FROM_GALLERY" = "Выбрать из галереи";
+"JV_CANCEL" = "Отмена";
+"JV_OK" = "ОК";
+"JV_ERROR" = "Ошибка";
+"JV_FILE_TOO_LARGE" = "Файл слишком большой";
+"JV_UNSUPPORTED_FILE_TYPE" = "Неподдерживаемый тип файла";
+"JV_NETWORK_ERROR" = "Ошибка сети";
+"JV_RETRY" = "Повторить";
+"JV_LOADING" = "Загрузка...";
+"JV_NO_MESSAGES" = "Пока нет сообщений";
+"JV_WRITE_MESSAGE" = "Напишите сообщение...";
+"JV_AGENT" = "Агент";
+"JV_YOU" = "Вы";
+"JV_TODAY" = "Сегодня";
+"JV_YESTERDAY" = "Вчера";
+"JV_LAST_SEEN" = "Был в сети";
+"JV_ONLINE" = "В сети";
+"JV_OFFLINE" = "Не в сети";

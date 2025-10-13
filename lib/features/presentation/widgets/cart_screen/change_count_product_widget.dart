@@ -218,12 +218,20 @@ class CartQuantityChanger extends StatelessWidget {
               Expanded(
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () => cartBloc.add(
-                    DeleteCartEvent(
-                      context: screenContext ?? context,
-                      productId: product.productId,
-                    ),
-                  ),
+                  onTapDown: (_) {
+                    print(
+                        '➖ CartQuantityChanger: minus button onTapDown for product ${product.productId}');
+                  },
+                  onTap: () {
+                    print(
+                        '➖ CartQuantityChanger: minus button tapped for product ${product.productId}');
+                    cartBloc.add(
+                      DeleteCartEvent(
+                        context: screenContext ?? context,
+                        productId: product.productId,
+                      ),
+                    );
+                  },
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.transparent,
@@ -237,20 +245,30 @@ class CartQuantityChanger extends StatelessWidget {
               Expanded(
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
+                  onTapDown: (_) {
+                    print(
+                        '➕ CartQuantityChanger: plus button onTapDown for product ${product.productId}');
+                  },
                   onTap: isAddDisabled
                       ? () {
+                          print(
+                              '➕ CartQuantityChanger: plus button tapped (disabled) for product ${product.productId}');
                           ScaffoldMessenger.of(context)
                             ..hideCurrentSnackBar()
                             ..showSnackBar(const SnackBar(
                               content: Text('Больше нет в наличии'),
                             ));
                         }
-                      : () => cartBloc.add(
+                      : () {
+                          print(
+                              '➕ CartQuantityChanger: plus button tapped for product ${product.productId}');
+                          cartBloc.add(
                             AddCartEvent(
                               context: screenContext ?? context,
                               productId: product.productId,
                             ),
-                          ),
+                          );
+                        },
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.transparent,
@@ -289,8 +307,8 @@ class ProductQuantityChanger extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {},
+    return InkWell(
+      onTap: () => print('Шкибиди'),
       child: Container(
         height: 44,
         padding: getMarginOrPadding(left: 20, right: 20, top: 5.5, bottom: 5.5),
@@ -317,12 +335,20 @@ class ProductQuantityChanger extends StatelessWidget {
                       color: Colors.transparent,
                       child: InkWell(
                         borderRadius: BorderRadius.circular(40.r),
-                        onTap: () => cartBloc.add(
-                          DeleteCartEvent(
-                            context: screenContext ?? context,
-                            productId: product.productId,
-                          ),
-                        ),
+                        onTapDown: (_) {
+                          print(
+                              '➖ ProductQuantityChanger: minus button onTapDown for product ${product.productId}');
+                        },
+                        onTap: () {
+                          print(
+                              '➖ ProductQuantityChanger: minus button tapped for product ${product.productId}');
+                          cartBloc.add(
+                            DeleteCartEvent(
+                              context: screenContext ?? context,
+                              productId: product.productId,
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -377,16 +403,28 @@ class ProductQuantityChanger extends StatelessWidget {
                       color: Colors.transparent,
                       child: InkWell(
                         borderRadius: BorderRadius.circular(40.r),
+                        onTapDown: (_) {
+                          print(
+                              '➕ ProductQuantityChanger: plus button onTapDown for product ${product.productId}');
+                        },
                         onTap: isAddDisabled
-                            ? () => ScaffoldMessenger.of(context)
-                              ..hideCurrentSnackBar()
-                              ..showSnackBar(const SnackBar(
-                                content: Text('Больше нет в наличии'),
-                              ))
-                            : () => cartBloc.add(AddCartEvent(
+                            ? () {
+                                print(
+                                    '➕ ProductQuantityChanger: plus button tapped (disabled) for product ${product.productId}');
+                                ScaffoldMessenger.of(context)
+                                  ..hideCurrentSnackBar()
+                                  ..showSnackBar(const SnackBar(
+                                    content: Text('Больше нет в наличии'),
+                                  ));
+                              }
+                            : () {
+                                print(
+                                    '➕ ProductQuantityChanger: plus button tapped for product ${product.productId}');
+                                cartBloc.add(AddCartEvent(
                                   context: screenContext ?? context,
                                   productId: product.productId,
-                                )),
+                                ));
+                              },
                       ),
                     ),
                   ),

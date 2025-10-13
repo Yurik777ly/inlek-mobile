@@ -68,7 +68,7 @@ class _DeliveryPaymentBlockState extends State<DeliveryPaymentBlock> {
                       isChecked: [
                         PaymentType.bepaid,
                         PaymentType.oplati,
-                        PaymentType.bepaid
+                        PaymentType.erip
                       ].contains(paymentType),
                       onTap: () {
                         setState(() {});

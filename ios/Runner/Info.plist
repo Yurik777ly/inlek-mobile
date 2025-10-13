@@ -35,6 +35,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Access to camera so that your customers can take photos with camera</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>The app requires access to your location for providing navigation features.</string>
 	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
@@ -44,6 +46,8 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>The app requires access to your location to display your position on the map and for navigation purposes.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Access to gallery so that your customers can send photos from gallery</string>
 	<key>NSPushNotificationsUsageDescription</key>
 	<string>The app uses push notifications to inform you about important pharmacy-related events and orders.</string>
 	<key>NSUserTrackingUsageDescription</key>
@@ -75,7 +79,5 @@
 	<true/>
 	<key>UNAuthorizationOptionSound</key>
 	<true/>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>The app does not use photo gallery access directly, but some libraries may require it.</string>
 </dict>
 </plist>
