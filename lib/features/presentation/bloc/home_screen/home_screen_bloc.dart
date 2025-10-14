@@ -8,6 +8,7 @@ import 'package:inlek/core/connectivity_service.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/pages/cart/cart_screen.dart';
 import 'package:inlek/features/presentation/pages/catalog/catalog_screen.dart';
+import 'package:inlek/features/presentation/pages/logs/logs_screen.dart';
 import 'package:inlek/features/presentation/pages/main/main_screen.dart';
 import 'package:inlek/features/presentation/pages/profile/personal_data_screen.dart';
 import 'package:inlek/features/presentation/pages/profile/profile_screen.dart';
@@ -20,7 +21,7 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
   late StreamSubscription<bool> subscription;
 
   final List<GlobalKey<NavigatorState>> navigatorKeys =
-      List.generate(4, (index) => GlobalKey<NavigatorState>());
+      List.generate(5, (index) => GlobalKey<NavigatorState>());
 
   Timer? _timer;
   int selectedPageIndex = 0;
@@ -31,7 +32,7 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
     CatalogScreen(),
     CartScreen(),
     ProfileScreen(),
-    //LogsScreen(),
+    LogsScreen(),
   ];
 
   List<String> iconsPaths = [
@@ -39,14 +40,14 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
     Paths.catalogIconPath,
     Paths.cartIconPath,
     Paths.profileIconPath,
-    //Paths.logsIconPath,
+    Paths.logsIconPath,
   ];
   List<String> iconsNames = [
     'Главная',
     'Каталог',
     'Корзина',
     'Профиль',
-    //'Логи',
+    'Логи',
   ];
 
   HomeScreenBloc() : super(HomeScreenInitial()) {

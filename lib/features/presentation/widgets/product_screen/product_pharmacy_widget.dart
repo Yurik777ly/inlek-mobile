@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
@@ -19,7 +18,7 @@ class ProductPharmacyWidget extends StatelessWidget {
       padding: getMarginOrPadding(top: 16, bottom: 16, left: 20, right: 20),
       decoration: BoxDecoration(
         color: UiConstants.whiteColor,
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

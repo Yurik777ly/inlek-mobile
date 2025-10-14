@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -107,7 +106,7 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
           padding: getMarginOrPadding(all: 16),
           decoration: BoxDecoration(
             color: UiConstants.whiteColor,
-            borderRadius: BorderRadius.circular(16.r),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
             children: [

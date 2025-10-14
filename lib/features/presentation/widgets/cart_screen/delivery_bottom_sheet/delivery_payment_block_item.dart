@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -40,7 +39,7 @@ class DeliveryPaymentBlockItem extends StatelessWidget {
             right: 16 - borderWidth),
         decoration: BoxDecoration(
           color: UiConstants.whiteColor,
-          borderRadius: BorderRadius.circular(16.r),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
             width: borderWidth,
             color: UiConstants.purple2Color.withOpacity(.2),

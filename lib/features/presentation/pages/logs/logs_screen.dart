@@ -161,11 +161,11 @@ class _LogsScreenState extends State<LogsScreen> {
                     )
                   : null,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.r),
+                borderRadius: BorderRadius.circular(8),
                 borderSide: const BorderSide(color: Colors.grey),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.r),
+                borderRadius: BorderRadius.circular(8),
                 borderSide: const BorderSide(color: UiConstants.pink2Color),
               ),
             ),
@@ -264,7 +264,7 @@ class _LogsScreenState extends State<LogsScreen> {
                       padding: EdgeInsets.all(6.w),
                       decoration: BoxDecoration(
                         color: UiConstants.pink2Color.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(4.r),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: Icon(
                         Icons.copy,
@@ -312,7 +312,7 @@ class _LogsScreenState extends State<LogsScreen> {
                             horizontal: 6.w, vertical: 2.h),
                         decoration: BoxDecoration(
                           color: Colors.blue.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(4.r),
+                          borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           log.formattedDuration,
@@ -332,7 +332,7 @@ class _LogsScreenState extends State<LogsScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                   decoration: BoxDecoration(
                     color: Colors.blue.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(4.r),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
                     log.formattedDuration,
@@ -351,7 +351,7 @@ class _LogsScreenState extends State<LogsScreen> {
                   padding: EdgeInsets.all(8.w),
                   decoration: BoxDecoration(
                     color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(4.r),
+                    borderRadius: BorderRadius.circular(4),
                     border: Border.all(color: Colors.grey[300]!),
                   ),
                   child: Column(
@@ -410,7 +410,7 @@ class _LogsScreenState extends State<LogsScreen> {
                               padding: EdgeInsets.all(4.w),
                               decoration: BoxDecoration(
                                 color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(4.r),
+                                borderRadius: BorderRadius.circular(4),
                               ),
                               child: Icon(
                                 Icons.copy,
@@ -520,7 +520,7 @@ class _LogsScreenState extends State<LogsScreen> {
                       margin: EdgeInsets.symmetric(vertical: 12.h),
                       decoration: BoxDecoration(
                         color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(2.r),
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                     Padding(
@@ -544,7 +544,7 @@ class _LogsScreenState extends State<LogsScreen> {
                               padding: EdgeInsets.all(8.w),
                               decoration: BoxDecoration(
                                 color: UiConstants.pink2Color.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(6.r),
+                                borderRadius: BorderRadius.circular(6),
                               ),
                               child: Icon(
                                 Icons.copy,
@@ -615,7 +615,7 @@ class _LogsScreenState extends State<LogsScreen> {
             padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
               color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(4.r),
+              borderRadius: BorderRadius.circular(4),
             ),
             child: SelectableText(
               content,
@@ -661,7 +661,7 @@ class _LogsScreenState extends State<LogsScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                   decoration: BoxDecoration(
                     color: UiConstants.pink2Color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(4.r),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
                     'JSON',
@@ -680,7 +680,7 @@ class _LogsScreenState extends State<LogsScreen> {
                   padding: EdgeInsets.all(6.w),
                   decoration: BoxDecoration(
                     color: UiConstants.pink2Color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(4.r),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                   child: Icon(
                     Icons.copy,
@@ -697,7 +697,7 @@ class _LogsScreenState extends State<LogsScreen> {
             padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
               color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(4.r),
+              borderRadius: BorderRadius.circular(4),
             ),
             child: SelectableText(
               isJson ? _formatJson(displayBody) : displayBody,

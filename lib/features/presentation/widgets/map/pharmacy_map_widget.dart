@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/paths.dart';
@@ -82,10 +81,10 @@ class _PharmacyMapWidgetState extends State<PharmacyMapWidget> {
           alignment: Alignment.bottomCenter,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(16.r),
+              borderRadius: BorderRadius.circular(16),
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16.r),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: YandexMap(
                     onMapCreated: (controller) => _bloc

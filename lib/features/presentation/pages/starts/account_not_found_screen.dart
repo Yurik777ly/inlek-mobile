@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/paths.dart';
@@ -63,7 +62,7 @@ class AccountNotFoundScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: UiConstants.whiteColor,
                   borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(16.r),
+                    top: Radius.circular(16),
                   ),
                 ),
                 child: Column(

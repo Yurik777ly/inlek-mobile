@@ -21,7 +21,7 @@ class _PriceRangeWidgetState extends State<PriceRangeWidget> {
         offset: Offset(-1, 4),
         color: Color(0xFF00A0E3).withOpacity(.1),
         blurRadius: 10.r,
-        spreadRadius: -4.r),
+        spreadRadius: -4),
   ];
 
   @override
@@ -80,7 +80,7 @@ class _PriceRangeWidgetState extends State<PriceRangeWidget> {
                 trackHeight: 2,
                 overlayShape: RoundSliderOverlayShape(overlayRadius: 0),
                 rangeThumbShape: RoundRangeSliderThumbShape(
-                    enabledThumbRadius: 6.r, disabledThumbRadius: 6.r),
+                    enabledThumbRadius: 6.r, disabledThumbRadius: 6),
               ),
               child: RangeSlider(
                 values:

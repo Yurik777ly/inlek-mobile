@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
@@ -21,7 +20,7 @@ class SearchProductsWidget extends StatelessWidget {
         padding: getMarginOrPadding(all: 8),
         decoration: BoxDecoration(
             color: UiConstants.whiteColor,
-            borderRadius: BorderRadiusDirectional.circular(16.r)),
+            borderRadius: BorderRadiusDirectional.circular(16)),
         child: ListView.separated(
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/paths.dart';
@@ -101,7 +100,7 @@ class SearchProductAppBar extends StatelessWidget {
                             left: 16, right: 16, top: 12, bottom: 12),
                         decoration: BoxDecoration(
                           color: UiConstants.white2Color,
-                          borderRadius: BorderRadius.circular(12.r),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
                           children: [

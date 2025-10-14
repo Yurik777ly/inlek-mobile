@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/custom_cache_manager.dart';
 
@@ -12,7 +11,7 @@ class BannerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(16.r),
+      borderRadius: BorderRadius.circular(16),
       child: CachedNetworkImage(
         imageUrl: url ?? '',
         height: height,

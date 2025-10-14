@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -93,7 +92,7 @@ class _AppButtonWidgetState extends State<AppButtonWidget> {
               fixedSize: Size(double.infinity, double.infinity),
               shape: RoundedRectangleBorder(
                   borderRadius:
-                      BorderRadius.circular(widget.borderRadius ?? 30.r),
+                      BorderRadius.circular(widget.borderRadius ?? 30),
                   side: widget.showBorder
                       ? BorderSide(color: UiConstants.purpleColor)
                       : BorderSide.none),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 
@@ -26,7 +25,7 @@ class PharmacyAvailableProductsChip extends StatelessWidget {
                 : availability == 'part'
                     ? UiConstants.yellowColor
                     : UiConstants.white2Color,
-            borderRadius: BorderRadius.circular(200.r),
+            borderRadius: BorderRadius.circular(200),
           ),
           child: Text(
             availability == 'full'

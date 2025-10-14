@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 
@@ -29,7 +28,7 @@ class SelectorChip extends StatelessWidget {
           margin: getMarginOrPadding(left: index != 0 ? 2 : 0),
           decoration: BoxDecoration(
             color: selected ? UiConstants.purpleColor : Colors.transparent,
-            borderRadius: BorderRadius.circular(12.r),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Text(text,
               style: UiConstants.textStyle2.copyWith(

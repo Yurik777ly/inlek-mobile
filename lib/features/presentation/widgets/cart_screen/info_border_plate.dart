@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -18,7 +17,7 @@ class InfoBorderPlate extends StatelessWidget {
       child: Container(
         padding: getMarginOrPadding(all: 8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.r),
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(
             width: 3,
             color: UiConstants.pink2Color.withOpacity(.3),

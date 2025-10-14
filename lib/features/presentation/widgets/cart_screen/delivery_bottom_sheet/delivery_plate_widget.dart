@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
@@ -18,7 +17,7 @@ class InfoPlateWidget extends StatelessWidget {
         padding: getMarginOrPadding(top: 10, bottom: 10, left: 8, right: 8),
         decoration: BoxDecoration(
           color: UiConstants.purple3Color,
-          borderRadius: BorderRadius.circular(16.r),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
           children: [
@@ -26,7 +25,7 @@ class InfoPlateWidget extends StatelessWidget {
               padding: getMarginOrPadding(all: 12),
               decoration: BoxDecoration(
                 color: UiConstants.whiteColor.withOpacity(.4),
-                borderRadius: BorderRadius.circular(8.r),
+                borderRadius: BorderRadius.circular(8),
               ),
               child:
                   SvgPicture.asset(Paths.infoIconPath, width: 16, height: 16),

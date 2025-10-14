@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -20,7 +19,7 @@ class DropdownWidget extends StatelessWidget {
           padding: getMarginOrPadding(all: 16),
           decoration: BoxDecoration(
             color: UiConstants.whiteColor,
-            borderRadius: BorderRadius.circular(16.r),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: ExpansionTile(
             expandedAlignment: Alignment.topLeft,

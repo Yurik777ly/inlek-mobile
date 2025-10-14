@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -45,7 +44,7 @@ class ProductChipWidget extends StatelessWidget {
       child: Container(
         padding: getMarginOrPadding(left: 8, right: 8, top: 2, bottom: 2),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(200.r),
+          borderRadius: BorderRadius.circular(200),
           gradient: LinearGradient(
             colors: [
               firstColor,

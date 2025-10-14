@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -32,7 +31,7 @@ class RightArrowButton extends StatelessWidget {
             width: width,
             decoration: BoxDecoration(
               color: color ?? UiConstants.white2Color,
-              borderRadius: BorderRadius.circular(8.r),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Transform.flip(
               flipX: true,

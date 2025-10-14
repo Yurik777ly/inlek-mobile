@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/paths.dart';
@@ -100,7 +99,7 @@ class _AddToCartButton extends StatelessWidget {
         padding: getMarginOrPadding(left: 20, right: 20, top: 5.5, bottom: 5.5),
         decoration: BoxDecoration(
           color: UiConstants.purpleColor,
-          borderRadius: BorderRadius.circular(40.r),
+          borderRadius: BorderRadius.circular(40),
         ),
         child: Center(
           child: isLoading
@@ -165,7 +164,7 @@ class CartQuantityChanger extends StatelessWidget {
           padding: getMarginOrPadding(all: 8),
           decoration: BoxDecoration(
             color: UiConstants.white2Color,
-            borderRadius: BorderRadius.circular(40.r),
+            borderRadius: BorderRadius.circular(40),
           ),
           child: Row(
             children: [
@@ -236,7 +235,7 @@ class CartQuantityChanger extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.transparent,
                       borderRadius: BorderRadius.horizontal(
-                        left: Radius.circular(8.r),
+                        left: Radius.circular(8),
                       ),
                     ),
                   ),
@@ -273,7 +272,7 @@ class CartQuantityChanger extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.transparent,
                       borderRadius: BorderRadius.horizontal(
-                        right: Radius.circular(8.r),
+                        right: Radius.circular(8),
                       ),
                     ),
                   ),
@@ -314,7 +313,7 @@ class ProductQuantityChanger extends StatelessWidget {
         padding: getMarginOrPadding(left: 20, right: 20, top: 5.5, bottom: 5.5),
         decoration: BoxDecoration(
           color: UiConstants.purpleColor,
-          borderRadius: BorderRadius.circular(40.r),
+          borderRadius: BorderRadius.circular(40),
         ),
         child: Row(
           children: [
@@ -334,7 +333,7 @@ class ProductQuantityChanger extends StatelessWidget {
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(40.r),
+                        borderRadius: BorderRadius.circular(40),
                         onTapDown: (_) {
                           print(
                               '➖ ProductQuantityChanger: minus button onTapDown for product ${product.productId}');
@@ -402,7 +401,7 @@ class ProductQuantityChanger extends StatelessWidget {
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(40.r),
+                        borderRadius: BorderRadius.circular(40),
                         onTapDown: (_) {
                           print(
                               '➕ ProductQuantityChanger: plus button onTapDown for product ${product.productId}');

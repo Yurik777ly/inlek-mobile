@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -17,7 +16,7 @@ class ProductSaleChip extends StatelessWidget {
         padding: getMarginOrPadding(all: 4),
         decoration: BoxDecoration(
           color: UiConstants.pink2Color.withOpacity(.05),
-          borderRadius: BorderRadius.circular(200.r),
+          borderRadius: BorderRadius.circular(200),
         ),
         child: Text(
           '-$discount%',

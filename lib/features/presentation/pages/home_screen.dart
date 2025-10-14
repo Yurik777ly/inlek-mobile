@@ -5,7 +5,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/app_route_observer.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -333,7 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             padding: getMarginOrPadding(all: 8),
                             decoration: BoxDecoration(
                               color: UiConstants.whiteColor,
-                              borderRadius: BorderRadius.circular(16.r),
+                              borderRadius: BorderRadius.circular(16),
                             ),
                             child: BlocBuilder<CartScreenBloc, CartScreenState>(
                               builder: (context, state) {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:pinput/pinput.dart';
 
@@ -41,7 +40,7 @@ class _PinputWidgetState extends State<PinputWidget> {
       ),
       decoration: BoxDecoration(
         color: UiConstants.white2Color,
-        borderRadius: BorderRadius.circular(8.r),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(width: 3, color: Colors.transparent),
       ),
     );

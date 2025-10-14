@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
@@ -163,26 +162,26 @@ class _GidTextFieldState extends State<AppTextFieldWidget> {
             decoration: InputDecoration(
               hintMaxLines: widget.hintMaxLines ?? 500,
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16.r),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: const BorderSide(color: Colors.transparent),
               ),
               disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16.r),
+                borderRadius: BorderRadius.circular(16),
                 borderSide:
                     const BorderSide(width: 3, color: Colors.transparent),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16.r),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide(
                     width: 3, color: UiConstants.purple2Color.withOpacity(.2)),
               ),
               errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16.r),
+                borderRadius: BorderRadius.circular(16),
                 borderSide:
                     const BorderSide(width: 3, color: UiConstants.pinkColor),
               ),
               focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16.r),
+                borderRadius: BorderRadius.circular(16),
                 borderSide:
                     const BorderSide(width: 3, color: UiConstants.pinkColor),
               ),

@@ -17,7 +17,7 @@ class OrderItemStatusChip extends StatelessWidget {
       padding: getMarginOrPadding(left: 8, right: 8, top: 4, bottom: 4),
       decoration: BoxDecoration(
         color: UiConstants.white5Color,
-        borderRadius: BorderRadius.circular(200.r),
+        borderRadius: BorderRadius.circular(200),
       ),
       child: Row(
         children: [

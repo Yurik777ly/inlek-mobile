@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
@@ -46,13 +45,13 @@ class SalesListItem extends StatelessWidget {
         width: isOneElementInList ? null : 296,
         decoration: BoxDecoration(
           color: UiConstants.whiteColor,
-          borderRadius: BorderRadius.circular(16.r),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
           children: [
             ClipRRect(
               borderRadius: BorderRadius.vertical(
-                top: Radius.circular(16.r),
+                top: Radius.circular(16),
               ),
               child: CachedNetworkImage(
                 height: 128,
@@ -99,7 +98,7 @@ class SalesListItem extends StatelessWidget {
                               padding: getMarginOrPadding(all: 4),
                               decoration: BoxDecoration(
                                 color: UiConstants.pink2Color.withOpacity(.05),
-                                borderRadius: BorderRadius.circular(200.r),
+                                borderRadius: BorderRadius.circular(200),
                               ),
                               child: Builder(builder: (context) {
                                 ProductEntity? productWhereDiscountDontNull =

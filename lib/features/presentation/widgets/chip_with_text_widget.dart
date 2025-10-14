@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -34,7 +33,7 @@ class ChipWithTextWidget extends StatelessWidget {
                 getMarginOrPadding(left: 8, right: 8, top: 4, bottom: 4),
             decoration: BoxDecoration(
               color: backgroundColor,
-              borderRadius: BorderRadius.circular(radius ?? 200.r),
+              borderRadius: BorderRadius.circular(radius ?? 200),
             ),
             child: Center(
               child: Text(

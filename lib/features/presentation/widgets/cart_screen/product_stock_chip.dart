@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
@@ -16,7 +15,7 @@ class ProductStockChip extends StatelessWidget {
         padding: getMarginOrPadding(all: 8),
         decoration: BoxDecoration(
           color: UiConstants.pink3Color,
-          borderRadius: BorderRadius.circular(8.r),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           children: [

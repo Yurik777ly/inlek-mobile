@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -27,7 +26,7 @@ class CourierDeliveryZoneItem extends StatelessWidget {
               color: deliveryZoneType == DeliveryZoneType.green
                   ? UiConstants.lime2Color
                   : UiConstants.yellow3Color,
-              borderRadius: BorderRadius.circular(8.r),
+              borderRadius: BorderRadius.circular(8),
               border: Border.all(
                   color: deliveryZoneType == DeliveryZoneType.green
                       ? UiConstants.green2Color

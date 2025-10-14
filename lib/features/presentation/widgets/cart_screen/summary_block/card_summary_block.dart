@@ -34,7 +34,7 @@ class CardSummaryBlock extends StatelessWidget {
           padding: getMarginOrPadding(left: 16, right: 16, top: 16, bottom: 32),
           decoration: BoxDecoration(
             color: UiConstants.whiteColor,
-            borderRadius: BorderRadius.circular(16.r),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
             children: [

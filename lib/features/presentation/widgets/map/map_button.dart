@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/ui_constants.dart';
 
@@ -24,7 +23,7 @@ class MapButton extends StatelessWidget {
         backgroundColor: UiConstants.whiteColor.withOpacity(.9),
         fixedSize: Size(36, 36),
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.r), side: BorderSide.none),
+            borderRadius: BorderRadius.circular(10), side: BorderSide.none),
       ),
     );
   }

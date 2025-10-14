@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -23,7 +22,7 @@ class MoreDetailPlate extends StatelessWidget {
         overlayColor: WidgetStatePropertyAll(Colors.transparent),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.r),
+            borderRadius: BorderRadius.circular(16),
           ),
         ),
         backgroundColor: WidgetStatePropertyAll(UiConstants.purple3Color),
@@ -45,7 +44,7 @@ class MoreDetailPlate extends StatelessWidget {
                 padding: getMarginOrPadding(all: 12),
                 decoration: BoxDecoration(
                   color: UiConstants.whiteColor.withOpacity(.4),
-                  borderRadius: BorderRadius.circular(8.r),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: SvgPicture.asset(
                   imagePath,

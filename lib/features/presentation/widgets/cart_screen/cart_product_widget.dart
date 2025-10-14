@@ -101,220 +101,198 @@ class CartProductWidget extends StatelessWidget {
       }
     }
 
-    return GestureDetector(
-      behavior: HitTestBehavior.deferToChild,
-      onTapDown: (details) {
-        print(
-            '➕ CartProductWidget: onTapDown at ${details.localPosition} for product ${product.productId}');
-      },
-      onTap: () {
-        print(
-            '➕ CartProductWidget: onTap triggered for product ${product.productId}');
-        Navigator.of(screenContext ?? context).push(
-          Routes.createRoute(
-            const ProductScreen(),
-            settings: RouteSettings(
-              name: Routes.productScreen,
-              arguments: {'id': product.productId},
+    return Stack(
+      children: [
+        DismissibleTile(
+          onDismissed: (_) {
+            if (effectiveCartBloc != null) {
+              effectiveCartBloc.add(
+                DeleteCartEvent(
+                    context: context, productId: product.productId, count: 0),
+              );
+            } else if (onProductDeleted != null) {
+              onProductDeleted!(product.productId, 0);
+            }
+          },
+          direction: productsListScreenType == ProductsListScreenType.cart
+              ? DismissibleTileDirection.horizontal
+              : DismissibleTileDirection.none,
+          key: UniqueKey(),
+          borderRadius: BorderRadius.all(
+            Radius.circular(16.r),
+          ),
+          delayBeforeResize: Duration.zero,
+          overlayTransitionDuration: Duration.zero,
+          movementDuration: Duration.zero,
+          rtlBackground: const ColoredBox(color: UiConstants.redColor),
+          rtlOverlayIndent: 0,
+          rtlDismissedColor: UiConstants.redColor,
+          rtlOverlay: SvgPicture.asset(Paths.deleteIconPath,
+              height: 24, width: 24, color: UiConstants.whiteColor),
+          rtlOverlayDismissed: SvgPicture.asset(Paths.deleteIconPath,
+              height: 24, width: 24, color: UiConstants.whiteColor),
+          ltrBackground: const ColoredBox(color: UiConstants.redColor),
+          ltrOverlayIndent: 0,
+          resizeDuration: Duration(milliseconds: 1),
+          ltrDismissedColor: UiConstants.redColor,
+          ltrOverlay: SvgPicture.asset(Paths.deleteIconPath,
+              height: 24, width: 24, color: UiConstants.whiteColor),
+          ltrOverlayDismissed: SvgPicture.asset(Paths.deleteIconPath,
+              height: 24, width: 24, color: UiConstants.whiteColor),
+          child: Container(
+            padding: getMarginOrPadding(all: 8),
+            decoration: BoxDecoration(
+              color: UiConstants.whiteColor,
+              borderRadius: BorderRadius.circular(16.r),
             ),
-          ),
-        );
-      },
-      child: DismissibleTile(
-        onDismissed: (_) {
-          if (effectiveCartBloc != null) {
-            effectiveCartBloc.add(
-              DeleteCartEvent(
-                  context: context, productId: product.productId, count: 0),
-            );
-          } else if (onProductDeleted != null) {
-            onProductDeleted!(product.productId, 0);
-          }
-        },
-        direction: productsListScreenType == ProductsListScreenType.cart
-            ? DismissibleTileDirection.horizontal
-            : DismissibleTileDirection.none,
-        key: UniqueKey(),
-        borderRadius: BorderRadius.all(
-          Radius.circular(16.r),
-        ),
-        delayBeforeResize: Duration.zero,
-        overlayTransitionDuration: Duration.zero,
-        movementDuration: Duration.zero,
-        rtlBackground: const ColoredBox(color: UiConstants.redColor),
-        rtlOverlayIndent: 0,
-        rtlDismissedColor: UiConstants.redColor,
-        rtlOverlay: SvgPicture.asset(Paths.deleteIconPath,
-            height: 24, width: 24, color: UiConstants.whiteColor),
-        rtlOverlayDismissed: SvgPicture.asset(Paths.deleteIconPath,
-            height: 24, width: 24, color: UiConstants.whiteColor),
-        ltrBackground: const ColoredBox(color: UiConstants.redColor),
-        ltrOverlayIndent: 0,
-        resizeDuration: Duration(milliseconds: 1),
-        ltrDismissedColor: UiConstants.redColor,
-        ltrOverlay: SvgPicture.asset(Paths.deleteIconPath,
-            height: 24, width: 24, color: UiConstants.whiteColor),
-        ltrOverlayDismissed: SvgPicture.asset(Paths.deleteIconPath,
-            height: 24, width: 24, color: UiConstants.whiteColor),
-        child: Container(
-          padding: getMarginOrPadding(all: 8),
-          decoration: BoxDecoration(
-            color: UiConstants.whiteColor,
-            borderRadius: BorderRadius.circular(16.r),
-          ),
-          child: Skeletonizer(
-            ignorePointers: false,
-            enabled: isLoadingProduct,
-            child: Column(
-              children: [
-                Stack(
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (productsListScreenType ==
-                                ProductsListScreenType.cart &&
-                            product.availability != 'absent')
-                          Skeleton.keep(
-                            child: Padding(
-                              padding: getMarginOrPadding(right: 8),
-                              child: CustomCheckbox(
-                                isChecked: state.selectedProductIds
-                                    .contains(product.productId),
-                                onChanged: (isChecked) {
-                                  if (effectiveCartBloc != null) {
-                                    effectiveCartBloc.add(
-                                      ToggleSelectionEvent(isChecked ?? false,
-                                          product.productId),
-                                    );
-                                  } else if (onSelectionToggled != null) {
-                                    onSelectionToggled!(
-                                        isChecked ?? false, product.productId);
-                                  }
-                                },
+            child: Skeletonizer(
+              ignorePointers: false,
+              enabled: isLoadingProduct,
+              child: Column(
+                children: [
+                  Stack(
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (productsListScreenType ==
+                                  ProductsListScreenType.cart &&
+                              product.availability != 'absent')
+                            Skeleton.keep(
+                              child: Padding(
+                                padding: getMarginOrPadding(right: 8),
+                                child: CustomCheckbox(
+                                  isChecked: state.selectedProductIds
+                                      .contains(product.productId),
+                                  onChanged: (isChecked) {
+                                    if (effectiveCartBloc != null) {
+                                      effectiveCartBloc.add(
+                                        ToggleSelectionEvent(isChecked ?? false,
+                                            product.productId),
+                                      );
+                                    } else if (onSelectionToggled != null) {
+                                      onSelectionToggled!(isChecked ?? false,
+                                          product.productId);
+                                    }
+                                  },
+                                ),
                               ),
                             ),
-                          ),
-                        Stack(
-                          children: [
-                            if (product.stockCount == 0)
-                              Container(
+                          Stack(
+                            children: [
+                              if (product.stockCount == 0)
+                                Container(
+                                  height: 104,
+                                  width: 104,
+                                  color: UiConstants.whiteColor.withOpacity(.6),
+                                ),
+                              CachedNetworkImage(
                                 height: 104,
                                 width: 104,
-                                color: UiConstants.whiteColor.withOpacity(.6),
-                              ),
-                            CachedNetworkImage(
-                              height: 104,
-                              width: 104,
-                              imageUrl:
-                                  '${dotenv.env['PUBLIC_URL']!}${product.image}',
-                              fit: BoxFit.contain,
-                              cacheManager: CustomCacheManager(),
-                              errorWidget: (context, url, error) =>
-                                  SvgPicture.asset(Paths.drugTemplateIconPath,
-                                      height: double.infinity),
-                              progressIndicatorBuilder:
-                                  (context, url, progress) => Center(
-                                child: CircularProgressIndicator(
-                                    color: UiConstants.pink2Color),
-                              ),
-                            ),
-
-                            /*Positioned(
-                                top: 4,
-                                left: 8,
-                                right: 8,
-                                child: Wrap(
-                                  spacing: 4,
-                                  runSpacing: 4,
-                                  children: [
-                                    if (product.productSticker != null)
-                                      ProductChipWidget(
-                                        productChipType:
-                                            ProductChipTypeExtension.fromString(
-                                                product.productSticker!),
-                                      ),
-                                  ],
+                                imageUrl:
+                                    '${dotenv.env['PUBLIC_URL']!}${product.image}',
+                                fit: BoxFit.contain,
+                                cacheManager: CustomCacheManager(),
+                                errorWidget: (context, url, error) =>
+                                    SvgPicture.asset(Paths.drugTemplateIconPath,
+                                        height: double.infinity),
+                                progressIndicatorBuilder:
+                                    (context, url, progress) => Center(
+                                  child: CircularProgressIndicator(
+                                      color: UiConstants.pink2Color),
                                 ),
-                              )*/
-                          ],
-                        ),
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text((name as String?).orDash(),
-                                  style: UiConstants.textStyle8.copyWith(
-                                      color: UiConstants.darkBlueColor),
-                                  maxLines: 4,
-                                  overflow: TextOverflow.ellipsis),
-                              SizedBox(height: 8),
-                              if (product.stockCount == 0)
-                                Padding(
-                                  padding: getMarginOrPadding(bottom: 4),
-                                  child: product?.otherPharmacy == 1 &&
-                                          (effectiveCartBloc?.state.cartType ??
-                                                  state.cartType) !=
-                                              TypeReceiving.pickup
-                                      ? AvailablePickupChip()
-                                      : OutStockChip(),
-                                )
-                              else if (product.isAlcohol || product.isRecipe)
-                                Padding(
-                                  padding: getMarginOrPadding(bottom: 4),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                              ),
+
+                              /*Positioned(
+                                  top: 4,
+                                  left: 8,
+                                  right: 8,
+                                  child: Wrap(
+                                    spacing: 4,
+                                    runSpacing: 4,
                                     children: [
-                                      OnlyPickupChip(),
-                                      /*if (widget.productsListScreenType ==
-                                            ProductsListScreenType.order)
-                                          Skeleton.ignore(
-                                            child: CircleAvatar(
-                                              backgroundColor:
-                                                  UiConstants.pink2Color,
-                                              radius: 12,
-                                              child: Padding(
-                                                padding:
-                                                    getMarginOrPadding(all: 4),
-                                                child: SvgPicture.asset(
-                                                    Paths.replaceIconPath,
-                                                    color:
-                                                        UiConstants.whiteColor),
-                                              ),
-                                            ),
-                                          )*/
+                                      if (product.productSticker != null)
+                                        ProductChipWidget(
+                                          productChipType:
+                                              ProductChipTypeExtension.fromString(
+                                                  product.productSticker!),
+                                        ),
                                     ],
                                   ),
-                                ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: productsListScreenType ==
-                                        ProductsListScreenType.order
-                                    ? CrossAxisAlignment.end
-                                    : CrossAxisAlignment
-                                        .center, // TODO: если нет скидки, то CrossAxisAlignment.end
-                                children: [
-                                  if (product.availability != 'absent')
-                                    Expanded(
-                                      child: ProductPrice(
-                                          oldPrice: oldPrice,
-                                          price: price,
-                                          productsListScreenType:
-                                              productsListScreenType),
+                                )*/
+                            ],
+                          ),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text((name as String?).orDash(),
+                                    style: UiConstants.textStyle8.copyWith(
+                                        color: UiConstants.darkBlueColor),
+                                    maxLines: 4,
+                                    overflow: TextOverflow.ellipsis),
+                                SizedBox(height: 8),
+                                if (product.stockCount == 0)
+                                  Padding(
+                                    padding: getMarginOrPadding(bottom: 4),
+                                    child: product?.otherPharmacy == 1 &&
+                                            (effectiveCartBloc
+                                                        ?.state.cartType ??
+                                                    state.cartType) !=
+                                                TypeReceiving.pickup
+                                        ? AvailablePickupChip()
+                                        : OutStockChip(),
+                                  )
+                                else if (product.isAlcohol || product.isRecipe)
+                                  Padding(
+                                    padding: getMarginOrPadding(bottom: 4),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        OnlyPickupChip(),
+                                        /*if (widget.productsListScreenType ==
+                                              ProductsListScreenType.order)
+                                            Skeleton.ignore(
+                                              child: CircleAvatar(
+                                                backgroundColor:
+                                                    UiConstants.pink2Color,
+                                                radius: 12,
+                                                child: Padding(
+                                                  padding:
+                                                      getMarginOrPadding(all: 4),
+                                                  child: SvgPicture.asset(
+                                                      Paths.replaceIconPath,
+                                                      color:
+                                                          UiConstants.whiteColor),
+                                                ),
+                                              ),
+                                            )*/
+                                      ],
                                     ),
-                                  if (productsListScreenType ==
-                                          ProductsListScreenType.cart &&
-                                      product.availability != 'absent')
-                                    GestureDetector(
-                                      onTap: () {
-                                        print(
-                                            '🔒 Blocking tap on ChangeCountProductWidget for product ${product.productId}');
-                                        // Блокируем нажатие, не делаем ничего
-                                      },
-                                      child: Padding(
+                                  ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: productsListScreenType ==
+                                          ProductsListScreenType.order
+                                      ? CrossAxisAlignment.end
+                                      : CrossAxisAlignment
+                                          .center, // TODO: если нет скидки, то CrossAxisAlignment.end
+                                  children: [
+                                    if (product.availability != 'absent')
+                                      Expanded(
+                                        child: ProductPrice(
+                                            oldPrice: oldPrice,
+                                            price: price,
+                                            productsListScreenType:
+                                                productsListScreenType),
+                                      ),
+                                    if (productsListScreenType ==
+                                            ProductsListScreenType.cart &&
+                                        product.availability != 'absent')
+                                      Padding(
                                         padding: getMarginOrPadding(
                                             top: 2, bottom: 2, left: 8),
                                         child: ChangeCountProductWidget(
@@ -323,71 +301,91 @@ class CartProductWidget extends StatelessWidget {
                                                 CartOrProductType.cart,
                                             screenContext: screenContext,
                                             cartBloc: effectiveCartBloc),
-                                      ),
-                                    )
-                                  else if (productsListScreenType ==
-                                      ProductsListScreenType.order)
-                                    Text(
-                                      '${product.quantity ?? product.count} шт.',
-                                      style: UiConstants.textStyle8.copyWith(
-                                        color: UiConstants.darkBlueColor
-                                            .withOpacity(.6),
-                                      ),
-                                    )
-                                ],
-                              ),
-                              if (productsListScreenType ==
-                                      ProductsListScreenType.pharmacy &&
-                                  product.stockCount != 0)
-                                Padding(
-                                  padding: getMarginOrPadding(top: 4),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.check_rounded,
-                                          color: UiConstants.greenColor),
-                                      SizedBox(width: 4),
+                                      )
+                                    else if (productsListScreenType ==
+                                        ProductsListScreenType.order)
                                       Text(
-                                        'В наличии ${product.stockCount} шт.',
+                                        '${product.quantity ?? product.count} шт.',
                                         style: UiConstants.textStyle8.copyWith(
-                                          color: UiConstants.blackColor,
+                                          color: UiConstants.darkBlueColor
+                                              .withOpacity(.6),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                            ],
+                                      )
+                                  ],
+                                ),
+                                if (productsListScreenType ==
+                                        ProductsListScreenType.pharmacy &&
+                                    product.stockCount != 0)
+                                  Padding(
+                                    padding: getMarginOrPadding(top: 4),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.check_rounded,
+                                            color: UiConstants.greenColor),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          'В наличии ${product.stockCount} шт.',
+                                          style:
+                                              UiConstants.textStyle8.copyWith(
+                                            color: UiConstants.blackColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    if (product.stockCount == 0)
-                      Container(
-                        height: 104,
-                        color: UiConstants.whiteColor.withOpacity(.5),
+                        ],
                       ),
-                  ],
-                ),
-                if (product is ProductEntity &&
-                    product.prices?.discountWithoutPromos != 0 &&
-                    (product.prices?.appliedPromocodes ?? [])
-                        .any((e) => state.selectedPromoCodes.contains(e)))
-                  Padding(
-                    padding: getMarginOrPadding(top: 8),
-                    child: InfoBorderPlate(
-                        imagePath: Paths.stockIconPath,
-                        title:
-                            'Этот товар уже со скидкой, промокод не действует'),
+                      if (product.stockCount == 0)
+                        Container(
+                          height: 104,
+                          color: UiConstants.whiteColor.withOpacity(.5),
+                        ),
+                    ],
                   ),
-                //if (widget.index % 3 == 2)
-                //  Padding(
-                //    padding: getMarginOrPadding(top: 8),
-                //    child: ProductStockChip(),
-                //  )
-              ],
+                  if (product is ProductEntity &&
+                      product.prices?.discountWithoutPromos != 0 &&
+                      (product.prices?.appliedPromocodes ?? [])
+                          .any((e) => state.selectedPromoCodes.contains(e)))
+                    Padding(
+                      padding: getMarginOrPadding(top: 8),
+                      child: InfoBorderPlate(
+                          imagePath: Paths.stockIconPath,
+                          title:
+                              'Этот товар уже со скидкой, промокод не действует'),
+                    ),
+                  //if (widget.index % 3 == 2)
+                  //  Padding(
+                  //    padding: getMarginOrPadding(top: 8),
+                  //    child: ProductStockChip(),
+                  //  )
+                ],
+              ),
             ),
           ),
         ),
-      ),
+
+        // такой баг, что если нажимать на каунтер быстро, то открывалась карточка товара, решил, что нужно ограничить область клика
+        Positioned.fill(
+          right: 100,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(screenContext ?? context).push(
+                Routes.createRoute(
+                  const ProductScreen(),
+                  settings: RouteSettings(
+                    name: Routes.productScreen,
+                    arguments: {'id': product.productId},
+                  ),
+                ),
+              );
+            },
+            child: Container(color: Colors.transparent),
+          ),
+        ),
+      ],
     );
   }
 }

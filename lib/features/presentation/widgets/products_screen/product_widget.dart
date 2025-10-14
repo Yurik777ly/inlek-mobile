@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/extensions.dart';
@@ -41,7 +40,7 @@ class ProductWidget extends StatelessWidget {
         width: 148,
         decoration: BoxDecoration(
           color: UiConstants.whiteColor,
-          borderRadius: BorderRadius.circular(16.r),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Stack(
           children: [
@@ -49,7 +48,7 @@ class ProductWidget extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(16.r),
+                    top: Radius.circular(16),
                   ),
                   child: CachedNetworkImage(
                     height: 112,

@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
@@ -30,20 +29,20 @@ class SubcategoryItem extends StatelessWidget {
         padding: getMarginOrPadding(all: 8),
         decoration: BoxDecoration(
           color: UiConstants.whiteColor,
-          borderRadius: BorderRadius.circular(8.r),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           children: [
             Skeleton.leaf(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.r),
+                borderRadius: BorderRadius.circular(8),
                 child: Container(
                   height: 40,
                   width: 40,
                   //padding: getMarginOrPadding(all: 12),
                   decoration: BoxDecoration(
                     color: UiConstants.purple3Color,
-                    borderRadius: BorderRadius.circular(8.r),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: imagePath.contains('http')
                       ? CachedNetworkImage(

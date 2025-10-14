@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
@@ -21,7 +20,7 @@ class SearchHistoryItem extends StatelessWidget {
         padding: getMarginOrPadding(left: 16, right: 16, top: 9, bottom: 9),
         decoration: BoxDecoration(
             color: UiConstants.white2Color,
-            borderRadius: BorderRadiusDirectional.circular(8.r)),
+            borderRadius: BorderRadiusDirectional.circular(8)),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

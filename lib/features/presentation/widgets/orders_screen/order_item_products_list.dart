@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -21,11 +20,11 @@ class OrderItemProductsList extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) => Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.r),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: UiConstants.white2Color),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.r),
+                  borderRadius: BorderRadius.circular(8),
                   child: CachedNetworkImage(
                     height: 56,
                     width: 56,

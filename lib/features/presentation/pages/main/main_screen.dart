@@ -1,7 +1,6 @@
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
@@ -208,7 +207,7 @@ class MainScreen extends StatelessWidget {
                         child: BlurryContainer(
                           blur: 8,
                           padding: EdgeInsets.zero,
-                          borderRadius: BorderRadius.circular(1000.r),
+                          borderRadius: BorderRadius.circular(1000),
                           child: FloatingActionButton(
                             shape: CircleBorder(),
                             elevation: 0,

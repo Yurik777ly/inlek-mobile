@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -29,7 +28,7 @@ class StocksPlateWidget extends StatelessWidget {
               fit: BoxFit.cover,
               image: AssetImage(Paths.stocksBackgroundIconPath),
             ),
-            borderRadius: BorderRadius.circular(16.r)),
+            borderRadius: BorderRadius.circular(16)),
         child: Align(
           alignment: Alignment.centerLeft,
           child: Text(

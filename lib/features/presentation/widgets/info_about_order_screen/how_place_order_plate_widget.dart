@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
@@ -29,7 +28,7 @@ class HowPlaceOrderPlateWidget extends StatelessWidget {
               fit: BoxFit.cover,
               image: AssetImage(Paths.howPlaceOrderBackgroundIconPath),
             ),
-            borderRadius: BorderRadius.circular(16.r),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

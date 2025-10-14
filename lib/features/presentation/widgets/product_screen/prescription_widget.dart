@@ -32,7 +32,7 @@ class PrescriptionWidget extends StatelessWidget {
           padding: getMarginOrPadding(all: 8),
           decoration: BoxDecoration(
             color: Colors.transparent,
-            borderRadius: BorderRadius.circular(8.r),
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(color: UiConstants.pink3Color, width: 1.5),
           ),
           child: Column(

@@ -21,7 +21,7 @@ class HowPlaceOrderTemplate extends StatelessWidget {
       padding: getMarginOrPadding(all: 16),
       decoration: BoxDecoration(
         color: UiConstants.whiteColor,
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
