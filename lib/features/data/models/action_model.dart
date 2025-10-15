@@ -17,6 +17,7 @@ class ActionModel extends ActionEntity {
     super.image960400,
     super.goodsIds,
     super.actionProducts,
+    super.content,
   });
 
   factory ActionModel.fromRawJson(String str) =>
@@ -53,6 +54,7 @@ class ActionModel extends ActionEntity {
               .map((e) => ProductModel.fromJson(e))
               .toList()
           : [],
+      content: action?["content"],
     );
   }
 
@@ -68,5 +70,6 @@ class ActionModel extends ActionEntity {
         "image_960_400": image960400,
         "goods_ids": goodsIds,
         "action_products": actionProducts,
+        "content": content,
       };
 }

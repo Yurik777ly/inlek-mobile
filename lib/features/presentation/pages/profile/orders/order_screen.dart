@@ -11,7 +11,6 @@ import 'package:inlek/features/domain/entities/order_entity.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/order_screen/order_screen_bloc.dart';
-import 'package:inlek/features/presentation/bloc/orders_screen/orders_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/app_button_widget.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/info_border_plate.dart';
 import 'package:inlek/features/presentation/widgets/cart_screen/products_list_widget.dart';
@@ -21,11 +20,10 @@ import 'package:inlek/features/presentation/widgets/main_screen/internet_no_inte
 import 'package:inlek/features/presentation/widgets/order_screen/order_progress_indicator.dart';
 import 'package:inlek/features/presentation/widgets/order_screen/order_status_widget.dart';
 import 'package:inlek/features/presentation/widgets/orders_screen/order_info_list.dart';
-import 'package:inlek/features/presentation/widgets/payment_webview_screen.dart';
 import 'package:inlek/locator_service.dart';
-import 'package:inlek/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OrderScreen extends StatelessWidget {
   const OrderScreen({super.key});
@@ -108,7 +106,29 @@ class OrderScreen extends StatelessWidget {
                                                 child: AppButtonWidget(
                                                   text: 'Оплатить',
                                                   onTap: () async {
-                                                    await Navigator.of(
+                                                    final url =
+                                                        orderState.order?.link;
+                                                    if (url == null ||
+                                                        url.isEmpty) {
+                                                      return;
+                                                    }
+
+                                                    final uri = Uri.parse(url);
+
+                                                    if (await canLaunchUrl(
+                                                        uri)) {
+                                                      // Открываем ссылку во внешнем приложении (не во WebView)
+                                                      await launchUrl(
+                                                        uri,
+                                                        mode: LaunchMode
+                                                            .externalApplication,
+                                                      );
+                                                    } else {
+                                                      // Можно вывести сообщение пользователю
+                                                      debugPrint(
+                                                          'Cannot open URL: $url');
+                                                    }
+                                                    /*await Navigator.of(
                                                             navigatorKey
                                                                 .currentContext!)
                                                         .push(
@@ -136,7 +156,7 @@ class OrderScreen extends StatelessWidget {
                                                         context.read<
                                                             OrdersScreenBloc>();
                                                     ordersBloc
-                                                        .add(LoadDataEvent());
+                                                        .add(LoadDataEvent());*/
                                                   },
                                                 ),
                                               ),

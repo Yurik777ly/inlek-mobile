@@ -13,6 +13,7 @@ class ActionEntity extends Equatable {
   final String? image960400;
   final String? goodsIds;
   final List<ProductEntity>? actionProducts;
+  final String? content;
 
   const ActionEntity({
     this.actionId,
@@ -26,6 +27,7 @@ class ActionEntity extends Equatable {
     this.image960400,
     this.goodsIds,
     this.actionProducts,
+    this.content,
   });
 
   @override
@@ -41,5 +43,6 @@ class ActionEntity extends Equatable {
         image960400,
         goodsIds,
         actionProducts,
+        content,
       ];
 }

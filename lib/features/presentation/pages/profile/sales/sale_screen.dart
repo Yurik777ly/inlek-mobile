@@ -12,6 +12,7 @@ import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.da
 import 'package:inlek/features/presentation/bloc/products_screen/products_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/sale_screen/sale_screen_bloc.dart';
 import 'package:inlek/features/presentation/widgets/custom_app_bar.dart';
+import 'package:inlek/features/presentation/widgets/custom_flutter_html.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/banner_item.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/internet_no_internet_connection_widget.dart';
 import 'package:inlek/features/presentation/widgets/products_screen/products_grid_widget.dart';
@@ -82,6 +83,14 @@ class SaleScreen extends StatelessWidget {
                                                   color: UiConstants
                                                       .darkBlueColor),
                                         ),
+                                        if (state.action?.content != null) ...[
+                                          SizedBox(height: 16),
+                                          Skeleton.replace(
+                                            child: CustomFlutterHtml(
+                                                isLoading: state.isLoading,
+                                                content: state.action?.content),
+                                          ),
+                                        ],
                                         SizedBox(height: 32),
                                         BlocProvider(
                                           create: (context) =>
