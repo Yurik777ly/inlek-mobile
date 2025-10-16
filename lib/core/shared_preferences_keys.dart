@@ -16,4 +16,5 @@ class SharedPreferencesKeys {
   static const String savedIntercom = 'savedIntercom';
   static const String savedComment = 'savedComment';
   static const String cartType = 'cartType';
+  static const String fcmToken = 'fcmToken';
 }

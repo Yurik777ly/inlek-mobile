@@ -31,17 +31,17 @@ class AuthRepositoryImpl implements AuthRepository {
 
   // 📌 Регистрация
   @override
-  Future<Either<Failure, void>> registration(String phone, String code, String? fcmToken) async =>
+  Future<Either<Failure, void>> registration(
+          String phone, String code, String? fcmToken) async =>
       await errorHandler.handle(
-        () async => await authRemoteDataSource.registration(phone, code, fcmToken),
+        () async =>
+            await authRemoteDataSource.registration(phone, code, fcmToken),
       );
 
   // 📌 Запрос кода
   @override
   Future<Either<Failure, int>> requestCode(
-    String phone,
-    String? fcmToken
-  ) async =>
+          String phone, String? fcmToken) async =>
       await errorHandler.handle(
         () async => await authRemoteDataSource.requestCode(phone, fcmToken),
       );
@@ -60,5 +60,12 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, bool?>> isPhoneExists(String phone) async =>
       await errorHandler.handle(
         () async => await authRemoteDataSource.isPhoneExists(phone),
+      );
+
+  // 📌 Обновление FCM токена
+  @override
+  Future<Either<Failure, void>> updateFCMToken(String fcmToken) async =>
+      await errorHandler.handle(
+        () async => await authRemoteDataSource.updateFCMToken(fcmToken),
       );
 }

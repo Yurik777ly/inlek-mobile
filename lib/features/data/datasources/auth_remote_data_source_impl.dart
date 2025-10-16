@@ -14,6 +14,7 @@ abstract class AuthRemoteDataSource {
   Future<void> updatePassword(String phone, String password, String code);
   Future<void> login(String phone, String password, String? fcmToken);
   Future<void> logout();
+  Future<void> updateFCMToken(String fcmToken);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -122,7 +123,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     String url = '${baseUrl}auth/registration';
 
     log('POST $url');
-    log('Request body: ${jsonEncode({'phone': phone, 'code': code, 'fcmToken': fcmToken})}');
+    log('Request body: ${jsonEncode({
+          'phone': phone,
+          'code': code,
+          'fcmToken': fcmToken
+        })}');
 
     try {
       final response = await client.post(
@@ -277,6 +282,44 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
     } catch (e) {
       log('Error during isPhoneExists: $e', level: 1000);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateFCMToken(String fcmToken) async {
+    String baseUrl = dotenv.env['BASE_URL']!;
+    String url = '${baseUrl}auth/update-fcm-token';
+    final String? serverToken =
+        sharedPreferences.getString(SharedPreferencesKeys.accessToken);
+
+    log('POST $url');
+    log('Request body: ${jsonEncode({'fcm_token': fcmToken})}');
+
+    try {
+      final response = await client.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $serverToken',
+        },
+        body: jsonEncode({'fcm_token': fcmToken}),
+      );
+
+      log('Response ($url): ${response.statusCode} ${response.body}');
+
+      switch (response.statusCode) {
+        case 200:
+          log('FCM token updated successfully');
+          break;
+        case 422:
+          throw InvalidFormatException();
+        default:
+          throw ServerException();
+      }
+    } catch (e) {
+      log('Error during updateFCMToken: $e', level: 1000);
       rethrow;
     }
   }

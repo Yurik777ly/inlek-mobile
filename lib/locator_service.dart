@@ -33,6 +33,7 @@ import 'package:inlek/features/domain/usecases/auth/login.dart';
 import 'package:inlek/features/domain/usecases/auth/logout.dart';
 import 'package:inlek/features/domain/usecases/auth/registration.dart';
 import 'package:inlek/features/domain/usecases/auth/request_code.dart';
+import 'package:inlek/features/domain/usecases/auth/update_fcm_token.dart';
 import 'package:inlek/features/domain/usecases/auth/update_password.dart';
 import 'package:inlek/features/domain/usecases/cart/add_cart.dart';
 import 'package:inlek/features/domain/usecases/cart/clear_cart.dart';
@@ -270,6 +271,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => RegistrationUC(sl()));
   sl.registerLazySingleton(() => RequestCodeUC(sl()));
   sl.registerLazySingleton(() => UpdatePasswordUC(sl()));
+  sl.registerLazySingleton(() => UpdateFCMTokenUC(sl()));
   sl.registerLazySingleton(() => IsPhoneExistsUC(sl()));
 
   // Profile

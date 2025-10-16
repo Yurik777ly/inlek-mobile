@@ -7,7 +7,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/core/fcm_token_manager.dart';
+import 'package:inlek/features/domain/usecases/auth/update_fcm_token.dart';
 import 'package:inlek/firebase_options.dart';
+import 'package:inlek/locator_service.dart';
 
 class NotificationManager {
   static final FlutterLocalNotificationsPlugin
@@ -147,6 +150,15 @@ class NotificationManager {
     await connectToForegroundMessages();
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     await handleInitialMessage(onInitialMessage: _onNotificationClick);
+
+    // Инициализируем FCM Token Manager
+    await FCMTokenManager.instance.initialize(
+      onTokenUpdate: (newToken) {
+        debugPrint('🔄 FCM Token updated in NotificationManager: $newToken');
+        // Здесь можно добавить дополнительную логику при обновлении токена
+      },
+      updateFCMTokenUC: sl<UpdateFCMTokenUC>(),
+    );
   }
 }
 

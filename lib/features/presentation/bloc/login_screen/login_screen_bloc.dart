@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:inlek/constants/enums.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/core/error/failure.dart';
+import 'package:inlek/core/fcm_token_manager.dart';
 import 'package:inlek/core/params/authentification_param.dart';
 import 'package:inlek/features/domain/usecases/auth/login.dart';
 import 'package:inlek/features/domain/usecases/profile/get_me.dart';
@@ -76,7 +76,10 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
 
     on<SubmitLoginEvent>(
       (event, emit) async {
-        final fcmToken = await FirebaseMessaging.instance.getToken();
+        // Получаем актуальный FCM токен через FCMTokenManager
+        final fcmToken = await FCMTokenManager.instance.getCurrentToken();
+        debugPrint('🔑 Using FCM token for login: $fcmToken');
+
         final failureOrLoads = await loginUC(
           AuthenticationParams(
             phone: Utils.formatPhoneNumber(phoneController.text),

@@ -1,15 +1,16 @@
 import 'dart:async';
 
 import 'package:app_links/app_links.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/app_route_observer.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/core/fcm_token_manager.dart';
 import 'package:inlek/core/notification_manager.dart';
 import 'package:inlek/core/routes.dart';
+import 'package:inlek/features/domain/usecases/auth/update_fcm_token.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/home_screen/home_screen_bloc.dart';
 import 'package:inlek/features/presentation/bloc/orders_screen/orders_screen_bloc.dart';
@@ -46,10 +47,31 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback(
       (_) async {
         try {
-          final fcmToken = await FirebaseMessaging.instance.getToken();
-          print('FCM Token: $fcmToken');
+          // ТЕСТИРОВАНИЕ: Принудительно обновляем FCM токен при каждом входе
+          print('🔄 [TEST] Force refreshing FCM token...');
+          final newToken = await FCMTokenManager.instance.refreshToken();
+          print('🆕 [TEST] New FCM Token: $newToken');
+
+          // Отправляем новый токен на сервер через UpdateFCMTokenUC
+          if (newToken != null) {
+            print(
+                '📤 [TEST] Sending FCM token to server via UpdateFCMTokenUC...');
+            final updateFCMTokenUC = sl<UpdateFCMTokenUC>();
+            final result = await updateFCMTokenUC(newToken);
+
+            result.fold(
+              (failure) {
+                print('❌ [TEST] Failed to send FCM token to server: $failure');
+              },
+              (_) {
+                print('✅ [TEST] FCM token sent to server successfully');
+              },
+            );
+          } else {
+            print('⚠️ [TEST] No FCM token received, skipping server update');
+          }
         } catch (e) {
-          print(e);
+          print('❌ [TEST] Error refreshing FCM token: $e');
         }
 
         // регистрация пушей
