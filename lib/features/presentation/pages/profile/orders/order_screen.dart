@@ -127,6 +127,19 @@ class OrderScreen extends StatelessWidget {
                                                       // Можно вывести сообщение пользователю
                                                       debugPrint(
                                                           'Cannot open URL: $url');
+                                                      if (!await canLaunchUrl(
+                                                          uri)) {
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                          const SnackBar(
+                                                            content: Text(
+                                                                'Не удалось открыть ссылку'),
+                                                            duration: Duration(
+                                                                seconds: 3),
+                                                          ),
+                                                        );
+                                                      }
                                                     }
                                                     /*await Navigator.of(
                                                             navigatorKey
@@ -268,10 +281,8 @@ class OrderScreen extends StatelessWidget {
             return;
           }
 
-          // очищаем стек корзины
-          homeBloc.navigatorKeys[2].currentState?.popUntil((r) => r.isFirst);
           // переводим на экран корзины
-          homeBloc.add(ChangePageEvent(2));
+          homeBloc.add(ChangePageEvent(2, forcePopToRoot: true));
 
           final orderType = orderState.order?.typeReceipt;
           if (orderType != null && orderType != cartBloc.state.cartType) {
