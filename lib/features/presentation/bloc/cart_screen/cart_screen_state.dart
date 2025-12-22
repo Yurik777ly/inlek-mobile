@@ -4,6 +4,8 @@ class CartScreenState extends Equatable {
   final bool isLoading;
   final bool isLoadingPharmacy;
   final bool isOrderCompleting;
+  final bool isRepeatingOrder;
+  final bool isClearingCart;
   final String? errorText;
   final String? promocodeErrorText;
   final CartEntity? cartData;
@@ -24,6 +26,8 @@ class CartScreenState extends Equatable {
     this.isLoading = true,
     this.isLoadingPharmacy = false,
     this.isOrderCompleting = false,
+    this.isRepeatingOrder = false,
+    this.isClearingCart = false,
     this.errorText,
     this.promocodeErrorText,
     this.cartData,
@@ -45,6 +49,8 @@ class CartScreenState extends Equatable {
     bool? isLoading,
     bool? isLoadingPharmacy,
     bool? isOrderCompleting,
+    bool? isRepeatingOrder,
+    bool? isClearingCart,
     String? errorText,
     String? promocodeErrorText,
     CartEntity? cartData,
@@ -66,6 +72,8 @@ class CartScreenState extends Equatable {
       isLoading: isLoading ?? this.isLoading,
       isLoadingPharmacy: isLoadingPharmacy ?? this.isLoadingPharmacy,
       isOrderCompleting: isOrderCompleting ?? this.isOrderCompleting,
+      isRepeatingOrder: isRepeatingOrder ?? this.isRepeatingOrder,
+      isClearingCart: isClearingCart ?? this.isClearingCart,
       errorText: errorText,
       promocodeErrorText: promocodeErrorText,
       cartData: cartData ?? this.cartData,
@@ -93,6 +101,8 @@ class CartScreenState extends Equatable {
         isLoading,
         isLoadingPharmacy,
         isOrderCompleting,
+        isRepeatingOrder,
+        isClearingCart,
         errorText,
         promocodeErrorText,
         cartData,

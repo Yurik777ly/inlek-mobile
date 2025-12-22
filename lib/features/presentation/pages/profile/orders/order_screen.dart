@@ -281,6 +281,9 @@ class OrderScreen extends StatelessWidget {
             return;
           }
 
+          // Устанавливаем флаг повтора заказа перед переходом на экран корзины
+          cartBloc.add(SetRepeatingOrderEvent(true));
+
           // переводим на экран корзины
           homeBloc.add(ChangePageEvent(2, forcePopToRoot: true));
 

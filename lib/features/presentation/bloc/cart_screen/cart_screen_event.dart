@@ -160,3 +160,19 @@ class UpdateLocalCartDeleteEvent extends CartScreenEvent {
   @override
   List<Object?> get props => [productId, newQuantity, isCartEmptyAfterRemoval];
 }
+
+class SetRepeatingOrderEvent extends CartScreenEvent {
+  final bool isRepeatingOrder;
+  const SetRepeatingOrderEvent(this.isRepeatingOrder);
+
+  @override
+  List<Object?> get props => [isRepeatingOrder];
+}
+
+class SetClearingCartEvent extends CartScreenEvent {
+  final bool isClearingCart;
+  const SetClearingCartEvent(this.isClearingCart);
+
+  @override
+  List<Object?> get props => [isClearingCart];
+}

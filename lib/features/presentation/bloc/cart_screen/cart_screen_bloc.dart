@@ -101,6 +101,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     on<ChangeAvailableDeliveryEvent>(_onChangeAvailableDelivery);
     on<UpdateLocalCartDataEvent>(_onUpdateLocalCartData);
     on<UpdateLocalCartDeleteEvent>(_onUpdateLocalCartDelete);
+    on<SetRepeatingOrderEvent>(_onSetRepeatingOrder);
+    on<SetClearingCartEvent>(_onSetClearingCart);
 
     on<ScrollUpListEvent>((_, __) => controller.animateTo(0,
         duration: const Duration(milliseconds: 700), curve: Curves.easeOut));
@@ -171,6 +173,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         emit(state.copyWith(
             isLoading: false,
             isLoadingPharmacy: false,
+            isRepeatingOrder: false,
+            isClearingCart: false,
             cartData: cartData,
             cartType: !state.isAvailableDelivery
                 ? TypeReceiving.pickup
@@ -370,13 +374,20 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
   Future<void> _onClearCart(
       ClearProductsEvent event, Emitter<CartScreenState> emit) async {
+    // Устанавливаем флаг очистки корзины
+    emit(state.copyWith(isClearingCart: true));
+    
     add(UpdateDeliveryPriceEvent());
     final failureOrCart = await clearCartUC();
     failureOrCart.fold(
-      (_) => Utils.showCustomDialog(
-          screenContext: event.context,
-          text: 'Ошибка очистки корзины',
-          action: (context) => Navigator.of(context).pop()),
+      (_) {
+        // Сбрасываем флаг при ошибке
+        emit(state.copyWith(isClearingCart: false));
+        Utils.showCustomDialog(
+            screenContext: event.context,
+            text: 'Ошибка очистки корзины',
+            action: (context) => Navigator.of(context).pop());
+      },
       (_) {
         // Set cartType to delivery when clearing cart
         /*emit(state.copyWith(
@@ -727,6 +738,16 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     if (!isClosed) {
       add(LoadCartDataEvent());
     }
+  }
+
+  void _onSetRepeatingOrder(
+      SetRepeatingOrderEvent event, Emitter<CartScreenState> emit) {
+    emit(state.copyWith(isRepeatingOrder: event.isRepeatingOrder));
+  }
+
+  void _onSetClearingCart(
+      SetClearingCartEvent event, Emitter<CartScreenState> emit) {
+    emit(state.copyWith(isClearingCart: event.isClearingCart));
   }
 
   @override
