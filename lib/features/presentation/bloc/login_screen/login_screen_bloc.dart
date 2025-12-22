@@ -77,8 +77,16 @@ class LoginScreenBloc extends Bloc<LoginScreenEvent, LoginScreenState> {
     on<SubmitLoginEvent>(
       (event, emit) async {
         // Получаем актуальный FCM токен через FCMTokenManager
-        final fcmToken = await FCMTokenManager.instance.getCurrentToken();
+        // На iOS ждем APNS токен, если он еще не установлен
+        final fcmToken =
+            await FCMTokenManager.instance.getCurrentToken(waitForApns: true);
         debugPrint('🔑 Using FCM token for login: $fcmToken');
+
+        // Если токен все еще null, логируем предупреждение, но продолжаем логин
+        if (fcmToken == null) {
+          debugPrint(
+              '⚠️ Warning: FCM token is null, login will proceed without it');
+        }
 
         final failureOrLoads = await loginUC(
           AuthenticationParams(

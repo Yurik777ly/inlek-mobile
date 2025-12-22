@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -45,6 +46,24 @@ class FCMTokenManager {
   /// Получение текущего токена
   Future<String?> _getCurrentToken() async {
     try {
+      // На iOS нужно сначала получить APNS токен
+      if (Platform.isIOS) {
+        final apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+        if (apnsToken == null) {
+          debugPrint('⚠️ APNS token not available yet, waiting...');
+          // Ждем немного и пробуем снова
+          await Future.delayed(const Duration(seconds: 1));
+          final retryApnsToken =
+              await FirebaseMessaging.instance.getAPNSToken();
+          if (retryApnsToken == null) {
+            debugPrint(
+                '⚠️ APNS token still not available, FCM token may be null');
+          }
+        } else {
+          debugPrint('✅ APNS token available: $apnsToken');
+        }
+      }
+
       _currentToken = await FirebaseMessaging.instance.getToken();
       debugPrint('Current FCM Token: $_currentToken');
       return _currentToken;
@@ -115,12 +134,26 @@ class FCMTokenManager {
     }
   }
 
-  /// Получение актуального токена
-  Future<String?> getCurrentToken() async {
+  /// Получение актуального токена с ожиданием APNS (для iOS)
+  Future<String?> getCurrentToken({bool waitForApns = false}) async {
     // Если токен не получен, получаем его
     if (_currentToken == null) {
       await _getCurrentToken();
     }
+
+    // Если на iOS и токен все еще null, и нужно ждать APNS
+    if (Platform.isIOS && _currentToken == null && waitForApns) {
+      debugPrint('⏳ Waiting for APNS token...');
+      // Пробуем получить токен несколько раз с задержкой
+      for (int i = 0; i < 5; i++) {
+        await Future.delayed(const Duration(milliseconds: 500));
+        await _getCurrentToken();
+        if (_currentToken != null) {
+          break;
+        }
+      }
+    }
+
     return _currentToken;
   }
 

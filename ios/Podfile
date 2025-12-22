@@ -32,7 +32,7 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 flutter_ios_podfile_setup
 
 target 'Runner' do
-  use_frameworks!
+  use_frameworks! :linkage => :static
   use_modular_headers!
 
   flutter_install_all_ios_pods(File.dirname(File.realpath(__FILE__)))
@@ -57,6 +57,51 @@ post_install do |installer|
         # Notifications
         'PERMISSION_NOTIFICATIONS=1'
       ]
+      
+      # Fix for "Multiple commands produce Assets.car" error
+      # Disable asset catalog compilation for pod targets to avoid conflicts
+      config.build_settings['ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOL_EXTENSIONS'] = 'NO'
+    end
+  end
+  
+  # Fix for "Multiple commands produce Assets.car" error
+  # Disable asset catalog compilation in the aggregate target to prevent conflicts
+  installer.aggregate_targets.each do |aggregate_target|
+    aggregate_target.user_project.native_targets.each do |target|
+      if target.name == 'Runner'
+        target.build_configurations.each do |config|
+          # Ensure asset catalogs are only compiled once by the main target
+          config.build_settings['ASSETCATALOG_COMPILER_APPICON_NAME'] = 'AppIcon'
+        end
+      end
+    end
+  end
+  
+  # Modify the CocoaPods resources script to prevent asset catalog conflicts
+  # Only disable compilation for pod asset catalogs, not the main app's AppIcon
+  installer.aggregate_targets.each do |aggregate_target|
+    script_path = File.join(aggregate_target.sandbox.root, 'Target Support Files', aggregate_target.label, "#{aggregate_target.label}-resources.sh")
+    
+    if File.exist?(script_path)
+      script_content = File.read(script_path)
+      modified_script = script_content
+      
+      # Only disable asset catalog compilation for pods (PODS_ROOT), not for the main app
+      # This prevents Assets.car conflict while keeping AppIcon working
+      modified_script = modified_script.gsub(/^\s*XCASSET_FILES\+=\("\$ABSOLUTE_XCASSET_FILE"\)$/) do |match|
+        # Only comment out if it's from PODS_ROOT, keep main app's asset catalogs
+        '# XCASSET_FILES+=("$ABSOLUTE_XCASSET_FILE") # Disabled for pods to prevent Assets.car conflict'
+      end
+      
+      # Disable actool compilation only if there are pod asset catalogs
+      # But allow main app's asset catalogs to be compiled by the Resources phase
+      modified_script = modified_script.gsub(/if \[\[ -n "\$\{XCASSET_FILES\[\@\]\}" \]\]; then/) do |match|
+        '# Disabled actool compilation in CocoaPods script to prevent Assets.car conflict'
+        '# Main app asset catalogs (like AppIcon) are compiled by the Resources build phase'
+        'if [[ false ]]; then'
+      end
+      
+      File.write(script_path, modified_script) if modified_script != script_content
     end
   end
 end

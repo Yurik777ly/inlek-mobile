@@ -35,8 +35,12 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSBonjourServices</key>
+	<array/>
 	<key>NSCameraUsageDescription</key>
 	<string>Access to camera so that your customers can take photos with camera</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>This app uses local network to discover services and communicate with devices on your network.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>The app requires access to your location for providing navigation features.</string>
 	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
@@ -57,9 +61,10 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
+		<string>fetch</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
+	<string>LaunchScreen.storyboard</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UIRequiresFullScreen</key>
