@@ -8,26 +8,26 @@ import 'package:searchfield/searchfield.dart';
 typedef SuggestionFetcher = Future<List<String>> Function(String query);
 
 class CitySearchField extends StatelessWidget {
-  const CitySearchField(
-      {super.key,
-      this.value,
-      required this.controller,
-      this.suggestions,
-      this.suggestionFetcher,
-      this.suggestionObjects,
-      this.hintText,
-      this.title,
-      this.onSuggestionTap,
-      this.onChangeField,
-      this.hasSearchWidget = true,
-      this.validator,
-      this.fillColor = UiConstants.white2Color,
-      this.prefixIcon,
-      this.minFetcherLength = 3,
-      this.focusNode})
-      : assert(
+  const CitySearchField({
+    super.key,
+    this.value,
+    required this.controller,
+    this.suggestions,
+    this.suggestionFetcher,
+    this.suggestionObjects,
+    this.hintText,
+    this.title,
+    this.onSuggestionTap,
+    this.onChangeField,
+    this.hasSearchWidget = true,
+    this.validator,
+    this.fillColor = UiConstants.white2Color,
+    this.prefixIcon,
+    this.minFetcherLength = 3,
+    this.focusNode,
+  }) : assert(
           suggestions != null ||
-              suggestionFetcher != null && suggestionObjects != null,
+              (suggestionFetcher != null && suggestionObjects != null),
           'Either suggestions or suggestionFetcher and suggestionObjects must be provided',
         );
 
@@ -49,99 +49,123 @@ class CitySearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FocusNode localFocusNode = focusNode ?? FocusNode();
+    final FocusNode localFocusNode = focusNode ?? FocusNode();
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (title != null)
           Padding(
             padding: getMarginOrPadding(bottom: 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (title != null)
-                  Text(
-                    title ?? '',
-                    style: UiConstants.textStyle3
-                        .copyWith(color: UiConstants.darkBlueColor),
-                  ),
-              ],
+            child: Text(
+              title!,
+              style: UiConstants.textStyle3
+                  .copyWith(color: UiConstants.darkBlueColor),
             ),
           ),
+
         ValueListenableBuilder<TextEditingValue>(
           valueListenable: controller,
           builder: (context, value, child) {
             return SearchField<String>(
-                validator: validator,
-                focusNode: localFocusNode,
-                controller: controller,
-                suggestionItemDecoration: BoxDecoration(
-                  border: Border.all(style: BorderStyle.none),
-                ),
-                maxSuggestionBoxHeight: 124,
-                hint: hintText ?? 'Не указано',
-                suggestions: (suggestions ?? const [])
-                    .map(
-                      (item) => SearchFieldListItem(
+              validator: validator,
+              focusNode: localFocusNode,
+              controller: controller,
+
+              suggestionItemDecoration: BoxDecoration(
+                border: Border.all(style: BorderStyle.none),
+              ),
+
+              maxSuggestionBoxHeight: 124,
+              hint: hintText ?? 'Не указано',
+
+              suggestions: (suggestions ?? const [])
+                  .map(
+                    (item) => SearchFieldListItem<String>(
+                      item,
+                      item: item,
+                      child: Text(
                         item,
-                        item: item,
-                        child: Text(
-                          item,
-                          style: UiConstants.textStyle3
-                              .copyWith(color: UiConstants.darkBlueColor),
+                        style: UiConstants.textStyle3.copyWith(
+                          color: UiConstants.darkBlueColor,
                         ),
                       ),
-                    )
-                    .toList(),
-                searchInputDecoration: SearchInputDecoration(
-                  searchStyle: UiConstants.textStyle3
-                      .copyWith(color: UiConstants.darkBlueColor),
-                  fillColor: fillColor,
+                    ),
+                  )
+                  .toList(),
+
+              // ✅ FIXED SearchInputDecoration (только поддерживаемые поля)
+              searchInputDecoration: SearchInputDecoration(
+                searchStyle: UiConstants.textStyle3.copyWith(
+                  color: UiConstants.darkBlueColor,
+                ),
+
+                decoration: InputDecoration(
                   filled: true,
-                  counterText: "",
+                  fillColor: fillColor,
+                  counterText: '',
+
+                  contentPadding: getMarginOrPadding(
+                    left: 16,
+                    right: 16,
+                    top: 10,
+                    bottom: 10,
+                  ),
+
+                  hintStyle: UiConstants.textStyle3.copyWith(
+                    color: UiConstants.darkBlue2Color.withOpacity(.6),
+                    height: 1,
+                  ),
+
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.transparent),
+                    borderSide: const BorderSide(color: Colors.transparent),
                   ),
+
                   disabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        const BorderSide(width: 3, color: Colors.transparent),
+                    borderSide: const BorderSide(color: Colors.transparent),
                   ),
+
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
-                        width: 3,
-                        color: UiConstants.purple2Color.withOpacity(.2)),
+                      width: 3,
+                      color: UiConstants.purple2Color.withOpacity(.2),
+                    ),
                   ),
+
                   errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
-                        width: 3, color: UiConstants.pinkColor),
+                      width: 3,
+                      color: UiConstants.pinkColor,
+                    ),
                   ),
+
                   focusedErrorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
-                        width: 3, color: UiConstants.pinkColor),
+                      width: 3,
+                      color: UiConstants.pinkColor,
+                    ),
                   ),
-                  contentPadding: getMarginOrPadding(
-                      left: 16, right: 16, top: 10, bottom: 10),
-                  hintStyle: UiConstants.textStyle3.copyWith(
-                      color: UiConstants.darkBlue2Color.withOpacity(.6),
-                      height: 1),
-                  prefixIconConstraints: BoxConstraints(maxWidth: 52),
-                  suffixIconConstraints: BoxConstraints(maxWidth: 52),
+
                   prefixIcon: prefixIcon != null
                       ? Padding(
                           padding: getMarginOrPadding(right: 12, left: 16),
                           child: SvgPicture.asset(
-                            prefixIcon ?? '',
-                            color: UiConstants.darkBlue2Color
-                                .withValues(alpha: .6),
+                            prefixIcon!,
+                            colorFilter: ColorFilter.mode(
+                              UiConstants.darkBlue2Color.withOpacity(.6),
+                              BlendMode.srcIn,
+                            ),
                             height: 24,
                             width: 24,
                           ),
                         )
                       : null,
+
                   suffixIcon: value.text.isNotEmpty
                       ? GestureDetector(
                           onTap: () {
@@ -152,8 +176,10 @@ class CitySearchField extends StatelessWidget {
                             padding: getMarginOrPadding(right: 16, left: 12),
                             child: SvgPicture.asset(
                               Paths.close2IconPath,
-                              color: UiConstants.darkBlue2Color
-                                  .withValues(alpha: .6),
+                              colorFilter: ColorFilter.mode(
+                                UiConstants.darkBlue2Color.withOpacity(.6),
+                                BlendMode.srcIn,
+                              ),
                               height: 24,
                               width: 24,
                             ),
@@ -161,60 +187,77 @@ class CitySearchField extends StatelessWidget {
                         )
                       : null,
                 ),
-                suggestionsDecoration: SuggestionDecoration(
-                  color: UiConstants.whiteColor,
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(16),
-                  ),
+              ),
+
+              suggestionsDecoration: SuggestionDecoration(
+                color: UiConstants.whiteColor,
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(16),
                 ),
-                onSearchTextChanged: (String query) async {
-                  // If a fetcher is provided, only query when input length >= 3
-                  if (suggestionFetcher != null) {
-                    if (query.trim().length < minFetcherLength) {
-                      return <SearchFieldListItem<String>>[];
-                    }
-                    final fetched = await suggestionFetcher!.call(query.trim());
-                    return fetched
-                        .map((region) => SearchFieldListItem<String>(
-                              region,
-                              item: region,
-                              child: Text(
-                                region,
-                                style: UiConstants.textStyle3
-                                    .copyWith(color: UiConstants.darkBlueColor),
-                              ),
-                            ))
-                        .toList();
+              ),
+
+              onSearchTextChanged: (String query) async {
+                if (suggestionFetcher != null) {
+                  if (query.trim().length < minFetcherLength) {
+                    return <SearchFieldListItem<String>>[];
                   }
 
-                  // Fallback to local suggestions (optionally filter by query)
-                  final base = suggestions ?? const <String>[];
-                  final filtered = query.isEmpty
-                      ? base
-                      : base
-                          .where((s) =>
-                              s.toLowerCase().contains(query.toLowerCase()))
-                          .toList();
-                  return filtered
-                      .map((region) => SearchFieldListItem<String>(
+                  final fetched =
+                      await suggestionFetcher!.call(query.trim());
+
+                  return fetched
+                      .map(
+                        (region) => SearchFieldListItem<String>(
+                          region,
+                          item: region,
+                          child: Text(
                             region,
-                            item: region,
-                            child: Text(
-                              region,
-                              style: UiConstants.textStyle3
-                                  .copyWith(color: UiConstants.redColor),
+                            style: UiConstants.textStyle3.copyWith(
+                              color: UiConstants.darkBlueColor,
                             ),
-                          ))
+                          ),
+                        ),
+                      )
                       .toList();
-                },
-                onSuggestionTap: (SearchFieldListItem<String> item) {
-                  onSuggestionTap?.call(item.item);
-                },
-                onTapOutside: (p0) {
-                  FocusScope.of(context).unfocus();
-                  localFocusNode.unfocus();
-                },
-                suggestionState: Suggestion.expand);
+                }
+
+                final base = suggestions ?? const <String>[];
+
+                final filtered = query.isEmpty
+                    ? base
+                    : base
+                        .where((s) => s
+                            .toLowerCase()
+                            .contains(query.toLowerCase()))
+                        .toList();
+
+                return filtered
+                    .map(
+                      (region) => SearchFieldListItem<String>(
+                        region,
+                        item: region,
+                        child: Text(
+                          region,
+                          style: UiConstants.textStyle3.copyWith(
+                            color: UiConstants.redColor,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList();
+              },
+
+              onSuggestionTap: (SearchFieldListItem<String> item) {
+                onSuggestionTap?.call(item.item);
+              },
+
+              onTapOutside: (p0) {
+                FocusScope.of(context).unfocus();
+                localFocusNode.unfocus();
+              },
+
+              suggestionState: Suggestion.expand,
+            );
           },
         ),
       ],

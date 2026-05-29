@@ -27,7 +27,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.dkmfarm.inlek.app"
-    compileSdk 35
+    compileSdk 36
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -62,7 +62,7 @@ android {
      defaultConfig {
         applicationId = "com.dkmfarm.inlek.app"
         minSdkVersion 26
-        targetSdkVersion 35
+        targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
@@ -76,16 +76,18 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(releaseKeystoreProperties['storeFile'])
-            keyAlias releaseKeystoreProperties['keyAlias']
-            keyPassword releaseKeystoreProperties['keyPassword']
-            storePassword releaseKeystoreProperties['storePassword']
+            if (releaseKeystorePropertiesFile.exists()) {
+                storeFile file(releaseKeystoreProperties['storeFile'])
+                keyAlias releaseKeystoreProperties['keyAlias']
+                keyPassword releaseKeystoreProperties['keyPassword']
+                storePassword releaseKeystoreProperties['storePassword']
+            }
         }
         debug {
-            storeFile file(debugKeystoreProperties['storeFile'])
-            keyAlias debugKeystoreProperties['keyAlias']
-            keyPassword debugKeystoreProperties['keyPassword']
-            storePassword debugKeystoreProperties['storePassword']
+//            storeFile file(debugKeystoreProperties['storeFile'])
+//            keyAlias debugKeystoreProperties['keyAlias']
+//            keyPassword debugKeystoreProperties['keyPassword']
+//            storePassword debugKeystoreProperties['storePassword']
         }
     }
     

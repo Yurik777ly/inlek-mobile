@@ -46,18 +46,30 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+
   HttpOverrides.global = MyHttpOverrides();
+
   await initializeDateFormatting('ru', null);
+
   await di.init();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // ✅ FIX 1: безопасная инициализация Firebase
+  try {
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
+  } catch (e) {
+    // если уже инициализирован — просто игнор
+    debugPrint('Firebase already initialized: $e');
+  }
 
-  ConnectionStatusSingleton connectionStatus =
-      ConnectionStatusSingleton.getInstance();
-  connectionStatus.initialize();
+  ConnectionStatusSingleton.getInstance().initialize();
 
   runApp(const MyApp());
 }

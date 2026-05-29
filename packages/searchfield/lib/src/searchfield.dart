@@ -373,7 +373,9 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
   ScrollbarDecoration? _scrollbarDecoration;
 
   final _defaultSearchInputDecoration = SearchInputDecoration(
-    hintText: 'Search',
+    decoration: InputDecoration(
+        hintText: 'Search',
+      ),
     textCapitalization: TextCapitalization.none,
     cursorWidth: 2.0,
     cursorColor: Colors.black,
@@ -1099,9 +1101,8 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
                   widget.searchInputDecoration!.textCapitalization,
               keyboardType: widget.inputType,
               cursorColor: widget.searchInputDecoration?.cursorColor,
-              decoration: widget.searchInputDecoration
-                      ?.copyWith(hintText: widget.hint) ??
-                  _defaultSearchInputDecoration,
+              decoration: widget.searchInputDecoration?.decoration ??
+                  _defaultSearchInputDecoration.decoration,
               onChanged: _onSearchChanged,
             ),
           ),
