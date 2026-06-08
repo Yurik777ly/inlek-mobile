@@ -199,7 +199,9 @@ class Utils {
       case OrderStatus.courier:
         return "Курьер уже едет к вам";
       case OrderStatus.readyToIssue:
-        return "Заказ ждет вас в аптеке до конца дня ${formatDate(date!)}";
+        return date != null
+            ? "Заказ ждет вас в аптеке до конца дня ${formatDate(date)}"
+            : "Заказ ждет вас в аптеке";
       case OrderStatus.reserved:
         return "Проверим наличие и свяжемся с вами в случае отсутствия товаров";
       case OrderStatus.received:

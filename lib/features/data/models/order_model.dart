@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:inlek/constants/extensions.dart';
 import 'package:inlek/features/data/models/pharmacy_model.dart';
 import 'package:inlek/features/data/models/product_model.dart';
@@ -53,6 +55,8 @@ class OrderModel extends OrderEntity {
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     final data = json['order'] ?? json;
+    final deliveryInfo = json['delivery_info'];
+    final paymentInfo = json['payment_info'];
 
     String? fullDeliveryAddress;
 
@@ -74,22 +78,17 @@ class OrderModel extends OrderEntity {
           : null,
     ];
 
-// Склеиваем непустые части через запятую
     fullDeliveryAddress = deliveryParts
         .where((e) => e != null && e.toString().trim().isNotEmpty)
         .join(', ');
 
-    List<ProductModel>? products = data['order_products_json'] != null
-        ? (data['order_products_json'] as List)
-            .map((e) => ProductModel.fromJson(e))
-            .toList()
-        : null;
+    final products = _parseOrderProducts(json, data);
 
     return OrderModel(
       orderId: data['order_id'] ?? data['id'],
       address: data['address'],
       fullDeliveryAddress: data['full_delivery_address'] ??
-          data['delivery_info']?['address'] ??
+          (deliveryInfo is Map ? deliveryInfo['address'] : null) ??
           fullDeliveryAddress,
       pharmacyId: data['pharmacy_id'],
       pharmacyName: data['pharmacy_name'],
@@ -127,53 +126,37 @@ class OrderModel extends OrderEntity {
       deliveryIntercom: data['delivery_intercom'],
       deliveryComment: data['delivery_comment'],
       paymentId: data['payment_id'],
-      paymentTitle: data['payment_title'],
+      paymentTitle: data['payment_title'] ??
+          (paymentInfo is Map ? paymentInfo['method_title'] : null),
       paymentCaption: data['payment_caption'],
-      sumPrices: data['sum_prices'] != null
-          ? double.tryParse(
-              (data['sum_prices'] ?? data['products_price']).toString())
-          : null,
-      sumPricesOld: data['sum_prices_old'] != null
-          ? double.tryParse(data['sum_prices_old'].toString())
-          : null,
-      sumPricesSalesOld: data['sum_prices_sales_old'] != null
-          ? double.tryParse(data['sum_prices_sales_old'].toString())
-          : null,
-      deliverySum: data['delivery_sum'] != null
-          ? double.tryParse(data['delivery_sum'].toString())
-          : null,
-      totalSum: data['total_sum'] != null
-          ? double.tryParse(data['total_sum'].toString())
-          : null,
+      sumPrices: _parseOrderDouble(
+        data['sum_prices'] ?? data['prices_sum'] ?? data['products_price'],
+      ),
+      sumPricesOld: _parseOrderDouble(data['sum_prices_old']),
+      sumPricesSalesOld: _parseOrderDouble(data['sum_prices_sales_old']),
+      deliverySum: _parseOrderDouble(data['delivery_sum']),
+      totalSum: _parseOrderDouble(
+        data['total_sum'] ?? data['amount'],
+      ),
       isPaid: data['is_paid'] == true,
       products: products,
       paymentType: PaymentTypeExtension.fromTitle(
-          data['payment_method'] ?? data['payment_type']),
+        data['payment_method'] ??
+            data['payment_type'] ??
+            (paymentInfo is Map ? paymentInfo['method'] : null) ??
+            (paymentInfo is Map ? paymentInfo['method_title'] : null),
+      ),
       typeReceipt: TypeReceivingExtension.fromTitle(
-          data['delivery_method_title'] ?? data['delivery_method']),
-      pharmacy: data['pharmacy'] != null
-          ? PharmacyModel.fromJson(data['pharmacy'][0])
-          : null,
+        data['delivery_method_title'] ??
+            data['delivery_method'] ??
+            (deliveryInfo is Map ? deliveryInfo['method_title'] : null) ??
+            (deliveryInfo is Map ? deliveryInfo['method'] : null),
+      ),
+      pharmacy: _parsePharmacy(data['pharmacy']),
       link: data['payment_link'] ??
           json['additional']?['payment_link'] ??
-          json['payment_info']?['payment_link'],
-      summary: json['summary'] != null
-          ? OrderSummaryEntity(
-              productsPrice:
-                  (json['summary']['products_price'] as num?)?.toDouble(),
-              productsPriceOld:
-                  (json['summary']['products_price_old'] as num?)?.toDouble(),
-              discountPercent:
-                  (json['summary']['discount_percent'] as num?)?.toDouble(),
-              discountAmount:
-                  (json['summary']['discount_amount'] as num?)?.toDouble(),
-              promocodesDiscount:
-                  (json['summary']['promocodes_discount'] as num?)?.toDouble(),
-              deliveryPrice:
-                  (json['summary']['delivery_price'] as num?)?.toDouble(),
-              totalPrice: (json['summary']['total_price'] as num?)?.toDouble(),
-            )
-          : null,
+          (paymentInfo is Map ? paymentInfo['payment_link'] : null),
+      summary: _parseSummary(json, data),
       additional: json['additional'] != null
           ? OrderAdditionalEntity(
               comment: json['additional']['comment'],
@@ -182,5 +165,114 @@ class OrderModel extends OrderEntity {
             )
           : null,
     );
+  }
+
+  static double? _parseOrderDouble(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+
+    if (value is num) {
+      return value.toDouble();
+    }
+
+    return double.tryParse(value.toString());
+  }
+
+  static OrderSummaryEntity? _parseSummary(
+    Map<String, dynamic> json,
+    Map<String, dynamic> data,
+  ) {
+    final rawSummary =
+        json['summary'] is Map ? Map<String, dynamic>.from(json['summary']) : null;
+
+    final productsPrice = _parseOrderDouble(
+          rawSummary?['products_price'] ??
+              data['sum_prices'] ??
+              data['prices_sum'],
+        ) ??
+        _parseOrderDouble(data['amount']);
+
+    final totalPrice = _parseOrderDouble(
+          rawSummary?['total_price'] ?? data['total_sum'],
+        ) ??
+        _parseOrderDouble(data['amount']);
+
+    if (productsPrice == null && totalPrice == null) {
+      return null;
+    }
+
+    return OrderSummaryEntity(
+      productsPrice: productsPrice,
+      productsPriceOld: _parseOrderDouble(
+        rawSummary?['products_price_old'] ?? data['sum_prices_old'],
+      ),
+      discountPercent: _parseOrderDouble(rawSummary?['discount_percent']),
+      discountAmount: _parseOrderDouble(rawSummary?['discount_amount']),
+      promocodesDiscount: _parseOrderDouble(rawSummary?['promocodes_discount']),
+      deliveryPrice: _parseOrderDouble(
+        rawSummary?['delivery_price'] ?? data['delivery_sum'],
+      ),
+      totalPrice: totalPrice,
+    );
+  }
+
+  static List<ProductModel>? _parseOrderProducts(
+    Map<String, dynamic> json,
+    Map<String, dynamic> data,
+  ) {
+    dynamic raw = data['order_products_json'] ?? json['products'];
+    if (raw == null) {
+      return null;
+    }
+
+    if (raw is String) {
+      try {
+        raw = jsonDecode(raw);
+      } catch (_) {
+        return null;
+      }
+    }
+
+    if (raw is! List) {
+      return null;
+    }
+
+    final products = <ProductModel>[];
+    for (final item in raw) {
+      if (item is! Map) {
+        continue;
+      }
+
+      try {
+        products.add(
+          ProductModel.fromJson(Map<String, dynamic>.from(item)),
+        );
+      } catch (_) {
+        continue;
+      }
+    }
+
+    return products.isEmpty ? null : products;
+  }
+
+  static PharmacyModel? _parsePharmacy(dynamic raw) {
+    if (raw == null) {
+      return null;
+    }
+
+    if (raw is List && raw.isNotEmpty) {
+      final first = raw.first;
+      if (first is Map) {
+        return PharmacyModel.fromJson(Map<String, dynamic>.from(first));
+      }
+      return null;
+    }
+
+    if (raw is Map) {
+      return PharmacyModel.fromJson(Map<String, dynamic>.from(raw));
+    }
+
+    return null;
   }
 }

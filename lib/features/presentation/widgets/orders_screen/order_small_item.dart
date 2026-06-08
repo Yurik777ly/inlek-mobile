@@ -44,7 +44,7 @@ class OrderSmallItem extends StatelessWidget {
               ),
               8.ph,
               Text(
-                Utils.formatDate(order.createdAt!),
+                Utils.formatDate(order.createdAt ?? DateTime.now()),
                 style: UiConstants.textStyle3.copyWith(
                   color: UiConstants.darkBlue2Color.withOpacity(.6),
                 ),
@@ -52,7 +52,8 @@ class OrderSmallItem extends StatelessWidget {
               8.ph,
               Row(
                 children: [
-                  OrderItemStatusChip(orderStatus: order.status!),
+                  if (order.status != null)
+                    OrderItemStatusChip(orderStatus: order.status!),
                   12.pw,
                   RightArrowButton(height: 22, width: 22),
                 ],

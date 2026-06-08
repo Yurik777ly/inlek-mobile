@@ -183,7 +183,27 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
         List<dynamic> dataList = data['data'];
 
         return dataList
-            .map((e) => PharmacyModel.fromJson(e['product_pharmacy_json']))
+            .map((e) {
+              final payload = e is Map ? e['product_pharmacy_json'] : null;
+
+              if (payload is Map<String, dynamic>) {
+                return PharmacyModel.fromJson(payload);
+              }
+
+              if (payload is Map) {
+                return PharmacyModel.fromJson(Map<String, dynamic>.from(payload));
+              }
+
+              if (e is Map<String, dynamic>) {
+                return PharmacyModel.fromJson(e);
+              }
+
+              if (e is Map) {
+                return PharmacyModel.fromJson(Map<String, dynamic>.from(e));
+              }
+
+              throw const FormatException('Invalid pharmacy payload');
+            })
             .toList();
       } else {
         throw ServerException();

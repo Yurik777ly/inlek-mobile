@@ -50,13 +50,14 @@ class OrderItem extends StatelessWidget {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        Utils.formatDate(order.createdAt!),
+                        Utils.formatDate(order.createdAt ?? DateTime.now()),
                         style: UiConstants.textStyle3.copyWith(
                           color: UiConstants.darkBlue2Color.withOpacity(.6),
                         ),
                       ),
                       SizedBox(height: 8),
-                      OrderItemStatusChip(orderStatus: order.status!)
+                      if (order.status != null)
+                        OrderItemStatusChip(orderStatus: order.status!)
                     ],
                   ),
                   RightArrowButton(),

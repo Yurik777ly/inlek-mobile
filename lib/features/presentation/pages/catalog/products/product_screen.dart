@@ -328,7 +328,9 @@ class ProductScreen extends StatelessWidget {
                                                         return ChangeCountProductWidget(
                                                             product:
                                                                 productState
-                                                                    .product!);
+                                                                    .product!,
+                                                            screenContext:
+                                                                context);
                                                       },
                                                     ),
                                             ),

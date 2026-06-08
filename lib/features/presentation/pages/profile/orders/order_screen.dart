@@ -30,7 +30,7 @@ class OrderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int? orderId = ModalRoute.of(context)?.settings.arguments! as int?;
+    final orderId = ModalRoute.of(context)?.settings.arguments as int?;
 
     return BlocBuilder<HomeScreenBloc, HomeScreenState>(
       builder: (context, homeState) {
@@ -80,23 +80,33 @@ class OrderScreen extends StatelessWidget {
                                               left: 20,
                                               top: 16),
                                           children: [
-                                            if (!orderState.isLoading)
+                                            if (!orderState.isLoading &&
+                                                orderState.order?.status !=
+                                                    null &&
+                                                orderState.order?.createdAt !=
+                                                    null)
                                               OrderStatusWidget(
-                                                  orderStatus:
-                                                      orderState.order!.status!,
-                                                  date: orderState
-                                                      .order!.createdAt!),
-                                            if (!orderState.isLoading)
+                                                orderStatus:
+                                                    orderState.order!.status!,
+                                                date: orderState
+                                                    .order!.createdAt!,
+                                              ),
+                                            if (!orderState.isLoading &&
+                                                orderState.order?.status !=
+                                                    null &&
+                                                orderState.order?.typeReceipt !=
+                                                    null)
                                               Padding(
                                                 padding:
                                                     getMarginOrPadding(top: 16),
                                                 child: OrderProgressIndicator(
-                                                    orderStatus: orderState
-                                                        .order!.status!,
-                                                    paymentType: orderState
-                                                        .order!.paymentType!,
-                                                    typeReceipt: orderState
-                                                        .order!.typeReceipt!),
+                                                  orderStatus:
+                                                      orderState.order!.status!,
+                                                  paymentType: orderState
+                                                      .order?.paymentType,
+                                                  typeReceipt: orderState
+                                                      .order!.typeReceipt!,
+                                                ),
                                               ),
                                             if (orderState.order?.status ==
                                                 OrderStatus.awaitingPayment)
@@ -227,7 +237,7 @@ class OrderScreen extends StatelessWidget {
                                                     context,
                                                     homeBloc,
                                                     orderState,
-                                                    orderId!,
+                                                    orderId ?? 0,
                                                   ),
                                                 ),
                                               ),

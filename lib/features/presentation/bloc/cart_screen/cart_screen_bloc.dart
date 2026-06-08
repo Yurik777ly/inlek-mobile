@@ -155,7 +155,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       CartDetailedParams(
           pharmacyId: state.cartType == TypeReceiving.pickup
               ? state.selectedPharmacyId
-              : UiConstants.deliveryPharmacyId,
+              : null,
           promocodes:
               state.selectedPromoCodes.map((e) => e.promocode).join('|'),
           deliveryZone: state.deliveryZone),

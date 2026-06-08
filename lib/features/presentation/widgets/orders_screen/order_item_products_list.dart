@@ -7,6 +7,43 @@ import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/custom_cache_manager.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
 
+Widget _buildOrderProductThumb(String? image) {
+  final normalizedImage = image?.trim();
+  final baseUrl = dotenv.env['PUBLIC_URL'];
+  final imageUrl = normalizedImage != null &&
+          normalizedImage.isNotEmpty &&
+          baseUrl != null &&
+          baseUrl.isNotEmpty
+      ? (normalizedImage.startsWith('http')
+          ? normalizedImage
+          : '$baseUrl$normalizedImage')
+      : null;
+
+  if (imageUrl == null) {
+    return SvgPicture.asset(
+      Paths.drugTemplateIconPath,
+      height: 56,
+      width: 56,
+    );
+  }
+
+  return CachedNetworkImage(
+    height: 56,
+    width: 56,
+    imageUrl: imageUrl,
+    fit: BoxFit.fitHeight,
+    cacheManager: CustomCacheManager(),
+    errorWidget: (context, url, error) => SvgPicture.asset(
+      Paths.drugTemplateIconPath,
+      height: 56,
+      width: 56,
+    ),
+    progressIndicatorBuilder: (context, url, progress) => Center(
+      child: CircularProgressIndicator(color: UiConstants.pink2Color),
+    ),
+  );
+}
+
 class OrderItemProductsList extends StatelessWidget {
   const OrderItemProductsList({super.key, required this.orderProducts});
 
@@ -25,22 +62,7 @@ class OrderItemProductsList extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: CachedNetworkImage(
-                    height: 56,
-                    width: 56,
-                    imageUrl:
-                        '${dotenv.env['PUBLIC_URL']!}${orderProducts[index].image}',
-                    fit: BoxFit.fitHeight,
-                    cacheManager: CustomCacheManager(),
-                    errorWidget: (context, url, error) => SvgPicture.asset(
-                        Paths.drugTemplateIconPath,
-                        height: double.infinity),
-                    progressIndicatorBuilder: (context, url, progress) =>
-                        Center(
-                      child: CircularProgressIndicator(
-                          color: UiConstants.pink2Color),
-                    ),
-                  ),
+                  child: _buildOrderProductThumb(orderProducts[index].image),
                 ),
               ),
           separatorBuilder: (context, index) => SizedBox(width: 4),

@@ -25,6 +25,52 @@ import 'package:inlek/features/presentation/widgets/cart_screen/product_price.da
 import 'package:inlek/features/presentation/widgets/custom_checkbox.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+Widget _buildProductImage(String? image, double height, double width) {
+  final imageUrl = _productImageUrl(image);
+  if (imageUrl == null) {
+    return SvgPicture.asset(
+      Paths.drugTemplateIconPath,
+      height: height,
+      width: width,
+    );
+  }
+
+  return CachedNetworkImage(
+    height: height,
+    width: width,
+    imageUrl: imageUrl,
+    fit: BoxFit.contain,
+    cacheManager: CustomCacheManager(),
+    errorWidget: (context, url, error) => SvgPicture.asset(
+      Paths.drugTemplateIconPath,
+      height: height,
+      width: width,
+    ),
+    progressIndicatorBuilder: (context, url, progress) => Center(
+      child: CircularProgressIndicator(color: UiConstants.pink2Color),
+    ),
+  );
+}
+
+String? _productImageUrl(String? image) {
+  final normalizedImage = image?.trim();
+  if (normalizedImage == null || normalizedImage.isEmpty) {
+    return null;
+  }
+
+  final baseUrl = dotenv.env['PUBLIC_URL'];
+  if (baseUrl == null || baseUrl.isEmpty) {
+    return null;
+  }
+
+  if (normalizedImage.startsWith('http://') ||
+      normalizedImage.startsWith('https://')) {
+    return normalizedImage;
+  }
+
+  return '$baseUrl$normalizedImage';
+}
+
 class CartProductWidget extends StatelessWidget {
   const CartProductWidget({
     super.key,
@@ -205,23 +251,7 @@ class CartProductWidget extends StatelessWidget {
                                       color: UiConstants.whiteColor
                                           .withOpacity(.6),
                                     ),
-                                  CachedNetworkImage(
-                                    height: 104,
-                                    width: 104,
-                                    imageUrl:
-                                        '${dotenv.env['PUBLIC_URL']!}${product.image}',
-                                    fit: BoxFit.contain,
-                                    cacheManager: CustomCacheManager(),
-                                    errorWidget: (context, url, error) =>
-                                        SvgPicture.asset(
-                                            Paths.drugTemplateIconPath,
-                                            height: double.infinity),
-                                    progressIndicatorBuilder:
-                                        (context, url, progress) => Center(
-                                      child: CircularProgressIndicator(
-                                          color: UiConstants.pink2Color),
-                                    ),
-                                  ),
+                                  _buildProductImage(product.image, 104, 104),
 
                                   /*Positioned(
                                       top: 4,

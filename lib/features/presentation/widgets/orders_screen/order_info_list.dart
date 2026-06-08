@@ -91,8 +91,7 @@ class OrderInfoList extends StatelessWidget {
         OrderInfoItem(
           imagePath: Paths.cardIconPath,
           title: 'Стоимость товаров',
-          subtitle:
-              '${order?.summary?.productsPrice ?? order?.sumPrices ?? 0} BYN',
+          subtitle: '${_productsPrice(order)} BYN',
         ),
         if ((order?.summary?.promocodesDiscount ?? 0) != 0)
           Padding(
@@ -118,10 +117,28 @@ class OrderInfoList extends StatelessWidget {
         OrderInfoItem(
           imagePath: Paths.cardIconPath,
           title: 'Итого',
-          subtitle: '${order?.summary?.totalPrice ?? order?.totalSum ?? 0} BYN',
+          subtitle: '${_totalPrice(order)} BYN',
         ),
       ],
     );
+  }
+
+  double _productsPrice(OrderEntity? order) {
+    final fromSummary = order?.summary?.productsPrice;
+    if (fromSummary != null && fromSummary > 0) {
+      return fromSummary;
+    }
+
+    return order?.sumPrices ?? order?.amount ?? 0;
+  }
+
+  double _totalPrice(OrderEntity? order) {
+    final fromSummary = order?.summary?.totalPrice;
+    if (fromSummary != null && fromSummary > 0) {
+      return fromSummary;
+    }
+
+    return order?.totalSum ?? order?.amount ?? 0;
   }
 
   /// Форматируем полный адрес

@@ -42,8 +42,10 @@ class ChangeCountProductWidget extends StatelessWidget {
         .firstWhereOrNull((e) => e.productId == product.productId);
     final isCart = cartOrProductType == CartOrProductType.cart;
     final isProduct = cartOrProductType == CartOrProductType.product;
-    int count =
-        cartProduct?.availability == 'absent' ? 1 : cartProduct?.quantity ?? 0;
+    int count = cartProduct?.quantity ?? 0;
+    if (count == 0 && (cartProduct?.requestedQuantity ?? 0) > 0) {
+      count = cartProduct!.requestedQuantity!;
+    }
     double? price = cartProduct?.availability == 'absent'
         ? product.price
         : cartProduct?.prices?.price ?? product.price;
@@ -53,7 +55,10 @@ class ChangeCountProductWidget extends StatelessWidget {
 
     if (isProduct && count == 0 && cartProduct?.availability != 'absent') {
       return _AddToCartButton(
-          product: product, cartBloc: effectiveCartBloc, isLoading: isLoading);
+          product: product,
+          cartBloc: effectiveCartBloc,
+          isLoading: isLoading,
+          screenContext: screenContext ?? context);
     } else if (isCart) {
       return CartQuantityChanger(
         count: count,
@@ -77,12 +82,17 @@ class ChangeCountProductWidget extends StatelessWidget {
 }
 
 class _AddToCartButton extends StatelessWidget {
-  const _AddToCartButton(
-      {required this.product, required this.cartBloc, required this.isLoading});
+  const _AddToCartButton({
+    required this.product,
+    required this.cartBloc,
+    required this.isLoading,
+    required this.screenContext,
+  });
 
   final ProductEntity product;
   final CartScreenBloc cartBloc;
   final bool isLoading;
+  final BuildContext screenContext;
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +101,18 @@ class _AddToCartButton extends StatelessWidget {
         if (product.availableSomewhere == 0) {
           await BottomSheetManager.showProductReceiptNotificationSheet();
         } else {
-          cartBloc.add(AddCartEvent(productId: product.productId));
+          cartBloc.add(AddCartEvent(
+            context: screenContext,
+            productId: product.productId,
+            onSuccess: () {
+              if (!screenContext.mounted) return;
+              ScaffoldMessenger.of(screenContext)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  const SnackBar(content: Text('Товар добавлен в корзину')),
+                );
+            },
+          ));
         }
       },
       child: Container(
