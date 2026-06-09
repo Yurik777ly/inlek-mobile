@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/launch_url_utils.dart';
 import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
@@ -475,22 +476,48 @@ class Utils {
     return 'с $startDay по $endDay $month';
   }
 
-  static void openJivoChat() {
-    // Configure for authorized user
-    Jivo.session.setContactInfo(
-        name: sl<SharedPreferences>().getString(SharedPreferencesKeys.fullName),
-        email: sl<SharedPreferences>().getString(SharedPreferencesKeys.email),
-        phone: sl<SharedPreferences>().getString(SharedPreferencesKeys.phone),
-        brief: "Pharmacy mobile app user");
+  static const String defaultJivoChannelId = 'k4Rt5TUDAB';
+  static const String supportPhone = '+375 (17) 388-76-78';
 
-    // ... or, configure for anonymous user
-    Jivo.session.setup(
-        channelId: dotenv.env['JIVO_CHANNEL_ID']!,
-        userToken:
-            sl<SharedPreferences>().getString(SharedPreferencesKeys.userId) ??
-                '');
+  static Future<void> openJivoChat({
+    BuildContext? context,
+    String? brief,
+  }) async {
+    final channelId =
+        dotenv.env['JIVO_CHANNEL_ID'] ?? defaultJivoChannelId;
+    final prefs = sl<SharedPreferences>();
 
-    Jivo.display.present();
+    try {
+      Jivo.session.setContactInfo(
+        name: prefs.getString(SharedPreferencesKeys.fullName),
+        email: prefs.getString(SharedPreferencesKeys.email),
+        phone: prefs.getString(SharedPreferencesKeys.phone),
+        brief: brief ?? 'Pharmacy mobile app user',
+      );
+
+      Jivo.session.setup(
+        channelId: channelId,
+        userToken: prefs.getString(SharedPreferencesKeys.userId) ?? '',
+      );
+
+      Jivo.display.present();
+    } catch (e) {
+      debugPrint('Failed to open Jivo chat: $e');
+      await _openSupportPhone(context);
+    }
+  }
+
+  static Future<void> _openSupportPhone(BuildContext? context) async {
+    try {
+      await LaunchUrlUtils.makePhoneCall(supportPhone);
+    } catch (e) {
+      debugPrint('Failed to open support phone: $e');
+      if (context != null && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Позвоните нам: $supportPhone')),
+        );
+      }
+    }
   }
 
   static Future<bool> openDocFile(String path,

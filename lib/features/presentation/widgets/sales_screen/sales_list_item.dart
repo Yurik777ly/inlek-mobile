@@ -48,6 +48,7 @@ class SalesListItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             ClipRRect(
               borderRadius: BorderRadius.vertical(
@@ -68,57 +69,51 @@ class SalesListItem extends StatelessWidget {
               ),
             ),
             SizedBox(height: 8),
-            Expanded(
-              child: Padding(
-                padding: getMarginOrPadding(left: 16, right: 16, bottom: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(action.pageTitle ?? '',
-                        style: UiConstants.textStyle3.copyWith(
-                            color: UiConstants.darkBlueColor,
-                            fontWeight: FontWeight.w800),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis),
-                    SizedBox(height: 8),
-                    const Spacer(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
+            Padding(
+              padding: getMarginOrPadding(left: 16, right: 16, bottom: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(action.pageTitle ?? '',
+                      style: UiConstants.textStyle3.copyWith(
+                          color: UiConstants.darkBlueColor,
+                          fontWeight: FontWeight.w800),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis),
+                  SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Text(
                           Utils.formatActionDate(
                               action.createDttm, action.endActionDate),
                           style: UiConstants.textStyle8.copyWith(
                             color: UiConstants.darkBlue2Color.withOpacity(.6),
                           ),
                         ),
-                        if (productWhereDiscountDontNull != null)
-                          Skeleton.unite(
-                            child: Container(
-                              padding: getMarginOrPadding(all: 4),
-                              decoration: BoxDecoration(
-                                color: UiConstants.pink2Color.withOpacity(.05),
-                                borderRadius: BorderRadius.circular(200),
-                              ),
-                              child: Builder(builder: (context) {
-                                ProductEntity? productWhereDiscountDontNull =
-                                    (action.actionProducts ?? [])
-                                        .firstWhereOrNull(
-                                            (e) => e.discount != null);
-                                return Text(
-                                  '-${productWhereDiscountDontNull?.discount}%',
-                                  style: UiConstants.textStyle6
-                                      .copyWith(color: UiConstants.pink2Color),
-                                );
-                              }),
+                      ),
+                      if (productWhereDiscountDontNull != null)
+                        Skeleton.unite(
+                          child: Container(
+                            padding: getMarginOrPadding(all: 4),
+                            decoration: BoxDecoration(
+                              color: UiConstants.pink2Color.withOpacity(.05),
+                              borderRadius: BorderRadius.circular(200),
+                            ),
+                            child: Text(
+                              '-${productWhereDiscountDontNull.discount}%',
+                              style: UiConstants.textStyle6
+                                  .copyWith(color: UiConstants.pink2Color),
                             ),
                           ),
-                      ],
-                    ),
-                  ],
-                ),
+                        ),
+                    ],
+                  ),
+                ],
               ),
-            )
+            ),
           ],
         ),
       ),

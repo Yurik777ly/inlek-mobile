@@ -249,7 +249,10 @@ class OrderScreen extends StatelessWidget {
                                                       UiConstants.purpleColor,
                                                   backgroundColor: UiConstants
                                                       .backgroundColor,
-                                                  onTap: Utils.openJivoChat),
+                                                  onTap: () => Utils.openJivoChat(
+                                                    context: context,
+                                                    brief: 'Заказ #$orderId',
+                                                  )),
                                             ),
                                           ],
                                         ),

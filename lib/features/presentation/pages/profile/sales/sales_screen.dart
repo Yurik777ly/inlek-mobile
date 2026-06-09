@@ -46,28 +46,17 @@ class SalesScreen extends StatelessWidget {
                             Expanded(
                               child: homeState is InternetUnavailable
                                   ? InternetNoInternetConnectionWidget()
-                                  : ListView(
+                                  : ListView.separated(
                                       padding: getMarginOrPadding(
-                                          top: 16, bottom: 94),
-                                      shrinkWrap: true,
-                                      children: [
-                                        ListView.separated(
-                                            physics:
-                                                NeverScrollableScrollPhysics(),
-                                            shrinkWrap: true,
-                                            padding: getMarginOrPadding(
-                                                right: 20, left: 20),
-                                            itemBuilder: (context, index) =>
-                                                SalesListItem(
-                                                  isExpanded: false,
-                                                  action: state.actions![index],
-                                                ),
-                                            separatorBuilder:
-                                                (context, index) =>
-                                                    SizedBox(height: 16),
-                                            itemCount:
-                                                (state.actions ?? []).length)
-                                      ],
+                                          top: 16, bottom: 94, left: 20, right: 20),
+                                      itemBuilder: (context, index) =>
+                                          SalesListItem(
+                                            isOneElementInList: true,
+                                            action: (state.actions ?? [])[index],
+                                          ),
+                                      separatorBuilder: (_, __) =>
+                                          SizedBox(height: 16),
+                                      itemCount: (state.actions ?? []).length,
                                     ),
                             ),
                           ],

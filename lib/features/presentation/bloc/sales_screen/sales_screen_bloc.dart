@@ -22,16 +22,21 @@ class SalesScreenBloc extends Bloc<SalesScreenEvent, SalesScreenState> {
     final failureOrLoads = await getActionsUC();
 
     failureOrLoads.fold(
-      (_) => Utils.showCustomDialog(
-        screenContext: screenContext!,
-        text: 'Ошибка загрузки акций',
-        action: (context) {
-          Navigator.of(context).pop();
-          Navigator.of(screenContext!).pop();
-        },
-      ),
+      (_) {
+        emit(state.copyWith(isLoading: false, actions: []));
+        if (screenContext != null) {
+          Utils.showCustomDialog(
+            screenContext: screenContext!,
+            text: 'Ошибка загрузки акций',
+            action: (context) {
+              Navigator.of(context).pop();
+              Navigator.of(screenContext!).pop();
+            },
+          );
+        }
+      },
       (actions) => emit(
-        SalesScreenState(isLoading: false, actions: actions),
+        state.copyWith(isLoading: false, actions: actions),
       ),
     );
   }
