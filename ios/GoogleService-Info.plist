@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyA4dM2AefWyu496zDqgPV95NzZwJJf_IEI</string>
+	<string>AIzaSyD2MBY8cEWOcFT6ZCqpYmAQ5fUeCjt2YxE</string>
 	<key>GCM_SENDER_ID</key>
-	<string>1073949749636</string>
+	<string>722661675975</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.dkmfarm.inlek.app</string>
 	<key>PROJECT_ID</key>
-	<string>inlek-72490</string>
+	<string>inlek-api</string>
 	<key>STORAGE_BUCKET</key>
-	<string>inlek-72490.firebasestorage.app</string>
+	<string>inlek-api.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1073949749636:ios:10b1c428af61f0707f2dd1</string>
+	<string>1:722661675975:ios:c2df2fd18b6fc3cf5a3fe2</string>
 </dict>
 </plist>

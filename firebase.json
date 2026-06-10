@@ -1,1 +1,22 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"inlek-72490","appId":"1:1073949749636:android:7c7992d069c1fa377f2dd1","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"inlek-72490","configurations":{"android":"1:1073949749636:android:7c7992d069c1fa377f2dd1","ios":"1:1073949749636:ios:10b1c428af61f0707f2dd1"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "inlek-api",
+          "appId": "1:722661675975:android:29754d95b75e91805a3fe2",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "inlek-api",
+          "configurations": {
+            "android": "1:722661675975:android:29754d95b75e91805a3fe2",
+            "ios": "1:722661675975:ios:c2df2fd18b6fc3cf5a3fe2"
+          }
+        }
+      }
+    }
+  }
+}

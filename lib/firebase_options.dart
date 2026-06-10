@@ -37,21 +37,22 @@ class DefaultFirebaseOptions {
     }
   }
 
+  // Проект inlek-api — синхронизировано с android/app/google-services.json
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDCtxsW3VhASvxW8428VAofYKQpImM3RsE',
-    appId: '1:1073949749636:android:7c7992d069c1fa377f2dd1',
-    messagingSenderId: '1073949749636',
-    projectId: 'inlek-72490',
-    storageBucket: 'inlek-72490.firebasestorage.app',
+    apiKey: 'AIzaSyCdoQGVFw4Uj9XhYH_uFleXGDhy-OeA97g',
+    appId: '1:722661675975:android:29754d95b75e91805a3fe2',
+    messagingSenderId: '722661675975',
+    projectId: 'inlek-api',
+    storageBucket: 'inlek-api.firebasestorage.app',
   );
 
+  // Проект inlek-api — синхронизировано с ios/GoogleService-Info.plist
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA4dM2AefWyu496zDqgPV95NzZwJJf_IEI',
-    appId: '1:1073949749636:ios:10b1c428af61f0707f2dd1',
-    messagingSenderId: '1073949749636',
-    projectId: 'inlek-72490',
-    storageBucket: 'inlek-72490.firebasestorage.app',
+    apiKey: 'AIzaSyD2MBY8cEWOcFT6ZCqpYmAQ5fUeCjt2YxE',
+    appId: '1:722661675975:ios:c2df2fd18b6fc3cf5a3fe2',
+    messagingSenderId: '722661675975',
+    projectId: 'inlek-api',
+    storageBucket: 'inlek-api.firebasestorage.app',
     iosBundleId: 'com.dkmfarm.inlek.app',
   );
-
 }
