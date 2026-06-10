@@ -429,9 +429,20 @@ Future<void> init() async {
   sl.registerLazySingleton(() => sharedPreferences);
   sl.registerLazySingleton<http.Client>(() => HttpClientWithLogger());
   sl.registerLazySingleton(() => InternetConnectionChecker.instance);
+  const defaultYandexGeocoderApiKey =
+      'b59aee20-e130-4225-9681-632ad6e8a545';
+  const defaultYandexSuggestApiKey =
+      'bcd2aad2-0542-4674-a464-2264cc611a0e';
+  final yandexGeocoderApiKey =
+      dotenv.env['YANDEX_GEOCODER_API_KEY'] ?? defaultYandexGeocoderApiKey;
+  final yandexSuggestApiKey =
+      dotenv.env['YANDEX_SUGGEST_API_KEY'] ?? defaultYandexSuggestApiKey;
   sl.registerLazySingleton(
-      () => YandexGeocoder(apiKey: dotenv.env['YANDEX_GEOCODER_API_KEY']!));
-  sl.registerLazySingleton(() => GeocoderManager(sl<YandexGeocoder>()));
+      () => YandexGeocoder(apiKey: yandexGeocoderApiKey));
+  sl.registerLazySingleton(() => GeocoderManager(
+        sl<YandexGeocoder>(),
+        suggestApiKey: yandexSuggestApiKey,
+      ));
   /*sl.registerSingletonAsync<UniLinksManager>(() async {
     final manager = UniLinksManager();
     await manager.init();

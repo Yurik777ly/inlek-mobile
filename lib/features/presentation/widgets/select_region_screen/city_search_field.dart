@@ -47,6 +47,13 @@ class CitySearchField extends StatelessWidget {
   final Color fillColor;
   final FocusNode? focusNode;
 
+  void _setControllerText(String text) {
+    controller.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final FocusNode localFocusNode = focusNode ?? FocusNode();
@@ -63,7 +70,6 @@ class CitySearchField extends StatelessWidget {
                   .copyWith(color: UiConstants.darkBlueColor),
             ),
           ),
-
         ValueListenableBuilder<TextEditingValue>(
           valueListenable: controller,
           builder: (context, value, child) {
@@ -71,14 +77,11 @@ class CitySearchField extends StatelessWidget {
               validator: validator,
               focusNode: localFocusNode,
               controller: controller,
-
               suggestionItemDecoration: BoxDecoration(
                 border: Border.all(style: BorderStyle.none),
               ),
-
               maxSuggestionBoxHeight: 124,
               hint: hintText ?? 'Не указано',
-
               suggestions: (suggestions ?? const [])
                   .map(
                     (item) => SearchFieldListItem<String>(
@@ -93,40 +96,32 @@ class CitySearchField extends StatelessWidget {
                     ),
                   )
                   .toList(),
-
-              // ✅ FIXED SearchInputDecoration (только поддерживаемые поля)
               searchInputDecoration: SearchInputDecoration(
                 searchStyle: UiConstants.textStyle3.copyWith(
                   color: UiConstants.darkBlueColor,
                 ),
-
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: fillColor,
                   counterText: '',
-
                   contentPadding: getMarginOrPadding(
                     left: 16,
                     right: 16,
                     top: 10,
                     bottom: 10,
                   ),
-
                   hintStyle: UiConstants.textStyle3.copyWith(
                     color: UiConstants.darkBlue2Color.withOpacity(.6),
                     height: 1,
                   ),
-
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: Colors.transparent),
                   ),
-
                   disabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: Colors.transparent),
                   ),
-
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
@@ -134,7 +129,6 @@ class CitySearchField extends StatelessWidget {
                       color: UiConstants.purple2Color.withOpacity(.2),
                     ),
                   ),
-
                   errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
@@ -142,7 +136,6 @@ class CitySearchField extends StatelessWidget {
                       color: UiConstants.pinkColor,
                     ),
                   ),
-
                   focusedErrorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
@@ -150,7 +143,6 @@ class CitySearchField extends StatelessWidget {
                       color: UiConstants.pinkColor,
                     ),
                   ),
-
                   prefixIcon: prefixIcon != null
                       ? Padding(
                           padding: getMarginOrPadding(right: 12, left: 16),
@@ -165,7 +157,6 @@ class CitySearchField extends StatelessWidget {
                           ),
                         )
                       : null,
-
                   suffixIcon: value.text.isNotEmpty
                       ? GestureDetector(
                           onTap: () {
@@ -188,22 +179,19 @@ class CitySearchField extends StatelessWidget {
                       : null,
                 ),
               ),
-
               suggestionsDecoration: SuggestionDecoration(
                 color: UiConstants.whiteColor,
                 borderRadius: const BorderRadius.vertical(
                   bottom: Radius.circular(16),
                 ),
               ),
-
               onSearchTextChanged: (String query) async {
                 if (suggestionFetcher != null) {
                   if (query.trim().length < minFetcherLength) {
                     return <SearchFieldListItem<String>>[];
                   }
 
-                  final fetched =
-                      await suggestionFetcher!.call(query.trim());
+                  final fetched = await suggestionFetcher!.call(query.trim());
 
                   return fetched
                       .map(
@@ -246,16 +234,17 @@ class CitySearchField extends StatelessWidget {
                     )
                     .toList();
               },
-
               onSuggestionTap: (SearchFieldListItem<String> item) {
+                final text = item.value?.isNotEmpty == true
+                    ? item.value!
+                    : item.searchKey;
+                _setControllerText(text);
                 onSuggestionTap?.call(item.item);
               },
-
               onTapOutside: (p0) {
                 FocusScope.of(context).unfocus();
                 localFocusNode.unfocus();
               },
-
               suggestionState: Suggestion.expand,
             );
           },
