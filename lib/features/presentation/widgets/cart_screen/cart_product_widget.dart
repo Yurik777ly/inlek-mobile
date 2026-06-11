@@ -52,6 +52,26 @@ Widget _buildProductImage(String? image, double height, double width) {
   );
 }
 
+double? _resolveOldPrice(ProductEntity product, double? currentPrice) {
+  final candidates = [
+    product.prices?.priceOld,
+    product.oldPrice,
+  ].whereType<double>().where((value) => value > 0);
+
+  if (candidates.isEmpty) {
+    return null;
+  }
+
+  final bestOldPrice =
+      candidates.reduce((a, b) => a > b ? a : b);
+
+  if (currentPrice != null && bestOldPrice <= currentPrice) {
+    return null;
+  }
+
+  return bestOldPrice;
+}
+
 String? _productImageUrl(String? image) {
   final normalizedImage = image?.trim();
   if (normalizedImage == null || normalizedImage.isEmpty) {
@@ -142,8 +162,8 @@ class CartProductWidget extends StatelessWidget {
               [])
           .firstWhereOrNull((e) => e.productId == product.productId);
       if (cartProduct != null) {
-        oldPrice = cartProduct.prices?.priceOld;
-        price = cartProduct.prices?.price;
+        price = cartProduct.prices?.price ?? cartProduct.price;
+        oldPrice = _resolveOldPrice(cartProduct, price);
       }
     }
 

@@ -82,11 +82,14 @@ class SummaryPricesBlock extends StatelessWidget {
   }
 }
 
-// Получает актуальное количество товара: учитывает наличие на складе и запрошенное количество
+// Получает актуальное количество товара в корзине с учётом остатка на складе
 int getActualQuantity(ProductEntity product) {
-  final required = product.requiredQuantity ?? product.quantity ?? 1;
-  final stock = product.stockCount ?? 1;
-  return required > stock ? stock : required;
+  final cartQuantity = product.quantity ??
+      product.requestedQuantity ??
+      product.requiredQuantity ??
+      1;
+  final stock = product.stockCount ?? cartQuantity;
+  return cartQuantity > stock ? stock : cartQuantity;
 }
 
 // Считает сумму всех товаров по старой цене

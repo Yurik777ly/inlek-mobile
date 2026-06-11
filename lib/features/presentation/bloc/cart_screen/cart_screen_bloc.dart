@@ -548,7 +548,14 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     // Считаем сумму всех товаров
     final productsTotal = selectedProducts.fold<double>(
       0,
-      (sum, product) => sum + (product.price ?? 0) * (product.quantity ?? 1),
+      (sum, product) {
+        final quantity = product.quantity ??
+            product.requestedQuantity ??
+            product.requiredQuantity ??
+            1;
+        final price = product.prices?.price ?? product.price ?? 0;
+        return sum + price * quantity;
+      },
     );
 
     // Итоговая сумма
@@ -681,16 +688,25 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
     if (!event.wasFirstTimeAdded && productIndex != -1) {
       ProductEntity product = updatedProducts[productIndex];
-      updatedProducts[productIndex] =
-          product.copyWith(quantity: event.quantity);
+      updatedProducts[productIndex] = product.copyWith(
+        quantity: event.quantity,
+        requiredQuantity: event.quantity,
+        requestedQuantity: event.quantity,
+      );
     } else {
-      updatedProducts.add(
-          ProductEntity(productId: event.productId, quantity: event.quantity));
+      updatedProducts.add(ProductEntity(
+        productId: event.productId,
+        quantity: event.quantity,
+        requiredQuantity: event.quantity,
+        requestedQuantity: event.quantity,
+      ));
     }
 
     emit(state.copyWith(
         cartData: state.cartData?.copyWith(products: updatedProducts),
         isLoading: false));
+
+    add(UpdateDeliveryPriceEvent());
 
     // If cart was empty and this is the first product, set cartType to delivery
     if (event.wasCartEmpty && event.wasFirstTimeAdded) {
@@ -719,8 +735,11 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     if (productIndex != -1) {
       if (event.newQuantity > 0) {
         final product = updatedProducts[productIndex];
-        updatedProducts[productIndex] =
-            product.copyWith(quantity: event.newQuantity);
+        updatedProducts[productIndex] = product.copyWith(
+          quantity: event.newQuantity,
+          requiredQuantity: event.newQuantity,
+          requestedQuantity: event.newQuantity,
+        );
       } else {
         updatedProducts.removeAt(productIndex);
         updatedSelectedProductIds.remove(event.productId);
@@ -733,6 +752,8 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         cartType: event.isCartEmptyAfterRemoval && state.isAvailableDelivery
             ? TypeReceiving.delivery
             : state.cartType));
+
+    add(UpdateDeliveryPriceEvent());
 
     // Загружаем актуальные данные корзины для синхронизации
     if (!isClosed) {
