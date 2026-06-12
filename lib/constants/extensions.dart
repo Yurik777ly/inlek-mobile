@@ -148,6 +148,8 @@ extension PaymentTypeExtension on PaymentType {
     switch (title) {
       case 'cash':
         return PaymentType.cash;
+      case 'При получении':
+        return PaymentType.cash;
       case 'Курьеру':
         return PaymentType.courier;
       case 'bepaid':

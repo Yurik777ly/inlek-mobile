@@ -548,12 +548,12 @@ class BottomSheetManager {
                                       .read<CartScreenBloc>()
                                       .add(CreateOrderEvent(
                                         screenContext: screenContext,
+                                        sheetContext: sheetContext,
                                         callback: () {
                                           personalDataScreenBloc.getProfile();
                                           ordersScreenBloc.add(LoadDataEvent());
                                         },
                                       ));
-                                  Navigator.pop(sheetContext);
                                 } else {
                                   // Показываем уведомление и скроллим к незаполненным полям
                                   _showDeliveryValidationError(

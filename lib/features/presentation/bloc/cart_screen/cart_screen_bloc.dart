@@ -608,19 +608,38 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
           address: streetHomeController.text,
           comment: commentController.text);
     }
-    final failureOrCart = await createOrderUC(params);
+    final failureOrOrder = await createOrderUC(params);
 
-    add(LoadCartDataEvent(isFirstLoading: true));
-
-    failureOrCart.fold(
-      (_) => emit(state.copyWith(
-          isLoading: false, errorText: 'Ошибка создания заказа')),
+    await failureOrOrder.fold(
+      (_) async {
+        emit(state.copyWith(
+            isOrderCompleting: false, errorText: 'Ошибка создания заказа'));
+        Utils.showCustomDialog(
+          screenContext: Utils.resolveActiveContext(event.screenContext) ??
+              event.screenContext,
+          text: 'Не удалось оформить заказ. Попробуйте ещё раз.',
+          action: (context) => Navigator.of(context).pop(),
+        );
+      },
       (order) async {
+        if (order == null) {
+          emit(state.copyWith(isOrderCompleting: false));
+          Utils.showCustomDialog(
+            screenContext: Utils.resolveActiveContext(event.screenContext) ??
+                event.screenContext,
+            text: 'Не удалось оформить заказ. Попробуйте ещё раз.',
+            action: (context) => Navigator.of(context).pop(),
+          );
+          return;
+        }
+
         event.callback?.call();
-        // сохраняем адрес при успешном оформлении доставки
+
         if (state.cartType == TypeReceiving.delivery) {
-          sharedPreferences.setString(SharedPreferencesKeys.savedAddress,
-              json.encode(selectedAddress?.toJsonString()));
+          if (selectedAddress != null) {
+            sharedPreferences.setString(SharedPreferencesKeys.savedAddress,
+                json.encode(selectedAddress?.toJsonString()));
+          }
 
           sharedPreferences.setString(
               SharedPreferencesKeys.savedApartment, flatController.text);
@@ -632,19 +651,20 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
               SharedPreferencesKeys.savedIntercom, doorPhoneController.text);
         }
 
-        /*if (order?.link != null) {
-          if (await canLaunchUrl(Uri.parse(order!.link!))) {
-            await launchUrl(Uri.parse(order.link!),
-                mode: LaunchMode.externalApplication);
-          } else {
-            throw "Не удалось открыть ${order.link!}";
-          }
-        }*/
-        BottomSheetManager.showThanksForOrderSheet(event.screenContext, order!);
+        final sheetContext = event.sheetContext;
+        if (sheetContext != null && sheetContext.mounted) {
+          Navigator.pop(sheetContext);
+        }
+
+        add(LoadCartDataEvent(isFirstLoading: true));
+        emit(state.copyWith(isOrderCompleting: false, selectedPromoCodes: []));
+        final thanksContext =
+            Utils.resolveActiveContext(event.screenContext);
+        if (thanksContext != null) {
+          BottomSheetManager.showThanksForOrderSheet(thanksContext, order);
+        }
       },
     );
-    // скрываем лоадер на кнопке
-    emit(state.copyWith(isOrderCompleting: false, selectedPromoCodes: []));
   }
 
   Future _onChangeAvailableDelivery(

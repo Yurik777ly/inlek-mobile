@@ -14,6 +14,7 @@ import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/presentation/widgets/app_button_widget.dart';
 import 'package:inlek/locator_service.dart';
+import 'package:inlek/main.dart';
 import 'package:intl/intl.dart';
 import 'package:jivosdk_plugin/bridge.dart';
 import 'package:open_file/open_file.dart';
@@ -303,13 +304,33 @@ class Utils {
     }
   }
 
+  static BuildContext? resolveActiveContext(BuildContext? context) {
+    if (context != null && context.mounted) {
+      return context;
+    }
+    final home = UiConstants.homeContext;
+    if (home != null && home.mounted) {
+      return home;
+    }
+    final root = navigatorKey.currentContext;
+    if (root != null && root.mounted) {
+      return root;
+    }
+    return null;
+  }
+
   static void showCustomDialog(
       {required BuildContext screenContext,
       String? title,
       required String text,
       required Function(BuildContext context) action}) {
+    final dialogContext = resolveActiveContext(screenContext);
+    if (dialogContext == null) {
+      debugPrint('showCustomDialog: no active context for "$text"');
+      return;
+    }
     showDialog(
-      context: screenContext,
+      context: dialogContext,
       builder: (BuildContext context) {
         return WillPopScope(
           onWillPop: () async {

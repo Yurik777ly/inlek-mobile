@@ -105,8 +105,10 @@ class _AddToCartButton extends StatelessWidget {
             context: screenContext,
             productId: product.productId,
             onSuccess: () {
-              if (!screenContext.mounted) return;
-              ScaffoldMessenger.of(screenContext)
+              final messengerContext =
+                  Utils.resolveActiveContext(screenContext);
+              if (messengerContext == null) return;
+              ScaffoldMessenger.of(messengerContext)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
                   const SnackBar(content: Text('Товар добавлен в корзину')),

@@ -109,11 +109,16 @@ class ToggleShowPharmaciesProductsInStockEvent extends CartScreenEvent {
 
 class CreateOrderEvent extends CartScreenEvent {
   final BuildContext screenContext;
+  final BuildContext? sheetContext;
   final Function()? callback;
-  const CreateOrderEvent({required this.screenContext, this.callback});
+  const CreateOrderEvent({
+    required this.screenContext,
+    this.sheetContext,
+    this.callback,
+  });
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [sheetContext];
 }
 
 class UpdateDeliveryPriceEvent extends CartScreenEvent {

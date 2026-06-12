@@ -125,12 +125,31 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
       log('Response ($url): ${response.statusCode} ${response.body}');
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        final orderData = data['data'];
 
-        return OrderModel.fromJson(data['data']);
-      } else {
-        return null;
+        if (orderData == null) {
+          throw ServerException();
+        }
+
+        try {
+          return OrderModel.fromJson(
+            orderData is Map<String, dynamic>
+                ? orderData
+                : Map<String, dynamic>.from(orderData as Map),
+          );
+        } catch (parseError) {
+          log('Order response parse error: $parseError', level: 1000);
+          log('Order response body: ${response.body}', level: 1000);
+          throw ServerException();
+        }
       }
+
+      log(
+        'Order create failed: ${response.statusCode} ${response.body}',
+        level: 1000,
+      );
+      throw ServerException();
     } catch (e) {
       log('Error during createOrder: $e', level: 1000);
       rethrow;
