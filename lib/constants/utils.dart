@@ -23,6 +23,45 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 class Utils {
+  static String get publicBannersBaseUrl {
+    final explicit = dotenv.env['PUBLIC_BANNERS_URL'];
+    if (explicit != null && explicit.isNotEmpty) {
+      return explicit.endsWith('/') ? explicit : '$explicit/';
+    }
+
+    final baseUrl = dotenv.env['BASE_URL'] ?? '';
+    if (baseUrl.contains('test.mobile.apteka-online.by')) {
+      return 'https://test.apteka-online.by/';
+    }
+
+    final publicUrl = dotenv.env['PUBLIC_URL'] ?? '';
+    if (publicUrl.isEmpty) {
+      return '';
+    }
+
+    return publicUrl.endsWith('/') ? publicUrl : '$publicUrl/';
+  }
+
+  static String buildPublicAssetUrl(String? path) {
+    if (path == null || path.isEmpty) {
+      return '';
+    }
+
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+
+    final base = publicBannersBaseUrl;
+    if (base.isEmpty) {
+      return path;
+    }
+
+    final normalizedPath =
+        path.startsWith('/') ? path.substring(1) : path;
+
+    return '$base$normalizedPath';
+  }
+
   static RegExp phoneRegexp = RegExp(r'^\+375 \(\d{2}\) \d{3}-\d{2}-\d{2}$');
   static RegExp nameAndSurnameRegexp = RegExp(r'^[a-zA-Zа-яА-ЯёЁ\-]+$');
 

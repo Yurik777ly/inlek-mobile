@@ -25,7 +25,14 @@
 -keep,allowobfuscation,allowshrinking class com.jivosite.sdk.model.** { *; }
 -keep,allowobfuscation,allowshrinking class com.jivosite.sdk.network.** { *; }
 
-# Google Play Core rules (for Flutter deferred components)
+# Geolocator
+-keep class com.baseflow.geolocator.** { *; }
+-dontwarn com.baseflow.geolocator.**
+
+# Yandex MapKit
+-keep class com.yandex.** { *; }
+-dontwarn com.yandex.**
+
 # These classes are optional and only needed for App Bundle with dynamic features
 -dontwarn com.google.android.play.core.splitcompat.SplitCompatApplication
 -dontwarn com.google.android.play.core.splitinstall.SplitInstallException

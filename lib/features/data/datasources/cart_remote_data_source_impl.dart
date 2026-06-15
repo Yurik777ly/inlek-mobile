@@ -231,9 +231,14 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final List<dynamic> pharmaciesJson = data['data'];
+        final pharmaciesJson = data['data'];
+        if (pharmaciesJson is! List) {
+          return [];
+        }
         return pharmaciesJson
-            .map((e) => CartPharmacyModel.fromJson(e))
+            .map((e) => CartPharmacyModel.fromJson(
+                  Map<String, dynamic>.from(e as Map),
+                ))
             .toList();
       } else {
         log('Error: ServerException occurred',

@@ -1075,6 +1075,23 @@ class BottomSheetManager {
             return BlocBuilder<CartScreenBloc, CartScreenState>(
               bloc: cartBloc,
               builder: (context, cartState) {
+                final pharmacyProducts = cartState.cartData?.products
+                        .where((e) =>
+                            cartState.selectedProductIds.contains(e.productId) ||
+                            e.availability == 'absent')
+                        .map(
+                          (toElement) => CartPharmaciesProductParam(
+                            productId: toElement.productId,
+                            quantity: (toElement.requestedQuantity ??
+                                    toElement.quantity ??
+                                    1)
+                                .clamp(1, double.infinity)
+                                .toInt(),
+                          ),
+                        )
+                        .toList() ??
+                    [];
+
                 return CustomBottomSheet(
                   padding: getMarginOrPadding(
                       left: 20, right: 20, top: 8, bottom: 0),
@@ -1091,25 +1108,7 @@ class BottomSheetManager {
                                     getCartPharmaciesUC: sl(),
                                     context: screenContext)
                                   ..add(LoadPharmaciesCartDataEvent(
-                                      products: cartState.cartData!.products
-                                          // это выбрет только те товары, которые отмчены, а так же те, которых нет в наличии
-                                          .where((e) =>
-                                              cartState.selectedProductIds
-                                                  .contains(e.productId) ||
-                                              e.availability == 'absent')
-                                          .map(
-                                            (toElement) =>
-                                                CartPharmaciesProductParam(
-                                              productId: toElement.productId,
-                                              quantity: (toElement
-                                                          .requestedQuantity ??
-                                                      toElement.quantity ??
-                                                      1)
-                                                  .clamp(1, double.infinity)
-                                                  .toInt(),
-                                            ),
-                                          )
-                                          .toList())),
+                                      products: pharmacyProducts)),
                               ),
                               BlocProvider(
                                 create: (context) => PharmacyMapBloc(
@@ -1200,9 +1199,47 @@ class BottomSheetManager {
                                     SizedBox(height: 16),
                                     Expanded(
                                       child: state.isLoading
-                                          ? Center(
-                                              child:
-                                                  CircularProgressIndicator())
+                                          ? const Center(
+                                              child: CircularProgressIndicator(),
+                                            )
+                                          : state.hasError
+                                              ? Center(
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        'Не удалось загрузить аптеки',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: UiConstants
+                                                            .textStyle3
+                                                            .copyWith(
+                                                          color: UiConstants
+                                                              .darkBlueColor,
+                                                          fontWeight:
+                                                              FontWeight.w800,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 12),
+                                                      AppButtonWidget(
+                                                        textWidget: const Text(
+                                                            'Повторить'),
+                                                        isActive: true,
+                                                        onTap: () {
+                                                          pharmaciesBloc.add(
+                                                            LoadPharmaciesCartDataEvent(
+                                                              products:
+                                                                  pharmacyProducts,
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )
                                           : selectorIndex == 0
                                               ? state.filteredPharmacies.isEmpty
                                                   ? Center(

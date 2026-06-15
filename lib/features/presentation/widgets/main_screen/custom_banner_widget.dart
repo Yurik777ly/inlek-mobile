@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
+import 'package:inlek/constants/utils.dart';
 import 'package:inlek/features/domain/entities/banner_entity.dart';
 import 'package:inlek/features/presentation/widgets/main_screen/banner_item.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -34,6 +34,9 @@ class _CustomBannerWidgetState extends State<CustomBannerWidget> {
 
   void _startAutoScroll() {
     _stopAutoScroll();
+    if (widget.banners.length < 2) {
+      return;
+    }
     _timer = Timer.periodic(Duration(seconds: 5), (timer) {
       if (widget.pageController.hasClients) {
         final nextPage = (widget.pageController.page?.toInt() ?? 0) + 1;
@@ -77,16 +80,17 @@ class _CustomBannerWidgetState extends State<CustomBannerWidget> {
                 child: Padding(
                   padding: getMarginOrPadding(right: 20, left: 20),
                   child: GestureDetector(
-                    onTap: () async {
-                      if (await canLaunchUrl(Uri.parse(banner.href ?? ''))) {
-                        await launchUrl(Uri.parse(banner.href ?? ''),
-                            mode: LaunchMode.externalApplication);
-                      } else {
-                        throw "Не удалось открыть ${banner.href ?? ''}";
-                      }
-                    },
+                    onTap: banner.href != null && banner.href!.isNotEmpty
+                        ? () async {
+                            final uri = Uri.parse(banner.href!);
+                            if (await canLaunchUrl(uri)) {
+                              await launchUrl(uri,
+                                  mode: LaunchMode.externalApplication);
+                            }
+                          }
+                        : null,
                     child: BannerItem(
-                      url: '${dotenv.env['PUBLIC_URL']!}${banner.image}',
+                      url: Utils.buildPublicAssetUrl(banner.image),
                     ),
                   ),
                 ),

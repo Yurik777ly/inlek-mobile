@@ -45,30 +45,37 @@ class PharmaciesCartScreenBloc
     on<LoadPharmaciesCartDataEvent>((event, emit) async {
       emit(state.copyWith(isLoading: true, hasError: false));
 
-      final position = await LocationManager.determinePosition();
+      try {
+        final position = await LocationManager.determinePosition(
+          requestIfDenied: false,
+        );
 
-      // Формируем param для запроса
-      final param = CartPharmaciesParam(
+        final param = CartPharmaciesParam(
           geoLat: position?.latitude ?? 0.0,
           geoLong: position?.longitude ?? 0.0,
-          products: event.products);
-      final failureOrLoads = await getCartPharmaciesUC(param);
+          products: event.products,
+        );
+        final failureOrLoads = await getCartPharmaciesUC(param);
 
-      failureOrLoads.fold(
-        (_) {
-          emit(state.copyWith(isLoading: false, hasError: true));
-          _filterAndEmit(emit);
-        },
-        (pharmacies) => emit(
-          state.copyWith(
-            isLoading: false,
-            hasError: false,
-            pharmacies: pharmacies,
-            filteredPharmacies: pharmacies,
-            mapObjects: _generateMapObjects(pharmacies),
+        failureOrLoads.fold(
+          (_) {
+            emit(state.copyWith(isLoading: false, hasError: true));
+            _filterAndEmit(emit);
+          },
+          (pharmacies) => emit(
+            state.copyWith(
+              isLoading: false,
+              hasError: false,
+              pharmacies: pharmacies,
+              filteredPharmacies: pharmacies,
+              mapObjects: _generateMapObjects(pharmacies),
+            ),
           ),
-        ),
-      );
+        );
+      } catch (_) {
+        emit(state.copyWith(isLoading: false, hasError: true));
+        _filterAndEmit(emit);
+      }
     });
   }
 

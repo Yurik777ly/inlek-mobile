@@ -128,34 +128,15 @@ class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
       log('Response ($url): ${response.statusCode} ${response.body}');
 
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.body);
+        final data = json.decode(response.body);
+        final dataMap = data['data'];
 
-        // Пройдем по ключам aside (если их несколько) и извлечем нужные данные
-        var banners = <BannerModel>[];
-
-        Map<String, dynamic>? dataMap = data['data'];
-
-        if (dataMap != null) {
-          dataMap.forEach(
-            (_, value) {
-              if (value is Map<String, dynamic>) {
-                value.forEach(
-                  (_, value) {
-                    String? image = value['items']['image_mobile']['value'];
-                    String? href = value['items']['href']['value'];
-
-                    // Если оба поля существуют, создаем BannerModel
-                    if (image != null && href != null) {
-                      banners.add(BannerModel(image: image, href: href));
-                    }
-                  },
-                );
-              }
-            },
-          );
+        if (dataMap is! Map<String, dynamic>) {
+          return [];
         }
 
-        return banners;
+        // На главной нужен только слайдер; остальные зоны — aside, catalog и т.д.
+        return _parseHomeSliderBanners(dataMap['homeSlider']);
       } else {
         throw ServerException();
       }
@@ -371,5 +352,52 @@ class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
       log('Error during getCities: $e', level: 1000);
       rethrow;
     }
+  }
+
+  List<BannerModel> _parseHomeSliderBanners(dynamic homeSlider) {
+    if (homeSlider is! Map<String, dynamic>) {
+      return [];
+    }
+
+    final banners = <BannerModel>[];
+
+    for (final entry in homeSlider.values) {
+      if (entry is! Map<String, dynamic>) {
+        continue;
+      }
+
+      final items = entry['items'];
+      if (items is! Map<String, dynamic>) {
+        continue;
+      }
+
+      final image = _readBannerItemValue(items, 'image_mobile');
+      if (image == null || image.isEmpty) {
+        continue;
+      }
+
+      banners.add(
+        BannerModel(
+          image: image,
+          href: _readBannerItemValue(items, 'href'),
+        ),
+      );
+    }
+
+    return banners;
+  }
+
+  String? _readBannerItemValue(Map<String, dynamic> items, String key) {
+    final field = items[key];
+    if (field is! Map<String, dynamic>) {
+      return null;
+    }
+
+    final value = field['value'];
+    if (value is! String || value.trim().isEmpty) {
+      return null;
+    }
+
+    return value.trim();
   }
 }
