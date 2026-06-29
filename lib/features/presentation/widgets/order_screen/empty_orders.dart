@@ -11,37 +11,52 @@ class EmptyOrders extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: getMarginOrPadding(top: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Заказов пока нет',
-            style: UiConstants.textStyle9.copyWith(
-              color: UiConstants.blackColor,
-            ),
-          ),
-          SizedBox(height: 39),
-          Expanded(
-            child: Center(
-              child: Image.asset(
-                Paths.emptyOrdersIconPath,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Padding(
+              padding: getMarginOrPadding(top: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Заказов пока нет',
+                        style: UiConstants.textStyle9.copyWith(
+                          color: UiConstants.blackColor,
+                        ),
+                      ),
+                      SizedBox(height: 39),
+                      Center(
+                        child: Image.asset(
+                          Paths.emptyOrdersIconPath,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: getMarginOrPadding(top: 24),
+                    child: AppButtonWidget(
+                      isActive: true,
+                      text: 'За покупками',
+                      onTap: () {
+                        context.read<HomeScreenBloc>().add(
+                              ChangePageEvent(1, forcePopToRoot: true),
+                            );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          AppButtonWidget(
-            isActive: true,
-            text: 'За покупками',
-            onTap: () {
-              //Navigator.pop(context);
-              context.read<HomeScreenBloc>().add(
-                    ChangePageEvent(1, forcePopToRoot: true),
-                  );
-            },
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

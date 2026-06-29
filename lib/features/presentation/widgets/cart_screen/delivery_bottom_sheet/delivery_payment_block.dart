@@ -29,6 +29,10 @@ class _DeliveryPaymentBlockState extends State<DeliveryPaymentBlock> {
       builder: (context, state) {
         final cartBloc = widget.screenContext.read<CartScreenBloc>();
         final paymentType = cartBloc.state.paymentType;
+        final isOnlinePayment = [
+          PaymentType.oplati,
+          PaymentType.erip,
+        ].contains(paymentType);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -57,19 +61,13 @@ class _DeliveryPaymentBlockState extends State<DeliveryPaymentBlock> {
                 Expanded(
                   child: DeliveryPaymentBlockItem(
                       imagePath: Paths.cardIconPath,
-                      title: paymentType == PaymentType.bepaid
-                          ? 'Картой'
-                          : 'Онлайн',
+                      title: 'Онлайн',
                       titleWidget: paymentType == PaymentType.erip
                           ? Image.asset(Paths.eripIconPath, height: 50)
                           : paymentType == PaymentType.oplati
                               ? SvgPicture.asset(Paths.oplatiIconPath)
                               : null,
-                      isChecked: [
-                        PaymentType.bepaid,
-                        PaymentType.oplati,
-                        PaymentType.erip
-                      ].contains(paymentType),
+                      isChecked: isOnlinePayment,
                       onTap: () {
                         setState(() {});
                         widget.changedOnlineMethodTap();

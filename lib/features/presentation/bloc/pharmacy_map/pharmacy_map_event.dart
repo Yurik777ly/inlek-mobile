@@ -7,7 +7,15 @@ abstract class PharmacyMapEvent extends Equatable {
 
 class InitPharmacyMapEvent extends PharmacyMapEvent {
   final List<CustomMapObject> points;
-  InitPharmacyMapEvent({required this.points});
+  final Point? initialCameraPoint;
+
+  InitPharmacyMapEvent({
+    required this.points,
+    this.initialCameraPoint,
+  });
+
+  @override
+  List<Object?> get props => [points, initialCameraPoint];
 }
 
 class AttachControllerEvent extends PharmacyMapEvent {

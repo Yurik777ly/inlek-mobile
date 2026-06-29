@@ -75,9 +75,9 @@ class ProductWidget extends StatelessWidget {
                         Text(product.pagetitle ?? '-',
                             style: UiConstants.textStyle8
                                 .copyWith(color: UiConstants.darkBlueColor),
-                            maxLines: 3,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis),
-                        SizedBox(height: 8),
+                        SizedBox(height: 4),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [

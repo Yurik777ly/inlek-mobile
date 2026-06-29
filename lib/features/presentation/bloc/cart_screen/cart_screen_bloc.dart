@@ -63,6 +63,24 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
   GeoObject? selectedAddress;
 
+  double? deliveryMapLatitude;
+  double? deliveryMapLongitude;
+
+  void updateDeliveryMapCenter(GeocodeResponse? response) {
+    final point = response?.firstPoint;
+    if (point == null) {
+      return;
+    }
+
+    deliveryMapLatitude = point.lat;
+    deliveryMapLongitude = point.lon;
+  }
+
+  void clearDeliveryMapCenter() {
+    deliveryMapLatitude = null;
+    deliveryMapLongitude = null;
+  }
+
   Timer? _debounceTimer;
   Timer? _addCartDebounceTimer;
   Timer? _deleteCartDebounceTimer;

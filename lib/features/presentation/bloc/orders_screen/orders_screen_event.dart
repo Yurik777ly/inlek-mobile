@@ -9,6 +9,10 @@ abstract class OrdersScreenEvent extends Equatable {
 
 class LoadDataEvent extends OrdersScreenEvent {}
 
+class ResetAndLoadOrdersEvent extends OrdersScreenEvent {
+  const ResetAndLoadOrdersEvent();
+}
+
 class ChangeOnlyActiveOrdersEvent extends OrdersScreenEvent {
   final bool? isChecked;
   const ChangeOnlyActiveOrdersEvent(this.isChecked);

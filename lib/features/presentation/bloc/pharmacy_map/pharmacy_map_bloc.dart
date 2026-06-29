@@ -32,13 +32,16 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
       this.screenContext})
       : super(PharmacyMapState()) {
     on<InitPharmacyMapEvent>((event, emit) {
-      if (mapScreenType == MapScreenType.order) {
+      Point? defaultPosition;
+
+      if (event.initialCameraPoint != null) {
+        defaultPosition = event.initialCameraPoint;
+      } else if (mapScreenType == MapScreenType.order) {
         if (event.points.isNotEmpty) {
           CustomMapObject? mark = event.points
               .firstWhereOrNull((e) => e.mapObject is PlacemarkMapObject);
           if (mark != null) {
-            emit(state.copyWith(
-                defaultPosition: (mark.mapObject as PlacemarkMapObject).point));
+            defaultPosition = (mark.mapObject as PlacemarkMapObject).point;
           }
         }
       } else if (mapScreenType != MapScreenType.courierDeliveryZones) {
@@ -52,10 +55,14 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
           }
         })();
 
-        emit(state.copyWith(
-            defaultPosition: city != null
-                ? Point(latitude: city.latitude, longitude: city.longitude)
-                : null));
+        if (city != null) {
+          defaultPosition =
+              Point(latitude: city.latitude, longitude: city.longitude);
+        }
+      }
+
+      if (defaultPosition != null) {
+        emit(state.copyWith(defaultPosition: defaultPosition));
       }
       emit(state.copyWith(points: event.points));
 
@@ -163,32 +170,37 @@ class PharmacyMapBloc extends Bloc<PharmacyMapEvent, PharmacyMapState> {
     }
 
     // Создание кластеризованной коллекции маркеров
-    final clusterizedCollection = ClusterizedPlacemarkCollection(
-      mapId: MapObjectId('clusterized_collection'),
-      placemarks: placemarks,
-      radius: 60,
-      minZoom: 15,
-      onClusterAdded:
-          (ClusterizedPlacemarkCollection self, Cluster cluster) async {
-        final clusterIcon = await Utils.createBitmapIcon(count: cluster.size);
-        return cluster.copyWith(
-          appearance: cluster.appearance.copyWith(
-            opacity: 1,
-            icon: PlacemarkIcon.single(
-              PlacemarkIconStyle(image: clusterIcon),
-            ),
-          ),
-        );
-      },
-      onClusterTap: (self, cluster) {
-        add(ZoomInEvent(point: cluster.appearance.point));
-      },
-    );
+    final markers = <MapObject>[...polygons];
+
+    if (placemarks.isNotEmpty) {
+      markers.add(
+        ClusterizedPlacemarkCollection(
+          mapId: MapObjectId('clusterized_collection'),
+          placemarks: placemarks,
+          radius: 60,
+          minZoom: 10,
+          onClusterAdded:
+              (ClusterizedPlacemarkCollection self, Cluster cluster) async {
+            final clusterIcon =
+                await Utils.createBitmapIcon(count: cluster.size);
+            return cluster.copyWith(
+              appearance: cluster.appearance.copyWith(
+                opacity: 1,
+                icon: PlacemarkIcon.single(
+                  PlacemarkIconStyle(image: clusterIcon),
+                ),
+              ),
+            );
+          },
+          onClusterTap: (self, cluster) {
+            add(ZoomInEvent(point: cluster.appearance.point));
+          },
+        ),
+      );
+    }
 
     // ❗ Оптимизация: перезаписываем markers, чтобы не плодились дубликаты
-    emit(state.copyWith(
-      markers: [clusterizedCollection, ...polygons],
-    ));
+    emit(state.copyWith(markers: markers));
 
     stopwatch.stop();
     debugPrint(

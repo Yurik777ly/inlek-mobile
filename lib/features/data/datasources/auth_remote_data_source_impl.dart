@@ -179,10 +179,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       switch (response.statusCode) {
         case 200:
-          final data = json.decode(response.body);
-          return data['data']['code'];
+          final data = json.decode(response.body) as Map<String, dynamic>;
+          final responseData = data['data'];
+          if (responseData is Map<String, dynamic>) {
+            final code = responseData['code'];
+            if (code is int) {
+              return code;
+            }
+            if (code != null) {
+              return int.tryParse(code.toString()) ?? 0;
+            }
+          }
+          return 0;
         case 409:
           throw SendingCodeTooOftenException();
+        case 422:
+          throw InvalidFormatException();
         default:
           throw ServerException();
       }

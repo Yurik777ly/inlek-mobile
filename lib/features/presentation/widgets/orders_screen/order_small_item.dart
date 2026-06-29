@@ -21,7 +21,7 @@ class OrderSmallItem extends StatelessWidget {
       child: GestureDetector(
         onTap: onTapOrder,
         child: Container(
-          height: 103,
+          width: 148,
           padding: getMarginOrPadding(all: 8),
           decoration: BoxDecoration(
             color: UiConstants.whiteColor,
@@ -32,29 +32,36 @@ class OrderSmallItem extends StatelessWidget {
             children: [
               Text(
                 order.typeReceipt?.title ?? '',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: UiConstants.textStyle8.copyWith(
                   color: UiConstants.darkBlueColor.withOpacity(.6),
                 ),
               ),
               Text(
                 'Заказ #${order.orderId}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: UiConstants.textStyle3.copyWith(
                     color: UiConstants.darkBlueColor,
                     fontWeight: FontWeight.w800),
               ),
-              8.ph,
               Text(
                 Utils.formatDate(order.createdAt ?? DateTime.now()),
-                style: UiConstants.textStyle3.copyWith(
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: UiConstants.textStyle8.copyWith(
                   color: UiConstants.darkBlue2Color.withOpacity(.6),
                 ),
               ),
-              8.ph,
+              const Spacer(),
               Row(
                 children: [
                   if (order.status != null)
-                    OrderItemStatusChip(orderStatus: order.status!),
-                  12.pw,
+                    Expanded(
+                      child: OrderItemStatusChip(orderStatus: order.status!),
+                    ),
+                  8.pw,
                   RightArrowButton(height: 22, width: 22),
                 ],
               )

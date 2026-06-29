@@ -158,7 +158,7 @@ class ProductsScreenBloc
           releaseForm: state.selectedReleaseForms.toList(),
           brand: state.selectedManufacturers.toList(),
           country: state.selectedCountries.toList(),
-          delivery: state.isDeliveryPossible == true ? 'true' : null,
+          delivery: state.isDeliveryPossible == true ? '1' : null,
           action: state.isParticipatesInCampaign ? 1 : null,
           recipe: state.isWithoutPrescription == true ? 'false' : null,
           available: state.isAvailable ? 1 : 0,

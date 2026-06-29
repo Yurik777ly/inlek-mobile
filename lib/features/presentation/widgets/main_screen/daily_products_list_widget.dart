@@ -11,7 +11,7 @@ class ProductsListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 285,
+      height: 300,
       child: ListView.separated(
           padding: getMarginOrPadding(left: 20, right: 20),
           scrollDirection: Axis.horizontal,

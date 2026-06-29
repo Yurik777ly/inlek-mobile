@@ -118,40 +118,49 @@ class _AddToCartButton extends StatelessWidget {
         }
       },
       child: Container(
-        height: 44,
-        padding: getMarginOrPadding(left: 20, right: 20, top: 5.5, bottom: 5.5),
+        width: double.infinity,
+        constraints: const BoxConstraints(minHeight: 44),
+        padding: getMarginOrPadding(left: 12, right: 12, top: 4, bottom: 4),
         decoration: BoxDecoration(
           color: UiConstants.purpleColor,
           borderRadius: BorderRadius.circular(40),
         ),
         child: Center(
           child: isLoading
-              ? CircularProgressIndicator(color: UiConstants.pink2Color)
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (product.availableSomewhere == 0)
-                      SvgPicture.asset(Paths.bellIconPath,
-                          color: UiConstants.whiteColor)
-                    else
-                      Text(
-                        'В корзину',
-                        style: UiConstants.textStyle2.copyWith(
-                          color: UiConstants.whiteColor,
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    color: UiConstants.pink2Color,
+                    strokeWidth: 2,
+                  ),
+                )
+              : FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (product.availableSomewhere == 0)
+                        SvgPicture.asset(Paths.bellIconPath,
+                            color: UiConstants.whiteColor)
+                      else
+                        Text(
+                          'В корзину',
+                          style: UiConstants.textStyle2.copyWith(
+                            color: UiConstants.whiteColor,
+                            height: 1.1,
+                          ),
                         ),
-                      ),
-                    if (product.isRecipe == true || product.isAlcohol == true)
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
+                      if (product.isRecipe == true || product.isAlcohol == true)
+                        Text(
                           'Только самовывоз',
                           style: UiConstants.textStyle8.copyWith(
                             color: UiConstants.whiteColor,
-                            height: 1,
+                            height: 1.1,
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
         ),
       ),
@@ -332,8 +341,9 @@ class ProductQuantityChanger extends StatelessWidget {
     return InkWell(
       onTap: () => print('Шкибиди'),
       child: Container(
-        height: 44,
-        padding: getMarginOrPadding(left: 20, right: 20, top: 5.5, bottom: 5.5),
+        width: double.infinity,
+        constraints: const BoxConstraints(minHeight: 44),
+        padding: getMarginOrPadding(left: 12, right: 12, top: 4, bottom: 4),
         decoration: BoxDecoration(
           color: UiConstants.purpleColor,
           borderRadius: BorderRadius.circular(40),
@@ -382,6 +392,7 @@ class ProductQuantityChanger extends StatelessWidget {
               flex: 2,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   FittedBox(
                     fit: BoxFit.scaleDown,

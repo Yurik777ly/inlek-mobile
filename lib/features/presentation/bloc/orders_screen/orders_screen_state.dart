@@ -1,6 +1,8 @@
 part of 'orders_screen_bloc.dart';
 
 class OrdersScreenState extends Equatable {
+  static const Object _unset = Object();
+
   final bool isLoading;
   final String? error;
   final List<OrderEntity> orders;
@@ -12,6 +14,12 @@ class OrdersScreenState extends Equatable {
   final List<String> typesReceiving;
   final Set<int> selectedTypesReceivingIds;
   final Set<OrderStatus> selectedStatuses;
+
+  bool get hasActiveFilters =>
+      query.isNotEmpty ||
+      selectedStatuses.isNotEmpty ||
+      selectedTypesReceivingIds.isNotEmpty ||
+      (startDate != null && endDate != null);
 
   const OrdersScreenState({
     this.isLoading = true,
@@ -29,10 +37,10 @@ class OrdersScreenState extends Equatable {
 
   OrdersScreenState copyWith({
     bool? isLoading,
-    String? error,
+    Object? error = _unset,
     bool? isOnlyActive,
-    DateTime? startDate,
-    DateTime? endDate,
+    Object? startDate = _unset,
+    Object? endDate = _unset,
     String? query,
     List<OrderEntity>? orders,
     List<OrderEntity>? filteredOrders,
@@ -42,10 +50,12 @@ class OrdersScreenState extends Equatable {
   }) {
     return OrdersScreenState(
       isLoading: isLoading ?? this.isLoading,
-      error: error ?? this.error,
+      error: identical(error, _unset) ? this.error : error as String?,
       isOnlyActive: isOnlyActive ?? this.isOnlyActive,
-      startDate: startDate ?? this.startDate,
-      endDate: endDate ?? this.endDate,
+      startDate: identical(startDate, _unset)
+          ? this.startDate
+          : startDate as DateTime?,
+      endDate: identical(endDate, _unset) ? this.endDate : endDate as DateTime?,
       query: query ?? this.query,
       orders: orders ?? this.orders,
       filteredOrders: filteredOrders ?? this.filteredOrders,

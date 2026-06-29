@@ -48,10 +48,31 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        final raw = data['data'];
 
-        List<dynamic> dataList = data['data'];
+        if (raw is! List) {
+          log('Unexpected order history payload: $raw',
+              name: 'OrderRemoteDataSource.getOrderHistory');
+          return [];
+        }
 
-        return dataList.map((e) => OrderModel.fromJson(e)).toList();
+        final orders = <OrderModel>[];
+        for (final item in raw) {
+          if (item is! Map) {
+            continue;
+          }
+
+          try {
+            orders.add(
+              OrderModel.fromJson(Map<String, dynamic>.from(item)),
+            );
+          } catch (parseError) {
+            log('Order history item parse error: $parseError item=$item',
+                level: 1000, name: 'OrderRemoteDataSource.getOrderHistory');
+          }
+        }
+
+        return orders;
       } else {
         throw ServerException();
       }

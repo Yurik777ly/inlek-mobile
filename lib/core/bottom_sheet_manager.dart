@@ -20,6 +20,8 @@ import 'package:inlek/core/params/cart_pharmacies_param.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/core/shared_preferences_keys.dart';
 import 'package:inlek/features/data/models/city_model.dart';
+import 'package:inlek/features/data/models/pharmacy_model.dart';
+import 'package:inlek/features/domain/usecases/content/get_pharmacies.dart';
 import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
 import 'package:inlek/features/domain/entities/order_entity.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
@@ -587,11 +589,15 @@ class BottomSheetManager {
 
   static Future<PaymentType?> showPickOnlinePaymentSheet(
       BuildContext screenContext) async {
+    final cartBloc = screenContext.read<CartScreenBloc>();
+    if (cartBloc.state.paymentType == PaymentType.bepaid) {
+      cartBloc.add(const ChangePaymentTypeEvent(PaymentType.oplati));
+    }
+
     return showModalBottomSheet(
       context: UiConstants.homeContext!,
       builder: (sheetContext) {
         return CustomBottomSheet(
-          //height: 220,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -601,27 +607,6 @@ class BottomSheetManager {
                     .copyWith(color: UiConstants.darkBlueColor),
               ),
               SizedBox(height: 16),
-              OnlinePaymentMethodButton(
-                child: Padding(
-                  padding: getMarginOrPadding(top: 10, bottom: 10),
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(Paths.cardIconPath,
-                          width: 24, height: 24),
-                      SizedBox(width: 8),
-                      Text(
-                        'Картой',
-                        style: UiConstants.textStyle3.copyWith(
-                            color: UiConstants.darkBlueColor,
-                            fontWeight: FontWeight.w800),
-                      ),
-                    ],
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pop(sheetContext, PaymentType.bepaid);
-                },
-              ),
               OnlinePaymentMethodButton(
                 child: SvgPicture.asset(Paths.oplatiIconPath),
                 onTap: () {
@@ -641,6 +626,119 @@ class BottomSheetManager {
     );
   }
 
+  static Future<ym.Point?> _resolveDeliveryMapPoint(
+    CartScreenBloc cartBloc,
+  ) async {
+    final selected = cartBloc.selectedAddress;
+    final selectedLat = selected?.point?.point?.lat;
+    final selectedLon = selected?.point?.point?.lon;
+
+    if (selectedLat != null && selectedLon != null) {
+      return ym.Point(latitude: selectedLat, longitude: selectedLon);
+    }
+
+    if (cartBloc.deliveryMapLatitude != null &&
+        cartBloc.deliveryMapLongitude != null) {
+      return ym.Point(
+        latitude: cartBloc.deliveryMapLatitude!,
+        longitude: cartBloc.deliveryMapLongitude!,
+      );
+    }
+
+    final city = cartBloc.cityController.text.trim();
+    if (city.isEmpty) {
+      return null;
+    }
+
+    final response = await sl<GeocoderManager>().getGeocodeCityInBelarus(city);
+    cartBloc.updateDeliveryMapCenter(response);
+
+    if (response?.firstPoint == null) {
+      return null;
+    }
+
+    return ym.Point(
+      latitude: response!.firstPoint!.lat,
+      longitude: response.firstPoint!.lon,
+    );
+  }
+
+  static CustomMapObject? _selectedAddressMapObject(
+    GeoObject? selectedAddress,
+    DeliveryZoneType deliveryZone,
+  ) {
+    if (selectedAddress?.point?.latitude == null ||
+        selectedAddress?.point?.longitude == null) {
+      return null;
+    }
+
+    return CustomMapObject(
+      mapObject: ym.PlacemarkMapObject(
+        mapId: ym.MapObjectId('213'),
+        point: ym.Point(
+          latitude: selectedAddress!.point!.latitude!,
+          longitude: selectedAddress.point!.longitude!,
+        ),
+      ),
+      data: {
+        'address': selectedAddress
+            .metaDataProperty?.geocoderMetaData?.address?.formatted,
+        'hasError': deliveryZone == DeliveryZoneType.none,
+      },
+    );
+  }
+
+  static List<CustomMapObject> _pharmacyMapObjects(
+    List<PharmacyEntity> pharmacies,
+  ) {
+    return pharmacies
+        .map((pharmacy) {
+          final coords = pharmacy.coordinates.split(', ');
+          if (coords.length < 2) {
+            return null;
+          }
+
+          final latitude = double.tryParse(coords[0]);
+          final longitude = double.tryParse(coords[1]);
+          if (latitude == null || longitude == null) {
+            return null;
+          }
+
+          return CustomMapObject(
+            mapObject: ym.PlacemarkMapObject(
+              mapId: ym.MapObjectId('pharmacy_${pharmacy.pharmacyId}'),
+              point: ym.Point(latitude: latitude, longitude: longitude),
+            ),
+            data: (pharmacy as PharmacyModel).toJson(),
+          );
+        })
+        .whereType<CustomMapObject>()
+        .toList();
+  }
+
+  static Future<List<CustomMapObject>> _buildDeliveryMapPoints({
+    GeoObject? selectedAddress,
+    required DeliveryZoneType deliveryZone,
+  }) async {
+    final points = List<CustomMapObject>.from(
+      sl<CourierZoneManager>().mapObjects,
+    );
+
+    final pharmaciesResult = await sl<GetPharmaciesUC>()('');
+    pharmaciesResult.fold(
+      (_) {},
+      (pharmacies) => points.addAll(_pharmacyMapObjects(pharmacies)),
+    );
+
+    final addressMarker =
+        _selectedAddressMapObject(selectedAddress, deliveryZone);
+    if (addressMarker != null) {
+      points.insert(0, addressMarker);
+    }
+
+    return points;
+  }
+
   static showSelectAddressOnMapSheet(BuildContext screenContext,
       {BuildContext? sheetContext}) async {
     // контроллер для адреса
@@ -658,17 +756,34 @@ class BottomSheetManager {
             ?.metaDataProperty?.geocoderMetaData?.address?.formatted ??
         '';
 
+    final initialMapPoint = await _resolveDeliveryMapPoint(cartScreenBloc);
+    final initialMapPoints = await _buildDeliveryMapPoints(
+      selectedAddress: selectedAddress,
+      deliveryZone: cartScreenBloc.state.deliveryZone,
+    );
+
     Future<GeocodeResponse?> zoomToQueryAddress(
       BuildContext context,
       String query,
     ) async {
+      final city = cartScreenBloc.cityController.text.trim();
+
       if (query.isEmpty) {
-        context.read<PharmacyMapBloc>().add(MoveToCurrentLocationEvent());
+        if (initialMapPoint != null) {
+          context.read<PharmacyMapBloc>().add(
+                MoveToPoint(point: initialMapPoint, zoom: 12),
+              );
+        } else {
+          context.read<PharmacyMapBloc>().add(MoveToCurrentLocationEvent());
+        }
         return null;
       }
 
       final geocoderManager = sl<GeocoderManager>();
-      final response = await geocoderManager.getGeocodeFromAddress(query);
+      final response = await geocoderManager.getGeocodeFromAddress(
+        query,
+        cityContext: city.isNotEmpty ? city : null,
+      );
 
       if (response?.firstAddress == null || response?.firstPoint == null) {
         return response;
@@ -699,6 +814,19 @@ class BottomSheetManager {
       return response;
     }
 
+    Future<void> refreshDeliveryMapMarkers(BuildContext context) async {
+      final points = await _buildDeliveryMapPoints(
+        selectedAddress: selectedAddress,
+        deliveryZone: cartScreenBloc.state.deliveryZone,
+      );
+      if (!context.mounted) {
+        return;
+      }
+      context.read<PharmacyMapBloc>().add(
+            InitPharmacyMapEvent(points: points),
+          );
+    }
+
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
@@ -713,52 +841,24 @@ class BottomSheetManager {
                 sharedPreferences: sl(),
               )..add(
                   InitPharmacyMapEvent(
-                    points: [
-                      if (selectedAddress != null)
-                        CustomMapObject(
-                          mapObject: ym.PlacemarkMapObject(
-                            mapId: ym.MapObjectId("213"),
-                            point: ym.Point(
-                                latitude: selectedAddress!.point!.latitude!,
-                                longitude: selectedAddress!.point!.longitude!),
-                          ),
-                          data: {
-                            'address': selectedAddress?.metaDataProperty
-                                ?.geocoderMetaData?.address?.formatted,
-                            'hasError': cartScreenBloc.state.deliveryZone ==
-                                DeliveryZoneType.none
-                          },
-                        ),
-                      ...sl<CourierZoneManager>().mapObjects
-                    ],
+                    initialCameraPoint: initialMapPoint,
+                    points: initialMapPoints,
                   ),
                 ),
               child: BlocConsumer<CartScreenBloc, CartScreenState>(
                 bloc: cartScreenBloc,
-                listener: (context, state) {
+                listenWhen: (previous, current) =>
+                    previous.deliveryZone != current.deliveryZone,
+                listener: (context, state) async {
+                  final points = await _buildDeliveryMapPoints(
+                    selectedAddress: selectedAddress,
+                    deliveryZone: state.deliveryZone,
+                  );
+                  if (!context.mounted) {
+                    return;
+                  }
                   context.read<PharmacyMapBloc>().add(
-                        InitPharmacyMapEvent(
-                          points: [
-                            if (selectedAddress != null)
-                              CustomMapObject(
-                                  mapObject: ym.PlacemarkMapObject(
-                                    mapId: ym.MapObjectId("213"),
-                                    point: ym.Point(
-                                        latitude:
-                                            selectedAddress!.point!.latitude!,
-                                        longitude:
-                                            selectedAddress!.point!.longitude!),
-                                  ),
-                                  data: {
-                                    'address': selectedAddress?.metaDataProperty
-                                        ?.geocoderMetaData?.address?.formatted,
-                                    'hasError':
-                                        cartScreenBloc.state.deliveryZone ==
-                                            DeliveryZoneType.none
-                                  }),
-                            ...sl<CourierZoneManager>().mapObjects
-                          ],
-                        ),
+                        InitPharmacyMapEvent(points: points),
                       );
                 },
                 builder: (context, state) {
@@ -804,10 +904,34 @@ class BottomSheetManager {
                                               () async {
                                         final geocoderManager =
                                             sl<GeocoderManager>();
+                                        final explicitCity = geocoderManager
+                                            .extractCityFromAddressQuery(query);
+                                        if (explicitCity != null &&
+                                            explicitCity !=
+                                                cartScreenBloc
+                                                    .cityController.text
+                                                    .trim()) {
+                                          cartScreenBloc.cityController.text =
+                                              explicitCity;
+                                          cartScreenBloc.updateDeliveryMapCenter(
+                                            await geocoderManager
+                                                .getGeocodeCityInBelarus(
+                                              explicitCity,
+                                            ),
+                                          );
+                                        }
+
+                                        final city =
+                                            cartScreenBloc.cityController.text
+                                                .trim();
 
                                         List<String> addresses =
                                             await geocoderManager
-                                                .getAddressSuggestions(query);
+                                                .getAddressSuggestions(
+                                          query,
+                                          cityContext:
+                                              city.isNotEmpty ? city : null,
+                                        );
 
                                         if (addresses.isNotEmpty &&
                                             context.mounted) {
@@ -847,14 +971,34 @@ class BottomSheetManager {
                                             DeliveryAddressHelper
                                                 .geoObjectFromResponse(response);
                                       });
+                                      await refreshDeliveryMapMarkers(context);
                                     },
                                     onChangeField: (p0) {
+                                      final explicitCity = sl<GeocoderManager>()
+                                          .extractCityFromAddressQuery(p0);
+                                      if (explicitCity != null &&
+                                          explicitCity !=
+                                              cartScreenBloc
+                                                  .cityController.text
+                                                  .trim()) {
+                                        cartScreenBloc.cityController.text =
+                                            explicitCity;
+                                        sl<GeocoderManager>()
+                                            .getGeocodeCityInBelarus(
+                                                explicitCity)
+                                            .then(
+                                          cartScreenBloc
+                                              .updateDeliveryMapCenter,
+                                        );
+                                      }
+
                                       setState(
                                         () {
                                           cartScreenBloc.selectedAddress = null;
                                           selectedAddress = null;
                                         },
                                       );
+                                      refreshDeliveryMapMarkers(context);
                                     },
                                   ),
                                 ),
@@ -889,6 +1033,7 @@ class BottomSheetManager {
                                             DeliveryAddressHelper
                                                 .geoObjectFromResponse(response);
                                       });
+                                      await refreshDeliveryMapMarkers(context);
                                     }
                                   },
                                 ),
@@ -1648,8 +1793,7 @@ class BottomSheetManager {
                     AppButtonWidget(
                       text: 'Показать результаты',
                       onTap: () {
-                        productsScreenBloc.add(ChangeProductSortTypeEvent());
-
+                        productsScreenBloc.add(const LoadProductsEvent(page: 1));
                         Navigator.pop(context);
                       },
                     )
@@ -1860,6 +2004,8 @@ class BottomSheetManager {
     DateTime? startDate =
         state.startDate ?? DateTime(DateTime.now().year, 1, 1);
     DateTime? endDate = state.endDate ?? DateTime(DateTime.now().year, 12, 31);
+    bool dateFilterEnabled =
+        state.startDate != null && state.endDate != null;
 
     DateFormat format = DateFormat('dd / MM / yyyy');
     TextEditingController startDateController =
@@ -1895,6 +2041,7 @@ class BottomSheetManager {
                   .tryParse(startDateController.text);
               endDate =
                   DateFormat('dd / MM / yyyy').tryParse(endDateController.text);
+              dateFilterEnabled = true;
 
               bool isValid = startDate != null &&
                   endDate != null &&
@@ -2047,8 +2194,11 @@ class BottomSheetManager {
                                       selectedTypesReceivingIds:
                                           selectedTypesReceivingIds,
                                       selectedStatuses: selectedStatuses,
-                                      startDate: startDate,
-                                      endDate: endDate),
+                                      startDate: dateFilterEnabled
+                                          ? startDate
+                                          : null,
+                                      endDate:
+                                          dateFilterEnabled ? endDate : null),
                                 );
                                 Navigator.pop(context);
                               }

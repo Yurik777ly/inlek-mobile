@@ -7,7 +7,6 @@ import 'package:inlek/features/domain/entities/order_entity.dart';
 import 'package:inlek/features/presentation/widgets/orders_screen/order_item_products_list.dart';
 import 'package:inlek/features/presentation/widgets/orders_screen/order_item_status_chip.dart';
 import 'package:inlek/features/presentation/widgets/right_arrow_button.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class OrderItem extends StatelessWidget {
   final VoidCallback onTapOrder;
@@ -17,23 +16,24 @@ class OrderItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Skeleton.ignorePointer(
-      child: GestureDetector(
-        onTap: onTapOrder,
-        child: Container(
-          padding: getMarginOrPadding(all: 8),
-          decoration: BoxDecoration(
-            color: UiConstants.whiteColor,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
+    return GestureDetector(
+      onTap: onTapOrder,
+      child: Container(
+        padding: getMarginOrPadding(all: 8),
+        decoration: BoxDecoration(
+          color: UiConstants.whiteColor,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -43,7 +43,7 @@ class OrderItem extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Заказ #${order.orderId}',
+                        'Заказ #${order.orderId ?? '-'}',
                         style: UiConstants.textStyle3.copyWith(
                             color: UiConstants.darkBlueColor,
                             fontWeight: FontWeight.w800),
@@ -60,13 +60,13 @@ class OrderItem extends StatelessWidget {
                         OrderItemStatusChip(orderStatus: order.status!)
                     ],
                   ),
-                  RightArrowButton(),
-                ],
-              ),
-              SizedBox(height: 8),
-              OrderItemProductsList(orderProducts: order.products ?? [])
-            ],
-          ),
+                ),
+                RightArrowButton(),
+              ],
+            ),
+            SizedBox(height: 8),
+            OrderItemProductsList(orderProducts: order.products ?? [])
+          ],
         ),
       ),
     );

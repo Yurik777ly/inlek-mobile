@@ -82,11 +82,16 @@ class PharmaciesCartScreenBloc
   void _filterAndEmit(Emitter<PharmaciesCartScreenState> emit) {
     final filteredPharmacies = _filterPharmacies(
         state.pharmacies, state.query, state.pharmacySortType);
+    final mapPharmacies = _filterPharmacies(
+      state.pharmacies,
+      '',
+      state.pharmacySortType,
+    );
 
     emit(
       state.copyWith(
         filteredPharmacies: filteredPharmacies,
-        mapObjects: _generateMapObjects(filteredPharmacies),
+        mapObjects: _generateMapObjects(mapPharmacies),
       ),
     );
   }

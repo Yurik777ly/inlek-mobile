@@ -107,38 +107,33 @@ class CustomAppBar extends StatelessWidget {
                     ),
                   ),
                 Expanded(
-                  child: Skeleton.ignorePointer(
-                    child: Skeleton.shade(
-                      child: AppTextFieldWidget(
-                          hintText: hintText ?? 'Искать препараты',
-                          fillColor: UiConstants.white2Color,
-                          controller: controller ?? TextEditingController(),
-                          prefixWidget: Skeleton.ignore(
-                            child: SvgPicture.asset(Paths.searchIconPath),
-                          ),
-                          suffixWidget: controller!.text.isNotEmpty
-                              ? Skeleton.ignore(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      controller?.clear();
-                                      onChangedField?.call("");
-                                    },
-                                    child:
-                                        SvgPicture.asset(Paths.closeIconPath),
-                                  ),
-                                )
-                              : null,
-                          onChangedField: onChangedField,
-                          onTap: onTapField),
-                    ),
+                  child: Skeleton.shade(
+                    child: AppTextFieldWidget(
+                        hintText: hintText ?? 'Искать препараты',
+                        fillColor: UiConstants.white2Color,
+                        controller: controller ?? TextEditingController(),
+                        prefixWidget: Skeleton.ignore(
+                          child: SvgPicture.asset(Paths.searchIconPath),
+                        ),
+                        suffixWidget: controller!.text.isNotEmpty
+                            ? Skeleton.ignore(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    controller?.clear();
+                                    onChangedField?.call("");
+                                  },
+                                  child: SvgPicture.asset(Paths.closeIconPath),
+                                ),
+                              )
+                            : null,
+                        onChangedField: onChangedField,
+                        onTap: onTapField),
                   ),
                 ),
                 if (isShowFilterButton)
                   Padding(
                     padding: getMarginOrPadding(left: 8),
-                    child: Skeleton.ignorePointer(
-                      child: FilterButton(onTap: onTapFilterButton),
-                    ),
+                    child: FilterButton(onTap: onTapFilterButton),
                   )
               ],
             ),

@@ -6,20 +6,27 @@ import 'package:inlek/features/presentation/widgets/sales_screen/sales_list_item
 class SalesHorizontalListWidget extends StatelessWidget {
   const SalesHorizontalListWidget({super.key, required this.actions});
 
+  static const double cardHeight = 248;
+
   final List<ActionEntity> actions;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 235,
+      height: cardHeight,
       child: actions.length == 1
-          ? SalesListItem(action: actions.first, isOneElementInList: true)
+          ? SalesListItem(
+              action: actions.first,
+              isOneElementInList: true,
+              height: cardHeight,
+            )
           : ListView.separated(
               padding: getMarginOrPadding(left: 20, right: 20),
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) => SalesListItem(
-                    action: actions[index],
-                  ),
+                action: actions[index],
+                height: cardHeight,
+              ),
               separatorBuilder: (context, index) => SizedBox(width: 8),
               itemCount: actions.length),
     );

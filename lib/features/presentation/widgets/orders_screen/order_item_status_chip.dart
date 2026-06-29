@@ -30,10 +30,14 @@ class OrderItemStatusChip extends StatelessWidget {
             ),
           ),
           SizedBox(width: 4),
-          Text(
-            Utils.getRussianOrderStatus(orderStatus),
-            style: UiConstants.textStyle6.copyWith(
-              color: UiConstants.darkBlue2Color.withOpacity(.8),
+          Flexible(
+            child: Text(
+              Utils.getRussianOrderStatus(orderStatus),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: UiConstants.textStyle6.copyWith(
+                color: UiConstants.darkBlue2Color.withOpacity(.8),
+              ),
             ),
           ),
         ],

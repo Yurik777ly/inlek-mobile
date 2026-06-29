@@ -36,8 +36,8 @@ class DeliveryAddressBlock extends StatefulWidget {
 }
 
 class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
-  // таймер для задержки по обратному геокодированию
   Timer? debounce;
+  Timer? cityDebounce;
 
   // Стейт для отслеживания выбранного адреса
   List<GeoObject?> suggestionObjects = [];
@@ -58,7 +58,61 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
     streetFocusNode.removeListener(_onStreetFocusChange);
     streetFocusNode.dispose();
     debounce?.cancel();
+    cityDebounce?.cancel();
     super.dispose();
+  }
+
+  Future<void> _syncCityFromAddressQuery(String query) async {
+    final explicitCity =
+        sl<GeocoderManager>().extractCityFromAddressQuery(query);
+    if (explicitCity == null) {
+      return;
+    }
+
+    final cartBloc = widget.screenContext.read<CartScreenBloc>();
+    final currentCity = cartBloc.cityController.text.trim();
+    if (currentCity.toLowerCase() == explicitCity.toLowerCase()) {
+      return;
+    }
+
+    cartBloc.cityController.text = explicitCity;
+    await _geocodeCityAndUpdateMap(explicitCity);
+  }
+
+  Future<void> _geocodeCityAndUpdateMap(String city) async {
+    final normalized = city.trim();
+    if (normalized.length < 2) {
+      return;
+    }
+
+    final response =
+        await sl<GeocoderManager>().getGeocodeCityInBelarus(normalized);
+    if (!mounted) {
+      return;
+    }
+
+    widget.screenContext.read<CartScreenBloc>().updateDeliveryMapCenter(response);
+  }
+
+  void _onCityChanged(String value) {
+    final cartBloc = widget.screenContext.read<CartScreenBloc>();
+
+    setState(() {
+      cartBloc.selectedAddress = null;
+      selectedAddress = null;
+      cartBloc.clearDeliveryMapCenter();
+      cartBloc.streetHomeController.clear();
+      cartBloc.add(UpdateDeliveryPriceEvent());
+    });
+
+    cityDebounce?.cancel();
+    if (value.trim().length < 2) {
+      return;
+    }
+
+    cityDebounce = Timer(const Duration(milliseconds: 750), () {
+      _geocodeCityAndUpdateMap(value);
+    });
   }
 
   void _onStreetFocusChange() {
@@ -119,7 +173,8 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                     onTapActionTitle: widget.onPickAddressOnMap,
                     hintText: 'Укажите город',
                     controller: cartBloc.cityController,
-                    validator: Utils.validate),
+                    validator: Utils.validate,
+                    onChangedField: _onCityChanged),
               ),
               SizedBox(height: 24),
               OptimizedFormField(
@@ -153,10 +208,16 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
 
                     final completer = Completer<List<String>>();
                     debounce = Timer(Duration(milliseconds: 750), () async {
+                      await _syncCityFromAddressQuery(query);
+
                       final geocoderManager = sl<GeocoderManager>();
+                      final city = cartBloc.cityController.text.trim();
 
                       List<String> addresses =
-                          await geocoderManager.getAddressSuggestions(query);
+                          await geocoderManager.getAddressSuggestions(
+                        query,
+                        cityContext: city.isNotEmpty ? city : null,
+                      );
 
                       setState(() {});
 
@@ -172,8 +233,11 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                     );
 
                     final geocoderManager = sl<GeocoderManager>();
-                    final response =
-                        await geocoderManager.getGeocodeFromAddress(p0);
+                    final city = cartBloc.cityController.text.trim();
+                    final response = await geocoderManager.getGeocodeFromAddress(
+                      p0,
+                      cityContext: city.isNotEmpty ? city : null,
+                    );
 
                     if (!mounted) {
                       return;
@@ -190,6 +254,7 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                     });
                   },
                   onChangeField: (p0) {
+                    _syncCityFromAddressQuery(p0);
                     setState(
                       () {
                         cartBloc.selectedAddress = null;
