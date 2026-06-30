@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/constants/enums.dart';
+import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/models/custom_marker_model.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
 import 'package:inlek/features/domain/entities/product_entity.dart';
@@ -45,42 +46,51 @@ class PharmaciesScreenBloc
     });
 
     on<ChangePharmacySortTypeEvent>((event, emit) {
-      emit(state.copyWith(pharmacySortType: event.pharmacySortType));
-      _filterAndEmit(emit);
+      _applyFilters(
+        emit,
+        state.copyWith(pharmacySortType: event.pharmacySortType),
+      );
     });
 
     on<ChangePharmacyQueryEvent>((event, emit) {
-      emit(state.copyWith(query: event.query));
-      _filterAndEmit(emit);
+      _applyFilters(emit, state.copyWith(query: event.query));
     });
   }
 
-  void _filterAndEmit(Emitter<PharmaciesScreenState> emit) {
-    final filteredPharmacies = _filterPharmacies(
-        state.pharmacies, state.query, state.pharmacySortType);
+  void _applyFilters(
+    Emitter<PharmaciesScreenState> emit,
+    PharmaciesScreenState nextState,
+  ) {
+    final filteredPharmacies = _filterPharmacies(nextState);
 
     emit(
-      state.copyWith(
+      nextState.copyWith(
         filteredPharmacies: filteredPharmacies,
         mapObjects: _generateMapObjects(filteredPharmacies),
       ),
     );
   }
 
-  List<PharmacyEntity> _filterPharmacies(
-      List<PharmacyEntity> pharmacies, String query, TypeReceiving sortType) {
-    final lowerQuery = query.toLowerCase();
+  bool _matchesReceivingType(PharmacyEntity pharmacy, TypeReceiving sortType) {
+    switch (sortType) {
+      case TypeReceiving.all:
+        return true;
+      case TypeReceiving.pickup:
+        return pharmacy.pharmacyId != UiConstants.deliveryPharmacyId;
+      case TypeReceiving.delivery:
+        return pharmacy.pharmacyId == UiConstants.deliveryPharmacyId;
+    }
+  }
 
-    return pharmacies.where((e) {
-      final hasEnoughQuery = lowerQuery.length <
-              3 || // фильтрация по названию включается с 3 символов
-          (e.address).toLowerCase().contains(lowerQuery);
+  List<PharmacyEntity> _filterPharmacies(PharmaciesScreenState filterState) {
+    final lowerQuery = filterState.query.toLowerCase();
 
-      final isMatchingSortType = sortType == TypeReceiving.all ||
-          e.pharmacyDelivery ==
-              (sortType == TypeReceiving.delivery ? 'Доставка' : 'Самовывоз');
+    return filterState.pharmacies.where((pharmacy) {
+      final hasEnoughQuery = lowerQuery.length < 3 ||
+          pharmacy.address.toLowerCase().contains(lowerQuery);
 
-      return hasEnoughQuery && isMatchingSortType;
+      return hasEnoughQuery &&
+          _matchesReceivingType(pharmacy, filterState.pharmacySortType);
     }).toList();
   }
 

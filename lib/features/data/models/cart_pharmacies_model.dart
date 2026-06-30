@@ -1,3 +1,4 @@
+import 'package:inlek/constants/pharmacy_utils.dart';
 import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
 
 class CartPharmaciesProductModel extends CartPharmaciesProductEntity {
@@ -61,7 +62,7 @@ class CartPharmacyModel extends CartPharmacyEntity {
         pharmacyName: json['pharmacy_name'],
         address: json['address'],
         coordinates: json['coordinates'],
-        schedule: json['schedule'],
+        schedule: PharmacyUtils.normalizeSchedule(json['schedule']),
         distanceMeters: (json['distance_meters'] == null)
             ? 0
             : (json['distance_meters'] is double)

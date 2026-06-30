@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/core/connection_status_singlton.dart';
+import 'package:inlek/core/notification_manager.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/pages/cart/cart_screen.dart';
 import 'package:inlek/features/presentation/pages/catalog/catalog_screen.dart';
@@ -64,9 +65,9 @@ Future main() async {
         options: DefaultFirebaseOptions.currentPlatform,
       );
     }
+    await NotificationManager.bootstrap();
   } catch (e) {
-    // если уже инициализирован — просто игнор
-    debugPrint('Firebase already initialized: $e');
+    debugPrint('Firebase/push bootstrap failed: $e');
   }
 
   ConnectionStatusSingleton.getInstance().initialize();

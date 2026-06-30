@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inlek/app_route_observer.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
-import 'package:inlek/core/fcm_token_manager.dart';
 import 'package:inlek/core/notification_manager.dart';
 import 'package:inlek/core/routes.dart';
 import 'package:inlek/features/presentation/bloc/cart_screen/cart_screen_bloc.dart';
@@ -46,10 +45,6 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback(
       (_) async {
         await NotificationManager.setupAllPushHandlers();
-
-        if (FCMTokenManager.instance.needsServerUpdate()) {
-          await FCMTokenManager.instance.forceSendToServer();
-        }
 
         // регистрация диплинков
         _handleInitialUri();

@@ -12,15 +12,23 @@ class CityModel extends CityEntity {
   });
 
   factory CityModel.fromJson(Map<String, dynamic> json) => CityModel(
-        id: json['id'],
-        pagetitle: json['pagetitle'],
-        alias: json['alias'],
-        published: json['published'] == 1,
-        latitude: (json['latitude'] as num).toDouble(),
-        longitude: (json['longitude'] as num).toDouble(),
+        id: json['id'] as int,
+        pagetitle: json['pagetitle']?.toString() ?? '',
+        alias: json['alias']?.toString() ?? '',
+        published: json['published'] == 1 || json['published'] == true,
+        latitude: _parseCoordinate(json['latitude']),
+        longitude: _parseCoordinate(json['longitude']),
         isDeliveryAvailable: json['is_delivery_available'] == true ||
             json['is_delivery_available'] == 1,
       );
+
+  static double _parseCoordinate(dynamic value) {
+    if (value is num) {
+      return value.toDouble();
+    }
+
+    return 0;
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,

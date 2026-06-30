@@ -66,6 +66,10 @@ class FCMTokenManager {
 
       _currentToken = await FirebaseMessaging.instance.getToken();
       debugPrint('Current FCM Token: $_currentToken');
+      if (_currentToken != null) {
+        await _saveTokenToStorage(_currentToken!);
+        await _syncTokenWithServerIfAuthenticated(_currentToken!);
+      }
       return _currentToken;
     } catch (e) {
       debugPrint('Error getting FCM token: $e');
@@ -98,6 +102,25 @@ class FCMTokenManager {
       debugPrint('FCM Token saved to storage');
     } catch (e) {
       debugPrint('Error saving FCM token to storage: $e');
+    }
+  }
+
+  /// Отправка токена на сервер, если пользователь авторизован
+  Future<void> _syncTokenWithServerIfAuthenticated(String token) async {
+    if (_lastSentToken == token) {
+      return;
+    }
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final accessToken = prefs.getString(SharedPreferencesKeys.accessToken);
+      if (accessToken == null || accessToken.isEmpty) {
+        return;
+      }
+
+      await _sendTokenToServer(token);
+    } catch (e) {
+      debugPrint('Error syncing FCM token with server: $e');
     }
   }
 

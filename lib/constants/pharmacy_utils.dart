@@ -1,6 +1,7 @@
+import 'dart:convert';
+
 class PharmacyUtils {
-  static // Функция для парсинга диапазона дней
-      List<int> _parseDaysRange(String daysRange) {
+  static List<int> _parseDaysRange(String daysRange) {
     final daysMap = {
       'ПН': 1,
       'ВТ': 2,
@@ -11,27 +12,32 @@ class PharmacyUtils {
       'ВС': 7,
     };
 
-    if (daysRange.contains('-')) {
-      final parts = daysRange.split('-');
+    final normalized = daysRange.trim().toUpperCase();
+
+    if (normalized.contains('-')) {
+      final parts = normalized.split('-');
       if (parts.length == 2 &&
-          daysMap.containsKey(parts[0]) &&
-          daysMap.containsKey(parts[1])) {
-        final start = daysMap[parts[0]]!;
-        final end = daysMap[parts[1]]!;
+          daysMap.containsKey(parts[0].trim()) &&
+          daysMap.containsKey(parts[1].trim())) {
+        final start = daysMap[parts[0].trim()]!;
+        final end = daysMap[parts[1].trim()]!;
         return List.generate(end - start + 1, (index) => start + index);
       }
-    } else if (daysRange.contains(',')) {
-      return daysRange.split(',').map((d) => daysMap[d]!).toList();
-    } else if (daysMap.containsKey(daysRange)) {
-      return [daysMap[daysRange]!];
+    } else if (normalized.contains(',')) {
+      return normalized
+          .split(',')
+          .map((d) => daysMap[d.trim()])
+          .whereType<int>()
+          .toList();
+    } else if (daysMap.containsKey(normalized)) {
+      return [daysMap[normalized]!];
     }
 
     return [];
   }
 
-  // Функция для парсинга диапазона часов
   static List<int>? _parseHoursRange(String hoursRange) {
-    final parts = hoursRange.split('-');
+    final parts = hoursRange.trim().split('-');
     if (parts.length == 2) {
       final start = _parseTimeToMinutes(parts[0]);
       final end = _parseTimeToMinutes(parts[1]);
@@ -40,9 +46,8 @@ class PharmacyUtils {
     return null;
   }
 
-// Функция для перевода времени в минуты
   static int? _parseTimeToMinutes(String time) {
-    final parts = time.split(':');
+    final parts = time.trim().split(':');
     if (parts.length == 2) {
       final hours = int.tryParse(parts[0]);
       final minutes = int.tryParse(parts[1]);
@@ -53,32 +58,70 @@ class PharmacyUtils {
     return null;
   }
 
-  static bool isPharmacyOpen(String schedule) {
+  static String normalizeSchedule(dynamic schedule) {
+    if (schedule == null) {
+      return '';
+    }
+
+    if (schedule is String) {
+      final trimmed = schedule.trim();
+      if (trimmed.isEmpty) {
+        return '';
+      }
+
+      if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+        try {
+          final decoded = jsonDecode(trimmed);
+          if (decoded is String) {
+            return decoded.trim();
+          }
+        } catch (_) {}
+      }
+
+      return trimmed;
+    }
+
+    return schedule.toString().trim();
+  }
+
+  static bool isPharmacyOpen(dynamic schedule) {
+    final normalizedSchedule = normalizeSchedule(schedule);
+    if (normalizedSchedule.isEmpty) {
+      return false;
+    }
+
     final now = DateTime.now();
-    final currentDay = now.weekday; // 1 = ПН, ..., 7 = ВС
-    final currentTime = now.hour * 60 + now.minute; // Время в минутах
+    final currentDay = now.weekday;
+    final currentTime = now.hour * 60 + now.minute;
 
     final Map<int, List<int>> workHours = {};
+    final lines = normalizedSchedule.split(RegExp(r'\r?\n'));
 
-    // Разбиваем расписание по \r\n
-    final lines = schedule.split('\r\n');
-    for (var line in lines) {
-      final parts = line.split(': ');
-      if (parts.length != 2) continue;
+    for (final rawLine in lines) {
+      final line = rawLine.trim();
+      if (line.isEmpty) {
+        continue;
+      }
 
-      final daysRange = parts[0]; // Например, "ПН-ПТ"
-      final hoursRange = parts[1]; // Например, "08:00-21:00"
+      final colonIndex = line.indexOf(':');
+      if (colonIndex == -1) {
+        continue;
+      }
+
+      final daysRange = line.substring(0, colonIndex).trim();
+      final hoursRange = line.substring(colonIndex + 1).trim();
 
       final days = _parseDaysRange(daysRange);
       final hours = _parseHoursRange(hoursRange);
-      if (hours == null) continue;
+      if (hours == null || days.isEmpty) {
+        continue;
+      }
 
-      for (var day in days) {
+      for (final day in days) {
         workHours[day] = hours;
       }
     }
 
-    // Проверяем, есть ли у текущего дня рабочие часы
     if (workHours.containsKey(currentDay)) {
       final hours = workHours[currentDay]!;
       return currentTime >= hours[0] && currentTime <= hours[1];

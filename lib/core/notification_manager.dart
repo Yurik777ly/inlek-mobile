@@ -12,19 +12,41 @@ import 'package:inlek/features/domain/usecases/auth/update_fcm_token.dart';
 import 'package:inlek/firebase_options.dart';
 import 'package:inlek/locator_service.dart';
 
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  debugPrint('firebaseMessagingBackgroundHandler: ${message.data}');
+  await NotificationManager.initNotifications();
+  await NotificationManager.showFlutterNotification(message);
+}
+
 class NotificationManager {
   static final FlutterLocalNotificationsPlugin
       _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   static late AndroidNotificationChannel channel;
   static bool isFlutterLocalNotificationsInitialized = false;
 
+  static void registerBackgroundHandler() {
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  }
+
+  static Future<void> bootstrap() async {
+    registerBackgroundHandler();
+    await _requestNotificationPermissions();
+    await initNotifications();
+    await FCMTokenManager.instance.initialize(
+      updateFCMTokenUC: sl<UpdateFCMTokenUC>(),
+    );
+  }
+
   static StreamSubscription<RemoteMessage>? _messageSubscription;
   static Function(String?)? _onNotificationClick;
 
   static Future<void> initNotifications(
       {Function(String?)? handleNotificationClick}) async {
-    _onNotificationClick = handleNotificationClick;
-    _requestNotificationPermissions();
+    if (handleNotificationClick != null) {
+      _onNotificationClick = handleNotificationClick;
+    }
     if (isFlutterLocalNotificationsInitialized) return;
 
     channel = const AndroidNotificationChannel(
@@ -90,8 +112,7 @@ class NotificationManager {
         enableVibration: true,
         icon: 'ic_notification',
         color: UiConstants.pink2Color,
-        ongoing: true,
-        setAsGroupSummary: true);
+      );
 
     const iOSDetails = DarwinNotificationDetails(
       presentSound: true,
@@ -115,6 +136,13 @@ class NotificationManager {
   }
 
   static Future<void> _requestNotificationPermissions() async {
+    if (Platform.isAndroid) {
+      final androidPlugin = _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+      await androidPlugin?.requestNotificationsPermission();
+    }
+
     final messaging = FirebaseMessaging.instance;
 
     NotificationSettings settings = await messaging.requestPermission(
@@ -148,24 +176,10 @@ class NotificationManager {
     _onNotificationClick = onPushNavigate;
     await initNotifications(handleNotificationClick: _onNotificationClick);
     await connectToForegroundMessages();
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     await handleInitialMessage(onInitialMessage: _onNotificationClick);
 
-    // Инициализируем FCM Token Manager
-    await FCMTokenManager.instance.initialize(
-      onTokenUpdate: (newToken) {
-        debugPrint('🔄 FCM Token updated in NotificationManager: $newToken');
-        // Здесь можно добавить дополнительную логику при обновлении токена
-      },
-      updateFCMTokenUC: sl<UpdateFCMTokenUC>(),
-    );
+    if (FCMTokenManager.instance.needsServerUpdate()) {
+      await FCMTokenManager.instance.forceSendToServer();
+    }
   }
-}
-
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  debugPrint('_firebaseMessagingBackgroundHandler');
-  debugPrint('_firebaseMessagingBackgroundHandler: ${message.data}');
-  //await NotificationManager.showFlutterNotification(message);
 }

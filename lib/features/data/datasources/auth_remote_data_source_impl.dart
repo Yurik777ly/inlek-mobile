@@ -126,7 +126,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     log('Request body: ${jsonEncode({
           'phone': phone,
           'code': code,
-          'fcmToken': fcmToken
+          'fcm_token': fcmToken,
         })}');
 
     try {
@@ -136,7 +136,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: jsonEncode({'phone': phone, 'code': code}),
+        body: jsonEncode({
+          'phone': phone,
+          'code': code,
+          if (fcmToken != null) 'fcm_token': fcmToken,
+        }),
       );
 
       log('Response ($url): ${response.statusCode} ${response.body}');
@@ -172,7 +176,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: jsonEncode({'phone': phone}),
+        body: jsonEncode({
+          'phone': phone,
+          if (fcmToken != null) 'fcm_token': fcmToken,
+        }),
       );
 
       log('Response ($url): ${response.statusCode} ${response.body}');

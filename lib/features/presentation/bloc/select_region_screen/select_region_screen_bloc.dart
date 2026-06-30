@@ -60,6 +60,72 @@ class SelectRegionScreenBloc
     );
   }
 
+  CityEntity? _findCityByGeocodeName(String name, List<CityEntity> cities) {
+    final exactMatch = _findCityByInput(name, cities);
+    if (exactMatch != null) {
+      return exactMatch;
+    }
+
+    final normalized = _normalizeCityName(name);
+    if (normalized.isEmpty) {
+      return null;
+    }
+
+    return cities.firstWhereOrNull((city) {
+      final cityName = _normalizeCityName(city.pagetitle);
+      return cityName.contains(normalized) || normalized.contains(cityName);
+    });
+  }
+
+  String? _extractCityNameFromGeocode(GeocodeResponse? response) {
+    final geoObject = response
+        ?.response?.geoObjectCollection?.featureMember?.firstOrNull?.geoObject;
+    if (geoObject == null) {
+      return null;
+    }
+
+    final components =
+        geoObject.metaDataProperty?.geocoderMetaData?.address?.components ?? [];
+
+    for (final kind in [
+      KindResponse.locality,
+      KindResponse.district,
+      KindResponse.area,
+    ]) {
+      final name = components.firstWhereOrNull((c) => c.kind == kind)?.name;
+      if (name != null && name.isNotEmpty) {
+        return name;
+      }
+    }
+
+    final formatted =
+        geoObject.metaDataProperty?.geocoderMetaData?.address?.formatted;
+    if (formatted != null && formatted.isNotEmpty) {
+      return formatted.split(',').first.trim();
+    }
+
+    return null;
+  }
+
+  void _applyDetectedCity(
+    Emitter<SelectRegionScreenState> emit,
+    String cityName,
+  ) {
+    final matchedCity = _findCityByGeocodeName(cityName, state.popularCities);
+    if (matchedCity != null) {
+      regionController.text = matchedCity.pagetitle;
+      emit(state.copyWith(
+        detectedCity: matchedCity.pagetitle,
+        selectedRegion: matchedCity,
+        isButtonActive: true,
+        showError: false,
+      ));
+      return;
+    }
+
+    emit(state.copyWith(detectedCity: cityName));
+  }
+
   bool _isPrefixOfKnownCity(String input, List<CityEntity> cities) {
     final normalized = _normalizeCityName(input);
     if (normalized.isEmpty) {
@@ -75,54 +141,17 @@ class SelectRegionScreenBloc
       Emitter<SelectRegionScreenState> emit) async {
     final position = await LocationManager.determinePosition();
     if (position == null) {
-      emit(state.copyWith(detectedCity: null));
+      _applyDetectedCity(emit, 'Минск');
       return;
     }
+
     final geocoderManager = sl<GeocoderManager>();
     final response = await geocoderManager.getGeocodeFromPoint(
-        position.latitude, position.longitude);
-    final geoObject =
-        response?.response?.geoObjectCollection?.featureMember?.first.geoObject;
-    String? city;
-    try {
-      final components =
-          geoObject?.metaDataProperty?.geocoderMetaData?.address?.components;
-      city = null;
-      if (components != null) {
-        for (final c in components) {
-          if (c.kind == KindResponse.locality) {
-            city = c.name;
-            break;
-          }
-        }
-        if (city == null) {
-          for (final c in components) {
-            if (c.kind == KindResponse.area) {
-              city = c.name;
-              break;
-            }
-          }
-        }
-      }
-    } catch (_) {
-      city = null;
-    }
-    if (city == null) {
-      city = 'Минск';
-    }
-
-    final matchedCity = _findCityByInput(city, state.popularCities);
-    if (matchedCity != null) {
-      regionController.text = matchedCity.pagetitle;
-      emit(state.copyWith(
-        detectedCity: city,
-        selectedRegion: matchedCity,
-        isButtonActive: true,
-        showError: false,
-      ));
-    } else {
-      emit(state.copyWith(detectedCity: city));
-    }
+      position.latitude,
+      position.longitude,
+    );
+    final city = _extractCityNameFromGeocode(response) ?? 'Минск';
+    _applyDetectedCity(emit, city);
   }
 
   void _onLoadData(
@@ -132,7 +161,9 @@ class SelectRegionScreenBloc
     failureOrLoads.fold(
       (_) => emit(state.copyWith(showError: false)),
       (cities) {
-        emit(state.copyWith(showError: false, popularCities: cities));
+        final publishedCities =
+            cities.where((city) => city.published).toList();
+        emit(state.copyWith(showError: false, popularCities: publishedCities));
         add(DetectCurrentCityEvent());
       },
     );

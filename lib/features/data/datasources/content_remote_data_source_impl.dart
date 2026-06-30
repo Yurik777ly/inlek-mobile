@@ -343,8 +343,30 @@ class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
-        List<dynamic> dataList = data['data'];
-        return dataList.map((e) => CityModel.fromJson(e)).toList();
+        final List<dynamic> dataList = data['data'];
+
+        final cities = <CityModel>[];
+        for (final item in dataList) {
+          if (item is! Map) {
+            continue;
+          }
+
+          final map = Map<String, dynamic>.from(item);
+          if (map['latitude'] == null || map['longitude'] == null) {
+            log('Skip city without coordinates: ${map['alias']}',
+                name: 'ContentRemoteDataSource.getCities');
+            continue;
+          }
+
+          try {
+            cities.add(CityModel.fromJson(map));
+          } catch (e) {
+            log('Skip invalid city ${map['alias']}: $e',
+                name: 'ContentRemoteDataSource.getCities');
+          }
+        }
+
+        return cities;
       } else {
         throw ServerException();
       }

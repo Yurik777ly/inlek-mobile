@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:inlek/constants/paths.dart';
 import 'package:inlek/constants/size_utils.dart';
 import 'package:inlek/constants/ui_constants.dart';
 import 'package:inlek/constants/utils.dart';
 import 'package:inlek/features/domain/entities/pharmacy_entity.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class ProductPharmacyWidget extends StatelessWidget {
   const ProductPharmacyWidget({super.key, required this.pharmacy});
 
   final PharmacyEntity pharmacy;
+
+  String _displayPharmacyName(PharmacyEntity pharmacy) {
+    final name = pharmacy.pharmacyName.trim();
+    if (name.isNotEmpty) {
+      return name;
+    }
+
+    final pageTitle = pharmacy.pageTitle?.trim();
+    if (pageTitle != null && pageTitle.isNotEmpty) {
+      return pageTitle;
+    }
+
+    return '-';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,33 +34,11 @@ class ProductPharmacyWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              if (pharmacy.pharmacyDelivery == 'Доставка')
-                Skeleton.replace(
-                  child: Container(
-                    margin: getMarginOrPadding(right: 9),
-                    height: 24,
-                    width: 24,
-                    padding: getMarginOrPadding(all: 4),
-                    decoration: BoxDecoration(
-                        color: UiConstants.purple3Color,
-                        shape: BoxShape.circle),
-                    child: SvgPicture.asset(Paths.carIconPath,
-                        height: double.infinity, width: double.infinity),
-                  ),
-                ),
-              Expanded(
-                child: Text(
-                  pharmacy.pharmacyDelivery == 'Доставка'
-                      ? 'Доставка'
-                      : pharmacy.pharmacyName ?? '-',
-                  style: UiConstants.textStyle3.copyWith(
-                      color: UiConstants.darkBlueColor,
-                      fontWeight: FontWeight.w800),
-                ),
-              ),
-            ],
+          Text(
+            _displayPharmacyName(pharmacy),
+            style: UiConstants.textStyle3.copyWith(
+                color: UiConstants.darkBlueColor,
+                fontWeight: FontWeight.w800),
           ),
           SizedBox(height: 16),
           Text(
