@@ -36,13 +36,15 @@ class ProductWidget extends StatelessWidget {
           ),
         ),
       ),
-      child: Container(
-        width: 148,
-        decoration: BoxDecoration(
-          color: UiConstants.whiteColor,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Stack(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          width: 148,
+          decoration: BoxDecoration(
+            color: UiConstants.whiteColor,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Stack(
           children: [
             Column(
               children: [
@@ -79,19 +81,25 @@ class ProductWidget extends StatelessWidget {
                             overflow: TextOverflow.ellipsis),
                         SizedBox(height: 4),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (product.availableSomewhere == 0)
-                              OutStockChip()
-                            else
-                              ProductPrice(
-                                  price: product.price,
-                                  oldPrice: product.oldPrice,
-                                  productsListScreenType:
-                                      ProductsListScreenType.product),
+                            Expanded(
+                              child: product.availableSomewhere == 0 ||
+                                      (product.price ?? 0) <= 0
+                                  ? const OutStockChip()
+                                  : ProductPrice(
+                                      price: product.price,
+                                      oldPrice: product.oldPrice,
+                                      productsListScreenType:
+                                          ProductsListScreenType.product,
+                                    ),
+                            ),
                             if (product.discount != null &&
-                                product.discount != 0)
-                              ProductSaleChip(discount: product.discount ?? 0)
+                                product.discount != 0) ...[
+                              const SizedBox(width: 4),
+                              ProductSaleChip(
+                                  discount: product.discount ?? 0),
+                            ],
                           ],
                         ),
                         Spacer(),
@@ -125,6 +133,7 @@ class ProductWidget extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }

@@ -49,7 +49,9 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
           (_) {},
           (result) => switch (index) {
             0 => categories = result as List<CategoryEntity>,
-            1 => daily = result as List<ProductEntity>,
+            1 => daily = (result as List<ProductEntity>)
+                .where((product) => (product.price ?? 0) > 0)
+                .toList(),
             2 => actions = result as List<ActionEntity>,
             3 => banners = result as List<BannerEntity>,
             _ => {},

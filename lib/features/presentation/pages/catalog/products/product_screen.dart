@@ -46,8 +46,13 @@ _ProductAnalogResult? _getProductsToDisplay(ProductEntity product) {
       false;
 
   if (isLP) {
-    // Для ЛП: сначала аналоги, потом похожие товары
-    if ((product.relatedProducts ?? []).isNotEmpty) {
+    // Для ЛП: аналоги по МНН+форме (как на сайте), затем похожие товары
+    if ((product.analogProducts ?? []).isNotEmpty) {
+      return _ProductAnalogResult(
+        products: product.analogProducts!,
+        title: 'Аналоги',
+      );
+    } else if ((product.relatedProducts ?? []).isNotEmpty) {
       return _ProductAnalogResult(
         products: product.relatedProducts!,
         title: 'Аналоги',
@@ -64,6 +69,11 @@ _ProductAnalogResult? _getProductsToDisplay(ProductEntity product) {
       return _ProductAnalogResult(
         products: product.similarProducts!,
         title: 'Похожие товары',
+      );
+    } else if ((product.analogProducts ?? []).isNotEmpty) {
+      return _ProductAnalogResult(
+        products: product.analogProducts!,
+        title: 'Аналоги',
       );
     } else if ((product.relatedProducts ?? []).isNotEmpty) {
       return _ProductAnalogResult(

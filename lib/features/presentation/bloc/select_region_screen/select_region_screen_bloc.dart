@@ -40,6 +40,37 @@ class SelectRegionScreenBloc
     });
   }
 
+  String _normalizeCityName(String value) {
+    return value
+        .trim()
+        .toLowerCase()
+        .replaceFirst(RegExp(r'^г\.?\s*'), '');
+  }
+
+  CityEntity? _findCityByInput(String input, List<CityEntity> cities) {
+    final normalized = _normalizeCityName(input);
+    if (normalized.isEmpty) {
+      return null;
+    }
+
+    return cities.firstWhereOrNull(
+      (city) =>
+          _normalizeCityName(city.pagetitle) == normalized ||
+          city.alias.toLowerCase() == normalized,
+    );
+  }
+
+  bool _isPrefixOfKnownCity(String input, List<CityEntity> cities) {
+    final normalized = _normalizeCityName(input);
+    if (normalized.isEmpty) {
+      return false;
+    }
+
+    return cities.any(
+      (city) => _normalizeCityName(city.pagetitle).startsWith(normalized),
+    );
+  }
+
   Future<void> _onDetectCurrentCity(DetectCurrentCityEvent event,
       Emitter<SelectRegionScreenState> emit) async {
     final position = await LocationManager.determinePosition();
@@ -77,13 +108,15 @@ class SelectRegionScreenBloc
       city = null;
     }
     if (city == null) {
-      emit(state.copyWith(detectedCity: 'Минск'));
-      return;
+      city = 'Минск';
     }
-    if (state.popularCities.contains(city)) {
-      regionController.text = city;
+
+    final matchedCity = _findCityByInput(city, state.popularCities);
+    if (matchedCity != null) {
+      regionController.text = matchedCity.pagetitle;
       emit(state.copyWith(
         detectedCity: city,
+        selectedRegion: matchedCity,
         isButtonActive: true,
         showError: false,
       ));
@@ -97,7 +130,7 @@ class SelectRegionScreenBloc
     final failureOrLoads = await getCitiesUC();
 
     failureOrLoads.fold(
-      (_) => emit(state.copyWith(showError: true)),
+      (_) => emit(state.copyWith(showError: false)),
       (cities) {
         emit(state.copyWith(showError: false, popularCities: cities));
         add(DetectCurrentCityEvent());
@@ -109,15 +142,13 @@ class SelectRegionScreenBloc
     RegionChangedEvent event,
     Emitter<SelectRegionScreenState> emit,
   ) async {
-    final selectedRegion = state.popularCities.firstWhereOrNull(
-      (city) => city.pagetitle == event.region,
-    );
+    final input = regionController.text;
+    final selectedRegion = _findCityByInput(input, state.popularCities);
+    final isKnownRegion = selectedRegion != null;
 
-    final isKnownRegion = state.popularCities
-        .any((city) => city.pagetitle == regionController.text);
-
-    final shouldShowError =
-        selectedRegion == null && regionController.text.isNotEmpty;
+    final shouldShowError = input.trim().isNotEmpty &&
+        selectedRegion == null &&
+        !_isPrefixOfKnownCity(input, state.popularCities);
 
     emit(
       state.copyWith(
@@ -130,8 +161,11 @@ class SelectRegionScreenBloc
 
   void _onConfirmRegion(
       ConfirmRegionEvent event, Emitter<SelectRegionScreenState> emit) async {
-    final selectedRegion = state.popularCities
-        .firstWhereOrNull((city) => city.pagetitle == regionController.text);
+    final selectedRegion =
+        _findCityByInput(regionController.text, state.popularCities);
+    if (selectedRegion == null) {
+      return;
+    }
 
     sharedPreferences.setString(
       SharedPreferencesKeys.city,

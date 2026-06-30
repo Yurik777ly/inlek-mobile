@@ -79,13 +79,23 @@ class SelectRegionScreen extends StatelessWidget {
                             minFetcherLength: 1,
                             suggestionFetcher: (query) {
                               final completer = Completer<List<String>>();
+                              final normalizedQuery = query
+                                  .trim()
+                                  .toLowerCase()
+                                  .replaceFirst(RegExp(r'^г\.?\s*'), '');
 
                               completer.complete(
                                 state.popularCities
                                     .map((e) => e.pagetitle)
-                                    .where((title) => title
-                                        .toLowerCase()
-                                        .startsWith(query.toLowerCase()))
+                                    .where((title) {
+                                      final normalizedTitle = title
+                                          .trim()
+                                          .toLowerCase()
+                                          .replaceFirst(
+                                              RegExp(r'^г\.?\s*'), '');
+                                      return normalizedTitle
+                                          .startsWith(normalizedQuery);
+                                    })
                                     .toList(),
                               );
 

@@ -41,6 +41,7 @@ class ProductModel extends ProductEntity {
     super.brandProducts,
     super.relatedProducts,
     super.similarProducts,
+    super.analogProducts,
     super.stockCount,
     super.quantity,
     super.promocodesJson,
@@ -60,6 +61,7 @@ class ProductModel extends ProductEntity {
 
     var price = extractOption(data['options'], 'price') ??
         data['price'] ??
+        data['product_price_from'] ??
         json['price'] ??
         json["product_price_from"] ??
         json["product_price_"];
@@ -69,14 +71,16 @@ class ProductModel extends ProductEntity {
 
     var priceOld = extractOption(data['options'], 'price_old') ??
         data['price_old'] ??
+        data['product_price_from_old'] ??
         json['price_old'] ??
         json["product_price_from_old"] ??
         json["product_price_old"];
     if (priceOld != null) {
       priceOld = double.tryParse(priceOld.toString());
     }
-    var discount =
-        json["product_price_from_percent"] ?? json["product_price_percent"];
+    var discount = data['product_price_from_percent'] ??
+        json["product_price_from_percent"] ??
+        json["product_price_percent"];
     if (discount != null) {
       discount = int.tryParse(discount.toString());
     }
@@ -169,6 +173,7 @@ class ProductModel extends ProductEntity {
       brandProducts: _parseNestedProducts(data['brand_products']),
       relatedProducts: _parseNestedProducts(data['related_products']),
       similarProducts: _parseNestedProducts(data['similar_products']),
+      analogProducts: _parseNestedProducts(data['analog_products']),
       stockCount: stockCount,
       quantity: data['quantity'] ?? data['count'],
       promocodesJson: [],
@@ -180,7 +185,9 @@ class ProductModel extends ProductEntity {
           : null,
       instruction: _asString(json['instruction'] ?? data['instruction']),
       categoriesJson: _parseCategories(data['categories_json']),
-      availableSomewhere: data['is_available'],
+      availableSomewhere: _parseInt(
+        data['is_available'] ?? json['is_available'] ?? data['available_somewhere'],
+      ),
       requestedQuantity: data['requested_quantity'],
     );
   }
@@ -225,6 +232,7 @@ class ProductModel extends ProductEntity {
           'brand_products': brandProducts,
           'related_products': relatedProducts,
           'similar_products': similarProducts,
+          'analog_products': analogProducts,
           'quantity': quantity,
           'promocodes_json': [],
           "prices": (prices as ProductPricesModel?)?.toJson(),

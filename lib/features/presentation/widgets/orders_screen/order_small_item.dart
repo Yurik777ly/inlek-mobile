@@ -22,7 +22,8 @@ class OrderSmallItem extends StatelessWidget {
         onTap: onTapOrder,
         child: Container(
           width: 148,
-          padding: getMarginOrPadding(all: 8),
+          height: double.infinity,
+          padding: getMarginOrPadding(left: 8, right: 8, top: 8, bottom: 6),
           decoration: BoxDecoration(
             color: UiConstants.whiteColor,
             borderRadius: BorderRadius.circular(16),
@@ -36,6 +37,7 @@ class OrderSmallItem extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: UiConstants.textStyle8.copyWith(
                   color: UiConstants.darkBlueColor.withOpacity(.6),
+                  height: 1.2,
                 ),
               ),
               Text(
@@ -43,8 +45,10 @@ class OrderSmallItem extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: UiConstants.textStyle3.copyWith(
-                    color: UiConstants.darkBlueColor,
-                    fontWeight: FontWeight.w800),
+                  color: UiConstants.darkBlueColor,
+                  fontWeight: FontWeight.w800,
+                  height: 1.2,
+                ),
               ),
               Text(
                 Utils.formatDate(order.createdAt ?? DateTime.now()),
@@ -52,19 +56,24 @@ class OrderSmallItem extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: UiConstants.textStyle8.copyWith(
                   color: UiConstants.darkBlue2Color.withOpacity(.6),
+                  height: 1.2,
                 ),
               ),
               const Spacer(),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   if (order.status != null)
                     Expanded(
-                      child: OrderItemStatusChip(orderStatus: order.status!),
+                      child: OrderItemStatusChip(
+                        orderStatus: order.status!,
+                        compact: true,
+                      ),
                     ),
                   8.pw,
                   RightArrowButton(height: 22, width: 22),
                 ],
-              )
+              ),
             ],
           ),
         ),

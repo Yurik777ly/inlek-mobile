@@ -38,6 +38,7 @@ class ProductEntity extends BaseProductEntity {
   final List<ProductEntity>? brandProducts;
   final List<ProductEntity>? relatedProducts;
   final List<ProductEntity>? similarProducts;
+  final List<ProductEntity>? analogProducts;
   final int? stockCount;
   final int? quantity;
   final List<PromocodeEntity>? promocodesJson;
@@ -87,6 +88,7 @@ class ProductEntity extends BaseProductEntity {
     this.brandProducts,
     this.relatedProducts,
     this.similarProducts,
+    this.analogProducts,
     this.stockCount,
     this.quantity,
     this.promocodesJson,
@@ -137,6 +139,7 @@ class ProductEntity extends BaseProductEntity {
     List<ProductEntity>? brandProducts,
     List<ProductEntity>? relatedProducts,
     List<ProductEntity>? similarProducts,
+    List<ProductEntity>? analogProducts,
     int? stockCount,
     int? quantity,
     List<PromocodeEntity>? promocodesJson,
@@ -186,6 +189,7 @@ class ProductEntity extends BaseProductEntity {
       brandProducts: brandProducts ?? this.brandProducts,
       relatedProducts: relatedProducts ?? this.relatedProducts,
       similarProducts: similarProducts ?? this.similarProducts,
+      analogProducts: analogProducts ?? this.analogProducts,
       stockCount: stockCount ?? this.stockCount,
       quantity: quantity ?? this.quantity,
       promocodesJson: promocodesJson ?? this.promocodesJson,
@@ -237,6 +241,7 @@ class ProductEntity extends BaseProductEntity {
         brandProducts,
         relatedProducts,
         similarProducts,
+        analogProducts,
         stockCount,
         quantity,
         promocodesJson,

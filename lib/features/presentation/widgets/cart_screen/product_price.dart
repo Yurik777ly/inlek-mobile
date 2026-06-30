@@ -24,6 +24,8 @@ class ProductPrice extends StatelessWidget {
         if (oldPrice != null && oldPrice != price && oldPrice != 0)
           Text(
             Utils.formatPrice(oldPrice),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: UiConstants.textStyle8.copyWith(
                 color: UiConstants.darkBlue2Color.withOpacity(.6),
                 fontWeight: FontWeight.w500,
@@ -31,6 +33,7 @@ class ProductPrice extends StatelessWidget {
           ),
         FittedBox(
           fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
           child: Text(
             '${[
               ProductsListScreenType.cart,

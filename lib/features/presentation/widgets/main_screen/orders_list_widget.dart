@@ -15,7 +15,7 @@ class OrdersListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 105,
+      height: 112,
       child: ListView.separated(
           padding: getMarginOrPadding(left: 20, right: 20),
           scrollDirection: Axis.horizontal,
