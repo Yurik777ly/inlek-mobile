@@ -48,7 +48,8 @@ android {
     // Чтение первого файла с ключами
     def releaseKeystoreProperties = new Properties()
     def releaseKeystorePropertiesFile = rootProject.file("key_upload.properties")
-    if (releaseKeystorePropertiesFile.exists()) {
+    def hasReleaseKeystore = releaseKeystorePropertiesFile.exists()
+    if (hasReleaseKeystore) {
         releaseKeystoreProperties.load(new FileInputStream(releaseKeystorePropertiesFile))
     }
 
@@ -76,8 +77,21 @@ android {
 
     signingConfigs {
         release {
-            if (releaseKeystorePropertiesFile.exists()) {
-                storeFile file(releaseKeystoreProperties['storeFile'])
+            if (hasReleaseKeystore) {
+                def storeFilePath = releaseKeystoreProperties['storeFile']
+                if (storeFilePath == null || storeFilePath.toString().trim().isEmpty()) {
+                    throw new GradleException("key_upload.properties: storeFile is not set")
+                }
+
+                def keystoreFile = rootProject.file(storeFilePath)
+                if (!keystoreFile.exists()) {
+                    throw new GradleException(
+                        "Release keystore not found: ${keystoreFile.absolutePath}. " +
+                        "Check storeFile path in android/key_upload.properties"
+                    )
+                }
+
+                storeFile keystoreFile
                 keyAlias releaseKeystoreProperties['keyAlias']
                 keyPassword releaseKeystoreProperties['keyPassword']
                 storePassword releaseKeystoreProperties['storePassword']
@@ -93,6 +107,13 @@ android {
     
     buildTypes {
         release {
+            if (!hasReleaseKeystore) {
+                throw new GradleException(
+                    "Release signing is not configured. Create android/key_upload.properties " +
+                    "(see https://docs.flutter.dev/deployment/android#signing-the-app). " +
+                    "Keystore file upload-keystore.jks is in the project root."
+                )
+            }
             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             minifyEnabled true

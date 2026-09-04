@@ -76,13 +76,15 @@ class ProductScreenBloc extends Bloc<ProductScreenEvent, ProductScreenState> {
 
   Future<void> _loadPharmacies(Emitter<ProductScreenState> emit) async {
     if (productId != null) {
-      final position = await LocationManager.determinePosition();
+      final position = await LocationManager.determinePosition(
+        requestIfDenied: false,
+      );
 
-      // Формируем param для запроса
       final param = ProductPharmaciesParam(
-          geoLat: position?.latitude ?? 0.0,
-          geoLong: position?.longitude ?? 0.0,
-          productId: productId!);
+        geoLat: position?.latitude,
+        geoLong: position?.longitude,
+        productId: productId!,
+      );
 
       final result = await getProductPharmaciesUC(param);
       result.fold(

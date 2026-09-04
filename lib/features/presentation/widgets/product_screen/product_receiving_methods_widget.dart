@@ -20,6 +20,11 @@ class ProductReceivingMethodsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final pharmaciesCount = pharmacies.isNotEmpty
+        ? pharmacies.length
+        : (product.pharmaciesCount ?? 0);
+    final canOpenPharmaciesMap = pharmacies.isNotEmpty;
+
     return Row(
       children: [
         Expanded(
@@ -27,20 +32,22 @@ class ProductReceivingMethodsWidget extends StatelessWidget {
             isLoading: isLoadingPharmacies,
             title: 'В наличии',
             subtitle:
-                'в ${pharmacies.length} ${Utils.getPharmacyLabel(pharmacies.length)}',
-            onTap: () => Navigator.of(context).push(
-              Routes.createRoute(
-                const PharmaciesScreen(),
-                settings: RouteSettings(
-                  name: Routes.pharmaciesScreen,
-                  arguments: {
-                    "mapScreenType": MapScreenType.product,
-                    "pharmacies": pharmacies,
-                    "product": product
-                  },
-                ),
-              ),
-            ),
+                'в $pharmaciesCount ${Utils.getPharmacyLabel(pharmaciesCount)}',
+            onTap: canOpenPharmaciesMap
+                ? () => Navigator.of(context).push(
+                      Routes.createRoute(
+                        const PharmaciesScreen(),
+                        settings: RouteSettings(
+                          name: Routes.pharmaciesScreen,
+                          arguments: {
+                            "mapScreenType": MapScreenType.product,
+                            "pharmacies": pharmacies,
+                            "product": product
+                          },
+                        ),
+                      ),
+                    )
+                : null,
             onTapArrowButton: () {},
           ),
         ),

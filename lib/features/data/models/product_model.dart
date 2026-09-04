@@ -53,6 +53,7 @@ class ProductModel extends ProductEntity {
     super.otherPharmacy,
     super.categoriesJson,
     super.availableSomewhere,
+    super.pharmaciesCount,
     super.requestedQuantity,
   });
 
@@ -144,7 +145,8 @@ class ProductModel extends ProductEntity {
       image: _asString(
             json['image'] ??
                 json['image_url_handle'] ??
-                json['options']?['image'] ??
+                extractOption(data['options'], 'image') ??
+                _optionValue(json['options'], 'image') ??
                 data['picture'],
           ) ??
           '',
@@ -187,6 +189,9 @@ class ProductModel extends ProductEntity {
       categoriesJson: _parseCategories(data['categories_json']),
       availableSomewhere: _parseInt(
         data['is_available'] ?? json['is_available'] ?? data['available_somewhere'],
+      ),
+      pharmaciesCount: _parseInt(
+        data['pharmacies_count'] ?? json['pharmacies_count'],
       ),
       requestedQuantity: data['requested_quantity'],
     );
@@ -243,6 +248,15 @@ class ProductModel extends ProductEntity {
       };
 
   static dynamic extractOption(dynamic source, String key) {
+    if (source is String) {
+      try {
+        final decoded = jsonDecode(source);
+        return _optionValue(decoded, key);
+      } catch (_) {
+        return null;
+      }
+    }
+
     return _optionValue(source, key);
   }
 

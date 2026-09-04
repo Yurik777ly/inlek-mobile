@@ -94,10 +94,10 @@ class OrderModel extends OrderEntity {
       pharmacyName: data['pharmacy_name'],
       customerId: data['customer_id'],
       createdAt: data['created_at'] != null
-          ? DateTime.parse(data['created_at']).toLocal()
+          ? _parseOrderDateTime(data['created_at'])
           : null,
       updatedAt: data['updated_at'] != null
-          ? DateTime.parse(data['updated_at'])
+          ? _parseOrderDateTime(data['updated_at'])
           : null,
       phone: data['phone'],
       name: data['name'],
@@ -152,7 +152,7 @@ class OrderModel extends OrderEntity {
             (deliveryInfo is Map ? deliveryInfo['method_title'] : null) ??
             (deliveryInfo is Map ? deliveryInfo['method'] : null),
       ),
-      pharmacy: _parsePharmacy(data['pharmacy']),
+      pharmacy: _parsePharmacy(data['pharmacy']) ?? _pharmacyFromOrderFields(data),
       link: data['payment_link'] ??
           json['additional']?['payment_link'] ??
           (paymentInfo is Map ? paymentInfo['payment_link'] : null),
@@ -254,6 +254,57 @@ class OrderModel extends OrderEntity {
     }
 
     return products.isEmpty ? null : products;
+  }
+
+  /// API отдаёт минское wall-clock время без таймзоны; ISO с offset/Z — legacy.
+  static DateTime _parseOrderDateTime(dynamic raw) {
+    final value = raw.toString().trim();
+
+    if (value.endsWith('Z') || RegExp(r'[+-]\d{2}:?\d{2}$').hasMatch(value)) {
+      return DateTime.parse(value).toLocal();
+    }
+
+    final match = RegExp(
+      r'^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?',
+    ).firstMatch(value);
+    if (match != null) {
+      return DateTime(
+        int.parse(match.group(1)!),
+        int.parse(match.group(2)!),
+        int.parse(match.group(3)!),
+        int.parse(match.group(4)!),
+        int.parse(match.group(5)!),
+        int.parse(match.group(6) ?? '0'),
+      );
+    }
+
+    return DateTime.parse(value);
+  }
+
+  static PharmacyModel? _pharmacyFromOrderFields(Map<String, dynamic> data) {
+    final pharmacyId = data['pharmacy_id'];
+    if (pharmacyId == null) {
+      return null;
+    }
+
+    final id = int.tryParse(pharmacyId.toString());
+    if (id == null || id <= 0) {
+      return null;
+    }
+
+    final name = data['pharmacy_name']?.toString() ?? '';
+    final address = data['address']?.toString() ?? '';
+    if (name.isEmpty && address.isEmpty) {
+      return null;
+    }
+
+    return PharmacyModel(
+      pharmacyId: id,
+      pharmacyName: name,
+      address: address,
+      coordinates: '',
+      schedule: '',
+    );
   }
 
   static PharmacyModel? _parsePharmacy(dynamic raw) {

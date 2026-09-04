@@ -101,9 +101,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                           ),
                                         );
 
-                                        ordersBloc.add(
-                                          const ResetAndLoadOrdersEvent(),
-                                        );
+                                        ordersBloc.add(LoadDataEvent());
                                       },
                                     ),
                                   ),

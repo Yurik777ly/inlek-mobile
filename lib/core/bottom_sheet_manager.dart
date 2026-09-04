@@ -1222,8 +1222,7 @@ class BottomSheetManager {
               builder: (context, cartState) {
                 final pharmacyProducts = cartState.cartData?.products
                         .where((e) =>
-                            cartState.selectedProductIds.contains(e.productId) ||
-                            e.availability == 'absent')
+                            cartState.selectedProductIds.contains(e.productId))
                         .map(
                           (toElement) => CartPharmaciesProductParam(
                             productId: toElement.productId,
@@ -1470,12 +1469,24 @@ class BottomSheetManager {
             final outOfStockProducts = <CartPharmaciesProductEntity>[];
 
             for (final product in pharmacy.products) {
-              if (product.stockCount != 0) {
+              if (_isCartPharmacyProductInStock(product)) {
                 inStockProducts.add(product);
               } else {
                 outOfStockProducts.add(product);
               }
             }
+
+            // Выбрать аптеку можно только если среди отмеченных в корзине
+            // товаров есть хотя бы один в наличии в этой аптеке.
+            final selectedIds = state.selectedProductIds;
+            final relevantProducts = selectedIds.isEmpty
+                ? pharmacy.products
+                : pharmacy.products
+                    .where((p) => selectedIds.contains(p.productId))
+                    .toList();
+            final canSelectPharmacy = relevantProducts.isNotEmpty &&
+                relevantProducts.any(_isCartPharmacyProductInStock) &&
+                pharmacy.availability != 'absent';
 
             return CustomBottomSheet(
               padding: getMarginOrPadding(left: 20, right: 20, top: 8),
@@ -1530,7 +1541,7 @@ class BottomSheetManager {
 
                     AppButtonWidget(
                       text: 'Заберу отсюда',
-                      isActive: true,
+                      isActive: canSelectPharmacy,
                       onTap: () {
                         cartBloc.add(SelectPharmacy(pharmacy.pharmacyId));
                         Navigator.pop(sheetContext);
@@ -2321,4 +2332,12 @@ class BottomSheetManager {
       );
     }
   }
+}
+
+bool _isCartPharmacyProductInStock(CartPharmaciesProductEntity product) {
+  if (product.availability == 'absent') {
+    return false;
+  }
+
+  return (product.stockCount ?? 0) > 0;
 }

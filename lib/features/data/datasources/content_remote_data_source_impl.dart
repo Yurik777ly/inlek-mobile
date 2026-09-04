@@ -37,7 +37,7 @@ class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
   @override
   Future<List<ActionModel>> getActions() async {
     String baseUrl = dotenv.env['BASE_URL']!;
-    String url = '${baseUrl}actions/';
+    final url = '${baseUrl}actions';
     final String? serverToken =
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
 
@@ -57,10 +57,40 @@ class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        final raw = data['data'];
 
-        List<dynamic> dataList = data['data'];
+        if (raw == null) {
+          return [];
+        }
 
-        return dataList.map((e) => ActionModel.fromJson(e)).toList();
+        final dataList = raw is List
+            ? raw
+            : raw is Map
+                ? raw.values.toList()
+                : <dynamic>[];
+
+        final actions = <ActionModel>[];
+
+        for (final item in dataList) {
+          if (item is! Map) {
+            continue;
+          }
+
+          try {
+            actions.add(
+              ActionModel.fromJson(Map<String, dynamic>.from(item)),
+            );
+          } catch (e, stackTrace) {
+            log(
+              'Skip invalid action: $e',
+              stackTrace: stackTrace,
+              level: 1000,
+              name: 'ContentRemoteDataSource.getActions',
+            );
+          }
+        }
+
+        return actions;
       } else {
         throw ServerException();
       }
@@ -73,7 +103,7 @@ class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
   @override
   Future<List<ArticleModel>> getArticles() async {
     String baseUrl = dotenv.env['BASE_URL']!;
-    String url = '${baseUrl}articles/';
+    String url = '${baseUrl}articles';
     final String? serverToken =
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
 
@@ -109,7 +139,7 @@ class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
   @override
   Future<List<BannerModel>> getBanners() async {
     String baseUrl = dotenv.env['BASE_URL']!;
-    String url = '${baseUrl}banners/';
+    String url = '${baseUrl}banners';
     final String? serverToken =
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
 
@@ -149,7 +179,7 @@ class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
   @override
   Future<List<NewsModel>> getNews() async {
     String baseUrl = dotenv.env['BASE_URL']!;
-    String url = '${baseUrl}news/';
+    String url = '${baseUrl}news';
     final String? serverToken =
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
 
@@ -205,8 +235,22 @@ class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        final payload = data['data'];
 
-        return ActionModel.fromJson(data['data']['action']);
+        if (payload is! Map) {
+          throw const FormatException('Invalid action payload');
+        }
+
+        final actionMap = Map<String, dynamic>.from(payload);
+        final actionJson = actionMap['action'] is Map
+            ? Map<String, dynamic>.from(actionMap['action'] as Map)
+            : actionMap;
+
+        if (actionMap['products'] != null) {
+          actionJson['products'] = actionMap['products'];
+        }
+
+        return ActionModel.fromJson(actionJson);
       } else {
         throw ServerException();
       }
@@ -287,7 +331,7 @@ class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
   @override
   Future<List<PharmacyModel>> getPharmacies(String address) async {
     String baseUrl = dotenv.env['BASE_URL']!;
-    String url = '${baseUrl}pharmacies/?address=$address';
+    String url = '${baseUrl}pharmacies?address=$address';
     final String? serverToken =
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
 
@@ -323,7 +367,7 @@ class ContentRemoteDataSourceImpl implements ContentRemoteDataSource {
   @override
   Future<List<CityModel>> getCities() async {
     String baseUrl = dotenv.env['BASE_URL']!;
-    String url = '${baseUrl}cities/';
+    String url = '${baseUrl}cities';
     final String? serverToken =
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
 

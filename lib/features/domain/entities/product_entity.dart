@@ -50,6 +50,7 @@ class ProductEntity extends BaseProductEntity {
   final int? otherPharmacy;
   final List<CategoryEntity>? categoriesJson;
   final int? availableSomewhere;
+  final int? pharmaciesCount;
   final int? requestedQuantity;
 
   const ProductEntity({
@@ -100,6 +101,7 @@ class ProductEntity extends BaseProductEntity {
     this.otherPharmacy,
     this.categoriesJson,
     this.availableSomewhere,
+    this.pharmaciesCount,
     this.requestedQuantity,
   });
 
@@ -151,6 +153,7 @@ class ProductEntity extends BaseProductEntity {
     int? otherPharmacy,
     List<CategoryEntity>? categoriesJson,
     int? availableSomewhere,
+    int? pharmaciesCount,
     int? requestedQuantity,
   }) {
     return ProductEntity(
@@ -201,6 +204,7 @@ class ProductEntity extends BaseProductEntity {
       otherPharmacy: otherPharmacy ?? this.otherPharmacy,
       categoriesJson: categoriesJson ?? this.categoriesJson,
       availableSomewhere: availableSomewhere ?? this.availableSomewhere,
+      pharmaciesCount: pharmaciesCount ?? this.pharmaciesCount,
       requestedQuantity: requestedQuantity ?? this.requestedQuantity,
     );
   }
@@ -253,6 +257,7 @@ class ProductEntity extends BaseProductEntity {
         otherPharmacy,
         categoriesJson,
         availableSomewhere,
+        pharmaciesCount,
         requestedQuantity,
       ];
 }

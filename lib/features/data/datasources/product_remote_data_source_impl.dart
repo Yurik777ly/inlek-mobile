@@ -158,8 +158,8 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     final String? serverToken =
         sharedPreferences.getString(SharedPreferencesKeys.accessToken);
 
-    final uri = Uri.parse(
-        '${baseUrl}product/${params.productId}/pharmacies?geo_lat=${params.geoLat}&geo_long=${params.geoLong}');
+    final uri = Uri.parse('${baseUrl}product/${params.productId}/pharmacies')
+        .replace(queryParameters: params.toQueryParameters());
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -179,32 +179,39 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        final raw = data['data'];
 
-        List<dynamic> dataList = data['data'];
+        if (raw == null) {
+          log('Empty pharmacies payload for product ${params.productId}',
+              name: 'ProductRemoteDataSource.getProductPharmacies');
+          return [];
+        }
 
-        return dataList
-            .map((e) {
-              final payload = e is Map ? e['product_pharmacy_json'] : null;
+        final dataList = raw is List
+            ? raw
+            : raw is Map
+                ? raw.values.toList()
+                : <dynamic>[];
 
-              if (payload is Map<String, dynamic>) {
-                return PharmacyModel.fromJson(payload);
-              }
+        final pharmacies = <PharmacyModel>[];
 
-              if (payload is Map) {
-                return PharmacyModel.fromJson(Map<String, dynamic>.from(payload));
-              }
+        for (final item in dataList) {
+          try {
+            final pharmacy = _parsePharmacyItem(item);
+            if (pharmacy != null) {
+              pharmacies.add(pharmacy);
+            }
+          } catch (parseError, stackTrace) {
+            log(
+              'Pharmacy item parse error for product ${params.productId}: $parseError',
+              stackTrace: stackTrace,
+              level: 1000,
+              name: 'ProductRemoteDataSource.getProductPharmacies',
+            );
+          }
+        }
 
-              if (e is Map<String, dynamic>) {
-                return PharmacyModel.fromJson(e);
-              }
-
-              if (e is Map) {
-                return PharmacyModel.fromJson(Map<String, dynamic>.from(e));
-              }
-
-              throw const FormatException('Invalid pharmacy payload');
-            })
-            .toList();
+        return pharmacies;
       } else {
         throw ServerException();
       }
@@ -212,6 +219,32 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       log('Error during getProductPharmacies: $e', level: 1000);
       rethrow;
     }
+  }
+
+  PharmacyModel? _parsePharmacyItem(dynamic item) {
+    if (item is! Map) {
+      return null;
+    }
+
+    final map = Map<String, dynamic>.from(item);
+    final payload = map['product_pharmacy_json'];
+
+    if (payload is String && payload.trim().isNotEmpty) {
+      final decoded = json.decode(payload);
+      if (decoded is Map) {
+        return PharmacyModel.fromJson(Map<String, dynamic>.from(decoded));
+      }
+    }
+
+    if (payload is Map) {
+      return PharmacyModel.fromJson(Map<String, dynamic>.from(payload));
+    }
+
+    if (map.containsKey('pharmacy_id') || map.containsKey('pharmacy_name')) {
+      return PharmacyModel.fromJson(map);
+    }
+
+    return null;
   }
 
   @override

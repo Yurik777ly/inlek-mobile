@@ -108,8 +108,7 @@ class OrderScreen extends StatelessWidget {
                                                       .order!.typeReceipt!,
                                                 ),
                                               ),
-                                            if (orderState.order?.status ==
-                                                OrderStatus.awaitingPayment)
+                                            if (_canPayOrder(orderState.order))
                                               Padding(
                                                 padding:
                                                     getMarginOrPadding(top: 16),
@@ -213,6 +212,7 @@ class OrderScreen extends StatelessWidget {
                                               spacing: 8,
                                               child: OrderInfoList(
                                                 order: orderState.order,
+                                                pharmacy: orderState.order?.pharmacy,
                                                 address: orderState.order
                                                         ?.fullDeliveryAddress ??
                                                     [
@@ -348,4 +348,31 @@ class OrderScreen extends StatelessWidget {
     cartBloc.selectedAddress = geocodeResponse
         ?.response?.geoObjectCollection?.featureMember?.firstOrNull?.geoObject;
   }
+}
+
+bool _canPayOrder(OrderEntity? order) {
+  if (order == null) {
+    return false;
+  }
+
+  // Оплата доступна только после подтверждения оператором («Зарезервирован»).
+  if (order.status != OrderStatus.reserved) {
+    return false;
+  }
+
+  if (order.isPaid == true) {
+    return false;
+  }
+
+  const onlinePayments = {
+    PaymentType.bepaid,
+    PaymentType.oplati,
+    PaymentType.erip,
+  };
+
+  if (!onlinePayments.contains(order.paymentType)) {
+    return false;
+  }
+
+  return order.link != null && order.link!.isNotEmpty;
 }

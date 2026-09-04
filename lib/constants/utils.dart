@@ -244,7 +244,7 @@ class Utils {
             ? "Заказ ждет вас в аптеке до конца дня ${formatDate(date)}"
             : "Заказ ждет вас в аптеке";
       case OrderStatus.reserved:
-        return "Проверим наличие и свяжемся с вами в случае отсутствия товаров";
+        return "Заказ подтверждён оператором.";
       case OrderStatus.received:
         return "Спасибо за заказ";
       case OrderStatus.collected:

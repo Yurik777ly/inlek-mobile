@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
@@ -427,7 +428,9 @@ Future<void> init() async {
   await dotenv.load(fileName: ".env");
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
-  sl.registerLazySingleton<http.Client>(() => HttpClientWithLogger());
+  sl.registerLazySingleton<http.Client>(() => HttpClientWithLogger(
+        enableLogging: kDebugMode,
+      ));
   sl.registerLazySingleton(() => InternetConnectionChecker.instance);
   const defaultYandexGeocoderApiKey =
       'b59aee20-e130-4225-9681-632ad6e8a545';

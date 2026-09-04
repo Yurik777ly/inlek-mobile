@@ -108,6 +108,11 @@ class PharmaciesCartScreenBloc
     final lowerQuery = filterState.query.toLowerCase();
 
     return filterState.pharmacies.where((pharmacy) {
+      // Аптеки без наличия выбранных товаров не показываем для самовывоза.
+      if (pharmacy.availability == 'absent') {
+        return false;
+      }
+
       final hasEnoughQuery = lowerQuery.length < 3 ||
           (pharmacy.address).toLowerCase().contains(lowerQuery);
 
