@@ -418,7 +418,8 @@ class CartProductWidget extends StatelessWidget {
                         ],
                       ),
                       if (product is ProductEntity &&
-                          product.prices?.discountWithoutPromos != 0 &&
+                          (product.prices?.discountWithoutPromos ?? 0) != 0 &&
+                          (product.prices?.discountOnlyPromos ?? 0) == 0 &&
                           (product.prices?.appliedPromocodes ?? [])
                               .any((e) => state.selectedPromoCodes.contains(e)))
                         Padding(

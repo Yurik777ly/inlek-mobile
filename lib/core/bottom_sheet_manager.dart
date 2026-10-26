@@ -1220,21 +1220,30 @@ class BottomSheetManager {
             return BlocBuilder<CartScreenBloc, CartScreenState>(
               bloc: cartBloc,
               builder: (context, cartState) {
-                final pharmacyProducts = cartState.cartData?.products
-                        .where((e) =>
-                            cartState.selectedProductIds.contains(e.productId))
-                        .map(
-                          (toElement) => CartPharmaciesProductParam(
-                            productId: toElement.productId,
-                            quantity: (toElement.requestedQuantity ??
-                                    toElement.quantity ??
-                                    1)
-                                .clamp(1, double.infinity)
-                                .toInt(),
-                          ),
-                        )
-                        .toList() ??
-                    [];
+                final cartProducts = cartState.cartData?.products ?? [];
+                final selectedProducts = cartProducts
+                    .where((e) =>
+                        cartState.selectedProductIds.contains(e.productId))
+                    .toList();
+                // Если чекбоксы пустые — берём все товары корзины с наличием,
+                // иначе POST /v2/cart/pharmacies уходит с products: [] → 422.
+                final productsForPharmacies = selectedProducts.isNotEmpty
+                    ? selectedProducts
+                    : cartProducts
+                        .where((e) => e.availability != 'absent')
+                        .toList();
+                final pharmacyProducts = productsForPharmacies
+                    .map(
+                      (toElement) => CartPharmaciesProductParam(
+                        productId: toElement.productId,
+                        quantity: (toElement.requestedQuantity ??
+                                toElement.quantity ??
+                                1)
+                            .clamp(1, double.infinity)
+                            .toInt(),
+                      ),
+                    )
+                    .toList();
 
                 return CustomBottomSheet(
                   padding: getMarginOrPadding(

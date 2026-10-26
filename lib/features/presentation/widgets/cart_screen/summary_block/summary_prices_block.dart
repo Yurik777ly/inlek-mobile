@@ -118,30 +118,30 @@ double calculateDiscount(List<ProductEntity> products) {
   });
 }
 
-// Считает суммарную скидку по всем промокодам ко всем товарам
+// Считает суммарную скидку по промокодам.
+// Предпочитает серверное discount_only_promos (корректно при ММ + промо).
 double calculatePromoDiscount(List<ProductEntity> products) {
   return products.fold(0.0, (sum, product) {
     final prices = product.prices;
     if (prices == null) return sum;
 
-    // Если есть скидка без промокодов — промокоды не применяются
-    if ((prices.discountWithoutPromos ?? 0) != 0) return sum;
+    final quantity = getActualQuantity(product);
+
+    // API уже посчитал промо поверх цены после ММ
+    final serverPromo = prices.discountOnlyPromos;
+    if (serverPromo != null) {
+      return sum + serverPromo * quantity;
+    }
 
     final basePrice = prices.price ?? 0.0;
-    final promocodes = prices.appliedPromocodes ?? [];
+    final promocodes = prices.appliedPromocodes;
 
-    // Применяем промокоды последовательно
     double discountedPrice = basePrice;
     for (final promo in promocodes) {
       discountedPrice *= (1 - promo.promocodePercent / 100);
     }
 
-    // Считаем разницу — это сумма скидки по промокодам
     final discountPerItem = basePrice - discountedPrice;
-
-    // Умножаем на актуальное количество
-    final quantity = getActualQuantity(product);
-
     return sum + discountPerItem * quantity;
   });
 }

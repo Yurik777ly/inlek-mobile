@@ -1,6 +1,25 @@
 import 'package:inlek/constants/pharmacy_utils.dart';
 import 'package:inlek/features/domain/entities/cart_pharmacies_entity.dart';
 
+int? _cartParseInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is double) return value.floor();
+  return int.tryParse(value.toString());
+}
+
+double? _cartParseDouble(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value.toDouble();
+  return double.tryParse(value.toString());
+}
+
+String? _cartAsString(dynamic value) {
+  if (value == null) return null;
+  if (value is String) return value.trim();
+  return value.toString();
+}
+
 class CartPharmaciesProductModel extends CartPharmaciesProductEntity {
   const CartPharmaciesProductModel({
     required super.productId,
@@ -19,22 +38,18 @@ class CartPharmaciesProductModel extends CartPharmaciesProductEntity {
 
   factory CartPharmaciesProductModel.fromJson(Map<String, dynamic> json) =>
       CartPharmaciesProductModel(
-        productId: json['product_id'],
-        name: json['name'],
-        image: json['image'],
-        requestedQuantity: json['requested_quantity'],
-        stockCount: json['stock_count'] != null
-            ? (json['stock_count'] as num).toInt()
-            : 0,
-        availability: json['availability'],
-        price: json['price'] != null ? (json['price'] as num).toDouble() : null,
-        oldPrice: json['price_old'] != null
-            ? (json['price_old'] as num).toDouble()
-            : null,
-        isRecipe: json['is_recipe'] ?? false,
-        isAlcohol: json['is_alcohol'] ?? false,
+        productId: _cartParseInt(json['product_id']) ?? 0,
+        name: _cartAsString(json['name']) ?? '',
+        image: _cartAsString(json['image']) ?? '',
+        requestedQuantity: _cartParseInt(json['requested_quantity']),
+        stockCount: _cartParseInt(json['stock_count']) ?? 0,
+        availability: _cartAsString(json['availability']),
+        price: _cartParseDouble(json['price']),
+        oldPrice: _cartParseDouble(json['price_old']),
+        isRecipe: json['is_recipe'] == true || json['is_recipe'] == 1,
+        isAlcohol: json['is_alcohol'] == true || json['is_alcohol'] == 1,
         delivery: json['delivery'],
-        otherPharmacy: json['other_pharmacy'],
+        otherPharmacy: _cartParseInt(json['other_pharmacy']),
       );
 }
 
@@ -58,27 +73,28 @@ class CartPharmacyModel extends CartPharmacyEntity {
 
   factory CartPharmacyModel.fromJson(Map<String, dynamic> json) =>
       CartPharmacyModel(
-        pharmacyId: json['pharmacy_id'],
-        pharmacyName: json['pharmacy_name'],
-        address: json['address'],
-        coordinates: json['coordinates'],
+        pharmacyId: _cartParseInt(json['pharmacy_id']) ?? 0,
+        pharmacyName: _cartAsString(json['pharmacy_name']) ?? '',
+        address: _cartAsString(json['address']) ?? '',
+        coordinates: _cartAsString(json['coordinates']) ?? '',
         schedule: PharmacyUtils.normalizeSchedule(json['schedule']),
-        distanceMeters: (json['distance_meters'] == null)
-            ? 0
-            : (json['distance_meters'] is double)
-                ? (json['distance_meters'] as double).toInt()
-                : json['distance_meters'] as int,
+        distanceMeters: _cartParseInt(json['distance_meters']) ?? 0,
         products: (json['products'] as List?)
-                ?.map((e) => CartPharmaciesProductModel.fromJson(e))
+                ?.whereType<Map>()
+                .map(
+                  (e) => CartPharmaciesProductModel.fromJson(
+                    Map<String, dynamic>.from(e),
+                  ),
+                )
                 .toList() ??
             [],
-        totalProducts: json['total_products'] as int? ?? 0,
-        totalPrice: (json['total_price'] as num?)?.toDouble() ?? 0.0,
-        totalPriceOld: (json['total_price_old'] as num?)?.toDouble() ?? 0.0,
-        totalDiscount: (json['total_discount'] as num?)?.toDouble() ?? 0.0,
-        availability: json['availability'] ?? 'full',
-        requestedQuantity: json['requested_quantity'],
-        sumAvailability: json['sum_availability'],
+        totalProducts: _cartParseInt(json['total_products']) ?? 0,
+        totalPrice: _cartParseDouble(json['total_price']) ?? 0.0,
+        totalPriceOld: _cartParseDouble(json['total_price_old']) ?? 0.0,
+        totalDiscount: _cartParseDouble(json['total_discount']) ?? 0.0,
+        availability: _cartAsString(json['availability']) ?? 'full',
+        requestedQuantity: _cartParseInt(json['requested_quantity']),
+        sumAvailability: _cartAsString(json['sum_availability']),
       );
 
   @override

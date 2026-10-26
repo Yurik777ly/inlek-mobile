@@ -5,6 +5,9 @@ source 'https://github.com/jivochat/cocoapods-repo'
 # Uncomment this line to define a global platform for your project
 platform :ios, '13.0'
 
+# Avoid "Multiple commands produce Assets.car" between CocoaPods and Runner AppIcon.
+install! 'cocoapods', :disable_input_output_paths => true
+
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
@@ -77,31 +80,34 @@ post_install do |installer|
     end
   end
   
-  # Modify the CocoaPods resources script to prevent asset catalog conflicts
-  # Only disable compilation for pod asset catalogs, not the main app's AppIcon
+  # Prevent CocoaPods from compiling xcassets into Assets.car (Runner owns AppIcon).
   installer.aggregate_targets.each do |aggregate_target|
-    script_path = File.join(aggregate_target.sandbox.root, 'Target Support Files', aggregate_target.label, "#{aggregate_target.label}-resources.sh")
-    
+    support_dir = File.join(aggregate_target.sandbox.root, 'Target Support Files', aggregate_target.label)
+    script_path = File.join(support_dir, "#{aggregate_target.label}-resources.sh")
+
     if File.exist?(script_path)
       script_content = File.read(script_path)
       modified_script = script_content
-      
-      # Only disable asset catalog compilation for pods (PODS_ROOT), not for the main app
-      # This prevents Assets.car conflict while keeping AppIcon working
-      modified_script = modified_script.gsub(/^\s*XCASSET_FILES\+=\("\$ABSOLUTE_XCASSET_FILE"\)$/) do |match|
-        # Only comment out if it's from PODS_ROOT, keep main app's asset catalogs
-        '# XCASSET_FILES+=("$ABSOLUTE_XCASSET_FILE") # Disabled for pods to prevent Assets.car conflict'
-      end
-      
-      # Disable actool compilation only if there are pod asset catalogs
-      # But allow main app's asset catalogs to be compiled by the Resources phase
-      modified_script = modified_script.gsub(/if \[\[ -n "\$\{XCASSET_FILES\[\@\]\}" \]\]; then/) do |match|
-        '# Disabled actool compilation in CocoaPods script to prevent Assets.car conflict'
-        '# Main app asset catalogs (like AppIcon) are compiled by the Resources build phase'
-        'if [[ false ]]; then'
-      end
-      
+      modified_script = modified_script.gsub(
+        /^\s*XCASSET_FILES\+=\("\$ABSOLUTE_XCASSET_FILE"\)$/,
+        '# XCASSET_FILES+=("$ABSOLUTE_XCASSET_FILE") # Disabled: Runner compiles AppIcon'
+      )
+      modified_script = modified_script.gsub(
+        /if \[\[ -n "\$\{XCASSET_FILES\[\@\]\}" \]\]; then/,
+        "if [[ false ]]; then"
+      )
       File.write(script_path, modified_script) if modified_script != script_content
     end
+
+    Dir.glob(File.join(support_dir, '*-resources-*-output-files.xcfilelist')).each do |list_path|
+      lines = File.readlines(list_path)
+      filtered = lines.reject { |line| line.include?('Assets.car') }
+      File.write(list_path, filtered.join) if filtered.length != lines.length
+    end
+  end
+
+  installer.pods_project.save
+  installer.aggregate_targets.each do |aggregate_target|
+    aggregate_target.user_project.save
   end
 end

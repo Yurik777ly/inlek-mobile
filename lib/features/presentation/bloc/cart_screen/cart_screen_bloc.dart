@@ -205,8 +205,15 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         _recalculateSelectionsAfterLoad(cartData, emit);
       },
     );
-    if (requestId == 1 && event.isFirstLoading) {
-      add(PickAllProductsEvent(force: true));
+    // Автовыбор доступных товаров:
+    // - при первой загрузке корзины в жизни bloc;
+    // - когда в корзине есть товары, но ни один не выбран (иначе
+    //   экран выбора аптек уходит с products: [] → 422 / пустой список).
+    final shouldAutoSelect = event.isFirstLoading &&
+        (requestId == 1 || state.selectedProductIds.isEmpty) &&
+        (state.cartData?.products.isNotEmpty ?? false);
+    if (shouldAutoSelect) {
+      add(const PickAllProductsEvent(force: true));
     }
     print('Тип корзины: ${state.cartType.title}');
   }
@@ -740,8 +747,15 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       ));
     }
 
+    final updatedSelectedProductIds = Set<int>.from(state.selectedProductIds);
+    if (event.wasFirstTimeAdded) {
+      updatedSelectedProductIds.add(event.productId);
+    }
+
     emit(state.copyWith(
         cartData: state.cartData?.copyWith(products: updatedProducts),
+        selectedProductIds: updatedSelectedProductIds,
+        isAllProductsChecked: _isAllProductsChecked(updatedSelectedProductIds),
         isLoading: false));
 
     add(UpdateDeliveryPriceEvent());
