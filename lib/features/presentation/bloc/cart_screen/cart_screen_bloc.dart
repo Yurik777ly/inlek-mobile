@@ -165,9 +165,11 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
     LoadCartDataEvent event,
     Emitter<CartScreenState> emit,
   ) async {
-    // Bump request id to invalidate all previous pending requests
+    // Bump request id to invalidate all previous pending requests.
+    // Доставку здесь не пересчитываем: обработчики bloc идут параллельно,
+    // и событие, отправленное до ответа сервера, видит корзину без цены
+    // нового товара и записывает 8 ₽ уже после загрузки.
     final int requestId = ++_loadDataRequestId;
-    add(UpdateDeliveryPriceEvent());
 
     final failureOrCart = await getCartUC(
       CartDetailedParams(
@@ -188,6 +190,22 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       (_) => emit(state.copyWith(
           isLoading: false, errorText: 'Ошибка загрузки данных')),
       (cartData) {
+        final availableIds = cartData.products
+            .where((product) => product.availability != 'absent')
+            .map((product) => product.productId)
+            .toSet();
+        var selectedIds = state.selectedProductIds
+            .where(availableIds.contains)
+            .toSet();
+        final shouldAutoSelect = event.isFirstLoading &&
+            (requestId == 1 || selectedIds.isEmpty) &&
+            cartData.products.isNotEmpty;
+        if (shouldAutoSelect) {
+          selectedIds = availableIds;
+        }
+        final allChecked = availableIds.isNotEmpty &&
+            availableIds.every(selectedIds.contains);
+
         emit(state.copyWith(
             isLoading: false,
             isLoadingPharmacy: false,
@@ -200,21 +218,16 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
                     ? TypeReceiving.delivery
                     : null,
             errorText: null,
-            isAllProductsChecked: cartData.products.isEmpty ? false : null));
-        // После загрузки данных пересчитываем состояние чекбоксов
-        _recalculateSelectionsAfterLoad(cartData, emit);
+            selectedProductIds: selectedIds,
+            isAllProductsChecked:
+                cartData.products.isEmpty ? false : allChecked,
+            deliveryPayment: _deliveryPayment(
+              cartData: cartData,
+              selectedIds: selectedIds,
+              zone: state.deliveryZone,
+            )));
       },
     );
-    // Автовыбор доступных товаров:
-    // - при первой загрузке корзины в жизни bloc;
-    // - когда в корзине есть товары, но ни один не выбран (иначе
-    //   экран выбора аптек уходит с products: [] → 422 / пустой список).
-    final shouldAutoSelect = event.isFirstLoading &&
-        (requestId == 1 || state.selectedProductIds.isEmpty) &&
-        (state.cartData?.products.isNotEmpty ?? false);
-    if (shouldAutoSelect) {
-      add(const PickAllProductsEvent(force: true));
-    }
     print('Тип корзины: ${state.cartType.title}');
   }
 
@@ -235,14 +248,18 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
   void _onToggleSelection(
       ToggleSelectionEvent event, Emitter<CartScreenState> emit) {
-    add(UpdateDeliveryPriceEvent());
     final selectedProductIds = Set<int>.from(state.selectedProductIds);
     event.isChecked == true
         ? selectedProductIds.add(event.productId)
         : selectedProductIds.remove(event.productId);
     emit(state.copyWith(
         selectedProductIds: selectedProductIds,
-        isAllProductsChecked: _isAllProductsChecked(selectedProductIds)));
+        isAllProductsChecked: _isAllProductsChecked(selectedProductIds),
+        deliveryPayment: _deliveryPayment(
+          cartData: state.cartData,
+          selectedIds: selectedProductIds,
+          zone: state.deliveryZone,
+        )));
   }
 
   bool _isAllProductsChecked(Set<int> selectedProductIds) {
@@ -252,33 +269,68 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
         false;
   }
 
-  // Пересчитывает selectedProductIds и isAllProductsChecked на основе актуальных данных корзины
-  void _recalculateSelectionsAfterLoad(
-      CartEntity cartData, Emitter<CartScreenState> emit) {
-    // Оставляем в selectedProductIds только те id, которые присутствуют и доступны
-    final availableProductIds = cartData.products
-        .where((e) => e.availability != 'absent')
-        .map((e) => e.productId)
-        .toSet();
+  int _billableQuantity(ProductEntity product) {
+    final cartQuantity = product.quantity ??
+        product.requestedQuantity ??
+        product.requiredQuantity ??
+        1;
+    final stock = product.stockCount ?? cartQuantity;
+    return cartQuantity > stock ? stock : cartQuantity;
+  }
 
-    final updatedSelected = state.selectedProductIds
-        .where((id) => availableProductIds.contains(id))
-        .toSet();
+  /// Сумма, от которой зависит бесплатная доставка.
+  /// finalPrice — цена после маркетинговой скидки и промокода.
+  /// Ноль при ненулевой цене товара значит, что поле ещё не пришло:
+  /// тогда берём цену строки корзины за вычетом промокода.
+  double _payableUnit(ProductEntity product) {
+    final price = product.prices?.price ?? product.price ?? 0;
+    final finalPrice = product.prices?.finalPrice;
+    if (finalPrice != null && (finalPrice > 0 || price <= 0)) {
+      return finalPrice;
+    }
+    final promo = product.prices?.discountOnlyPromos ?? 0;
+    final payable = price - promo;
+    return payable < 0 ? 0 : payable;
+  }
 
-    final updatedIsAllChecked = availableProductIds.isNotEmpty &&
-        availableProductIds.every((id) => updatedSelected.contains(id));
+  bool _deliveryBaseKnown(
+    CartEntity? cartData,
+    Set<int> selectedIds,
+  ) {
+    final products = cartData?.products
+            .where((product) => selectedIds.contains(product.productId)) ??
+        const <ProductEntity>[];
+    for (final product in products) {
+      final hasPrice = product.prices != null ||
+          (product.price != null && product.price! > 0);
+      if (!hasPrice) {
+        return false;
+      }
+    }
+    return true;
+  }
 
-    emit(state.copyWith(
-      selectedProductIds: updatedSelected,
-      isAllProductsChecked: updatedIsAllChecked,
-    ));
+  int? _deliveryPayment({
+    required CartEntity? cartData,
+    required Set<int> selectedIds,
+    required DeliveryZoneType zone,
+  }) {
+    if (!_deliveryBaseKnown(cartData, selectedIds)) {
+      return null;
+    }
+    final total = (cartData?.products ?? const <ProductEntity>[])
+        .where((product) => selectedIds.contains(product.productId))
+        .fold<double>(
+          0,
+          (sum, product) =>
+              sum + _payableUnit(product) * _billableQuantity(product),
+        );
+    return zone.getPrice(total);
   }
 
   // Функция для удаления товара с дебаунс таймером
   Future<void> _onDeleteCart(
       DeleteCartEvent event, Emitter<CartScreenState> emit) async {
-    add(UpdateDeliveryPriceEvent());
-
     // Сбрасываем предыдущий таймер удаления, если событие повторяется
     _deleteCartDebounceTimer?.cancel();
 
@@ -331,8 +383,6 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
   // Функция для добавления товара с дебаунс таймером
   Future<void> _onAddCart(
       AddCartEvent event, Emitter<CartScreenState> emit) async {
-    add(UpdateDeliveryPriceEvent());
-
     // Сбрасываем предыдущий таймер добавления, если событие повторяется
     _addCartDebounceTimer?.cancel();
 
@@ -348,7 +398,14 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
       if (!wasFirstTimeAdded) {
         ProductEntity product = currentProducts[productIndex];
+        final stock = product.stockCount;
+        if (stock != null && stock <= 0) {
+          return;
+        }
         newQuantity = event.count ?? (product.quantity ?? 0) + 1;
+        if (stock != null && newQuantity > stock) {
+          return;
+        }
       }
 
       // Выполняем API запрос БЕЗ локального обновления состояния
@@ -401,8 +458,7 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       ClearProductsEvent event, Emitter<CartScreenState> emit) async {
     // Устанавливаем флаг очистки корзины
     emit(state.copyWith(isClearingCart: true));
-    
-    add(UpdateDeliveryPriceEvent());
+
     final failureOrCart = await clearCartUC();
     failureOrCart.fold(
       (_) {
@@ -425,7 +481,6 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
   void _onPickAllProducts(
       PickAllProductsEvent event, Emitter<CartScreenState> emit) {
-    add(UpdateDeliveryPriceEvent());
     Set<int> selectedProductIds = state.isAllProductsChecked && !event.force
         ? {}
         : (state.cartData?.products ?? [])
@@ -434,8 +489,12 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
             .toSet();
     emit(state.copyWith(
         selectedProductIds: selectedProductIds,
-        isAllProductsChecked:
-            event.force ? true : !state.isAllProductsChecked));
+        isAllProductsChecked: event.force ? true : !state.isAllProductsChecked,
+        deliveryPayment: _deliveryPayment(
+          cartData: state.cartData,
+          selectedIds: selectedProductIds,
+          zone: state.deliveryZone,
+        )));
   }
 
   void _handleCartUpdateError(
@@ -459,7 +518,6 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
 
   void _onDeleteProduct(
       DeleteProductEvent event, Emitter<CartScreenState> emit) async {
-    add(UpdateDeliveryPriceEvent());
     ProductEntity? product = state.cartData?.products
         .firstWhereOrNull((e) => e.productId == event.productId);
     if (product != null) {
@@ -558,37 +616,19 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
   }
 
   void _onUpdateDeliveryPrice(
-      UpdateDeliveryPriceEvent event, Emitter<CartScreenState> emit) async {
-    DeliveryZoneType deliveryZone = courierZoneManager.getZoneTypeByCoordinates(
+      UpdateDeliveryPriceEvent event, Emitter<CartScreenState> emit) {
+    final deliveryZone = courierZoneManager.getZoneTypeByCoordinates(
         event.address?.point ?? selectedAddress?.point);
-    emit(state.copyWith(isLoading: true));
-    emit(state.copyWith(deliveryZone: deliveryZone, isLoading: false));
-
-    final selectedProducts = state.cartData?.products
-            .where((product) =>
-                state.selectedProductIds.contains(product.productId))
-            .toList() ??
-        [];
-
-    // Считаем сумму всех товаров
-    final productsTotal = selectedProducts.fold<double>(
-      0,
-      (sum, product) {
-        final quantity = product.quantity ??
-            product.requestedQuantity ??
-            product.requiredQuantity ??
-            1;
-        final price = product.prices?.price ?? product.price ?? 0;
-        return sum + price * quantity;
-      },
-    );
-
-    // Итоговая сумма
-    final totalPrice = productsTotal;
-    // Получаем сообщение с ценой для зоны
-    final priceMessage = deliveryZone.getPrice(totalPrice);
-
-    emit(state.copyWith(deliveryPayment: priceMessage, address: event.address));
+    emit(state.copyWith(
+      deliveryZone: deliveryZone,
+      isLoading: false,
+      address: event.address,
+      deliveryPayment: _deliveryPayment(
+        cartData: state.cartData,
+        selectedIds: state.selectedProductIds,
+        zone: deliveryZone,
+      ),
+    ));
   }
 
   Future<void> _onCreateOrder(
@@ -752,13 +792,17 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       updatedSelectedProductIds.add(event.productId);
     }
 
+    final updatedCart = state.cartData?.copyWith(products: updatedProducts);
     emit(state.copyWith(
-        cartData: state.cartData?.copyWith(products: updatedProducts),
+        cartData: updatedCart,
         selectedProductIds: updatedSelectedProductIds,
         isAllProductsChecked: _isAllProductsChecked(updatedSelectedProductIds),
-        isLoading: false));
-
-    add(UpdateDeliveryPriceEvent());
+        isLoading: false,
+        deliveryPayment: _deliveryPayment(
+          cartData: updatedCart,
+          selectedIds: updatedSelectedProductIds,
+          zone: state.deliveryZone,
+        )));
 
     // If cart was empty and this is the first product, set cartType to delivery
     if (event.wasCartEmpty && event.wasFirstTimeAdded) {
@@ -798,14 +842,18 @@ class CartScreenBloc extends Bloc<CartScreenEvent, CartScreenState> {
       }
     }
 
+    final updatedCart = state.cartData?.copyWith(products: updatedProducts);
     emit(state.copyWith(
-        cartData: state.cartData?.copyWith(products: updatedProducts),
+        cartData: updatedCart,
         selectedProductIds: updatedSelectedProductIds,
         cartType: event.isCartEmptyAfterRemoval && state.isAvailableDelivery
             ? TypeReceiving.delivery
-            : state.cartType));
-
-    add(UpdateDeliveryPriceEvent());
+            : state.cartType,
+        deliveryPayment: _deliveryPayment(
+          cartData: updatedCart,
+          selectedIds: updatedSelectedProductIds,
+          zone: state.deliveryZone,
+        )));
 
     // Загружаем актуальные данные корзины для синхронизации
     if (!isClosed) {

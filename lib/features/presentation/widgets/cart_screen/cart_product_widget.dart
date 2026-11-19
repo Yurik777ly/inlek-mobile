@@ -361,8 +361,7 @@ class CartProductWidget extends StatelessWidget {
                                                     productsListScreenType),
                                           ),
                                         if (productsListScreenType ==
-                                                ProductsListScreenType.cart &&
-                                            product.availability != 'absent')
+                                            ProductsListScreenType.cart)
                                           Padding(
                                             padding: getMarginOrPadding(
                                                 top: 2, bottom: 2, left: 8),

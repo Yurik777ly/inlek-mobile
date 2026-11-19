@@ -19,6 +19,9 @@ class GeocoderManager {
   /// Bbox: Минск и Минский район
   static const String minskBbox = '27.35,53.75~28.55,54.15';
 
+  /// Bbox только города Минска, без других населённых пунктов
+  static const String minskCityBbox = '27.40,53.82~27.72,53.98';
+
   /// Центр Беларуси
   static const double belarusCenterLat = 53.7098;
   static const double belarusCenterLon = 27.9534;
@@ -131,20 +134,32 @@ class GeocoderManager {
     String lang = 'ru_RU',
     int results = 7,
     String? cityContext,
+    bool restrictToMinsk = false,
   }) async {
     final trimmed = query.trim();
     if (trimmed.isEmpty) {
       return [];
     }
 
-    final resolvedCity = resolveCityContext(
-      query: trimmed,
-      fieldCity: cityContext,
-    );
-    final searchArea = await _resolveSearchArea(resolvedCity);
+    final resolvedCity = restrictToMinsk
+        ? 'Минск'
+        : resolveCityContext(
+            query: trimmed,
+            fieldCity: cityContext,
+          );
+    final searchArea = restrictToMinsk
+        ? const _SearchArea(
+            lat: minskLat,
+            lon: minskLon,
+            spnLat: 0.2,
+            spnLon: 0.35,
+            bbox: minskCityBbox,
+          )
+        : await _resolveSearchArea(resolvedCity);
     final searchText = _buildAddressQuery(
       trimmed,
       cityContext: resolvedCity,
+      ignoreExplicitCity: restrictToMinsk,
     );
 
     final url = Uri.https(
@@ -158,7 +173,8 @@ class GeocoderManager {
         'bbox': searchArea.bbox,
         'll': '${searchArea.lon},${searchArea.lat}',
         'print_address': '1',
-        'types': 'geo,street,house,locality',
+        'strict_bounds': restrictToMinsk ? '1' : '0',
+        'types': restrictToMinsk ? 'street,house' : 'geo,street,house,locality',
       },
     );
 
@@ -173,6 +189,12 @@ class GeocoderManager {
       final List<dynamic> items = data['results'] ?? [];
 
       return items
+          .where((item) {
+            if (!restrictToMinsk) {
+              return true;
+            }
+            return item is Map<String, dynamic> && _isMinskSuggestion(item);
+          })
           .map((item) {
             final map = item as Map<String, dynamic>;
             final address = map['address'] as Map<String, dynamic>?;
@@ -202,13 +224,16 @@ class GeocoderManager {
       return null;
     }
 
-    final resolvedCity = resolveCityContext(
-      query: trimmed,
-      fieldCity: cityContext,
-    );
+    final resolvedCity = restrictToMinsk
+        ? 'Минск'
+        : resolveCityContext(
+            query: trimmed,
+            fieldCity: cityContext,
+          );
     final query = _buildAddressQuery(
       trimmed,
       cityContext: resolvedCity,
+      ignoreExplicitCity: restrictToMinsk,
     );
     if (query.isEmpty) {
       return null;
@@ -292,7 +317,69 @@ class GeocoderManager {
       return null;
     }
 
+    // Одна часть без префикса «г.» — это улица или дом, а не город.
+    // Иначе запрос «Независимости» ищется по всей стране.
+    final hasCityPrefix = RegExp(
+      r'^(г\.?|город)\s+\S',
+      caseSensitive: false,
+    ).hasMatch(firstPart);
+    if (parts.length == 1 && !hasCityPrefix) {
+      return null;
+    }
+
     return _normalizeCityName(firstPart);
+  }
+
+  bool isMinskCity(String? city) {
+    final normalized = _normalizeCityName(city ?? '')?.toLowerCase();
+    return normalized == 'минск' || normalized == 'minsk';
+  }
+
+  bool _isMinskSuggestion(Map<String, dynamic> item) {
+    final address = item['address'];
+    if (address is Map) {
+      final components = address['component'];
+      if (components is List) {
+        for (final component in components) {
+          if (component is! Map) {
+            continue;
+          }
+          final name = component['name']?.toString() ?? '';
+          if (!isMinskCity(name)) {
+            continue;
+          }
+          final kind = component['kind'];
+          final kinds = kind is List
+              ? kind.map((entry) => entry.toString().toLowerCase())
+              : [kind?.toString().toLowerCase() ?? ''];
+          if (kinds.contains('locality')) {
+            return true;
+          }
+        }
+      }
+
+      final formatted = address['formatted_address']?.toString() ?? '';
+      if (_formattedAddressIsMinsk(formatted)) {
+        return true;
+      }
+    }
+
+    final subtitle = item['subtitle'];
+    if (subtitle is Map) {
+      final text = subtitle['text']?.toString() ?? '';
+      if (_formattedAddressIsMinsk(text) || isMinskCity(text)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  bool _formattedAddressIsMinsk(String formatted) {
+    return formatted
+        .split(',')
+        .map((part) => part.trim())
+        .any((part) => isMinskCity(part));
   }
 
   bool _looksLikeStreetPart(String part) {
@@ -351,13 +438,15 @@ class GeocoderManager {
   String _buildAddressQuery(
     String address, {
     String? cityContext,
+    bool ignoreExplicitCity = false,
   }) {
     var query = address.trim();
     if (query.isEmpty) {
       return '';
     }
 
-    final explicitCity = extractCityFromAddressQuery(query);
+    final explicitCity =
+        ignoreExplicitCity ? null : extractCityFromAddressQuery(query);
     final city = explicitCity ?? cityContext?.trim();
 
     if (city != null &&

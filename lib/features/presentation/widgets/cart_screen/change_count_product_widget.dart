@@ -42,15 +42,19 @@ class ChangeCountProductWidget extends StatelessWidget {
         .firstWhereOrNull((e) => e.productId == product.productId);
     final isCart = cartOrProductType == CartOrProductType.cart;
     final isProduct = cartOrProductType == CartOrProductType.product;
+    final stockLimit = cartProduct?.stockCount ?? product.stockCount;
+    final noStock = stockLimit != null && stockLimit <= 0;
     int count = cartProduct?.quantity ?? 0;
-    if (count == 0 && (cartProduct?.requestedQuantity ?? 0) > 0) {
+    // Нет остатка в выбранной аптеке (для доставки — в виртуальной):
+    // показываем 0, а не запрошенное количество.
+    if (!noStock && count == 0 && (cartProduct?.requestedQuantity ?? 0) > 0) {
       count = cartProduct!.requestedQuantity!;
     }
     double? price = cartProduct?.availability == 'absent'
         ? product.price
         : cartProduct?.prices?.price ?? product.price;
-    final isAddDisabled = (cartProduct?.quantity ?? 0) >=
-        (cartProduct?.stockCount ?? product.stockCount ?? double.infinity);
+    final isAddDisabled = noStock ||
+        (cartProduct?.quantity ?? 0) >= (stockLimit ?? double.infinity);
     final isLoading = (cartProduct ?? product).isLoading;
 
     if (isProduct && count == 0 && cartProduct?.availability != 'absent') {

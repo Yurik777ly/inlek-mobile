@@ -63,9 +63,9 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
   }
 
   Future<void> _syncCityFromAddressQuery(String query) async {
-    final explicitCity =
-        sl<GeocoderManager>().extractCityFromAddressQuery(query);
-    if (explicitCity == null) {
+    final geocoderManager = sl<GeocoderManager>();
+    final explicitCity = geocoderManager.extractCityFromAddressQuery(query);
+    if (explicitCity == null || !geocoderManager.isMinskCity(explicitCity)) {
       return;
     }
 
@@ -217,6 +217,7 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                           await geocoderManager.getAddressSuggestions(
                         query,
                         cityContext: city.isNotEmpty ? city : null,
+                        restrictToMinsk: true,
                       );
 
                       setState(() {});
@@ -237,6 +238,7 @@ class _DeliveryAddressBlockState extends State<DeliveryAddressBlock> {
                     final response = await geocoderManager.getGeocodeFromAddress(
                       p0,
                       cityContext: city.isNotEmpty ? city : null,
+                      restrictToMinsk: true,
                     );
 
                     if (!mounted) {

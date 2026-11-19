@@ -128,6 +128,12 @@ android {
     buildFeatures {
        dataBinding = true
    }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
 }
 
 flutter {
@@ -135,6 +141,8 @@ flutter {
 }
 
 dependencies {
-    implementation 'com.yandex.android:maps.mobile:4.4.0-lite'
+    // 4.19.0 is the newest lite SDK that is 16 KB-aligned and still Java 8.
+    // Newer MapKit (4.22+) is compiled for Java 21 and does not build with this project.
+    implementation 'com.yandex.android:maps.mobile:4.19.0-lite'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
 }

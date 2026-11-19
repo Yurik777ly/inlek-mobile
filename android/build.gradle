@@ -29,6 +29,62 @@ subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
 
+subprojects { subproject ->
+    subproject.configurations.configureEach {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == "com.yandex.android" && details.requested.name == "maps.mobile") {
+                def variant = (details.requested.version ?: "").endsWith("-full") ? "full" : "lite"
+                details.useVersion("4.19.0-${variant}")
+                details.because("Google Play requires 16 KB page alignment; MapKit before 4.19 is 4 KB aligned")
+            }
+        }
+    }
+}
+
+// yandex_mapkit 4.1.0 is compiled against MapKit 4.6.1. 4.19.0 renamed
+// setHeadingEnabled and added indoorLevelId to RequestPoint.
+subprojects { subproject ->
+    if (subproject.name != "yandex_mapkit") {
+        return
+    }
+
+    def controller = new File(
+        subproject.projectDir,
+        "src/main/java/com/unact/yandexmapkit/lite/YandexMapController.java"
+    )
+    def utils = new File(
+        subproject.projectDir,
+        "src/main/java/com/unact/yandexmapkit/lite/UtilsLite.java"
+    )
+
+    if (controller.exists()) {
+        def text = controller.getText("UTF-8")
+        def updated = text.replace(
+            "userLocationLayer.setHeadingEnabled(",
+            "userLocationLayer.setHeadingModeActive("
+        )
+        if (updated != text) {
+            controller.write(updated, "UTF-8")
+        }
+    }
+
+    if (utils.exists()) {
+        def text = utils.getText("UTF-8")
+        def oldCtor = """RequestPointType.values()[(Integer) json.get("requestPointType")],
+      null,
+      null
+    );"""
+        def newCtor = """RequestPointType.values()[(Integer) json.get("requestPointType")],
+      null,
+      null,
+      null
+    );"""
+        if (text.contains(oldCtor)) {
+            utils.write(text.replace(oldCtor, newCtor), "UTF-8")
+        }
+    }
+}
+
 subprojects {
     project.evaluationDependsOn(":app")
 }

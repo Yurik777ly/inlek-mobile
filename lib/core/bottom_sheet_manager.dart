@@ -783,6 +783,7 @@ class BottomSheetManager {
       final response = await geocoderManager.getGeocodeFromAddress(
         query,
         cityContext: city.isNotEmpty ? city : null,
+        restrictToMinsk: true,
       );
 
       if (response?.firstAddress == null || response?.firstPoint == null) {
@@ -907,6 +908,8 @@ class BottomSheetManager {
                                         final explicitCity = geocoderManager
                                             .extractCityFromAddressQuery(query);
                                         if (explicitCity != null &&
+                                            geocoderManager
+                                                .isMinskCity(explicitCity) &&
                                             explicitCity !=
                                                 cartScreenBloc
                                                     .cityController.text
@@ -931,6 +934,7 @@ class BottomSheetManager {
                                           query,
                                           cityContext:
                                               city.isNotEmpty ? city : null,
+                                          restrictToMinsk: true,
                                         );
 
                                         if (addresses.isNotEmpty &&
@@ -974,9 +978,13 @@ class BottomSheetManager {
                                       await refreshDeliveryMapMarkers(context);
                                     },
                                     onChangeField: (p0) {
-                                      final explicitCity = sl<GeocoderManager>()
+                                      final geocoderManager =
+                                          sl<GeocoderManager>();
+                                      final explicitCity = geocoderManager
                                           .extractCityFromAddressQuery(p0);
                                       if (explicitCity != null &&
+                                          geocoderManager
+                                              .isMinskCity(explicitCity) &&
                                           explicitCity !=
                                               cartScreenBloc
                                                   .cityController.text
